@@ -1,0 +1,952 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>M4-01 — Сегменты ЦА · Магия Масел</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --brand: #2C5F2D;
+      --brand-dark: #1a4a1b;
+      --brand-light: #4a8f4b;
+      --brand-bg: #e8f5e9;
+      --accent: #D4AF37;
+      --accent-bg: #fdf8e8;
+      --n50: #f8fafc; --n100: #f1f5f9; --n200: #e2e8f0;
+      --n300: #cbd5e1; --n400: #94a3b8; --n500: #64748b;
+      --n600: #475569; --n700: #334155; --n800: #1e293b; --n900: #0f172a;
+      --success: #10b981; --warning: #f59e0b; --error: #ef4444; --info: #3b82f6;
+      --font: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      --shadow-card: 0 1px 3px 0 rgba(0,0,0,.05), 0 1px 2px -1px rgba(0,0,0,.05);
+      --shadow-hover: 0 10px 25px -5px rgba(0,0,0,.08), 0 8px 10px -6px rgba(0,0,0,.04);
+      --shadow-btn: 0 4px 14px 0 rgba(44,95,45,.35);
+      --r-sm:4px; --r-md:6px; --r-lg:8px; --r-xl:12px; --r-2xl:16px; --r-3xl:24px; --r-full:9999px;
+    }
+
+    body { font-family: var(--font); font-size: 16px; line-height: 1.6; color: var(--n600); background: var(--n100); }
+
+    @keyframes fade-up { 0%{opacity:0;transform:translateY(20px)} 100%{opacity:1;transform:translateY(0)} }
+    .fade-up { opacity:0; transform:translateY(20px); transition:opacity .6s ease-out, transform .6s ease-out; }
+    .fade-up.visible { opacity:1; transform:translateY(0); }
+
+    .container { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
+    .section { padding: 80px 0; }
+
+    /* Nav */
+    .nav-wrap {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 300;
+      background: rgba(255,255,255,.93); backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--n200); height: 64px;
+    }
+    .nav-inner { height:100%; display:flex; align-items:center; justify-content:space-between; }
+    .nav-logo img { height:40px; width:auto; display:block; }
+    .nav-links { display:flex; gap:20px; flex-wrap:wrap; }
+    .nav-links a { font-size:13px; font-weight:500; color:var(--n600); text-decoration:none; transition:color .2s; }
+    .nav-links a:hover { color:var(--brand); }
+    .nav-badge {
+      font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:.05em;
+      color:var(--brand); background:var(--brand-bg);
+      padding:5px 12px; border-radius:var(--r-full); white-space:nowrap;
+    }
+
+    /* Section header */
+    .section-header { margin-bottom:40px; }
+    .section-label {
+      display:inline-block; font-size:11px; font-weight:700; text-transform:uppercase;
+      letter-spacing:.08em; color:var(--brand); background:var(--brand-bg);
+      padding:4px 12px; border-radius:var(--r-full); margin-bottom:12px;
+    }
+    .section-title { font-size:30px; font-weight:600; color:var(--n900); line-height:1.25; margin-bottom:8px; }
+    .section-sub { font-size:16px; color:var(--n500); }
+
+    /* Grid */
+    .grid-2 { display:grid; grid-template-columns:repeat(auto-fit,minmax(340px,1fr)); gap:20px; }
+    .grid-3 { display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:20px; }
+
+    /* Badge */
+    .badge { display:inline-flex; align-items:center; padding:3px 10px; border-radius:var(--r-full); font-size:12px; font-weight:600; }
+    .badge-green { background:#d1fae5; color:#065f46; }
+    .badge-yellow { background:#fef3c7; color:#92400e; }
+    .badge-blue { background:#dbeafe; color:#1e40af; }
+    .badge-brand { background:var(--brand-bg); color:var(--brand-dark); }
+    .badge-accent { background:var(--accent-bg); color:#7a6000; }
+    .badge-red { background:#fee2e2; color:#991b1b; }
+    .badge-gray { background:var(--n100); color:var(--n500); }
+
+    /* Table */
+    .table-wrap { overflow-x:auto; border-radius:var(--r-2xl); border:1px solid var(--n200); margin:20px 0; }
+    table { width:100%; border-collapse:collapse; background:#fff; }
+    thead tr { background:var(--n50); border-bottom:2px solid var(--n200); }
+    th { padding:14px 18px; text-align:left; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.05em; color:var(--n500); }
+    td { padding:14px 18px; font-size:14px; color:var(--n600); border-bottom:1px solid var(--n200); }
+    tr:last-child td { border-bottom:none; }
+    tbody tr { transition:background .2s; }
+    tbody tr:hover { background:var(--n50); }
+    .td-num { font-size:13px; color:var(--n400); font-family:monospace; }
+
+    /* Alert */
+    .alert { display:flex; gap:14px; border-radius:var(--r-xl); padding:18px; margin:16px 0; }
+    .alert-warning { background:#fffbeb; border:1px solid #fde68a; border-left:4px solid var(--warning); }
+    .alert-error { background:#fff1f2; border:1px solid #fecdd3; border-left:4px solid var(--error); }
+    .alert-info { background:#eff6ff; border:1px solid #bfdbfe; border-left:4px solid var(--info); }
+    .alert-success { background:#f0fdf4; border:1px solid #bbf7d0; border-left:4px solid var(--success); }
+    .alert-brand { background:var(--brand-bg); border:1px solid #a5d6a7; border-left:4px solid var(--brand); }
+    .alert-icon { font-size:18px; flex-shrink:0; margin-top:1px; }
+
+    /* Card */
+    .card {
+      background:#fff; border-radius:var(--r-2xl); border:1px solid var(--n200);
+      padding:28px; box-shadow:var(--shadow-card);
+      transition:transform .3s ease, box-shadow .3s ease;
+    }
+    .card:hover { transform:translateY(-3px); box-shadow:var(--shadow-hover); }
+    .card-brand {
+      background: linear-gradient(135deg, var(--brand-bg) 0%, #fff 100%);
+      border-radius:var(--r-2xl); border:1px solid #a5d6a7; padding:28px; box-shadow:var(--shadow-card);
+    }
+    .card-accent {
+      background: var(--accent-bg);
+      border-radius:var(--r-2xl); border:1px solid #e8d87a; padding:28px; box-shadow:var(--shadow-card);
+    }
+    .card-title { font-size:16px; font-weight:700; color:var(--n900); margin-bottom:12px; }
+    .card-icon { font-size:24px; margin-bottom:12px; }
+
+    /* Stat cards */
+    .stat-card {
+      background:linear-gradient(135deg,var(--brand) 0%,var(--brand-dark) 100%);
+      border-radius:var(--r-2xl); padding:24px; color:#fff; box-shadow:var(--shadow-btn);
+    }
+    .stat-label { font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.05em; opacity:.75; margin-bottom:8px; }
+    .stat-value { font-size:28px; font-weight:700; line-height:1; margin-bottom:6px; }
+    .stat-desc { font-size:13px; opacity:.8; }
+
+    /* List item */
+    .list-item {
+      display:flex; gap:10px; align-items:flex-start;
+      padding:9px 0; border-bottom:1px solid var(--n100);
+      font-size:14px; color:var(--n600);
+    }
+    .list-item:last-child { border-bottom:none; }
+    .list-dot { width:8px; height:8px; border-radius:50%; background:var(--brand); flex-shrink:0; margin-top:6px; }
+    .list-dot-red { width:8px; height:8px; border-radius:50%; background:var(--error); flex-shrink:0; margin-top:6px; }
+
+    /* Status icons */
+    .s-ok { color:var(--success); font-weight:600; }
+    .s-warn { color:var(--warning); font-weight:600; }
+    .s-need { color:#f97316; font-weight:600; }
+
+    @media (max-width:768px) {
+      .nav-links { display:none; }
+      .section-title { font-size:24px; }
+      .grid-2, .grid-3 { grid-template-columns:1fr; }
+    }
+
+    /* Hero */
+    .hero {
+      background: linear-gradient(135deg, var(--brand-dark) 0%, var(--brand) 50%, var(--brand-light) 100%);
+      padding: 120px 0 80px; color:#fff; position:relative; overflow:hidden;
+    }
+    .hero::before {
+      content:''; position:absolute; inset:0;
+      background: radial-gradient(ellipse at 70% 50%, rgba(212,175,55,.15) 0%, transparent 60%);
+    }
+    .hero-inner { display:flex; align-items:center; gap:48px; flex-wrap:wrap; }
+    .hero-logo-wrap { flex-shrink:0; }
+    .hero-logo-wrap img { height:140px; width:auto; display:block; border-radius:var(--r-xl); }
+    .hero-content { flex:1; min-width:280px; }
+    .hero-badge {
+      display:inline-block; font-size:11px; font-weight:700; text-transform:uppercase;
+      letter-spacing:.1em; background:rgba(255,255,255,.15); color:#fff;
+      border:1px solid rgba(255,255,255,.3); padding:6px 16px;
+      border-radius:var(--r-full); margin-bottom:20px; backdrop-filter:blur(8px);
+    }
+    .hero-title { font-size:52px; font-weight:700; line-height:1.1; margin-bottom:16px; }
+    .hero-title span { color:var(--accent); }
+    .hero-sub { font-size:18px; opacity:.85; max-width:600px; margin-bottom:32px; line-height:1.6; }
+    .hero-meta { display:flex; gap:24px; flex-wrap:wrap; }
+    .hero-meta-item { display:flex; flex-direction:column; gap:3px; }
+    .hero-meta-label { font-size:10px; text-transform:uppercase; letter-spacing:.08em; opacity:.6; }
+    .hero-meta-value { font-size:14px; font-weight:600; }
+
+    @media (max-width:768px) {
+      .hero { padding: 100px 0 60px; }
+      .hero-title { font-size:34px; }
+      .hero-logo-wrap img { height:80px; }
+    }
+
+    /* Footer */
+    .footer { background:var(--n900); color:var(--n400); padding:40px 0; font-size:13px; }
+    .footer-inner { display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:16px; }
+    .footer-meta { display:flex; gap:20px; flex-wrap:wrap; }
+    .footer-meta-item { display:flex; flex-direction:column; gap:2px; }
+    .footer-meta-label { font-size:10px; text-transform:uppercase; letter-spacing:.05em; color:var(--n600); }
+    .footer-meta-value { font-size:12px; color:var(--n400); }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav-wrap">
+  <div class="container">
+    <div class="nav-inner">
+      <div class="nav-logo"><img src="../../assets/logo-horizontal-light.png" alt="Магия Масел"></div>
+      <div class="nav-links">
+        <a href="#map">Карта сегментов</a>
+        <a href="#s1">С1 Функциональный</a>
+        <a href="#s2">С2 Семейный</a>
+        <a href="#s3">С3 Крафт-контролёр</a>
+        <a href="#s4">С4 Гастроном</a>
+        <a href="#s5">С5 Красота</a>
+        <a href="#matrix">Матрица</a>
+        <a href="#priorities">Приоритеты</a>
+        <a href="#conflicts">Конфликты</a>
+      </div>
+      <div class="nav-badge">M4 · Документ 1/8</div>
+    </div>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="container">
+    <div class="hero-inner">
+      <div class="hero-logo-wrap">
+        <img src="../../assets/logo-badge-dark.png" alt="Магия Масел — Кирилл Бродский">
+      </div>
+      <div class="hero-content">
+        <div class="hero-badge">M4 · Аудитория · Документ 1 из 8</div>
+        <h1 class="hero-title">Сегменты <span>ЦА</span></h1>
+        <p class="hero-sub">Пять покупательских сегментов, построенных по задаче и поведению. Матрица продукт × сегмент и приоритеты для первых 90 дней.</p>
+        <div class="hero-meta">
+          <div class="hero-meta-item">
+            <span class="hero-meta-label">Клиент</span>
+            <span class="hero-meta-value">Кирилл Бродский</span>
+          </div>
+          <div class="hero-meta-item">
+            <span class="hero-meta-label">Дата</span>
+            <span class="hero-meta-value">31.03.2026</span>
+          </div>
+          <div class="hero-meta-item">
+            <span class="hero-meta-label">Версия</span>
+            <span class="hero-meta-value">1.0</span>
+          </div>
+          <div class="hero-meta-item">
+            <span class="hero-meta-label">Сегментов</span>
+            <span class="hero-meta-value">5</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ПРИНЦИП СЕГМЕНТАЦИИ -->
+<section class="section fade-up" id="principle">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-label">Принцип</div>
+      <h2 class="section-title">Принцип сегментации</h2>
+      <p class="section-sub">Сегментация по задаче и поведению, а не по возрасту или полу.</p>
+    </div>
+    <div class="alert alert-brand fade-up">
+      <span class="alert-icon">💡</span>
+      <div>
+        <strong style="color:var(--brand-dark); display:block; margin-bottom:4px;">Один человек — два сегмента</strong>
+        <p style="font-size:14px; color:var(--n600);">Один и тот же человек может одновременно принадлежать двум сегментам — но покупательское решение в каждом случае разное.</p>
+      </div>
+    </div>
+    <div class="card fade-up" style="margin-top:20px;">
+      <div class="card-title">Источники сегментации</div>
+      <div class="list-item"><div class="list-dot"></div><div>Цифровая речь потребителей (DR ЦА, Яндекс Маркет, iRecommend, Отзовик, Babyblog)</div></div>
+      <div class="list-item"><div class="list-dot"></div><div>Прямые наблюдения Кирилла с Дорогомиловского рынка</div></div>
+      <div class="list-item"><div class="list-dot"></div><div>M2 гипотезы и мастер-синтез</div></div>
+      <div class="list-item"><div class="list-dot"></div><div>M3 продуктовая стратегия (матрица продукт × сегмент)</div></div>
+      <div class="list-item"><div class="list-dot"></div><div>Ответы Кирилла 27.03 и 29.03.2026</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- КАРТА ПЯТИ СЕГМЕНТОВ -->
+<section class="section fade-up" id="map" style="background:#fff;">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-label">Обзор</div>
+      <h2 class="section-title">Карта пяти сегментов</h2>
+    </div>
+    <div class="table-wrap fade-up">
+      <table>
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Сегмент</th>
+            <th>Задача</th>
+            <th>Масла-якори</th>
+            <th>Потенциал LTV</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="td-num">С1</td>
+            <td><strong>Функциональный</strong></td>
+            <td>Здоровье курсом</td>
+            <td>Тмин, расторопша, тыква</td>
+            <td><span class="badge badge-green">Максимальный</span></td>
+          </tr>
+          <tr>
+            <td class="td-num">С2</td>
+            <td><strong>Семейный ЗОЖ</strong></td>
+            <td>Полезно дома, без фанатизма</td>
+            <td>Лён, кедр, подсолнечник</td>
+            <td><span class="badge badge-yellow">Средний</span></td>
+          </tr>
+          <tr>
+            <td class="td-num">С3</td>
+            <td><strong>Крафт-контролёр</strong></td>
+            <td>Свежесть и честность</td>
+            <td>Тмин, тыква (любое флагманское)</td>
+            <td><span class="badge badge-green">Высокий</span></td>
+          </tr>
+          <tr>
+            <td class="td-num">С4</td>
+            <td><strong>Гастроном</strong></td>
+            <td>Вкус и кухня</td>
+            <td>Кедр, грецкий, кунжут, миндаль</td>
+            <td><span class="badge badge-yellow">Средний</span></td>
+          </tr>
+          <tr>
+            <td class="td-num">С5</td>
+            <td><strong>Красота изнутри</strong></td>
+            <td>Кожа, волосы, ногти</td>
+            <td>Миндаль, кедр, конопля, лён</td>
+            <td><span class="badge badge-yellow">Средний</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="alert alert-info fade-up">
+      <span class="alert-icon">ℹ️</span>
+      <div>
+        <strong style="color:#1e40af; display:block; margin-bottom:4px;">Подарочный сценарий</strong>
+        <p style="font-size:14px; color:var(--n600);">Не выделен в отдельный сегмент — это ситуативное поведение носителей С1–С5, а не самостоятельный тип покупателя.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- С1 — ФУНКЦИОНАЛЬНЫЙ -->
+<section class="section fade-up" id="s1">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-label">Сегмент С1</div>
+      <h2 class="section-title">С1 — «Функциональный»</h2>
+      <p class="section-sub">Покупает масло как нутрицевтик — с целью, курсом, по протоколу. Ядро аудитории Кирилла и самый ценный сегмент по повторному чеку.</p>
+    </div>
+
+    <div class="grid-3 fade-up" style="margin-bottom:28px;">
+      <div class="stat-card">
+        <div class="stat-label">Доля покупателей</div>
+        <div class="stat-value">35–40%</div>
+        <div class="stat-desc">на Дорогомиловском рынке</div>
+      </div>
+      <div class="stat-card" style="background:linear-gradient(135deg,var(--accent) 0%,#b8960e 100%); color:var(--n900);">
+        <div class="stat-label" style="color:var(--n700);">LTV / год</div>
+        <div class="stat-value" style="color:var(--n900);">15–30 тыс ₽</div>
+        <div class="stat-desc" style="color:var(--n700);">при закреплении ритуала</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Первый чек</div>
+        <div class="stat-value">700–2 500 ₽</div>
+        <div class="stat-desc">100 мл или 250 мл флагмана</div>
+      </div>
+    </div>
+
+    <!-- Профиль -->
+    <div class="card fade-up" style="margin-bottom:20px;">
+      <div class="card-icon">👤</div>
+      <div class="card-title">Профиль</div>
+      <div class="list-item"><div class="list-dot"></div><div><strong>Пол:</strong> женщины 60%, мужчины 40% (мужчины чаще в подсегменте биохакеров)</div></div>
+      <div class="list-item"><div class="list-dot"></div><div><strong>Возраст:</strong> 30–60 лет</div></div>
+      <div class="list-item"><div class="list-dot"></div><div><strong>Доход:</strong> средний+ и выше. 2 000–2 500 ₽ за 250 мл — нормальная стоимость нутрицевтика</div></div>
+      <div class="list-item"><div class="list-dot"></div><div><strong>Образ жизни:</strong> заботится о здоровье системно, читает про состав, следит за самочувствием</div></div>
+    </div>
+
+    <!-- Подсегменты -->
+    <div class="grid-2 fade-up" style="margin-bottom:20px;">
+      <div class="card-brand">
+        <div class="card-icon">🏥</div>
+        <div class="card-title">С1а — «Назначил врач»</div>
+        <p style="font-size:14px; color:var(--n600); margin-bottom:12px;">Точка входа — внешняя рекомендация. ЛОР, терапевт, диетолог. Доверие к рекомендации врача переносится на производителя.</p>
+        <div style="font-size:13px; color:var(--n500); font-style:italic; padding:10px; background:rgba(44,95,45,.05); border-radius:var(--r-lg); border-left:3px solid var(--brand);">
+          «Назначил принимать ЛОР. Натощак, пол года» — Яндекс Маркет, 25.07.2025
+        </div>
+      </div>
+      <div class="card-brand">
+        <div class="card-icon">🧬</div>
+        <div class="card-title">С1б — «Самоназначение / превентивная медицина»</div>
+        <p style="font-size:14px; color:var(--n600); margin-bottom:12px;">Биохакеры, адепты превентивной медицины. Читают про кислотный профиль, тимохинон. Готовы платить за «инженерный крафт». Растущий сегмент (+16,5%/год).</p>
+        <div style="font-size:13px; color:var(--n500); font-style:italic; padding:10px; background:rgba(44,95,45,.05); border-radius:var(--r-lg); border-left:3px solid var(--brand);">
+          «Пью столовую ложку — моментально включает мозг» — Яндекс Маркет, 19.02.2026
+        </div>
+      </div>
+    </div>
+    <div class="card-brand fade-up" style="margin-bottom:20px;">
+      <div class="card-icon">🩺</div>
+      <div class="card-title">С1в — «ЖКТ/Печень»</div>
+      <p style="font-size:14px; color:var(--n600);">Конкретная медицинская история: гастрит, проблемы с печенью. Масло расторопши или кедра как мягкая альтернатива агрессивным таблеткам. Особенно восприимчивы к теме «не химия, природа».</p>
+    </div>
+
+    <!-- Поведение -->
+    <div class="table-wrap fade-up">
+      <table>
+        <thead>
+          <tr>
+            <th>Параметр</th>
+            <th>Описание</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td><strong>Частота покупки</strong></td><td>1 раз в 21–30 дней (250 мл) или 1 раз в 30–45 дней (набор 3×100 мл)</td></tr>
+          <tr><td><strong>Формат первой покупки</strong></td><td>100 мл или 250 мл флагманского масла</td></tr>
+          <tr><td><strong>Решение</strong></td><td>Часто «курс — пауза — курс». Повтор при ощущаемом эффекте</td></tr>
+          <tr><td><strong>Сценарий применения</strong></td><td>Натощак с утра, строго по схеме. Иногда — «в еду, когда не смог натощак»</td></tr>
+          <tr><td><strong>Главный страх</strong></td><td>Купить испорченное или некачественное; переплатить без результата</td></tr>
+          <tr><td><strong>Барьер повтора</strong></td><td>Субъективное «не понял, помогло ли»; тошнота при приёме натощак; забывает купить</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Каналы -->
+    <div class="card fade-up" style="margin-top:20px; margin-bottom:20px;">
+      <div class="card-icon">📡</div>
+      <div class="card-title">Каналы привлечения</div>
+      <div class="list-item"><div class="list-dot"></div><div><strong>Дорогомиловский рынок</strong> — главный текущий источник. Консультация Кирилла конвертирует через честность + опыт</div></div>
+      <div class="list-item"><div class="list-dot"></div><div><strong>Telegram-канал</strong> — контент про применение, протоколы, производство</div></div>
+      <div class="list-item"><div class="list-dot"></div><div><strong>Сарафанное радио</strong> — «подруга рассказала», «врач рекомендовал конкретного производителя»</div></div>
+      <div class="list-item"><div class="list-dot"></div><div><strong>Отзывы на маркетплейсах</strong> — изучают перед покупкой, хотя сами через маркетплейс не покупают</div></div>
+    </div>
+
+    <!-- Коммуникация -->
+    <div class="grid-2 fade-up">
+      <div class="card" style="border-top:4px solid var(--success);">
+        <div class="card-title" style="color:var(--success);">Что работает</div>
+        <div class="list-item"><div class="list-dot"></div><div>Конкретные протоколы: «как пить тмин», «схема на 30 дней»</div></div>
+        <div class="list-item"><div class="list-dot"></div><div>Объяснение разницы гидравлика vs шнек (как образование)</div></div>
+        <div class="list-item"><div class="list-dot"></div><div>Честные ожидания: «не панацея, вот что можно ожидать»</div></div>
+        <div class="list-item"><div class="list-dot"></div><div>Кирилл как автор и объясняющий</div></div>
+      </div>
+      <div class="card" style="border-top:4px solid var(--error);">
+        <div class="card-title" style="color:var(--error);">Что не работает</div>
+        <div class="list-item"><div class="list-dot-red"></div><div>Абстрактные заявления о пользе без объяснения механизма</div></div>
+        <div class="list-item"><div class="list-dot-red"></div><div>Агрессивные СТА и давление</div></div>
+        <div class="list-item"><div class="list-dot-red"></div><div>Эзотерика («энергия природы», «магия отжима»)</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- С2 — СЕМЕЙНЫЙ ЗОЖ -->
+<section class="section fade-up" id="s2" style="background:#fff;">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-label">Сегмент С2</div>
+      <h2 class="section-title">С2 — «Семейный ЗОЖ»</h2>
+      <p class="section-sub">Масло как базовый домашний продукт. «Просто хорошее масло дома» — без фанатизма.</p>
+    </div>
+
+    <div class="grid-3 fade-up" style="margin-bottom:28px;">
+      <div class="stat-card">
+        <div class="stat-label">Доля покупателей</div>
+        <div class="stat-value">25–30%</div>
+        <div class="stat-desc">текущая оценка</div>
+      </div>
+      <div class="stat-card" style="background:linear-gradient(135deg,var(--accent) 0%,#b8960e 100%); color:var(--n900);">
+        <div class="stat-label" style="color:var(--n700);">LTV / год</div>
+        <div class="stat-value" style="color:var(--n900);">8–15 тыс ₽</div>
+        <div class="stat-desc" style="color:var(--n700);">при регулярности</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Частота</div>
+        <div class="stat-value">1–2 мес</div>
+        <div class="stat-desc">250 мл одного-двух масел</div>
+      </div>
+    </div>
+
+    <div class="card fade-up" style="margin-bottom:20px;">
+      <div class="card-icon">👤</div>
+      <div class="card-title">Профиль</div>
+      <div class="list-item"><div class="list-dot"></div><div><strong>Пол:</strong> преимущественно женщины (70–75%), принимают решение о питании семьи</div></div>
+      <div class="list-item"><div class="list-dot"></div><div><strong>Возраст:</strong> 30–50 лет, есть дети</div></div>
+      <div class="list-item"><div class="list-dot"></div><div><strong>Доход:</strong> средний. Цена важна, но переплату за «настоящее» принимают</div></div>
+      <div class="list-item"><div class="list-dot"></div><div><strong>Образ жизни:</strong> осознанное питание без фанатизма, читают состав, избегают «химии»</div></div>
+    </div>
+
+    <div class="table-wrap fade-up">
+      <table>
+        <thead>
+          <tr><th>Параметр</th><th>Описание</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><strong>Формат</strong></td><td>250 мл одного-двух масел</td></tr>
+          <tr><td><strong>Применение</strong></td><td>В еду, салаты, каши. Иногда — курс натощак, но нерегулярно</td></tr>
+          <tr><td><strong>Главный страх</strong></td><td>«Испортится», «не знаю как хранить», «можно ли детям»</td></tr>
+          <tr><td><strong>Барьер повтора</strong></td><td>Неудобство хранения; ребёнок отказался есть</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="grid-2 fade-up" style="margin-top:20px;">
+      <div class="card" style="border-top:4px solid var(--success);">
+        <div class="card-title" style="color:var(--success);">Что работает</div>
+        <div class="list-item"><div class="list-dot"></div><div>«Как хранить правильно» — снимает главный страх</div></div>
+        <div class="list-item"><div class="list-dot"></div><div>Простые применения: «добавьте в кашу», «заправьте салат»</div></div>
+        <div class="list-item"><div class="list-dot"></div><div>«Можно ли детям» — конкретный ответ с объяснением</div></div>
+        <div class="list-item"><div class="list-dot"></div><div>Малый объём 100 мл для первого раза</div></div>
+      </div>
+      <div class="card" style="border-top:4px solid var(--error);">
+        <div class="card-title" style="color:var(--error);">Что не работает</div>
+        <div class="list-item"><div class="list-dot-red"></div><div>Медицинский язык («тимохинон», «кислотный профиль»)</div></div>
+        <div class="list-item"><div class="list-dot-red"></div><div>Сложные протоколы</div></div>
+      </div>
+    </div>
+
+    <div class="card fade-up" style="margin-top:20px;">
+      <div class="card-icon">📡</div>
+      <div class="card-title">Каналы привлечения</div>
+      <div class="list-item"><div class="list-dot"></div><div><strong>Форумы мам и семейные сообщества</strong> — обсуждение состава, «можно ли ребёнку»</div></div>
+      <div class="list-item"><div class="list-dot"></div><div><strong>Дорогомиловский рынок</strong> — «увидела, попробовала»</div></div>
+      <div class="list-item"><div class="list-dot"></div><div><strong>Telegram-контент</strong> — простые рецепты применения, польза для семьи</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- С3 — КРАФТ-КОНТРОЛЁР -->
+<section class="section fade-up" id="s3">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-label">Сегмент С3</div>
+      <h2 class="section-title">С3 — «Крафт-контролёр»</h2>
+      <p class="section-sub">Уже обжигался. Контролирует всё: тара, дата отжима, хранение, вкус. Ищет производителя, которому можно доверять безусловно.</p>
+    </div>
+
+    <div class="grid-3 fade-up" style="margin-bottom:28px;">
+      <div class="stat-card">
+        <div class="stat-label">Доля покупателей</div>
+        <div class="stat-value">15–20%</div>
+        <div class="stat-desc">текущая оценка</div>
+      </div>
+      <div class="stat-card" style="background:linear-gradient(135deg,var(--accent) 0%,#b8960e 100%); color:var(--n900);">
+        <div class="stat-label" style="color:var(--n700);">LTV</div>
+        <div class="stat-value" style="color:var(--n900);">Очень высокий</div>
+        <div class="stat-desc" style="color:var(--n700);">аналогично С1 при стабильности</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Частота при доверии</div>
+        <div class="stat-value">2–4 нед</div>
+        <div class="stat-desc">малые объёмы 100–250 мл</div>
+      </div>
+    </div>
+
+    <div class="card fade-up" style="margin-bottom:20px;">
+      <div class="card-icon">👤</div>
+      <div class="card-title">Профиль</div>
+      <div class="list-item"><div class="list-dot"></div><div><strong>Пол:</strong> 50/50</div></div>
+      <div class="list-item"><div class="list-dot"></div><div><strong>Возраст:</strong> 35–60 лет</div></div>
+      <div class="list-item"><div class="list-dot"></div><div><strong>Доход:</strong> средний+ и выше. Заплатят больше «своему» производителю</div></div>
+      <div class="list-item"><div class="list-dot"></div><div><strong>Опыт:</strong> уже покупали холодный отжим. Есть негативный опыт</div></div>
+    </div>
+
+    <div class="table-wrap fade-up">
+      <table>
+        <thead>
+          <tr><th>Параметр</th><th>Описание</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><strong>Формат</strong></td><td>Малые объёмы (100–250 мл). Избегают большой тары</td></tr>
+          <tr><td><strong>Критерии выбора</strong></td><td>Тёмное стекло, дата на этикетке, «не горчит», контроль первого вскрытия</td></tr>
+          <tr><td><strong>Главный страх</strong></td><td>Окисление, подмена, «смесь с дешёвым»</td></tr>
+          <tr><td><strong>Барьер повтора</strong></td><td>Один негативный опыт. Конфликт при возврате</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Ключевой конфликт -->
+    <div class="alert alert-warning fade-up" style="margin-top:20px;">
+      <span class="alert-icon">⚠️</span>
+      <div>
+        <strong style="color:#92400e; display:block; margin-bottom:4px;">Ключевой конфликт сегмента — «Горечь»</strong>
+        <p style="font-size:14px; color:var(--n600);">«Горчит — значит настоящее» (опытные пользователи тмина, расторопши) vs «Горькое — значит испортилось» (для льна и кулинарных масел). Для Кирилла — <strong>легализация вкуса через обучение</strong>.</p>
+      </div>
+    </div>
+
+    <div class="grid-2 fade-up" style="margin-top:20px;">
+      <div class="card" style="border-top:4px solid var(--success);">
+        <div class="card-title" style="color:var(--success);">Что работает</div>
+        <div class="list-item"><div class="list-dot"></div><div>Видео производства (пресс, отжим, разлив)</div></div>
+        <div class="list-item"><div class="list-dot"></div><div>Дата отжима на этикетке</div></div>
+        <div class="list-item"><div class="list-dot"></div><div>Объяснение: почему тёмное стекло, почему малые объёмы</div></div>
+        <div class="list-item"><div class="list-dot"></div><div>Честный разбор «почему горчит лён и почему горчит тмин»</div></div>
+        <div class="list-item"><div class="list-dot"></div><div>Политика возврата при несоответствии</div></div>
+      </div>
+      <div class="card" style="border-top:4px solid var(--error);">
+        <div class="card-title" style="color:var(--error);">Что не работает</div>
+        <div class="list-item"><div class="list-dot-red"></div><div>Абстрактные заявления «всё свежее и натуральное» без доказательств</div></div>
+        <div class="list-item"><div class="list-dot-red"></div><div>Игнорирование вопросов о хранении и сроках</div></div>
+      </div>
+    </div>
+
+    <div class="card fade-up" style="margin-top:20px;">
+      <div class="card-icon">📡</div>
+      <div class="card-title">Каналы привлечения</div>
+      <div class="list-item"><div class="list-dot"></div><div><strong>Отзовики и маркетплейс-отзывы</strong> — изучает тщательно перед покупкой</div></div>
+      <div class="list-item"><div class="list-dot"></div><div><strong>Telegram</strong> — смотрит на прозрачность: видео производства, ответы на вопросы</div></div>
+      <div class="list-item"><div class="list-dot"></div><div><strong>Дорогомиловский рынок</strong> — личный контакт с Кириллом закрывает недоверие быстро</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- С4 — ГАСТРОНОМ -->
+<section class="section fade-up" id="s4" style="background:#fff;">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-label">Сегмент С4</div>
+      <h2 class="section-title">С4 — «Гастроном»</h2>
+      <p class="section-sub">Покупает масло ради вкуса и опыта в кулинарии. Не пьёт натощак — добавляет в еду. Ценит разнообразие.</p>
+    </div>
+
+    <div class="grid-3 fade-up" style="margin-bottom:28px;">
+      <div class="stat-card">
+        <div class="stat-label">Доля покупателей</div>
+        <div class="stat-value">15–20%</div>
+        <div class="stat-desc">текущая оценка</div>
+      </div>
+      <div class="stat-card" style="background:linear-gradient(135deg,var(--accent) 0%,#b8960e 100%); color:var(--n900);">
+        <div class="stat-label" style="color:var(--n700);">LTV / год</div>
+        <div class="stat-value" style="color:var(--n900);">8–18 тыс ₽</div>
+        <div class="stat-desc" style="color:var(--n700);">при регулярности</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Частота</div>
+        <div class="stat-value">1–2 мес</div>
+        <div class="stat-desc">сразу несколько видов</div>
+      </div>
+    </div>
+
+    <div class="card fade-up" style="margin-bottom:20px;">
+      <div class="card-icon">👤</div>
+      <div class="card-title">Профиль</div>
+      <div class="list-item"><div class="list-dot"></div><div><strong>Пол:</strong> 50/50, часто пары/семьи где один отвечает за кухню</div></div>
+      <div class="list-item"><div class="list-dot"></div><div><strong>Возраст:</strong> 28–55 лет</div></div>
+      <div class="list-item"><div class="list-dot"></div><div><strong>Доход:</strong> средний+ и выше. Ходит в рестораны, интересуется фермерскими продуктами</div></div>
+      <div class="list-item"><div class="list-dot"></div><div><strong>Образ жизни:</strong> «домашний ресторан», экспериментирует с рецептами</div></div>
+    </div>
+
+    <div class="table-wrap fade-up">
+      <table>
+        <thead>
+          <tr><th>Параметр</th><th>Описание</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><strong>Формат</strong></td><td>100–250 мл, часто несколько разных масел одновременно</td></tr>
+          <tr><td><strong>Применение</strong></td><td>Финиш на блюда, заправки, соусы. Не термическая обработка</td></tr>
+          <tr><td><strong>Главный страх</strong></td><td>Нестабильность вкуса от партии к партии; «заглушит вкус блюда»</td></tr>
+          <tr><td><strong>Барьер повтора</strong></td><td>Вкусовая «лотерея»; цена при нестабильном результате</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="grid-2 fade-up" style="margin-top:20px;">
+      <div class="card" style="border-top:4px solid var(--success);">
+        <div class="card-title" style="color:var(--success);">Что работает</div>
+        <div class="list-item"><div class="list-dot"></div><div>Конкретные применения: «кедровое в пасту на финиш», «ореховое к тостам»</div></div>
+        <div class="list-item"><div class="list-dot"></div><div>Вкусовые описания: «нежно-ореховый», «лёгкая горчинка»</div></div>
+        <div class="list-item"><div class="list-dot"></div><div>Разнообразие линейки, не одно масло</div></div>
+        <div class="list-item"><div class="list-dot"></div><div>Рецепты как контент — «4 заправки с маслом Кирилла»</div></div>
+      </div>
+      <div class="card" style="border-top:4px solid var(--error);">
+        <div class="card-title" style="color:var(--error);">Что не работает</div>
+        <div class="list-item"><div class="list-dot-red"></div><div>Курсовые протоколы и медицинская лексика</div></div>
+        <div class="list-item"><div class="list-dot-red"></div><div>«Пейте натощак» — не его история</div></div>
+      </div>
+    </div>
+
+    <div class="card fade-up" style="margin-top:20px;">
+      <div class="card-icon">📡</div>
+      <div class="card-title">Каналы привлечения</div>
+      <div class="list-item"><div class="list-dot"></div><div><strong>Рецептурный контент</strong> в Telegram и Instagram — «что с чем сочетать»</div></div>
+      <div class="list-item"><div class="list-dot"></div><div><strong>Дорогомиловский рынок</strong> — «увидел, попробовал прямо сейчас»</div></div>
+      <div class="list-item"><div class="list-dot"></div><div><strong>Foodie-комьюнити</strong> и кулинарные блоги</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- С5 — КРАСОТА ИЗНУТРИ -->
+<section class="section fade-up" id="s5">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-label">Сегмент С5</div>
+      <h2 class="section-title">С5 — «Красота изнутри»</h2>
+      <p class="section-sub">Покупает масло ради видимых изменений: ногти, волосы, кожа. Курс 30–60 дней, ждёт конкретного эффекта.</p>
+    </div>
+
+    <div class="alert alert-warning fade-up">
+      <span class="alert-icon">⚠️</span>
+      <div>
+        <strong style="color:#92400e; display:block; margin-bottom:4px;">Кирилл убрал вектор «Красота» из продуктовых наборов (29.03.2026)</strong>
+        <p style="font-size:14px; color:var(--n600);">Однако данные DR ЦА показывают: сегмент реален и покупает активно — миндаль, кедр, конопля. Рекомендация: не создавать отдельный набор «Красота», но учитывать сегмент в контент-стратегии.</p>
+      </div>
+    </div>
+
+    <div class="grid-3 fade-up" style="margin-bottom:28px;">
+      <div class="stat-card">
+        <div class="stat-label">Доля покупателей</div>
+        <div class="stat-value">15–20%</div>
+        <div class="stat-desc">преимущественно онлайн</div>
+      </div>
+      <div class="stat-card" style="background:linear-gradient(135deg,var(--accent) 0%,#b8960e 100%); color:var(--n900);">
+        <div class="stat-label" style="color:var(--n700);">LTV / год</div>
+        <div class="stat-value" style="color:var(--n900);">6–12 тыс ₽</div>
+        <div class="stat-desc" style="color:var(--n700);">средний</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Частота</div>
+        <div class="stat-value">1 мес</div>
+        <div class="stat-desc">при закреплении</div>
+      </div>
+    </div>
+
+    <div class="card fade-up" style="margin-bottom:20px;">
+      <div class="card-icon">👤</div>
+      <div class="card-title">Профиль</div>
+      <div class="list-item"><div class="list-dot"></div><div><strong>Пол:</strong> женщины 90%+</div></div>
+      <div class="list-item"><div class="list-dot"></div><div><strong>Возраст:</strong> 28–50 лет</div></div>
+      <div class="list-item"><div class="list-dot"></div><div><strong>Доход:</strong> средний. Ценит результат, не готова переплачивать без эффекта</div></div>
+      <div class="list-item"><div class="list-dot"></div><div><strong>Образ жизни:</strong> следит за внешностью, пробует разные методы, активна в тематических сообществах</div></div>
+    </div>
+
+    <div class="table-wrap fade-up">
+      <table>
+        <thead>
+          <tr><th>Параметр</th><th>Описание</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><strong>Формат</strong></td><td>100–250 мл одного масла «под проблему»</td></tr>
+          <tr><td><strong>Применение</strong></td><td>Добавляет в еду или принимает курсом. Иногда — и наружно</td></tr>
+          <tr><td><strong>Главный страх</strong></td><td>«Не увижу эффекта»; «потрачу деньги впустую»</td></tr>
+          <tr><td><strong>Барьер повтора</strong></td><td>Субъективность эффекта (сложно отделить от других факторов)</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="grid-2 fade-up" style="margin-top:20px;">
+      <div class="card" style="border-top:4px solid var(--success);">
+        <div class="card-title" style="color:var(--success);">Что работает</div>
+        <div class="list-item"><div class="list-dot"></div><div>Конкретные истории эффекта: «ногти через 30 дней», «волосы через 2 месяца»</div></div>
+        <div class="list-item"><div class="list-dot"></div><div>Протокол применения: «миндальное — 1 ч.л. в день в течение 60 дней»</div></div>
+        <div class="list-item"><div class="list-dot"></div><div>Честные ожидания: «это инструмент, а не волшебство»</div></div>
+        <div class="list-item"><div class="list-dot"></div><div>Комплексный подход: масло + питание + время</div></div>
+      </div>
+      <div class="card" style="border-top:4px solid var(--error);">
+        <div class="card-title" style="color:var(--error);">Что не работает</div>
+        <div class="list-item"><div class="list-dot-red"></div><div>Прямые обещания «вырастут волосы»</div></div>
+        <div class="list-item"><div class="list-dot-red"></div><div>Медицинские клеймы</div></div>
+      </div>
+    </div>
+
+    <div class="card fade-up" style="margin-top:20px;">
+      <div class="card-icon">📡</div>
+      <div class="card-title">Каналы привлечения</div>
+      <div class="list-item"><div class="list-dot"></div><div><strong>Beauty-сообщества:</strong> форумы и Telegram-каналы по уходу за волосами и кожей</div></div>
+      <div class="list-item"><div class="list-dot"></div><div><strong>Отзовики (iRecommend):</strong> читает истории «ногти окрепли», «волосопад уменьшился»</div></div>
+      <div class="list-item"><div class="list-dot"></div><div><strong>Блогеры</strong> в нише натуральной косметики (бартер — гипотеза M2)</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- МАТРИЦА СЕГМЕНТОВ × ПРОДУКТ -->
+<section class="section fade-up" id="matrix" style="background:#fff;">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-label">Матрица</div>
+      <h2 class="section-title">Матрица сегментов × продукт</h2>
+      <p class="section-sub">Входной продукт, основной продукт, набор и ремайндер для каждого сегмента.</p>
+    </div>
+    <div class="table-wrap fade-up">
+      <table>
+        <thead>
+          <tr>
+            <th>Сегмент</th>
+            <th>Входной продукт</th>
+            <th>Основной продукт</th>
+            <th>Набор</th>
+            <th>Ремайндер</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>С1 Функциональный</strong></td>
+            <td>100 мл тмин/расторопша</td>
+            <td>250 мл флагман</td>
+            <td><span class="badge badge-brand">«Здоровье» 3×100</span></td>
+            <td class="td-num">21–25 дн.</td>
+          </tr>
+          <tr>
+            <td><strong>С2 Семейный</strong></td>
+            <td>100–250 мл лён/кедр</td>
+            <td>250 мл 1–2 вида</td>
+            <td><span class="badge badge-gray">—</span></td>
+            <td class="td-num">30–45 дн.</td>
+          </tr>
+          <tr>
+            <td><strong>С3 Крафт-контролёр</strong></td>
+            <td>100 мл (малый риск)</td>
+            <td>250 мл флагман</td>
+            <td><span class="badge badge-brand">Любой флагманский</span></td>
+            <td class="td-num">21–28 дн.</td>
+          </tr>
+          <tr>
+            <td><strong>С4 Гастроном</strong></td>
+            <td>100 мл «на пробу»</td>
+            <td>Несколько 100 мл</td>
+            <td><span class="badge badge-accent">«Кухня» 3×100</span></td>
+            <td class="td-num">45–60 дн.</td>
+          </tr>
+          <tr>
+            <td><strong>С5 Красота</strong></td>
+            <td>100 мл миндаль/кедр</td>
+            <td>250 мл выбранного</td>
+            <td><span class="badge badge-gray">—</span></td>
+            <td class="td-num">30 дн.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ПРИОРИТЕТЫ -->
+<section class="section fade-up" id="priorities">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-label">Приоритеты</div>
+      <h2 class="section-title">Приоритеты для Кирилла</h2>
+      <p class="section-sub">Фокус на первые 90 дней онлайна и далее.</p>
+    </div>
+
+    <div class="grid-3 fade-up" style="margin-bottom:28px;">
+      <div class="card" style="border-top:4px solid var(--brand);">
+        <div class="card-icon">🎯</div>
+        <div class="card-title">Сейчас (первые 90 дней)</div>
+        <p style="font-size:14px; font-weight:600; color:var(--brand); margin-bottom:12px;">С1 (Функциональный) + С3 (Крафт-контролёр)</p>
+        <p style="font-size:13px; color:var(--n500); margin-bottom:12px;">Максимальный LTV, наибольшая готовность платить, лучшая конверсия через образовательный контент.</p>
+        <div class="list-item"><div class="list-dot"></div><div>Видео производства → С3</div></div>
+        <div class="list-item"><div class="list-dot"></div><div>Протоколы применения → С1</div></div>
+        <div class="list-item"><div class="list-dot"></div><div>Набор «Здоровье» 3×100 мл → входная точка для обоих</div></div>
+      </div>
+      <div class="card" style="border-top:4px solid var(--accent);">
+        <div class="card-icon">📈</div>
+        <div class="card-title">Следующий приоритет (2–3 мес)</div>
+        <p style="font-size:14px; font-weight:600; color:var(--accent); margin-bottom:12px;">С4 (Гастроном) + С2 (Семейный)</p>
+        <div class="list-item"><div class="list-dot"></div><div>Набор «Кухня» + рецептурный контент</div></div>
+        <div class="list-item"><div class="list-dot"></div><div>Контент про применение в еду, хранение</div></div>
+      </div>
+      <div class="card" style="border-top:4px solid var(--info);">
+        <div class="card-icon">🔮</div>
+        <div class="card-title">Перспектива (4–6 мес)</div>
+        <p style="font-size:14px; font-weight:600; color:var(--info); margin-bottom:12px;">С5 (Красота)</p>
+        <div class="list-item"><div class="list-dot"></div><div>При появлении конопли и развитии контент-базы</div></div>
+        <div class="list-item"><div class="list-dot"></div><div>Через beauty-инфлюенсеров (гипотеза M2)</div></div>
+      </div>
+    </div>
+
+    <!-- Размер рынка -->
+    <div class="alert alert-brand fade-up">
+      <span class="alert-icon">📊</span>
+      <div>
+        <strong style="color:var(--brand-dark); display:block; margin-bottom:4px;">Размер рынка — ориентир</strong>
+        <p style="font-size:14px; color:var(--n600);">2 пресса = 40–60 л/мес = ~160–240 бутылок 250 мл. При среднем чеке 3 ступени — 40–80 активных покупателей в месяц. Реалистичная цель на старте онлайна: <strong>30–50 новых покупателей/мес</strong>. Основные — из Дорогомиловского рынка через конверсию в TG-канал (50–75%).</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- КОНФЛИКТНЫЕ ЗОНЫ -->
+<section class="section fade-up" id="conflicts" style="background:#fff;">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-label">Предупреждения</div>
+      <h2 class="section-title">Конфликтные зоны</h2>
+      <p class="section-sub">Три ключевых риска, которые нужно учитывать в коммуникации и операционке.</p>
+    </div>
+
+    <div class="grid-2 fade-up" style="margin-bottom:20px;">
+      <div class="card" style="border-top:4px solid var(--error);">
+        <div class="card-icon">🔥</div>
+        <div class="card-title">1. «Горечь» — главный узел смысла</div>
+        <p style="font-size:14px; color:var(--n600); margin-bottom:12px;">Аудитория С1 и С3 трактует горечь противоположно:</p>
+        <div class="list-item"><div class="list-dot"></div><div><strong>Тмин, расторопша:</strong> горечь/жгучесть = признак активного вещества</div></div>
+        <div class="list-item"><div class="list-dot-red"></div><div><strong>Лён, подсолнечник, кедр:</strong> горечь = окисление, брак</div></div>
+        <p style="font-size:13px; color:var(--n500); margin-top:8px;">Необходимо: разные объяснения для разных масел в контенте и инструкциях.</p>
+      </div>
+      <div class="card" style="border-top:4px solid var(--warning);">
+        <div class="card-icon">🔍</div>
+        <div class="card-title">2. Барьер «не увижу эффекта»</div>
+        <p style="font-size:14px; color:var(--n600); margin-bottom:12px;">Актуален для С1 (подсегмент ЖКТ/Печень) и С5 (Красота).</p>
+        <p style="font-size:14px; color:var(--n600);">Решение: честные временные рамки + ведение мини-дневника (контент-идея).</p>
+      </div>
+    </div>
+
+    <div class="alert alert-error fade-up">
+      <span class="alert-icon">🚨</span>
+      <div>
+        <strong style="color:#991b1b; display:block; margin-bottom:4px;">3. Отсутствие клиентской базы</strong>
+        <p style="font-size:14px; color:var(--n600);">Кирилл подтвердил: базы нет. Все повторные покупки — самостоятельные. Критично для всех сегментов. <strong>QR-код на точке + TG-канал = приоритет №1.</strong></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="container">
+    <div class="footer-inner">
+      <div>
+        <img src="../../assets/logo-horizontal-dark.png" alt="Магия Масел" style="height:48px; width:auto; border-radius:var(--r-lg);">
+        <div style="margin-top:8px; font-size:12px; color:var(--n600);">BrandOS · Фабрика Контента v5</div>
+      </div>
+      <div class="footer-meta">
+        <div class="footer-meta-item">
+          <span class="footer-meta-label">Документ</span>
+          <span class="footer-meta-value">M4-01 — Сегменты ЦА</span>
+        </div>
+        <div class="footer-meta-item">
+          <span class="footer-meta-label">Модуль</span>
+          <span class="footer-meta-value">M4 · 1 из 8</span>
+        </div>
+        <div class="footer-meta-item">
+          <span class="footer-meta-label">Версия</span>
+          <span class="footer-meta-value">1.0 · 31.03.2026</span>
+        </div>
+        <div class="footer-meta-item">
+          <span class="footer-meta-label">Источники</span>
+          <span class="footer-meta-value">DR ЦА M2, Мастер-синтез M2, M3, Ответы Кирилла 27.03 + 29.03</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script>
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) entry.target.classList.add('visible');
+    });
+  }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+
+  document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
+</script>
+</body>
+</html>

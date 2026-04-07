@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Согласование M3 — Продуктовая стратегия · Магия Масел</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --primary: #0ea5e9;
+  --primary-dark: #0284c7;
+  --primary-bg: #e0f2fe;
+  --background: #ffffff;
+  --foreground: #0f172a;
+  --card-bg: hsl(0,0%,97%);
+  --border: #1C1C1E;
+  --muted: #64748b;
+  --radius: 4px;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family:'Inter',sans-serif; background:#fff; color:var(--foreground); line-height:1.75; font-size:16px; }
+.container { max-width:900px; margin:0 auto; padding:0 1.5rem; }
+.nav { position:sticky; top:0; background:white; border-bottom:1px solid #e5e7eb; z-index:100; padding:1rem 0; }
+.nav-container { display:flex; justify-content:space-between; align-items:center; }
+.nav-brand { font-weight:700; font-size:1rem; } .nav-brand span { color:var(--primary); }
+.nav-links { display:flex; gap:1.5rem; list-style:none; }
+.nav-links a { color:var(--foreground); text-decoration:none; font-size:0.8rem; font-weight:500; }
+.nav-links a:hover { color:var(--primary); }
+.hero { padding:3rem 0; background:linear-gradient(135deg,rgba(255,255,255,.98) 0%,rgba(240,249,255,.95) 100%); }
+.hero-badge { display:inline-block; padding:.4rem .9rem; background:var(--primary-bg); border:1px solid rgba(14,165,233,.3); border-radius:4px; font-size:.8rem; font-weight:600; color:var(--primary); margin-bottom:1.25rem; }
+.hero h1 { font-size:clamp(28px,3.5vw,44px); font-weight:500; line-height:1.2; letter-spacing:-.02em; margin-bottom:1rem; }
+.hero-subtitle { font-size:1rem; color:var(--muted); }
+.section { padding:2.5rem 0; }
+.section-header { position:relative; padding-top:1.5rem; margin-bottom:1.75rem; }
+.section-header::before { content:''; position:absolute; top:0; left:0; right:0; height:1px; background:repeating-linear-gradient(to right,#9CA3AF 0,#9CA3AF 4px,transparent 4px,transparent 8px); }
+.section-tag { font-size:.7rem; font-weight:700; color:var(--primary); text-transform:uppercase; letter-spacing:.1em; margin-bottom:.4rem; }
+h2 { font-size:26px; font-weight:300; line-height:1.2; letter-spacing:-.02em; }
+.approval-block { border:1px solid var(--border); border-radius:4px; padding:1.75rem; margin-bottom:1.5rem; }
+.approval-arg { font-size:.95rem; color:var(--muted); margin-bottom:1.25rem; line-height:1.7; }
+.approval-decision { font-size:1rem; font-weight:700; color:var(--foreground); margin-bottom:1.25rem; padding:.75rem 1rem; background:var(--primary-bg); border-left:3px solid var(--primary); border-radius:0 4px 4px 0; }
+
+/* Интерактивные чекбоксы */
+.approval-checks { display:flex; gap:.75rem; margin-bottom:1rem; flex-wrap:wrap; }
+.check-item { display:flex; align-items:center; gap:.6rem; font-size:.9rem; font-weight:500; cursor:pointer; padding:.5rem .9rem; border:1px solid #e5e7eb; border-radius:4px; transition:all .15s; user-select:none; }
+.check-item:hover { border-color:var(--primary); }
+.check-item.selected-agree { background:#f0fdf4; border-color:#10b981; color:#065f46; }
+.check-item.selected-edit { background:#fffbeb; border-color:#f59e0b; color:#92400e; }
+.check-item.selected-reject { background:#fff1f2; border-color:#ef4444; color:#991b1b; }
+.check-box { width:18px; height:18px; border:2px solid currentColor; border-radius:3px; flex-shrink:0; display:flex; align-items:center; justify-content:center; font-size:11px; }
+
+.comment-field { width:100%; border:1px solid #e5e7eb; border-radius:4px; padding:.6rem .9rem; font-size:.875rem; color:var(--muted); font-family:'Inter',sans-serif; margin-top:.25rem; }
+.table-wrapper { overflow-x:auto; margin:1.5rem 0; border:1px solid var(--border); border-radius:4px; }
+table { width:100%; border-collapse:collapse; background:white; }
+th,td { padding:.875rem 1rem; text-align:left; border-bottom:1px solid rgba(28,28,30,.15); font-size:.9rem; }
+th { background:var(--card-bg); font-weight:600; font-size:.8rem; text-transform:uppercase; letter-spacing:.05em; }
+tr:last-child td { border-bottom:none; }
+.footer { padding:1.5rem 0; border-top:1px solid #e5e7eb; text-align:center; color:var(--muted); font-size:.8rem; }
+.instr-box { background:var(--primary-bg); border:1px solid rgba(14,165,233,.25); border-radius:4px; padding:1.25rem 1.5rem; margin-bottom:2rem; font-size:.95rem; }
+.comment-area { margin-top:1rem; }
+.comment-label { font-size:.8rem; font-weight:600; color:var(--muted); text-transform:uppercase; letter-spacing:.05em; margin-bottom:.4rem; }
+textarea.comment-field { min-height:60px; resize:vertical; }
+
+/* Кнопка копирования */
+.copy-section { background:var(--primary-bg); border:1px solid rgba(14,165,233,.25); border-radius:4px; padding:2rem; text-align:center; margin:2rem 0; }
+.copy-section h3 { font-size:1.1rem; font-weight:600; margin-bottom:.5rem; }
+.copy-section p { color:var(--muted); font-size:.9rem; margin-bottom:1.25rem; }
+.btn-copy { display:inline-flex; align-items:center; gap:.5rem; padding:.875rem 2rem; background:var(--primary); color:white; border:none; border-radius:4px; font-size:1rem; font-weight:600; cursor:pointer; transition:background .2s; }
+.btn-copy:hover { background:var(--primary-dark); }
+.copy-success { display:none; margin-top:1rem; color:#065f46; font-weight:600; font-size:.95rem; }
+
+/* Статус в таблице */
+td.status-cell { font-size:.85rem; font-weight:500; min-width:130px; }
+td.status-agree { color:#065f46; }
+td.status-edit { color:#92400e; }
+td.status-reject { color:#991b1b; }
+td.status-empty { color:#9ca3af; font-style:italic; }
+
+@media(max-width:768px) { .nav-links{display:none;} h2{font-size:22px;} .approval-checks{flex-direction:column;gap:.6rem;} }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav">
+  <div class="container nav-container">
+    <div class="nav-brand">Brand<span>OS</span> · Документ</div>
+    <ul class="nav-links">
+      <li><a href="#blok1">Ядро</a></li>
+      <li><a href="#blok2">Архитектура</a></li>
+      <li><a href="#blok3">Лестница</a></li>
+      <li><a href="#blok4">Цены</a></li>
+      <li><a href="#blok5">PDR</a></li>
+      <li><a href="#blok6">Риски</a></li>
+      <li><a href="#summary">Итого</a></li>
+    </ul>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="container">
+    <div class="hero-badge">M3 · Продуктовая стратегия · Согласование</div>
+    <h1>Согласование модуля M3</h1>
+    <p class="hero-subtitle">Кирилл Бродский · Магия Масел · 01.04.2026</p>
+  </div>
+</section>
+
+<!-- ИНСТРУКЦИЯ -->
+<section class="section">
+  <div class="container">
+    <div class="instr-box">
+      Этот документ фиксирует ключевые решения модуля M3, на основе которых будут строиться модули M6 (GTM-стратегия) и M7 (Контент). По каждому блоку — пожалуйста, отметьте ваш статус и при необходимости оставьте комментарий. Ваши корректировки важны: мы не двигаемся дальше, пока все решения не согласованы.
+    </div>
+  </div>
+</section>
+
+<!-- БЛОК 1 -->
+<section class="section" id="blok1">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-tag">Блок 1</div>
+      <h2>Ядро продукта</h2>
+    </div>
+    <div class="approval-block">
+      <p class="approval-arg">Ядро сформировано на основе ваших ответов от 27.03 и подтверждено 29.03. Главный продукт — масла первого холодного отжима на гидравлическом прессе, малыми партиями (40–60 л/мес), под конкретную задачу клиента: здоровье, кухня, подарок. Позиция Кирилла как лица бренда — «тёплый ремесленник с инженерным прошлым» — зафиксирована как основной образ (29.03).</p>
+      <div class="approval-decision">Моно-масла холодного отжима под задачу клиента, с личной консультацией и напоминанием на повтор. Образ бренда — «Тёплый Ремесленник» (основной) + «Консьерж-система» (дополнительный).</div>
+      <div class="approval-checks" data-block="1">
+        <div class="check-item agree" onclick="selectCheck(this, 'agree')">
+          <div class="check-box"></div> Согласен
+        </div>
+        <div class="check-item edit" onclick="selectCheck(this, 'edit')">
+          <div class="check-box"></div> Требует корректировки
+        </div>
+        <div class="check-item reject" onclick="selectCheck(this, 'reject')">
+          <div class="check-box"></div> Отклонено
+        </div>
+      </div>
+      <div class="comment-area">
+        <div class="comment-label">Комментарий</div>
+        <textarea class="comment-field" id="comment-1" placeholder="Ваши замечания или уточнения..." rows="2"></textarea>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- БЛОК 2 -->
+<section class="section" id="blok2">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-tag">Блок 2</div>
+      <h2>Продуктовая архитектура</h2>
+    </div>
+    <div class="approval-block">
+      <p class="approval-arg">Архитектура построена на принципах, которые вы подтвердили: только моно-масла, никаких купажей и капсул. Два продуктовых трека — пищевой (основной) и косметический (отдельно, на будущее). Внутри пищевого — три группы: флагманы здоровья (тмин, расторопша, тыква, конопля), красота/тело (миндаль, кедр, кунжут, лён — поштучно), кухня (грецкий, кунжут, подсолнечник, кедр). Форматы: 100 мл → 250 мл → набор 3×100 мл → подарочный бокс.</p>
+      <div class="approval-decision">Два трека (пищевой + косметический), три группы внутри пищевого, форматы 100/250/500 мл. 500 мл — только лён и подсолнечник. Подарочный бокс собирается вручную.</div>
+      <div class="approval-checks" data-block="2">
+        <div class="check-item agree" onclick="selectCheck(this, 'agree')">
+          <div class="check-box"></div> Согласен
+        </div>
+        <div class="check-item edit" onclick="selectCheck(this, 'edit')">
+          <div class="check-box"></div> Требует корректировки
+        </div>
+        <div class="check-item reject" onclick="selectCheck(this, 'reject')">
+          <div class="check-box"></div> Отклонено
+        </div>
+      </div>
+      <div class="comment-area">
+        <div class="comment-label">Комментарий</div>
+        <textarea class="comment-field" id="comment-2" placeholder="Ваши замечания или уточнения..." rows="2"></textarea>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- БЛОК 3 -->
+<section class="section" id="blok3">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-tag">Блок 3</div>
+      <h2>Лестница продуктов</h2>
+    </div>
+    <div class="approval-block">
+      <p class="approval-arg">Лестница из 5 ступеней спроектирована так, чтобы клиент сам поднимался по ней по мере роста доверия. Вход — бесплатная дегустация на рынке или контент в TG. Далее: 1×100 мл (700–1 200 ₽) → набор 3×100 мл (2 500–3 500 ₽) → 250 мл основной ритуал (1 500–2 500 ₽) → подарочный бокс (4 000–6 000+ ₽). Ключевой механизм удержания — полуручной ремайндер на 21–25 день (система напоминает Кириллу, он пишет клиенту лично).</p>
+      <div class="approval-decision">5-ступенчатая лестница: дегустация → пробник 100 мл → набор 3×100 мл → ритуал 250 мл → подарочный бокс. Переходы через ремайндеры и личный контакт.</div>
+      <div class="approval-checks" data-block="3">
+        <div class="check-item agree" onclick="selectCheck(this, 'agree')">
+          <div class="check-box"></div> Согласен
+        </div>
+        <div class="check-item edit" onclick="selectCheck(this, 'edit')">
+          <div class="check-box"></div> Требует корректировки
+        </div>
+        <div class="check-item reject" onclick="selectCheck(this, 'reject')">
+          <div class="check-box"></div> Отклонено
+        </div>
+      </div>
+      <div class="comment-area">
+        <div class="comment-label">Комментарий</div>
+        <textarea class="comment-field" id="comment-3" placeholder="Ваши замечания или уточнения..." rows="2"></textarea>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- БЛОК 4 -->
+<section class="section" id="blok4">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-tag">Блок 4</div>
+      <h2>Ценовая модель</h2>
+    </div>
+    <div class="approval-block">
+      <p class="approval-arg">Себестоимости финализированы по вашим данным от 29.03. Наборы дают маржу ~75–80%: «Здоровье» (тмин + расторопша + тыква, себест. ~580 ₽, цена 2 500–3 000 ₽), «Кухня» (кедр + грецкий + кунжут, себест. ~590 ₽, цена 2 200–2 700 ₽). Выявлен ценовой риск: текущие цены на 10–15% ниже конкурентов при позиционировании «выше рынка по качеству». Рекомендация: не снижать дальше, при онлайн-запуске протестировать рыночные цены.</p>
+      <div class="approval-decision">Два набора — «Здоровье» (2 500–3 000 ₽) и «Кухня» (2 200–2 700 ₽). Скидка набора vs поштучно — не более 10%. Ценовую стратегию «чуть ниже рынка» объяснять через отсутствие маркетинговых расходов, а не демпинг.</div>
+      <div class="approval-checks" data-block="4">
+        <div class="check-item agree" onclick="selectCheck(this, 'agree')">
+          <div class="check-box"></div> Согласен
+        </div>
+        <div class="check-item edit" onclick="selectCheck(this, 'edit')">
+          <div class="check-box"></div> Требует корректировки
+        </div>
+        <div class="check-item reject" onclick="selectCheck(this, 'reject')">
+          <div class="check-box"></div> Отклонено
+        </div>
+      </div>
+      <div class="comment-area">
+        <div class="comment-label">Комментарий</div>
+        <textarea class="comment-field" id="comment-4" placeholder="Ваши замечания или уточнения..." rows="2"></textarea>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- БЛОК 5 -->
+<section class="section" id="blok5">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-tag">Блок 5</div>
+      <h2>Требования к продукту (PDR)</h2>
+    </div>
+    <div class="approval-block">
+      <p class="approval-arg">Требования зафиксированы на основе ваших подтверждений: гидравлический пресс (≤40°C), тёмное стекло, дозатор, госсертификаты, дата отжима на этикетке, карточка применения в наборах, протокол «30 дней» в наборах 3×100 мл. Запрещено: купажи, капсулы, обещания лечения, агрессивные CTA. Сервис: полуручной ремайндер, возврат при несоответствии (онлайн), подарочные боксы собираются вручную.</p>
+      <div class="approval-decision">Продукт обязан содержать дату отжима, карточку применения, протокол «30 дней» (наборы). Сервис включает полуручной ремайндер и возврат для онлайн-заказов. Купажи, капсулы и медицинские заявления — запрещены.</div>
+      <div class="approval-checks" data-block="5">
+        <div class="check-item agree" onclick="selectCheck(this, 'agree')">
+          <div class="check-box"></div> Согласен
+        </div>
+        <div class="check-item edit" onclick="selectCheck(this, 'edit')">
+          <div class="check-box"></div> Требует корректировки
+        </div>
+        <div class="check-item reject" onclick="selectCheck(this, 'reject')">
+          <div class="check-box"></div> Отклонено
+        </div>
+      </div>
+      <div class="comment-area">
+        <div class="comment-label">Комментарий</div>
+        <textarea class="comment-field" id="comment-5" placeholder="Ваши замечания или уточнения..." rows="2"></textarea>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- БЛОК 6 -->
+<section class="section" id="blok6">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-tag">Блок 6</div>
+      <h2>Риски продукта</h2>
+    </div>
+    <div class="approval-block">
+      <p class="approval-arg">Выявлено 4 критических и важных риска. Критические: (1) нулевая клиентская база — нет QR на точке, нет контактов, клиенты возвращаются случайно; (2) один канал привлечения — 100% выручки с Дорогомиловского рынка. Важные: (3) цена ниже конкурентов при премиум-позиционировании — когнитивный диссонанс; (4) Кирилл = всё сам — узкое горлышко при любом росте. Производственный потолок: 40–60 л/мес при 2 прессах.</p>
+      <div class="approval-decision">Приоритеты снижения рисков: (1) QR на точке + TG-канал = сбор базы с первого дня, (2) запуск онлайн-канала в течение 90 дней, (3) не снижать цены при выходе в онлайн. Делегирование возможно при стабилизации на 300–400К ₽/мес.</div>
+      <div class="approval-checks" data-block="6">
+        <div class="check-item agree" onclick="selectCheck(this, 'agree')">
+          <div class="check-box"></div> Согласен
+        </div>
+        <div class="check-item edit" onclick="selectCheck(this, 'edit')">
+          <div class="check-box"></div> Требует корректировки
+        </div>
+        <div class="check-item reject" onclick="selectCheck(this, 'reject')">
+          <div class="check-box"></div> Отклонено
+        </div>
+      </div>
+      <div class="comment-area">
+        <div class="comment-label">Комментарий</div>
+        <textarea class="comment-field" id="comment-6" placeholder="Ваши замечания или уточнения..." rows="2"></textarea>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ИТОГОВАЯ ТАБЛИЦА -->
+<section class="section" id="summary">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-tag">Сводка</div>
+      <h2>Итоговая таблица</h2>
+    </div>
+    <div class="table-wrapper">
+      <table>
+        <thead>
+          <tr>
+            <th>№</th>
+            <th>Блок</th>
+            <th>Ключевое решение</th>
+            <th>Статус</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>1</td>
+            <td>Ядро продукта</td>
+            <td>Моно-масла под задачу + образ «Тёплый Ремесленник»</td>
+            <td class="status-cell status-empty" id="table-status-1">—</td>
+          </tr>
+          <tr>
+            <td>2</td>
+            <td>Продуктовая архитектура</td>
+            <td>2 трека, 3 группы, форматы 100/250/500, бокс вручную</td>
+            <td class="status-cell status-empty" id="table-status-2">—</td>
+          </tr>
+          <tr>
+            <td>3</td>
+            <td>Лестница продуктов</td>
+            <td>5 ступеней: дегустация → пробник → набор → ритуал → бокс</td>
+            <td class="status-cell status-empty" id="table-status-3">—</td>
+          </tr>
+          <tr>
+            <td>4</td>
+            <td>Ценовая модель</td>
+            <td>«Здоровье» 2 500–3 000 ₽, «Кухня» 2 200–2 700 ₽, не демпинговать</td>
+            <td class="status-cell status-empty" id="table-status-4">—</td>
+          </tr>
+          <tr>
+            <td>5</td>
+            <td>Требования (PDR)</td>
+            <td>Дата отжима, карточка, протокол 30 дней, ремайндер, без купажей</td>
+            <td class="status-cell status-empty" id="table-status-5">—</td>
+          </tr>
+          <tr>
+            <td>6</td>
+            <td>Риски</td>
+            <td>QR + база с первого дня, онлайн за 90 дней, не снижать цены</td>
+            <td class="status-cell status-empty" id="table-status-6">—</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ОБЩИЕ КОММЕНТАРИИ -->
+<section class="section">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-tag">Обратная связь</div>
+      <h2>Общие комментарии</h2>
+    </div>
+    <div class="comment-area">
+      <div class="comment-label">Свободные замечания, пожелания, вопросы</div>
+      <textarea class="comment-field" id="general-comment" rows="4" style="min-height:120px;" placeholder="Общие замечания, вопросы, пожелания..."></textarea>
+    </div>
+  </div>
+</section>
+
+<!-- КНОПКА КОПИРОВАНИЯ -->
+<section class="section">
+  <div class="container">
+    <div class="copy-section">
+      <h3>Готово? Скопируйте ваши ответы</h3>
+      <p>Нажмите кнопку — ответы скопируются в буфер обмена. Вставьте в Telegram или WhatsApp и отправьте.</p>
+      <button class="btn-copy" onclick="copyAnswers()">Скопировать ответы</button>
+      <div class="copy-success" id="copy-success">&#10003; Скопировано! Вставьте в мессенджер и отправьте.</div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="container">
+    BrandOS · brand-os.ru · Магия Масел · Согласование M3 · 2026
+  </div>
+</footer>
+
+<script>
+const blockNames = {
+  1: 'Блок 1 — Ядро продукта',
+  2: 'Блок 2 — Продуктовая архитектура',
+  3: 'Блок 3 — Лестница продуктов',
+  4: 'Блок 4 — Ценовая модель',
+  5: 'Блок 5 — Требования к продукту (PDR)',
+  6: 'Блок 6 — Риски продукта'
+};
+
+const statusLabels = {
+  agree: '✅ Согласен',
+  edit: '⚠️ Требует корректировки',
+  reject: '❌ Отклонено'
+};
+
+const tableLabels = {
+  agree: '✅ Согласен',
+  edit: '⚠️ Корректировки',
+  reject: '❌ Отклонено'
+};
+
+const tableClasses = {
+  agree: 'status-agree',
+  edit: 'status-edit',
+  reject: 'status-reject'
+};
+
+function selectCheck(el, type) {
+  const container = el.closest('.approval-checks');
+  container.querySelectorAll('.check-item').forEach(function(item) {
+    item.classList.remove('selected-agree', 'selected-edit', 'selected-reject');
+    item.querySelector('.check-box').textContent = '';
+  });
+  el.classList.add('selected-' + type);
+  el.querySelector('.check-box').textContent = '✓';
+  container.dataset.selected = type;
+
+  // Обновить итоговую таблицу
+  var blockNum = container.dataset.block;
+  var cell = document.getElementById('table-status-' + blockNum);
+  if (cell) {
+    cell.textContent = tableLabels[type];
+    cell.className = 'status-cell ' + tableClasses[type];
+  }
+}
+
+function copyAnswers() {
+  var lines = ['📋 СОГЛАСОВАНИЕ M3 — ПРОДУКТОВАЯ СТРАТЕГИЯ', 'Магия Масел · ' + new Date().toLocaleDateString('ru-RU'), ''];
+  for (var i = 1; i <= 6; i++) {
+    var container = document.querySelector('.approval-checks[data-block="' + i + '"]');
+    var comment = document.getElementById('comment-' + i);
+    var selected = container ? container.dataset.selected : null;
+    var status = selected ? statusLabels[selected] : '— не заполнено';
+    var commentText = comment && comment.value.trim() ? '\n   Комментарий: ' + comment.value.trim() : '';
+    lines.push(blockNames[i] + ': ' + status + commentText);
+  }
+  var generalComment = document.getElementById('general-comment');
+  if (generalComment && generalComment.value.trim()) {
+    lines.push('');
+    lines.push('Общие комментарии:');
+    lines.push(generalComment.value.trim());
+  }
+  var text = lines.join('\n');
+  navigator.clipboard.writeText(text).then(function() {
+    var el = document.getElementById('copy-success');
+    el.style.display = 'block';
+    setTimeout(function() { el.style.display = 'none'; }, 4000);
+  }).catch(function() {
+    // Fallback для старых браузеров
+    var ta = document.createElement('textarea');
+    ta.value = text;
+    ta.style.position = 'fixed';
+    ta.style.opacity = '0';
+    document.body.appendChild(ta);
+    ta.focus();
+    ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+    var el = document.getElementById('copy-success');
+    el.style.display = 'block';
+    setTimeout(function() { el.style.display = 'none'; }, 4000);
+  });
+}
+</script>
+
+</body>
+</html>

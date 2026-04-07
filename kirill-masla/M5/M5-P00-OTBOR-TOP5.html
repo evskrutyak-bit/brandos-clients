@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>M5-P00 · Отбор топ-5 конкурентов — Магия Масел · BrandOS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --primary: #0ea5e9;
+  --primary-dark: #0284c7;
+  --primary-light: #7dd3fc;
+  --primary-bg: #e0f2fe;
+  --background: #ffffff;
+  --foreground: #0f172a;
+  --card-bg: hsl(0,0%,97%);
+  --border: #1C1C1E;
+  --muted: #64748b;
+  --radius: 4px;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: 'Inter', sans-serif; background: var(--background); color: var(--foreground); line-height: 1.75; font-size: 16px; }
+.container { max-width: 1200px; margin: 0 auto; padding: 0 1.5rem; }
+.nav { position: sticky; top: 0; background: white; border-bottom: 1px solid var(--border); z-index: 100; padding: 1rem 0; }
+.nav-container { display: flex; justify-content: space-between; align-items: center; gap: 2rem; }
+.nav-brand { font-size: 1rem; font-weight: 700; color: var(--foreground); white-space: nowrap; }
+.nav-brand span { color: var(--primary); }
+.nav-links { display: flex; gap: 1.5rem; list-style: none; overflow-x: auto; flex-wrap: wrap; }
+.nav-links a { color: var(--foreground); text-decoration: none; font-size: .875rem; font-weight: 500; white-space: nowrap; transition: color .2s; }
+.nav-links a:hover { color: var(--primary); }
+.hero { padding: 3.75rem 0; background: linear-gradient(135deg, rgba(255,255,255,.98) 0%, rgba(240,249,255,.95) 100%); }
+.hero-badge { display: inline-flex; align-items: center; gap: .5rem; padding: .5rem 1rem; background: var(--card-bg); border: 1px solid var(--border); border-radius: var(--radius); font-size: .875rem; font-weight: 600; margin-bottom: 1.5rem; color: var(--foreground); }
+.hero h1 { font-size: clamp(32px, 4vw, 51px); font-weight: 500; line-height: 1.2; letter-spacing: -.03em; margin-bottom: 1.5rem; }
+.hero-subtitle { font-size: 1.125rem; color: var(--muted); margin-bottom: 2rem; }
+.hero-meta { display: flex; gap: 2rem; flex-wrap: wrap; }
+.hero-meta-item { font-size: .875rem; color: var(--muted); }
+.hero-meta-item strong { color: var(--primary); font-weight: 600; }
+.section { padding: 2.5rem 0; }
+@media (min-width: 768px) { .section { padding: 3.75rem 0; } }
+.section-header { position: relative; margin-bottom: 32px; padding-top: 24px; }
+.section-header::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px; background: repeating-linear-gradient(to right, #9CA3AF 0, #9CA3AF 4px, transparent 4px, transparent 8px); }
+.section-tag { display: inline-block; font-size: .75rem; font-weight: 600; text-transform: uppercase; letter-spacing: .1em; color: var(--primary); margin-bottom: .5rem; }
+h2 { font-size: 32px; font-weight: 300; line-height: 1.2; letter-spacing: -.02em; margin-bottom: 1rem; }
+h3 { font-size: 20px; font-weight: 600; line-height: 1.3; margin-bottom: 1rem; }
+p { margin-bottom: 1rem; color: var(--muted); }
+p:last-child { margin-bottom: 0; }
+.card { border: 1px solid var(--border); border-radius: var(--radius); background: linear-gradient(135deg, rgba(255,255,255,.98) 0%, rgba(250,250,252,.95) 100%); padding: 1.5rem; position: relative; overflow: hidden; }
+.card-title { font-size: 1.0625rem; font-weight: 600; margin-bottom: .75rem; color: var(--foreground); }
+.card-description { font-size: .9375rem; line-height: 1.75; color: var(--muted); }
+.grid { display: grid; gap: 1.5rem; }
+.grid-2 { grid-template-columns: 1fr; }
+.grid-3 { grid-template-columns: 1fr; }
+@media (min-width: 768px) { .grid-2 { grid-template-columns: repeat(2, 1fr); } .grid-3 { grid-template-columns: repeat(3, 1fr); } }
+.highlight-box { background: linear-gradient(135deg, rgba(14,165,233,.05) 0%, rgba(14,165,233,.02) 100%); border: 1px solid rgba(14,165,233,.2); border-left: 4px solid var(--primary); padding: 1.25rem 1.5rem; border-radius: var(--radius); margin: 1.5rem 0; }
+.highlight-box p { margin: 0; font-size: 1rem; }
+.highlight-box strong { color: var(--primary); }
+.warning-block { background: linear-gradient(135deg, rgba(239,68,68,.04) 0%, rgba(239,68,68,.01) 100%); border: 1px solid rgba(239,68,68,.18); border-left: 4px solid #ef4444; padding: 1.25rem 1.5rem; border-radius: var(--radius); margin: 0; }
+.warning-block p { margin: 0; font-size: .9375rem; color: var(--muted); }
+.warning-block strong { color: var(--foreground); }
+.list-styled { list-style: none; padding: 0; }
+.list-styled li { padding-left: 1.5rem; margin-bottom: .75rem; position: relative; color: var(--muted); font-size: .9375rem; }
+.list-styled li::before { content: ''; position: absolute; left: 0; top: .65rem; width: 6px; height: 6px; background: var(--primary); border-radius: 50%; }
+.table-wrapper { overflow-x: auto; margin: 1.5rem 0; border: 1px solid var(--border); border-radius: var(--radius); }
+table { width: 100%; border-collapse: collapse; background: white; }
+th, td { padding: 1rem; text-align: left; border-bottom: 1px solid var(--border); }
+th { background: var(--card-bg); font-weight: 600; font-size: .8125rem; text-transform: uppercase; letter-spacing: .05em; color: var(--foreground); }
+td { font-size: .9375rem; color: var(--muted); }
+tr:last-child td { border-bottom: none; }
+tr:hover td { background: var(--card-bg); }
+.table-accent { color: var(--primary); font-weight: 600; }
+.footer { padding: 2rem 0; border-top: 1px solid var(--border); text-align: center; color: var(--muted); font-size: .875rem; }
+@media (max-width: 768px) { .container { padding: 0 1rem; } h2 { font-size: 24px; } h3 { font-size: 18px; } .nav-links { gap: .75rem; } .hero-meta { gap: 1rem; } }
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="container nav-container">
+    <div class="nav-brand">Brand<span>OS</span> · Документ</div>
+    <ul class="nav-links">
+      <li><a href="#methodology">Методология</a></li>
+      <li><a href="#scoring">Скоринг-таблица</a></li>
+      <li><a href="#rationale">Обоснование</a></li>
+      <li><a href="#near-miss">Кого не взяли</a></li>
+      <li><a href="#coverage">Покрытие сегментов</a></li>
+    </ul>
+  </div>
+</nav>
+
+<section class="hero">
+  <div class="container">
+    <div class="hero-badge">M5-P00 · Конкуренты · BrandOS</div>
+    <h1>Отбор топ-5 конкурентов<br><span style="color:var(--primary)">Магия Масел</span></h1>
+    <p class="hero-subtitle">Взвешенный скоринг по 5 критериям · Артефакт 2 · M5-конкуренты</p>
+    <div class="hero-meta">
+      <span class="hero-meta-item"><strong>Клиент:</strong> Кирилл Бродский</span>
+      <span class="hero-meta-item"><strong>Модуль:</strong> M5 — Конкуренты</span>
+      <span class="hero-meta-item"><strong>Источник:</strong> 18 конкурентов (01-ландшафт.md)</span>
+      <span class="hero-meta-item"><strong>Версия:</strong> v1.0 · Апрель 2026</span>
+    </div>
+  </div>
+</section>
+
+<!-- Методология -->
+<section class="section" id="methodology">
+  <div class="container">
+    <div class="section-header">
+      <span class="section-tag">01 — Методология</span>
+      <h2>Критерии отбора</h2>
+    </div>
+    <p>Из 18 конкурентов Артефакта 1 отбираем 5 для глубокого досье. Критерий — не «кто самый большой», а <strong style="color:var(--foreground)">кто наиболее релевантен для принятия тактических решений по проекту Кирилла</strong>.</p>
+    <div class="table-wrapper">
+      <table>
+        <thead>
+          <tr>
+            <th>Критерий</th>
+            <th>Вес</th>
+            <th>Что оцениваем</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td><strong style="color:var(--foreground)">Пересечение по ЦА</strong></td><td class="table-accent">25%</td><td>Их покупатель ≈ покупатель Кирилла (ЗОЖ 30–60, средний+ доход, осознанность)</td></tr>
+          <tr><td><strong style="color:var(--foreground)">Пересечение по продукту</strong></td><td class="table-accent">25%</td><td>Линейка пересекается: те же масла, тот же формат, та же ценовая зона</td></tr>
+          <tr><td><strong style="color:var(--foreground)">Пересечение по каналам</strong></td><td class="table-accent">15%</td><td>Конкурируют в тех же каналах (D2C, Telegram, Instagram, маркетплейсы, рынок)</td></tr>
+          <tr><td><strong style="color:var(--foreground)">Сила digital</strong></td><td class="table-accent">20%</td><td>Развитость маркетинга, соцсетей, контента, воронки</td></tr>
+          <tr><td><strong style="color:var(--foreground)">Чему учиться</strong></td><td class="table-accent">15%</td><td>Уникальные практики, форматы, механики, которые стоит изучить</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="highlight-box">
+      <p>Баллы: <strong>1 (минимум) — 5 (максимум)</strong> по каждому критерию. Формула: <strong>Итого = ЦА×0.25 + Продукт×0.25 + Каналы×0.15 + Digital×0.20 + Учиться×0.15</strong></p>
+    </div>
+  </div>
+</section>
+
+<!-- Скоринг-таблица -->
+<section class="section" id="scoring">
+  <div class="container">
+    <div class="section-header">
+      <span class="section-tag">02 — Скоринг-таблица</span>
+      <h2>Все 18 конкурентов</h2>
+    </div>
+    <div class="table-wrapper">
+      <table>
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Конкурент</th>
+            <th>ЦА (×0.25)</th>
+            <th>Продукт (×0.25)</th>
+            <th>Каналы (×0.15)</th>
+            <th>Digital (×0.20)</th>
+            <th>Учиться (×0.15)</th>
+            <th>Итого</th>
+            <th>Топ-5?</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>1</td><td><strong style="color:var(--foreground)">TRAWA</strong></td><td>5</td><td>5</td><td>4</td><td>5</td><td>5</td><td class="table-accent">4.85</td><td>★</td></tr>
+          <tr><td>2</td><td><strong style="color:var(--foreground)">Радость Здоровья</strong></td><td>5</td><td>5</td><td>5</td><td>3</td><td>4</td><td class="table-accent">4.45</td><td>★</td></tr>
+          <tr><td>3</td><td><strong style="color:var(--foreground)">Altaria</strong></td><td>4</td><td>3</td><td>3</td><td>4</td><td>5</td><td class="table-accent">3.80</td><td>★</td></tr>
+          <tr><td>4</td><td><strong style="color:var(--foreground)">Масляный Король</strong></td><td>3</td><td>4</td><td>3</td><td>1</td><td>3</td><td class="table-accent">2.80</td><td>★</td></tr>
+          <tr><td>5</td><td><strong style="color:var(--foreground)">Дом Кедра</strong></td><td>3</td><td>4</td><td>3</td><td>3</td><td>3</td><td class="table-accent">3.15</td><td>★</td></tr>
+          <tr><td>6</td><td>Siberian Green</td><td>3</td><td>2</td><td>2</td><td>3</td><td>3</td><td>2.65</td><td></td></tr>
+          <tr><td>7</td><td>Маслослад</td><td>4</td><td>4</td><td>3</td><td>2</td><td>3</td><td>3.20</td><td></td></tr>
+          <tr><td>8</td><td>Яства из деревни</td><td>2</td><td>3</td><td>2</td><td>2</td><td>4</td><td>2.60</td><td></td></tr>
+          <tr><td>9</td><td>Компас Здоровья</td><td>3</td><td>3</td><td>2</td><td>2</td><td>3</td><td>2.60</td><td></td></tr>
+          <tr><td>10</td><td>РадоГрад</td><td>3</td><td>3</td><td>2</td><td>2</td><td>2</td><td>2.45</td><td></td></tr>
+          <tr><td>11</td><td>Сибирский продукт</td><td>2</td><td>3</td><td>2</td><td>1</td><td>2</td><td>2.00</td><td></td></tr>
+          <tr><td>12</td><td>Dial-Export</td><td>2</td><td>3</td><td>1</td><td>1</td><td>3</td><td>2.05</td><td></td></tr>
+          <tr><td>13</td><td>Пазл Здоровья</td><td>3</td><td>2</td><td>2</td><td>3</td><td>4</td><td>2.85</td><td></td></tr>
+          <tr><td>14</td><td>Polezzno</td><td>2</td><td>3</td><td>2</td><td>1</td><td>1</td><td>1.80</td><td></td></tr>
+          <tr><td>15</td><td>Олеос</td><td>2</td><td>2</td><td>1</td><td>1</td><td>1</td><td>1.40</td><td></td></tr>
+          <tr><td>16</td><td>Барака</td><td>1</td><td>2</td><td>1</td><td>1</td><td>2</td><td>1.40</td><td></td></tr>
+          <tr><td>17</td><td>Hemani</td><td>1</td><td>1</td><td>1</td><td>1</td><td>2</td><td>1.15</td><td></td></tr>
+          <tr><td>18</td><td>Азбука Вкуса (СТМ)</td><td>3</td><td>2</td><td>1</td><td>2</td><td>2</td><td>2.05</td><td></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="highlight-box">
+      <p><strong>Проверка TRAWA:</strong> 5×0.25 + 5×0.25 + 4×0.15 + 5×0.20 + 5×0.15 = 1.25 + 1.25 + 0.60 + 1.00 + 0.75 = <strong>4.85 ✓</strong><br>
+      <strong>Проверка Радость Здоровья:</strong> 5×0.25 + 5×0.25 + 5×0.15 + 3×0.20 + 4×0.15 = 1.25 + 1.25 + 0.75 + 0.60 + 0.60 = <strong>4.45 ✓</strong></p>
+    </div>
+  </div>
+</section>
+
+<!-- Обоснование отбора -->
+<section class="section" id="rationale">
+  <div class="container">
+    <div class="section-header">
+      <span class="section-tag">03 — Обоснование отбора</span>
+      <h2>Топ-5: почему именно они</h2>
+    </div>
+    <div class="grid grid-2" style="gap:1.5rem; margin-bottom:1.5rem;">
+      <div class="card">
+        <div class="card-title">1. TRAWA — 4.85</div>
+        <div class="card-description">Безальтернативный выбор. Единственный системный игрок в премиальном D2C. Задаёт ценовой потолок ниши, формирует ожидания ЦА. Всё, что Кирилл строит в digital, будет сравниваться с TRAWA. Из досье TRAWA извлекаются уязвимости (нет Telegram, нет квиза, нет подписки), которые напрямую влияют на стратегию.</div>
+      </div>
+      <div class="card">
+        <div class="card-title">2. Радость Здоровья — 4.45</div>
+        <div class="card-description">Ближайший структурный аналог Кирилла. Тоже Москва, тоже точка на рынке, тоже сыродавленное масло, тоже D2C через мессенджеры, тоже премиум. Это зеркало: что у них работает — может работать у Кирилла. Максимальное пересечение по каналам (5 баллов).</div>
+      </div>
+      <div class="card">
+        <div class="card-title">3. Altaria — 3.80</div>
+        <div class="card-description">Представитель инновационного сегмента. Не прямой конкурент по продукту (спрей ≠ стекло), но по ЦА и каналам — пересекается. Важен: показывает как работает инфлюенс-маркетинг в масляной нише, 10 000+ отзывов — механика для изучения, Consumer Experience — тренд.</div>
+      </div>
+      <div class="card">
+        <div class="card-title">4. Дом Кедра — 3.15</div>
+        <div class="card-description">Представитель маркетплейс-сегмента. Самый широкий ассортимент (23 масла), агрессивное дисконтирование, уникальная линейка BIO-hepa. Важен для понимания: как маркетплейсы формируют ценовые ожидания, какие продуктовые форматы востребованы. При выходе Кирилла на Ozon/WB — прямой конкурент по полке.</div>
+      </div>
+    </div>
+    <div class="warning-block">
+      <p><strong>5. Масляный Король — 2.80 (антипример)</strong><br>
+      Попал в топ-5 не по итоговому баллу (формально 7-е место после Маслослада и Пазла Здоровья), а по стратегической значимости: 22+ года на рынке, Гран-при ПродЭкспо, широчайшая дистрибуция — но полный провал в digital. Это ценнейший кейс: как не надо. Его цены (льняное 260 ₽/250 мл) — ценовой якорь, с которым Кирилл будет бороться в сознании покупателя.</p>
+    </div>
+    <div class="highlight-box" style="margin-top:1.5rem;">
+      <p><strong>Замена по скорингу:</strong> Формально 5-е место занимает Маслослад (3.20) и Пазл Здоровья (2.85). Масляный Король (2.80) включён вместо Маслослада по причине стратегической значимости — ценовой якорь + антипример digital-провала важнее для проекта, чем ещё один крафтовый D2C.</p>
+    </div>
+  </div>
+</section>
+
+<!-- Кого не взяли -->
+<section class="section" id="near-miss">
+  <div class="container">
+    <div class="section-header">
+      <span class="section-tag">04 — Кого не взяли</span>
+      <h2>Почти в топ-5</h2>
+    </div>
+    <div class="grid grid-2">
+      <div class="card">
+        <div class="card-title">6-й — Маслослад (3.20)</div>
+        <div class="card-description">Структурный аналог (Москва, крафт, D2C, дубовый пресс), но: слишком похож на «Радость Здоровья», которая уже в топ-5; данных в источниках мало — профиль получится тонким; меньше уникальных механик (YouTube-канал — единственная фишка).</div>
+      </div>
+      <div class="card">
+        <div class="card-title">7-й — Пазл Здоровья (2.85)</div>
+        <div class="card-description">Интересен уникальным позиционированием (масла-миксы под задачу, Telegram-напоминания), но: другой продукт (миксы, не моно-масла); пограничные медицинские обещания — Кирилл не может копировать этот подход; данных мало.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Покрытие сегментов -->
+<section class="section" id="coverage">
+  <div class="container">
+    <div class="section-header">
+      <span class="section-tag">05 — Покрытие сегментов</span>
+      <h2>Карта отбора по сегментам</h2>
+    </div>
+    <div class="table-wrapper">
+      <table>
+        <thead>
+          <tr>
+            <th>Сегмент из Арт. 1</th>
+            <th>Представлен в топ-5?</th>
+            <th>Кем</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>Премиальный D2C</td><td class="table-accent">✓</td><td>TRAWA, Радость Здоровья</td></tr>
+          <tr><td>Промышленные производители</td><td class="table-accent">✓</td><td>Масляный Король</td></tr>
+          <tr><td>Маркетплейс-нативные</td><td class="table-accent">✓</td><td>Дом Кедра</td></tr>
+          <tr><td>Инновационные форматы</td><td class="table-accent">✓</td><td>Altaria</td></tr>
+          <tr><td>Аптечные / БАД</td><td style="color:#ef4444">✗</td><td>— (осознанный выбор)</td></tr>
+          <tr><td>Офлайн-локальные</td><td class="table-accent">✓ (частично)</td><td>Радость Здоровья</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="highlight-box">
+      <p>Аптечный сегмент не представлен — <strong>осознанный выбор</strong>. Олеос/Биокор/Барака — слишком далеки по ЦА, продукту и каналам. Пересечение минимальное. При необходимости можно добавить 6-й профиль отдельно.</p>
+    </div>
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="container">
+    BrandOS · brand-os.ru · Магия Масел · M5 Профили конкурентов · 2026
+  </div>
+</footer>
+
+</body>
+</html>

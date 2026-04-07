@@ -1,0 +1,992 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>M4-07 — Язык аудитории · Магия Масел</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --brand: #2C5F2D;
+      --brand-dark: #1a4a1b;
+      --brand-light: #4a8f4b;
+      --brand-bg: #e8f5e9;
+      --accent: #D4AF37;
+      --accent-bg: #fdf8e8;
+      --n50: #f8fafc; --n100: #f1f5f9; --n200: #e2e8f0;
+      --n300: #cbd5e1; --n400: #94a3b8; --n500: #64748b;
+      --n600: #475569; --n700: #334155; --n800: #1e293b; --n900: #0f172a;
+      --success: #10b981; --warning: #f59e0b; --error: #ef4444; --info: #3b82f6;
+      --font: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      --shadow-card: 0 1px 3px 0 rgba(0,0,0,.05), 0 1px 2px -1px rgba(0,0,0,.05);
+      --shadow-hover: 0 10px 25px -5px rgba(0,0,0,.08), 0 8px 10px -6px rgba(0,0,0,.04);
+      --shadow-btn: 0 4px 14px 0 rgba(44,95,45,.35);
+      --r-sm:4px; --r-md:6px; --r-lg:8px; --r-xl:12px; --r-2xl:16px; --r-3xl:24px; --r-full:9999px;
+    }
+
+    body { font-family: var(--font); font-size: 16px; line-height: 1.6; color: var(--n600); background: var(--n100); }
+
+    @keyframes fade-up { 0%{opacity:0;transform:translateY(20px)} 100%{opacity:1;transform:translateY(0)} }
+    .fade-up { opacity:0; transform:translateY(20px); transition:opacity .6s ease-out, transform .6s ease-out; }
+    .fade-up.visible { opacity:1; transform:translateY(0); }
+
+    .container { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
+    .section { padding: 80px 0; }
+
+    /* Nav */
+    .nav-wrap {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 300;
+      background: rgba(255,255,255,.93); backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--n200); height: 64px;
+    }
+    .nav-inner { height:100%; display:flex; align-items:center; justify-content:space-between; }
+    .nav-logo img { height:40px; width:auto; display:block; }
+    .nav-links { display:flex; gap:20px; flex-wrap:wrap; }
+    .nav-links a { font-size:13px; font-weight:500; color:var(--n600); text-decoration:none; transition:color .2s; }
+    .nav-links a:hover { color:var(--brand); }
+    .nav-badge {
+      font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:.05em;
+      color:var(--brand); background:var(--brand-bg);
+      padding:5px 12px; border-radius:var(--r-full); white-space:nowrap;
+    }
+
+    /* Section header */
+    .section-header { margin-bottom:40px; }
+    .section-label {
+      display:inline-block; font-size:11px; font-weight:700; text-transform:uppercase;
+      letter-spacing:.08em; color:var(--brand); background:var(--brand-bg);
+      padding:4px 12px; border-radius:var(--r-full); margin-bottom:12px;
+    }
+    .section-title { font-size:30px; font-weight:600; color:var(--n900); line-height:1.25; margin-bottom:8px; }
+    .section-sub { font-size:16px; color:var(--n500); }
+
+    /* Grid */
+    .grid-2 { display:grid; grid-template-columns:repeat(auto-fit,minmax(340px,1fr)); gap:20px; }
+    .grid-3 { display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:20px; }
+
+    /* Badge */
+    .badge { display:inline-flex; align-items:center; padding:3px 10px; border-radius:var(--r-full); font-size:12px; font-weight:600; }
+    .badge-green { background:#d1fae5; color:#065f46; }
+    .badge-yellow { background:#fef3c7; color:#92400e; }
+    .badge-blue { background:#dbeafe; color:#1e40af; }
+    .badge-brand { background:var(--brand-bg); color:var(--brand-dark); }
+    .badge-accent { background:var(--accent-bg); color:#7a6000; }
+    .badge-red { background:#fee2e2; color:#991b1b; }
+    .badge-gray { background:var(--n100); color:var(--n500); }
+
+    /* Table */
+    .table-wrap { overflow-x:auto; border-radius:var(--r-2xl); border:1px solid var(--n200); margin:20px 0; }
+    table { width:100%; border-collapse:collapse; background:#fff; }
+    thead tr { background:var(--n50); border-bottom:2px solid var(--n200); }
+    th { padding:14px 18px; text-align:left; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.05em; color:var(--n500); }
+    td { padding:14px 18px; font-size:14px; color:var(--n600); border-bottom:1px solid var(--n200); }
+    tr:last-child td { border-bottom:none; }
+    tbody tr { transition:background .2s; }
+    tbody tr:hover { background:var(--n50); }
+    .td-num { font-size:13px; color:var(--n400); font-family:monospace; }
+
+    /* Alert */
+    .alert { display:flex; gap:14px; border-radius:var(--r-xl); padding:18px; margin:16px 0; }
+    .alert-warning { background:#fffbeb; border:1px solid #fde68a; border-left:4px solid var(--warning); }
+    .alert-error { background:#fff1f2; border:1px solid #fecdd3; border-left:4px solid var(--error); }
+    .alert-info { background:#eff6ff; border:1px solid #bfdbfe; border-left:4px solid var(--info); }
+    .alert-success { background:#f0fdf4; border:1px solid #bbf7d0; border-left:4px solid var(--success); }
+    .alert-brand { background:var(--brand-bg); border:1px solid #a5d6a7; border-left:4px solid var(--brand); }
+    .alert-icon { font-size:18px; flex-shrink:0; margin-top:1px; }
+
+    /* Card */
+    .card {
+      background:#fff; border-radius:var(--r-2xl); border:1px solid var(--n200);
+      padding:28px; box-shadow:var(--shadow-card);
+      transition:transform .3s ease, box-shadow .3s ease;
+    }
+    .card:hover { transform:translateY(-3px); box-shadow:var(--shadow-hover); }
+    .card-brand {
+      background: linear-gradient(135deg, var(--brand-bg) 0%, #fff 100%);
+      border-radius:var(--r-2xl); border:1px solid #a5d6a7; padding:28px; box-shadow:var(--shadow-card);
+    }
+    .card-accent {
+      background: var(--accent-bg);
+      border-radius:var(--r-2xl); border:1px solid #e8d87a; padding:28px; box-shadow:var(--shadow-card);
+    }
+    .card-title { font-size:16px; font-weight:700; color:var(--n900); margin-bottom:12px; }
+    .card-icon { font-size:24px; margin-bottom:12px; }
+
+    /* Stat cards */
+    .stat-card {
+      background:linear-gradient(135deg,var(--brand) 0%,var(--brand-dark) 100%);
+      border-radius:var(--r-2xl); padding:24px; color:#fff; box-shadow:var(--shadow-btn);
+    }
+    .stat-label { font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.05em; opacity:.75; margin-bottom:8px; }
+    .stat-value { font-size:28px; font-weight:700; line-height:1; margin-bottom:6px; }
+    .stat-desc { font-size:13px; opacity:.8; }
+
+    /* List item */
+    .list-item {
+      display:flex; gap:10px; align-items:flex-start;
+      padding:9px 0; border-bottom:1px solid var(--n100);
+      font-size:14px; color:var(--n600);
+    }
+    .list-item:last-child { border-bottom:none; }
+    .list-dot { width:8px; height:8px; border-radius:50%; background:var(--brand); flex-shrink:0; margin-top:6px; }
+    .list-dot-red { width:8px; height:8px; border-radius:50%; background:var(--error); flex-shrink:0; margin-top:6px; }
+
+    /* Status icons */
+    .s-ok { color:var(--success); font-weight:600; }
+    .s-warn { color:var(--warning); font-weight:600; }
+    .s-need { color:#f97316; font-weight:600; }
+
+    @media (max-width:768px) {
+      .nav-links { display:none; }
+      .section-title { font-size:24px; }
+      .grid-2, .grid-3 { grid-template-columns:1fr; }
+    }
+
+    /* Hero */
+    .hero {
+      background: linear-gradient(135deg, var(--brand-dark) 0%, var(--brand) 50%, var(--brand-light) 100%);
+      padding: 120px 0 80px; color:#fff; position:relative; overflow:hidden;
+    }
+    .hero::before {
+      content:''; position:absolute; inset:0;
+      background: radial-gradient(ellipse at 70% 50%, rgba(212,175,55,.15) 0%, transparent 60%);
+    }
+    .hero-inner { display:flex; align-items:center; gap:48px; flex-wrap:wrap; }
+    .hero-logo-wrap { flex-shrink:0; }
+    .hero-logo-wrap img { height:140px; width:auto; display:block; border-radius:var(--r-xl); }
+    .hero-content { flex:1; min-width:280px; }
+    .hero-badge {
+      display:inline-block; font-size:11px; font-weight:700; text-transform:uppercase;
+      letter-spacing:.1em; background:rgba(255,255,255,.15); color:#fff;
+      border:1px solid rgba(255,255,255,.3); padding:6px 16px;
+      border-radius:var(--r-full); margin-bottom:20px; backdrop-filter:blur(8px);
+    }
+    .hero-title { font-size:52px; font-weight:700; line-height:1.1; margin-bottom:16px; }
+    .hero-title span { color:var(--accent); }
+    .hero-sub { font-size:18px; opacity:.85; max-width:600px; margin-bottom:32px; line-height:1.6; }
+    .hero-meta { display:flex; gap:24px; flex-wrap:wrap; }
+    .hero-meta-item { display:flex; flex-direction:column; gap:3px; }
+    .hero-meta-label { font-size:10px; text-transform:uppercase; letter-spacing:.08em; opacity:.6; }
+    .hero-meta-value { font-size:14px; font-weight:600; }
+
+    @media (max-width:768px) {
+      .hero { padding: 100px 0 60px; }
+      .hero-title { font-size:34px; }
+      .hero-logo-wrap img { height:80px; }
+    }
+
+    /* Footer */
+    .footer { background:var(--n900); color:var(--n400); padding:40px 0; font-size:13px; }
+    .footer-inner { display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:16px; }
+    .footer-meta { display:flex; gap:20px; flex-wrap:wrap; }
+    .footer-meta-item { display:flex; flex-direction:column; gap:2px; }
+    .footer-meta-label { font-size:10px; text-transform:uppercase; letter-spacing:.05em; color:var(--n600); }
+    .footer-meta-value { font-size:12px; color:var(--n400); }
+
+    /* Vocabulary tabs/sections */
+    .vocab-section {
+      background:#fff; border-radius:var(--r-2xl); border:1px solid var(--n200);
+      padding:28px; margin-bottom:24px; box-shadow:var(--shadow-card);
+    }
+    .vocab-header {
+      display:flex; align-items:center; gap:12px; margin-bottom:20px;
+      padding-bottom:16px; border-bottom:1px solid var(--n200);
+    }
+    .vocab-seg-badge {
+      font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:.05em;
+      background: linear-gradient(135deg, var(--brand-bg), #f0f9f0);
+      color:var(--brand-dark); padding:6px 14px; border-radius:var(--r-full);
+      border:1px solid #a5d6a7;
+    }
+    .vocab-title { font-size:17px; font-weight:700; color:var(--n900); }
+    .vocab-avatar { font-size:13px; color:var(--n500); font-style:italic; margin-left:auto; }
+
+    .vocab-cols { display:grid; grid-template-columns:1fr 1fr 1fr; gap:20px; }
+    @media(max-width:900px) { .vocab-cols { grid-template-columns:1fr; } }
+
+    .vocab-col-title {
+      font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.06em;
+      color:var(--n500); margin-bottom:12px; padding-bottom:8px; border-bottom:1px solid var(--n200);
+    }
+    .phrase-item {
+      font-size:13px; color:var(--n700); font-style:italic;
+      padding:8px 10px; background:var(--n50); border-radius:var(--r-md);
+      margin-bottom:6px; border-left:2px solid var(--n300);
+    }
+    .phrase-item:last-child { margin-bottom:0; }
+    .phrase-item.phrase-special {
+      background:var(--brand-bg); border-left-color:var(--brand);
+      color:var(--brand-dark); font-style:normal; font-weight:500;
+    }
+
+    /* Antislova grid */
+    .anti-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:12px; margin-top:20px; }
+    .anti-item {
+      background:#fff; border-radius:var(--r-xl); border:1px solid #fecdd3;
+      padding:14px 16px; position:relative;
+    }
+    .anti-word { font-size:14px; font-weight:700; color:#991b1b; margin-bottom:4px; }
+    .anti-reason { font-size:12px; color:var(--n500); margin-bottom:8px; }
+    .anti-replace { font-size:12px; color:var(--brand-dark); background:var(--brand-bg); padding:6px 8px; border-radius:var(--r-sm); }
+    .anti-label { font-size:10px; text-transform:uppercase; letter-spacing:.05em; color:var(--n400); margin-bottom:2px; }
+
+    /* Формулировки */
+    .formula-card {
+      background: linear-gradient(135deg, var(--brand-bg) 0%, #fff 60%);
+      border-radius:var(--r-2xl); border:1px solid #a5d6a7;
+      padding:24px; margin-bottom:20px; box-shadow:var(--shadow-card);
+    }
+    .formula-title { font-size:15px; font-weight:700; color:var(--n900); margin-bottom:12px; }
+    .formula-hook {
+      font-size:14px; color:var(--n700); font-style:italic;
+      padding:14px 18px; background:rgba(44,95,45,.05);
+      border-radius:var(--r-lg); border-left:3px solid var(--brand);
+      margin-bottom:10px; line-height:1.7;
+    }
+
+    /* Канальные секции */
+    .channel-card {
+      background:#fff; border-radius:var(--r-2xl); border:1px solid var(--n200);
+      padding:24px; box-shadow:var(--shadow-card);
+    }
+    .channel-title { font-size:16px; font-weight:700; color:var(--n900); margin-bottom:4px; }
+    .channel-sub { font-size:13px; color:var(--n500); margin-bottom:16px; }
+    .channel-phrase {
+      font-size:13px; color:var(--n700); font-style:italic;
+      padding:7px 10px; background:var(--n50); border-radius:var(--r-sm);
+      margin-bottom:5px; border-left:2px solid var(--brand-light);
+    }
+    .channel-dont-title { font-size:12px; font-weight:600; color:var(--error); margin-top:14px; margin-bottom:6px; text-transform:uppercase; letter-spacing:.04em; }
+    .channel-dont-item {
+      font-size:12px; color:var(--n500);
+      padding:5px 8px; background:#fff1f2; border-radius:var(--r-sm); margin-bottom:4px;
+      border-left:2px solid var(--error);
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav-wrap">
+  <div class="container">
+    <div class="nav-inner">
+      <div class="nav-logo"><img src="../../assets/logo-horizontal-light.png" alt="Магия Масел"></div>
+      <div class="nav-links">
+        <a href="#principle">Принцип</a>
+        <a href="#vocabulary">Словарь</a>
+        <a href="#signals">Сигналы готовности</a>
+        <a href="#barriers">Барьеры</a>
+        <a href="#antislova">Антислова</a>
+        <a href="#formulas">Формулировки</a>
+      </div>
+      <div class="nav-badge">M4 · Документ 7/8</div>
+    </div>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="container">
+    <div class="hero-inner">
+      <div class="hero-logo-wrap">
+        <img src="../../assets/logo-badge-dark.png" alt="Магия Масел — Кирилл Бродский">
+      </div>
+      <div class="hero-content">
+        <div class="hero-badge">M4 · Аудитория · Документ 7 из 8</div>
+        <h1 class="hero-title">Язык <span>аудитории</span></h1>
+        <p class="hero-sub">Словарь, фразы-сигналы, метафоры, антислова и готовые формулировки для контента.</p>
+        <div class="hero-meta">
+          <div class="hero-meta-item">
+            <span class="hero-meta-label">Клиент</span>
+            <span class="hero-meta-value">Кирилл Бродский</span>
+          </div>
+          <div class="hero-meta-item">
+            <span class="hero-meta-label">Дата</span>
+            <span class="hero-meta-value">31.03.2026</span>
+          </div>
+          <div class="hero-meta-item">
+            <span class="hero-meta-label">Версия</span>
+            <span class="hero-meta-value">1.0 (Opus)</span>
+          </div>
+          <div class="hero-meta-item">
+            <span class="hero-meta-label">Сегментов</span>
+            <span class="hero-meta-value">5 (С1–С5)</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 1. ПРИНЦИП -->
+<section class="section fade-up" id="principle">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-label">1. Принцип</div>
+      <h2 class="section-title">Почему язык аудитории важнее «правильного» языка</h2>
+      <p class="section-sub">Маркетинговый текст говорит: «Источник полиненасыщенных жирных кислот». Покупатель говорит: «Ложку на голодный желудок — моментально включает мозг».</p>
+    </div>
+    <div class="alert alert-brand fade-up">
+      <span class="alert-icon">💡</span>
+      <div>
+        <strong style="color:var(--brand-dark); display:block; margin-bottom:4px;">Правило для контента Кирилла</strong>
+        <p style="font-size:14px; color:var(--n600);">Если фраза звучит как из рекламного буклета — переписать. Если звучит как реплика покупателя на рынке — оставить.</p>
+      </div>
+    </div>
+    <div class="grid-3" style="margin-top:24px;">
+      <div class="card fade-up" style="border-top:4px solid var(--info);">
+        <div class="card-icon">👁</div>
+        <div class="card-title">Узнавание</div>
+        <p style="font-size:14px; color:var(--n600);">Когда человек видит фразу, которую сам мог бы произнести — он останавливается. «Это про меня» — единственный хук, который работает стабильно.</p>
+      </div>
+      <div class="card fade-up" style="border-top:4px solid var(--brand);">
+        <div class="card-icon">🤝</div>
+        <div class="card-title">Доверие</div>
+        <p style="font-size:14px; color:var(--n600);">Маркетинговый язык вызывает защитную реакцию: «мне продают». Язык аудитории вызывает ощущение: «этот человек понимает мою ситуацию».</p>
+      </div>
+      <div class="card fade-up" style="border-top:4px solid var(--accent);">
+        <div class="card-icon">📈</div>
+        <div class="card-title">Конверсия</div>
+        <p style="font-size:14px; color:var(--n600);">Фразы, построенные на реальной речи, получают больше реакций. Люди цепляются за конкретное — «натощак, пол года», «нежно-ореховый привкус», «уменьшился волосопад».</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 2. СЛОВАРЬ -->
+<section class="section fade-up" id="vocabulary" style="background:#fff;">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-label">2. Словарь</div>
+      <h2 class="section-title">Словарь аудитории по сегментам</h2>
+      <p class="section-sub">Источники: Яндекс Маркет, iRecommend, Babyblog, Отзовик, наблюдения Кирилла на Дорогомиловском рынке, кастдев-интервью M4.</p>
+    </div>
+
+    <!-- С1 -->
+    <div class="vocab-section fade-up">
+      <div class="vocab-header">
+        <div class="vocab-seg-badge">С1</div>
+        <div class="vocab-title">Функциональный</div>
+        <div class="vocab-avatar">Татьяна, 47 лет · ЛОР назначил тмин</div>
+      </div>
+      <div class="vocab-cols">
+        <div>
+          <div class="vocab-col-title">Слова и термины</div>
+          <div class="phrase-item phrase-special">натощак, курс, протокол, пропить</div>
+          <div class="phrase-item phrase-special">омега, тимохинон, силимарин</div>
+          <div class="phrase-item">капсулы, БАДы, химия, синтетика</div>
+          <div class="phrase-item">иммунитет, ЖКТ, печень</div>
+          <div class="phrase-item">назначил врач, ЛОР сказал</div>
+          <div class="phrase-item">эффект, результат, самочувствие</div>
+        </div>
+        <div>
+          <div class="vocab-col-title">Как формулируют проблему</div>
+          <div class="phrase-item">«Анализы в норме, но ощущение — не норма»</div>
+          <div class="phrase-item">«Пила капсулы три месяца — забыла купить, и не заметила разницы»</div>
+          <div class="phrase-item">«Устала от синтетики — хочу натуральное, но не блажь»</div>
+          <div class="phrase-item">«Не больна — зачем пить химию?»</div>
+          <div class="phrase-item">«Голова ватная после обеда»</div>
+        </div>
+        <div>
+          <div class="vocab-col-title">Желаемый результат + специфика</div>
+          <div class="phrase-item">«Пью столовую ложку — моментально включает мозг»</div>
+          <div class="phrase-item">«Утром стала вставать легче»</div>
+          <div class="phrase-item">«Выгоднее и натуральнее, чем капсулы»</div>
+          <div class="phrase-item phrase-special">«пол года» (слитно, по-бытовому)</div>
+          <div class="phrase-item phrase-special">«горлодер» (вкус тмина)</div>
+          <div class="phrase-item phrase-special">«тепло расходится по телу»</div>
+          <div class="phrase-item phrase-special">«включает мозг»</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- С2 -->
+    <div class="vocab-section fade-up">
+      <div class="vocab-header">
+        <div class="vocab-seg-badge">С2</div>
+        <div class="vocab-title">Семейный ЗОЖ</div>
+        <div class="vocab-avatar">Ольга, 36 лет · двое детей</div>
+      </div>
+      <div class="vocab-cols">
+        <div>
+          <div class="vocab-col-title">Слова и термины</div>
+          <div class="phrase-item phrase-special">дети, ребёнок, каша, семья</div>
+          <div class="phrase-item phrase-special">хранение, холодильник, после вскрытия</div>
+          <div class="phrase-item">состав, без химии, рафинированное</div>
+          <div class="phrase-item">можно ли детям, с какого возраста</div>
+          <div class="phrase-item">осознанное, нормальное масло</div>
+        </div>
+        <div>
+          <div class="vocab-col-title">Как формулируют проблему</div>
+          <div class="phrase-item">«Купила льняное — пахнет странно, выкинула»</div>
+          <div class="phrase-item">«Не знаю сколько оно может стоять после вскрытия»</div>
+          <div class="phrase-item">«Педиатр сказал Омега нужна — ребёнок капсулу не глотает»</div>
+          <div class="phrase-item">«Дорого, а вдруг ребёнок откажется есть»</div>
+        </div>
+        <div>
+          <div class="vocab-col-title">Желаемый результат + специфика</div>
+          <div class="phrase-item">«Добавила в кашу — дети съели без возражений»</div>
+          <div class="phrase-item">«Беру уже не в первый раз — подешевле совсем не то»</div>
+          <div class="phrase-item phrase-special">«добавляю в кашу» (не «употребляю перорально»)</div>
+          <div class="phrase-item phrase-special">«дать ребёнку» (не «включить в детский рацион»)</div>
+          <div class="phrase-item phrase-special">«рацион моей семьи» (уклад, не эксперимент)</div>
+          <div class="phrase-item phrase-special">«подешевле — совсем не то»</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- С3 -->
+    <div class="vocab-section fade-up">
+      <div class="vocab-header">
+        <div class="vocab-seg-badge">С3</div>
+        <div class="vocab-title">Крафт-контролёр</div>
+        <div class="vocab-avatar">Андрей, 53 года · инженер</div>
+      </div>
+      <div class="vocab-cols">
+        <div>
+          <div class="vocab-col-title">Слова и термины</div>
+          <div class="phrase-item phrase-special">тёмное стекло, прозрачная бутылка</div>
+          <div class="phrase-item phrase-special">дата отжима, дата изготовления</div>
+          <div class="phrase-item phrase-special">шнек, гидравлика, пресс, температура</div>
+          <div class="phrase-item">горчит, горькое, прогоркло, окислилось</div>
+          <div class="phrase-item">подмена, смесь, подсолнечное вместо</div>
+        </div>
+        <div>
+          <div class="vocab-col-title">Как формулируют проблему</div>
+          <div class="phrase-item">«Масло горькое — оно испорчено, окислилось»</div>
+          <div class="phrase-item">«Купил на маркетплейсе — прозрачная бутылка, горечь»</div>
+          <div class="phrase-item">«Написал в поддержку — "так и должно быть". Выкинул»</div>
+          <div class="phrase-item">«Все пишут "натуральное" — а внутри непонятно что»</div>
+          <div class="phrase-item">«Похоже на дешёвое подсолнечное... смесь»</div>
+        </div>
+        <div>
+          <div class="vocab-col-title">Желаемый результат + специфика</div>
+          <div class="phrase-item">«Не горчит — значит свежее. Дата нормальная»</div>
+          <div class="phrase-item">«Нашёл нормального человека — рекомендую»</div>
+          <div class="phrase-item phrase-special">«прозрачная бутылка — сразу минус»</div>
+          <div class="phrase-item phrase-special">«сам давит» (ключевая фраза доверия)</div>
+          <div class="phrase-item phrase-special">«есть один нормальный» (формула рекомендации)</div>
+          <div class="phrase-item phrase-special">«конкретный день, не "свежее"»</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- С4 -->
+    <div class="vocab-section fade-up">
+      <div class="vocab-header">
+        <div class="vocab-seg-badge">С4</div>
+        <div class="vocab-title">Гастроном</div>
+        <div class="vocab-avatar">Михаил, 42 года · готовит дома как хобби</div>
+      </div>
+      <div class="vocab-cols">
+        <div>
+          <div class="vocab-col-title">Слова и термины</div>
+          <div class="phrase-item phrase-special">вкус, аромат, привкус, послевкусие, ноты</div>
+          <div class="phrase-item phrase-special">финиш, заправка, паста, тосты</div>
+          <div class="phrase-item phrase-special">не перебивает, не заглушает, оживляет</div>
+          <div class="phrase-item">характер, изюминка, разнообразие</div>
+          <div class="phrase-item">фермерское, крафтовое, местный производитель</div>
+        </div>
+        <div>
+          <div class="vocab-col-title">Как формулируют проблему</div>
+          <div class="phrase-item">«Оливковое на всё — как соль: необходимо, но без характера»</div>
+          <div class="phrase-item">«Нестабильность вкуса от партии к партии — вот что бесит»</div>
+          <div class="phrase-item">«Не понимаю какое куда — все масла разные, а объяснений нет»</div>
+          <div class="phrase-item">«Заглушило всё блюдо — деньги на ветер»</div>
+        </div>
+        <div>
+          <div class="vocab-col-title">Желаемый результат + специфика</div>
+          <div class="phrase-item">«В послевкусии — нежно-ореховый привкус»</div>
+          <div class="phrase-item">«Приятный вкус, без горчинки! Беру не в первый раз»</div>
+          <div class="phrase-item phrase-special">«на финиш» (не «для заправки готовых блюд»)</div>
+          <div class="phrase-item phrase-special">«с горькой зеленью» (руккола как контекст)</div>
+          <div class="phrase-item phrase-special">«как хороший нож» (масло = инструмент)</div>
+          <div class="phrase-item phrase-special">«живой продукт с именем»</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- С5 -->
+    <div class="vocab-section fade-up">
+      <div class="vocab-header">
+        <div class="vocab-seg-badge">С5</div>
+        <div class="vocab-title">Красота изнутри</div>
+        <div class="vocab-avatar">Елена, 33 года · выпадают волосы полтора года</div>
+      </div>
+      <div class="vocab-cols">
+        <div>
+          <div class="vocab-col-title">Слова и термины</div>
+          <div class="phrase-item phrase-special">волосопад (ключевое слово сегмента!)</div>
+          <div class="phrase-item phrase-special">изнутри, клеточный уровень, питание</div>
+          <div class="phrase-item phrase-special">курсом 60 дней</div>
+          <div class="phrase-item">волосы, ногти, кожа, сухость, ломкость</div>
+          <div class="phrase-item">кремы не помогают, снаружи не работает</div>
+          <div class="phrase-item">рыбий жир, отрыжка, капсулы</div>
+        </div>
+        <div>
+          <div class="vocab-col-title">Как формулируют проблему</div>
+          <div class="phrase-item">«Расчёска каждое утро — страшно смотреть»</div>
+          <div class="phrase-item">«Кремы помогают пока мажу — перестала мазать, всё вернулось»</div>
+          <div class="phrase-item">«Рыбий жир — отрыжка рыбная, невозможно»</div>
+          <div class="phrase-item">«Месяц пила — ничего не изменилось»</div>
+        </div>
+        <div>
+          <div class="vocab-col-title">Желаемый результат + специфика</div>
+          <div class="phrase-item">«Ногти заметно окрепли»</div>
+          <div class="phrase-item">«Уменьшился волосопад»</div>
+          <div class="phrase-item">«Сфотографировала расчёску — до и после»</div>
+          <div class="phrase-item phrase-special">«пока мажу» (временный эффект кремов)</div>
+          <div class="phrase-item phrase-special">«слежу за собой по-взрослому»</div>
+          <div class="phrase-item phrase-special">«красота изнутри» (не снаружи)</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 3. СИГНАЛЫ ГОТОВНОСТИ -->
+<section class="section fade-up" id="signals">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-label">3. Сигналы готовности</div>
+      <h2 class="section-title">Фразы-сигналы готовности к покупке</h2>
+      <p class="section-sub">Покупатель готов. Вот как это звучит. Кирилл должен узнавать эти фразы и реагировать быстро — предложить конкретный следующий шаг.</p>
+    </div>
+
+    <div class="section-label" style="margin-bottom:16px; background:#d1fae5; color:#065f46;">На рынке (офлайн)</div>
+    <div class="table-wrap fade-up">
+      <table>
+        <thead>
+          <tr>
+            <th>Фраза</th>
+            <th>Что значит</th>
+            <th>Что делать</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td style="font-style:italic; font-size:13px;">«А вы сами давите?»</td>
+            <td style="font-size:13px;">Доверие формируется — хочет убедиться в подлинности</td>
+            <td style="font-size:13px;">Ответить честно. Показать бутылку с датой. Предложить попробовать</td>
+          </tr>
+          <tr>
+            <td style="font-style:italic; font-size:13px;">«А какое масло для [конкретная задача]?»</td>
+            <td style="font-size:13px;">Потребность уже есть, ищет решение</td>
+            <td style="font-size:13px;">Подобрать масло под задачу. Дать протокол. Предложить 100 мл на пробу</td>
+          </tr>
+          <tr>
+            <td style="font-style:italic; font-size:13px;">«Мне врач сказал попить тмин/расторопшу»</td>
+            <td style="font-size:13px;">Осведомлённость есть, нужно только закрыть доверие</td>
+            <td style="font-size:13px;">Объяснить механизм. Показать как принимать. Дать QR на канал</td>
+          </tr>
+          <tr>
+            <td style="font-style:italic; font-size:13px;">«А это свежее? Когда давили?»</td>
+            <td style="font-size:13px;">С3: контроль. Готов купить при подтверждении</td>
+            <td style="font-size:13px;">Назвать конкретную дату. Показать на этикетке. Объяснить тёмное стекло</td>
+          </tr>
+          <tr>
+            <td style="font-style:italic; font-size:13px;">«Давайте попробую маленькую»</td>
+            <td style="font-size:13px;">Готовность к покупке. Снижает риск через малый формат</td>
+            <td style="font-size:13px;">Предложить 100 мл. Дать карточку с инструкцией. QR на TG</td>
+          </tr>
+          <tr>
+            <td style="font-style:italic; font-size:13px;">«А вот кедровое — к пасте подойдёт?»</td>
+            <td style="font-size:13px;">С4: конкретное применение в голове, ищет подтверждение</td>
+            <td style="font-size:13px;">Подтвердить. Дать ещё 1-2 рецепта. Предложить попробовать грецкое для контраста</td>
+          </tr>
+          <tr>
+            <td style="font-style:italic; font-size:13px;">«Подруга/муж/коллега говорил про вас»</td>
+            <td style="font-size:13px;">Пришёл через сарафан — доверие уже высокое</td>
+            <td style="font-size:13px;">Не переубеждать, не продавать. Спросить «что именно интересует?» и подобрать</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="section-label" style="margin-bottom:16px; margin-top:32px; background:#dbeafe; color:#1e40af;">В Telegram (онлайн)</div>
+    <div class="table-wrap fade-up">
+      <table>
+        <thead>
+          <tr>
+            <th>Фраза</th>
+            <th>Что значит</th>
+            <th>Что делать</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td style="font-style:italic; font-size:13px;">«Как заказать?»</td>
+            <td style="font-size:13px;">Готов. Не тянуть</td>
+            <td style="font-size:13px;">Ответить в течение часа. Дать инструкцию заказа. Уточнить что именно и какой объём</td>
+          </tr>
+          <tr>
+            <td style="font-style:italic; font-size:13px;">«А [конкретное масло] есть в наличии?»</td>
+            <td style="font-size:13px;">Определился с выбором</td>
+            <td style="font-size:13px;">Подтвердить наличие. Если нет — альтернатива и срок появления</td>
+          </tr>
+          <tr>
+            <td style="font-style:italic; font-size:13px;">«Как правильно принимать [масло]?»</td>
+            <td style="font-size:13px;">Уже хочет, нужна инструкция перед покупкой</td>
+            <td style="font-size:13px;">Дать протокол. Спросить «для какой задачи?» Предложить 100 мл</td>
+          </tr>
+          <tr>
+            <td style="font-style:italic; font-size:13px;">«А можно набор?»</td>
+            <td style="font-size:13px;">Высокий средний чек, готов к покупке</td>
+            <td style="font-size:13px;">Предложить конкретный набор под задачу (Здоровье или Кухня). Объяснить каждое масло</td>
+          </tr>
+          <tr>
+            <td style="font-style:italic; font-size:13px;">«Хочу повторить заказ»</td>
+            <td style="font-size:13px;">Повторная покупка — подтверждение лояльности</td>
+            <td style="font-size:13px;">Уточнить: «То же самое? Или хотите попробовать что-то ещё?». Быстро оформить</td>
+          </tr>
+          <tr>
+            <td style="font-style:italic; font-size:13px;">«Можно в подарок упаковать?»</td>
+            <td style="font-size:13px;">Подарочный сценарий + готов заплатить больше</td>
+            <td style="font-size:13px;">Предложить набор. Уточнить для кого (под задачу или под кухню). Красиво собрать</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- 4. БАРЬЕРЫ -->
+<section class="section fade-up" id="barriers" style="background:#fff;">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-label">4. Барьеры</div>
+      <h2 class="section-title">Фразы-сигналы барьеров</h2>
+      <p class="section-sub">Сомневается или уходит. Вот как это звучит, что за этим стоит и как ответить.</p>
+    </div>
+    <div class="table-wrap fade-up">
+      <table>
+        <thead>
+          <tr>
+            <th>Фраза-барьер</th>
+            <th>Что на самом деле</th>
+            <th>Как ответить Кириллу</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td style="font-style:italic; font-size:13px; font-weight:600;">«Вернусь в следующий раз, ещё есть»</td>
+            <td style="font-size:13px;">Не понял отличия. Скрытое «дорого». Нет ощущения срочности</td>
+            <td style="font-size:13px;">«Хорошо! Попробуйте прямо сейчас на кончике ложки. И вот QR на канал — пишу когда свежая партия. Когда решите — напишете.» Главное: не давить + QR</td>
+          </tr>
+          <tr>
+            <td style="font-style:italic; font-size:13px; font-weight:600;">«Похожу по рынку, подумаю»</td>
+            <td style="font-size:13px;">Не получил достаточно доказательств. Нужно разрешение от партнёра</td>
+            <td style="font-size:13px;">«Конечно! Обратите внимание на одну вещь — дата отжима. Если её нет — масло может стоять полгода. У меня — вот дата. И QR на канал.» Дать критерий, который работает на Кирилла</td>
+          </tr>
+          <tr>
+            <td style="font-style:italic; font-size:13px; font-weight:600;">«А почему так дорого?» (или уход молча)</td>
+            <td style="font-size:13px;">Сравнивает с рафинированным (200 ₽/л). Не понял фрейм: нутрицевтик, а не бакалея</td>
+            <td style="font-size:13px;">«Из кг семян тмина — 200 мл масла. Остальное — жмых. Для сравнения: капсулы Омега — 1 200 за месяц. Бутылка льняного — те же деньги, но живое.» Не оправдываться — объяснять</td>
+          </tr>
+          <tr>
+            <td style="font-style:italic; font-size:13px; font-weight:600;">«Горькое — значит испорченное!»</td>
+            <td style="font-size:13px;">Не знает: для тмина горечь = норма (тимохинон), для льна = проблема (окисление)</td>
+            <td style="font-size:13px;"><strong>Тмин:</strong> «Горечь = тимохинон, именно ради него и пьют. Запейте тёплой водой с мёдом.» <strong>Лён:</strong> «Для льна горечь = окислилось. Привезите — разберёмся.» Два разных ответа!</td>
+          </tr>
+          <tr>
+            <td style="font-style:italic; font-size:13px; font-weight:600;">«Месяц пила — ничего не изменилось»</td>
+            <td style="font-size:13px;">Ожидание быстрого результата при медленном механизме. Цикл роста волоса — 60 дней</td>
+            <td style="font-size:13px;">«Масло — не таблетка. Цикл роста волоса — 60 дней. Новые волосы уже получают питание. Если через 60 дней нет разницы — тогда обсудим.» Честный срок + механизм</td>
+          </tr>
+          <tr>
+            <td style="font-style:italic; font-size:13px; font-weight:600;">«Можно ли детям?» (без ответа — уходит)</td>
+            <td style="font-size:13px;">Для С2 это ключевой вопрос. Без конкретики — вся воронка закрыта</td>
+            <td style="font-size:13px;">«Льняное — с 3 лет, пол чайной ложки в кашу. Кедровое — аналогично. Если аллергия на орехи — кедровое не стоит. В остальном — безопасно, это еда, не добавка.» Конкретный возраст, доза, способ</td>
+          </tr>
+          <tr>
+            <td style="font-style:italic; font-size:13px; font-weight:600;">«Это как машинное масло» / «Это отрава»</td>
+            <td style="font-size:13px;">Пришёл с ожиданием лекарства и столкнулся с непривычным вкусом. Или проецирует плохой опыт</td>
+            <td style="font-size:13px;">«Давайте разберёмся — какое масло, дата на этикетке? Тмин действительно жжёт — это тимохинон. Если непереносимо — попробуйте кедровое, там мягче.» Не защищаться — разбираться</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- 5. АНТИСЛОВА -->
+<section class="section fade-up" id="antislova">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-label">5. Антислова</div>
+      <h2 class="section-title">Антислова — чего категорически не говорить</h2>
+      <p class="section-sub">Проверено через DR ЦА и brand/voice-style. Эти слова вызывают отторжение у аудитории Кирилла.</p>
+    </div>
+
+    <div class="section-label" style="margin-bottom:16px; background:#fee2e2; color:#991b1b;">Категория 1: Маркетинговый восторг</div>
+    <div class="anti-grid fade-up" style="margin-bottom:32px;">
+      <div class="anti-item">
+        <div class="anti-word">«Уникальный продукт»</div>
+        <div class="anti-reason">Все так пишут. Нулевая информация</div>
+        <div class="anti-label">Заменить на:</div>
+        <div class="anti-replace">«Масло, которое давим на гидравлическом прессе при температуре не выше 35 °C»</div>
+      </div>
+      <div class="anti-item">
+        <div class="anti-word">«Экологически чистый»</div>
+        <div class="anti-reason">Размытое, ничего не значит</div>
+        <div class="anti-label">Заменить на:</div>
+        <div class="anti-replace">«Сырьё от проверенного поставщика. Вот откуда, вот какого урожая»</div>
+      </div>
+      <div class="anti-item">
+        <div class="anti-word">«Натуральный» (без уточнения)</div>
+        <div class="anti-reason">Написано на каждой второй бутылке — обесценено</div>
+        <div class="anti-label">Заменить на:</div>
+        <div class="anti-replace">«Одно масло. Одно сырьё. Без смесей. Дата отжима — на бутылке»</div>
+      </div>
+      <div class="anti-item">
+        <div class="anti-word">«Премиум-качество»</div>
+        <div class="anti-reason">Ничего не объясняет. С3 раздражает</div>
+        <div class="anti-label">Заменить на:</div>
+        <div class="anti-replace">«Тёмное стекло. Малый объём. Отжато [дата]»</div>
+      </div>
+      <div class="anti-item">
+        <div class="anti-word">«Инновационная технология»</div>
+        <div class="anti-reason">Прессу 200 лет. Аудитория знает</div>
+        <div class="anti-label">Заменить на:</div>
+        <div class="anti-replace">«Гидравлический пресс — без нагрева, без контакта с металлом»</div>
+      </div>
+    </div>
+
+    <div class="section-label" style="margin-bottom:16px; background:#fee2e2; color:#991b1b;">Категория 2: Давление и дефицит</div>
+    <div class="anti-grid fade-up" style="margin-bottom:32px;">
+      <div class="anti-item">
+        <div class="anti-word">«Купите сейчас!»</div>
+        <div class="anti-reason">Кирилл не давит — это его сила</div>
+        <div class="anti-label">Заменить на:</div>
+        <div class="anti-replace">«Если интересно — напишите, подберём»</div>
+      </div>
+      <div class="anti-item">
+        <div class="anti-word">«Только сегодня! Последний шанс!»</div>
+        <div class="anti-reason">Аудитория 30–60 лет видела это 1000 раз</div>
+        <div class="anti-label">Заменить на:</div>
+        <div class="anti-replace">«Свежая партия — отжато [дата]. Следующая через 2 недели»</div>
+      </div>
+      <div class="anti-item">
+        <div class="anti-word">«Скидка 50%»</div>
+        <div class="anti-reason">Для премиум-нутрицевтика — сигнал что что-то не так</div>
+        <div class="anti-label">Заменить на:</div>
+        <div class="anti-replace">Не делать скидок. Предложить 100 мл на пробу</div>
+      </div>
+      <div class="anti-item">
+        <div class="anti-word">«Успейте!» / «Не упустите шанс»</div>
+        <div class="anti-reason">Кричащее. Противоположно тону Кирилла</div>
+        <div class="anti-label">Заменить на:</div>
+        <div class="anti-replace">«Если хотите из свежей партии — напишите до [дата]»</div>
+      </div>
+    </div>
+
+    <div class="section-label" style="margin-bottom:16px; background:#fee2e2; color:#991b1b;">Категория 3: Медицинские обещания</div>
+    <div class="anti-grid fade-up" style="margin-bottom:32px;">
+      <div class="anti-item">
+        <div class="anti-word">«Вылечит» / «Излечивает»</div>
+        <div class="anti-reason">Незаконно (ФАС). Аудитория знает — масло не лекарство</div>
+        <div class="anti-label">Заменить на:</div>
+        <div class="anti-replace">«Поддерживает», «входит в протокол профилактики»</div>
+      </div>
+      <div class="anti-item">
+        <div class="anti-word">«Гарантированный результат»</div>
+        <div class="anti-reason">Невозможно гарантировать. С5 уже разочарована обещаниями</div>
+        <div class="anti-label">Заменить на:</div>
+        <div class="anti-replace">«Большинство замечают изменения к концу второго месяца»</div>
+      </div>
+      <div class="anti-item">
+        <div class="anti-word">«Панацея» / «Чудо-средство»</div>
+        <div class="anti-reason">brand/voice-style прямо запрещает</div>
+        <div class="anti-label">Заменить на:</div>
+        <div class="anti-replace">«Инструмент. Не чудо. Работает при регулярности»</div>
+      </div>
+      <div class="anti-item">
+        <div class="anti-word">«Лучше, чем таблетки»</div>
+        <div class="anti-reason">Опасное сравнение — нельзя противопоставлять медицине</div>
+        <div class="anti-label">Заменить на:</div>
+        <div class="anti-replace">«Другой подход: не вместо врача, а вместе с рекомендациями»</div>
+      </div>
+    </div>
+
+    <div class="section-label" style="margin-bottom:16px; background:#fee2e2; color:#991b1b;">Категория 4: Эзотерика и пафос</div>
+    <div class="anti-grid fade-up">
+      <div class="anti-item">
+        <div class="anti-word">«Энергия природы»</div>
+        <div class="anti-reason">Эзотерика. Биохакеры — скептики</div>
+        <div class="anti-label">Заменить на:</div>
+        <div class="anti-replace">«Тимохинон — вещество в составе, которое [конкретный эффект]»</div>
+      </div>
+      <div class="anti-item">
+        <div class="anti-word">«Магия отжима» / «Сила семян»</div>
+        <div class="anti-reason">Противоположно инженерному позиционированию Кирилла</div>
+        <div class="anti-label">Заменить на:</div>
+        <div class="anti-replace">«Гидравлический пресс, температура не выше 35 °C»</div>
+      </div>
+      <div class="anti-item">
+        <div class="anti-word">«Живительная сила»</div>
+        <div class="anti-reason">Звучит как реклама БАДов из телемагазина</div>
+        <div class="anti-label">Заменить на:</div>
+        <div class="anti-replace">«Свежее масло — в нём всё то, ради чего его и берут»</div>
+      </div>
+      <div class="anti-item">
+        <div class="anti-word">«Секрет здоровья»</div>
+        <div class="anti-reason">Нет секретов. Есть информация и дисциплина</div>
+        <div class="anti-label">Заменить на:</div>
+        <div class="anti-replace">«Протокол: ложка натощак, 30 дней. Вот что можно ожидать»</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 6. ГОТОВЫЕ ФОРМУЛИРОВКИ -->
+<section class="section fade-up" id="formulas" style="background:#fff;">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-label">6. Формулировки</div>
+      <h2 class="section-title">Готовые формулировки — брать напрямую</h2>
+      <p class="section-sub">Написаны языком аудитории и в тоне Кирилла. Можно использовать в постах, описаниях, ответах в личке.</p>
+    </div>
+
+    <div class="grid-2">
+      <div class="formula-card fade-up">
+        <div class="formula-title">Масло тмина — хук</div>
+        <div class="formula-hook">Врач сказал «попейте масло тмина». Вы открыли маркетплейс — 47 позиций. Одна женщина пишет «горлодер». Другой — «моментально включает мозг». Как понять, кому верить?</div>
+        <div class="formula-title" style="margin-top:16px;">Про горечь тмина</div>
+        <div class="formula-hook">Тмин горчит и жжёт — это тимохинон, активное вещество. Именно ради него масло и пьют. Если тмин не горчит — значит, разбавили или масло старое. Для первого раза: начните с половины чайной ложки, запейте тёплой водой с мёдом.</div>
+        <div class="formula-title" style="margin-top:16px;">Протокол приёма</div>
+        <div class="formula-hook">Как принимать: 1 чайная ложка натощак за 20 минут до еды. Курс — 30 дней, потом перерыв 2 недели. Если желудок чувствительный — первые 3 дня принимайте после еды.</div>
+      </div>
+
+      <div class="formula-card fade-up">
+        <div class="formula-title">Льняное — хук</div>
+        <div class="formula-hook">Капсулы Омега-3 из аптеки — 1 200 рублей на месяц. Бутылка льняного масла — хватает на 25 дней. Те же Омега-3, но живые, не синтетические. И без рыбной отрыжки.</div>
+        <div class="formula-title" style="margin-top:16px;">Про хранение льняного</div>
+        <div class="formula-hook">Три правила хранения льняного масла: 1) После вскрытия — в холодильник. 2) Тёмная бутылка или обернуть фольгой. 3) Использовать за 4–6 недель. Без этих правил — 850 рублей в мусор.</div>
+        <div class="formula-title" style="margin-top:16px;">Про горечь льняного</div>
+        <div class="formula-hook">Льняное горчит — значит, окислилось. Для льна горечь это НЕ норма (в отличие от тмина). Если ваше льняное горчит — его пить не стоит.</div>
+      </div>
+
+      <div class="formula-card fade-up">
+        <div class="formula-title">Кедровое/грецкое — хук для кухни</div>
+        <div class="formula-hook">Оливковое на всё — как соль: необходимо, но без характера. Четыре масла, которые добавят вашей кухне новый слой.</div>
+        <div class="formula-title" style="margin-top:16px;">Применения</div>
+        <div class="formula-hook">Кедровое — на пасту, на финиш. Нежно-ореховый привкус, не перебивает блюдо.<br>Грецкое — с горькой зеленью, рукколой и сыром.<br>Кунжутное — для азиатских блюд, вок.<br>Миндальное — к десертам, выпечке, утренним тостам.</div>
+        <div class="formula-title" style="margin-top:16px;">Стабильность вкуса</div>
+        <div class="formula-hook">Знаю, что бесит в масле больше всего — нестабильный вкус. У меня малые партии. Каждая — с датой отжима. Если вкус отличается — напишите, разберёмся.</div>
+      </div>
+
+      <div class="formula-card fade-up">
+        <div class="formula-title">Миндальное — хук (красота)</div>
+        <div class="formula-hook">Кремы работают пока мажешь. Перестала — всё вернулось. А если начать изнутри?</div>
+        <div class="formula-title" style="margin-top:16px;">Протокол для волос</div>
+        <div class="formula-hook">Миндальное масло — 1 чайная ложка в день. Можно натощак, можно в йогурт или смузи. Курс — 60 дней. Почему 60? Цикл роста волоса. Новые волосы, которые сейчас растут, получат питание. Результат станет виден когда они вырастут.</div>
+        <div class="formula-title" style="margin-top:16px;">Честные ожидания</div>
+        <div class="formula-hook">Через месяц — скорее всего, ничего не заметите. Это нормально. К концу второго месяца — посмотрите на ногти и расчёску. Не чудо. Но при регулярности — работает.</div>
+      </div>
+
+      <div class="formula-card fade-up">
+        <div class="formula-title">Про производство — пресс</div>
+        <div class="formula-hook">Гидравлический пресс. Без нагрева — температура не выше 35 °C. Без контакта с металлом. Шнековый пресс нагревает и окисляет масло — поэтому мы используем гидравлику.</div>
+        <div class="formula-title" style="margin-top:16px;">Про объём</div>
+        <div class="formula-hook">Из 1 кг семян тмина — 200 мл масла. Из 1 кг тыквенных семян — ещё меньше. Остальное — жмых. Поэтому такая цена — не наценка, а арифметика.</div>
+        <div class="formula-title" style="margin-top:16px;">Про дату</div>
+        <div class="formula-hook">На каждой бутылке — дата отжима. Не «свежее». Не «этого месяца». Конкретный день. Потому что прозрачность — не маркетинг, а стандарт.</div>
+      </div>
+
+      <div class="formula-card fade-up">
+        <div class="formula-title">Ответы в личке</div>
+        <div class="formula-hook" style="margin-bottom:10px;"><strong>На «как принимать?»:</strong> Зависит от задачи. Для чего хотите принимать? Напишите — подберу масло и протокол.</div>
+        <div class="formula-hook" style="margin-bottom:10px;"><strong>На «можно ли детям?»:</strong> Льняное — с 3 лет, пол чайной ложки в кашу или йогурт. Кедровое — аналогично. Ребёнок вкуса не заметит. Если аллергия на орехи — кедровое не стоит.</div>
+        <div class="formula-hook" style="margin-bottom:10px;"><strong>Ремайндер (21–25 дней):</strong> Добрый день! Как масло — заканчивается? Если нужна свежая бутылка — напишите, отложу из новой партии.</div>
+        <div class="formula-hook"><strong>На «не вижу эффекта»:</strong> Сколько дней принимаете? Для структурных изменений (волосы, ногти) нужно минимум 60 дней — это цикл роста. Если через 60 дней нет разницы — обсудим.</div>
+      </div>
+    </div>
+
+    <!-- Язык по каналам -->
+    <div class="section-header" style="margin-top:48px;">
+      <div class="section-label">Язык по каналам</div>
+      <h2 class="section-title">Как адаптировать по каналу</h2>
+    </div>
+    <div class="grid-3 fade-up">
+      <div class="channel-card">
+        <div class="channel-title">Рынок (живой разговор)</div>
+        <div class="channel-sub">Тёплый, спокойный, уверенный. Кирилл — проводник, не продавец.</div>
+        <div class="channel-phrase">«Попробуйте на кончике ложки»</div>
+        <div class="channel-phrase">«Горечь — это нормально, вот почему...»</div>
+        <div class="channel-phrase">«Если не понравится — не берите. Вот QR»</div>
+        <div class="channel-phrase">«Отжато [конкретная дата]»</div>
+        <div class="channel-phrase">«Из килограмма получается 200 мл»</div>
+        <div class="channel-dont-title">Не говорить на рынке:</div>
+        <div class="channel-dont-item">Длинные монологи о пользе</div>
+        <div class="channel-dont-item">Медицинские термины без контекста</div>
+        <div class="channel-dont-item">«Берите, не пожалеете» — давление</div>
+      </div>
+      <div class="channel-card">
+        <div class="channel-title">Telegram-канал</div>
+        <div class="channel-sub">Экспертный, но тёплый. Факты + личный голос. 500–1500 знаков.</div>
+        <div class="channel-phrase">«Льняное масло — рекордсмен по Омега-3. Но не все знают, что...»</div>
+        <div class="channel-phrase">«Почему тмин жжёт — и почему это хорошо»</div>
+        <div class="channel-phrase">«Если есть вопросы — напишите в личку»</div>
+        <div class="channel-phrase">«Сегодня давили тыквенное. Из 5 кг — 1 литр. Вот видео»</div>
+        <div class="channel-dont-title">Не писать в канале:</div>
+        <div class="channel-dont-item">«Доброе утро, друзья!»</div>
+        <div class="channel-dont-item">Посты без «почему» — только «что»</div>
+        <div class="channel-dont-item">Эмодзи-салат (макс. 2–3)</div>
+      </div>
+      <div class="channel-card">
+        <div class="channel-title">Личные сообщения</div>
+        <div class="channel-sub">Дружественно-профессиональный. Как разговор с проверенным специалистом.</div>
+        <div class="channel-phrase">«Добрый день! Для какой задачи ищете масло?»</div>
+        <div class="channel-phrase">«Как масло? Заканчивается?» (ремайндер)</div>
+        <div class="channel-phrase">«А вы сами как себя чувствуете? Замечаете что-то?» (С2→С5)</div>
+        <div class="channel-phrase">«Если что-то не так — напишите, разберёмся»</div>
+        <div class="channel-dont-title">Не писать в личке:</div>
+        <div class="channel-dont-item">Рассылка без повода</div>
+        <div class="channel-dont-item">«У нас акция!»</div>
+        <div class="channel-dont-item">Игнорировать вопросы</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="container">
+    <div class="footer-inner">
+      <img src="../../assets/logo-horizontal-dark.png" alt="Магия Масел" style="height:32px; width:auto; opacity:.7;">
+      <div class="footer-meta">
+        <div class="footer-meta-item">
+          <span class="footer-meta-label">Клиент</span>
+          <span class="footer-meta-value">Кирилл Бродский</span>
+        </div>
+        <div class="footer-meta-item">
+          <span class="footer-meta-label">Документ</span>
+          <span class="footer-meta-value">M4 · 7 из 8</span>
+        </div>
+        <div class="footer-meta-item">
+          <span class="footer-meta-label">Версия</span>
+          <span class="footer-meta-value">1.0 (Opus) · 31.03.2026</span>
+        </div>
+        <div class="footer-meta-item">
+          <span class="footer-meta-label">Источники</span>
+          <span class="footer-meta-value">M2 DR ЦА + KASTDEV + PAIN-MAP + brand/voice-style</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script>
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) entry.target.classList.add('visible');
+    });
+  }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+
+  document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
+</script>
+</body>
+</html>

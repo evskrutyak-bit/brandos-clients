@@ -1,0 +1,1072 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>M5-P06 · Микроконкуренты — Кластер стартовой стадии</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --primary: #0ea5e9;
+      --primary-light: rgba(14,165,233,.08);
+      --border: #1C1C1E;
+      --border-light: #e5e7eb;
+      --radius: 4px;
+      --text: #111827;
+      --text-muted: #6b7280;
+      --bg: #ffffff;
+      --section-bg: #f9fafb;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      font-size: 15px;
+      line-height: 1.65;
+      color: var(--text);
+      background: var(--bg);
+    }
+
+    /* NAV */
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(255,255,255,.97);
+      border-bottom: 1px solid var(--border-light);
+      backdrop-filter: blur(8px);
+    }
+    .nav-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 32px;
+      height: 56px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+    }
+    .nav-brand {
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      color: var(--primary);
+      white-space: nowrap;
+    }
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+    .nav-links a {
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--text-muted);
+      text-decoration: none;
+      white-space: nowrap;
+      transition: color .2s;
+    }
+    .nav-links a:hover { color: var(--primary); }
+
+    /* CONTAINER */
+    .container { max-width: 1200px; margin: 0 auto; padding: 0 32px; }
+
+    /* HERO */
+    .hero {
+      background: linear-gradient(135deg, rgba(255,255,255,.98) 0%, rgba(240,249,255,.95) 100%);
+      border-bottom: 1px solid var(--border-light);
+      padding: 64px 0 48px;
+    }
+    .hero-meta {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+    .hero-tag {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: var(--primary);
+      background: var(--primary-light);
+      padding: 4px 10px;
+      border-radius: var(--radius);
+    }
+    .hero-date {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+    .hero h1 {
+      font-size: clamp(28px, 4vw, 42px);
+      font-weight: 700;
+      line-height: 1.2;
+      margin-bottom: 12px;
+      color: var(--border);
+    }
+    .hero-sub {
+      font-size: 16px;
+      color: var(--text-muted);
+      max-width: 680px;
+      margin-bottom: 32px;
+    }
+    .hero-stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 16px;
+      max-width: 860px;
+    }
+    .stat-card {
+      background: #fff;
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius);
+      padding: 16px 20px;
+    }
+    .stat-card .stat-label {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+    }
+    .stat-card .stat-value {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--border);
+      line-height: 1.2;
+    }
+    .stat-card .stat-note {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-top: 3px;
+    }
+
+    /* SECTION */
+    section { padding: 56px 0; border-bottom: 1px solid var(--border-light); }
+    section:last-of-type { border-bottom: none; }
+
+    .section-header {
+      margin-bottom: 32px;
+      padding-top: 4px;
+      border-top: 3px solid transparent;
+      border-image: repeating-linear-gradient(90deg, var(--primary) 0, var(--primary) 8px, transparent 8px, transparent 16px) 1;
+    }
+    .section-tag {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: var(--primary);
+      margin-bottom: 8px;
+    }
+    .section-header h2 {
+      font-size: clamp(20px, 2.5vw, 28px);
+      font-weight: 700;
+      color: var(--border);
+    }
+    .section-header p {
+      margin-top: 8px;
+      color: var(--text-muted);
+      max-width: 640px;
+    }
+
+    /* GRID */
+    .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+    @media (max-width: 768px) {
+      .grid-2, .grid-3 { grid-template-columns: 1fr; }
+    }
+
+    /* CARD */
+    .card {
+      background: #fff;
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius);
+      padding: 24px;
+    }
+    .card h3 {
+      font-size: 15px;
+      font-weight: 600;
+      margin-bottom: 12px;
+      color: var(--border);
+    }
+    .card p { color: var(--text-muted); font-size: 14px; }
+
+    /* HIGHLIGHT BOX */
+    .highlight-box {
+      background: var(--primary-light);
+      border-left: 4px solid var(--primary);
+      border-radius: var(--radius);
+      padding: 20px 24px;
+      margin: 20px 0;
+    }
+    .highlight-box h4 {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--primary);
+      margin-bottom: 8px;
+    }
+    .highlight-box p, .highlight-box li {
+      font-size: 14px;
+      color: var(--text);
+    }
+    .highlight-box ul { padding-left: 18px; }
+    .highlight-box li { margin-bottom: 4px; }
+
+    /* WARNING BLOCK */
+    .warning-block {
+      background: #fef2f2;
+      border-left: 4px solid #ef4444;
+      border-radius: var(--radius);
+      padding: 20px 24px;
+      margin: 20px 0;
+    }
+    .warning-block h4 {
+      font-size: 14px;
+      font-weight: 600;
+      color: #dc2626;
+      margin-bottom: 8px;
+    }
+    .warning-block p, .warning-block li {
+      font-size: 14px;
+      color: var(--text);
+    }
+    .warning-block ul { padding-left: 18px; }
+    .warning-block li { margin-bottom: 4px; }
+
+    /* TABLE */
+    .table-wrapper {
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius);
+      overflow-x: auto;
+      margin: 20px 0;
+    }
+    table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+    thead { background: var(--section-bg); }
+    th {
+      text-align: left;
+      padding: 10px 14px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      border-bottom: 1px solid var(--border-light);
+      white-space: nowrap;
+    }
+    td {
+      padding: 10px 14px;
+      border-bottom: 1px solid var(--border-light);
+      color: var(--text);
+      vertical-align: top;
+    }
+    tr:last-child td { border-bottom: none; }
+    tr:nth-child(even) td { background: #fafafa; }
+
+    /* LIST STYLED */
+    .list-styled { list-style: none; padding: 0; }
+    .list-styled li {
+      padding: 6px 0 6px 22px;
+      position: relative;
+      font-size: 14px;
+      color: var(--text);
+      border-bottom: 1px solid var(--border-light);
+    }
+    .list-styled li:last-child { border-bottom: none; }
+    .list-styled li::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 13px;
+      width: 8px;
+      height: 8px;
+      background: var(--primary);
+      border-radius: 50%;
+    }
+
+    /* PLAYER CARD */
+    .player-card {
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius);
+      margin-bottom: 32px;
+      overflow: hidden;
+    }
+    .player-header {
+      background: var(--section-bg);
+      border-bottom: 1px solid var(--border-light);
+      padding: 20px 24px;
+    }
+    .player-header-top {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 8px;
+    }
+    .player-number {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: var(--primary);
+      margin-bottom: 4px;
+    }
+    .player-header h3 {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--border);
+    }
+    .player-meta {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+    .player-body { padding: 24px; }
+    .player-section { margin-bottom: 20px; }
+    .player-section h4 {
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 10px;
+    }
+
+    /* BADGE */
+    .badge {
+      display: inline-block;
+      font-size: 11px;
+      font-weight: 600;
+      padding: 2px 8px;
+      border-radius: 20px;
+      margin: 2px;
+    }
+    .badge-green { background: #dcfce7; color: #166534; }
+    .badge-red { background: #fee2e2; color: #991b1b; }
+    .badge-blue { background: #dbeafe; color: #1e40af; }
+    .badge-amber { background: #fef3c7; color: #92400e; }
+    .badge-gray { background: #f3f4f6; color: #374151; }
+
+    /* THREAT LEVEL */
+    .threat-badge {
+      display: inline-block;
+      font-size: 11px;
+      font-weight: 600;
+      padding: 4px 12px;
+      border-radius: var(--radius);
+    }
+    .threat-low { background: #dcfce7; color: #166534; }
+    .threat-medium { background: #fef3c7; color: #92400e; }
+    .threat-high { background: #fee2e2; color: #991b1b; }
+
+    /* GAP ITEM */
+    .gap-item {
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius);
+      margin-bottom: 16px;
+      overflow: hidden;
+    }
+    .gap-header {
+      background: var(--primary-light);
+      border-bottom: 1px solid var(--border-light);
+      padding: 12px 20px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .gap-num {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--primary);
+      background: rgba(14,165,233,.15);
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .gap-header h4 {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--primary);
+    }
+    .gap-body { padding: 16px 20px; }
+    .gap-body p { font-size: 13.5px; color: var(--text); }
+
+    /* FOOTER */
+    footer {
+      background: var(--section-bg);
+      border-top: 1px solid var(--border-light);
+      padding: 32px 0;
+    }
+    .footer-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 32px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    .footer-brand {
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      color: var(--primary);
+    }
+    .footer-meta {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+    .footer-meta span { margin: 0 6px; opacity: .4; }
+
+    p + p { margin-top: 10px; }
+    h3 + p { margin-top: 8px; }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-inner">
+    <div class="nav-brand">BrandOS · M5-P06</div>
+    <div class="nav-links">
+      <a href="#selection">Отбор</a>
+      <a href="#players">Игроки</a>
+      <a href="#patterns">Паттерны</a>
+      <a href="#gaps">Пробелы</a>
+    </div>
+  </div>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="container">
+    <div class="hero-meta">
+      <span class="hero-tag">M5 · Артефакт 2b</span>
+      <span class="hero-date">Версия 1.0 · Апрель 2026</span>
+    </div>
+    <h1>Кластер микроконкурентов</h1>
+    <p class="hero-sub">6 игроков стартовой стадии · Паттерны выживания · Пробелы, которые никто не закрывает · Модели для Кирилла</p>
+    <div class="hero-stats">
+      <div class="stat-card">
+        <div class="stat-label">Игроков в кластере</div>
+        <div class="stat-value">6</div>
+        <div class="stat-note">из 10+ проверенных</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Диапазон выручки</div>
+        <div class="stat-value">200К–8М ₽</div>
+        <div class="stat-note">в год (расчёт)</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Города</div>
+        <div class="stat-value">6 регионов</div>
+        <div class="stat-note">МО, Екб, Влад, Тамбов, Оренбург, Самара</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Пробелов рынка</div>
+        <div class="stat-value">5 ключевых</div>
+        <div class="stat-note">незанятых позиций</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SELECTION -->
+<section id="selection">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-tag">01 · Таблица отбора</div>
+      <h2>Проверено 10+ кандидатов — в финальный список 6</h2>
+    </div>
+
+    <div class="table-wrapper">
+      <table>
+        <thead>
+          <tr>
+            <th>№</th>
+            <th>Название / Аккаунт</th>
+            <th>Город</th>
+            <th>Каналы</th>
+            <th>Оценка выручки</th>
+            <th>Что интересного</th>
+            <th>Почему в списке</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>1</td>
+            <td><strong>Семя Жизни</strong><br/>@semyazhizni_oil</td>
+            <td>Боровск (МО)</td>
+            <td>Instagram, Telegram, сайт lifeseedoils.ru</td>
+            <td>~600К–2М ₽/год</td>
+            <td>Семейная пара, с 2020, 20+ видов, блог в TG</td>
+            <td>Та же стадия, D2C, отжим под заказ, СДЭК</td>
+          </tr>
+          <tr>
+            <td>2</td>
+            <td><strong>С.Маслодел</strong><br/>smaslodel.ru</td>
+            <td>Екатеринбург / Березовский</td>
+            <td>Сайт, офлайн-точки ПолонАмбар, СДЭК</td>
+            <td>~1–3М ₽/год</td>
+            <td>Премиальный ценник, офлайн + интернет-магазин</td>
+            <td>Гибридная модель: розница + сайт</td>
+          </tr>
+          <tr>
+            <td>3</td>
+            <td><strong>YASNO MASLO</strong><br/>@yasno_maslo</td>
+            <td>Владивосток (предположительно)</td>
+            <td>Instagram, Telegram, WhatsApp, сайт yasnomaslo.ru</td>
+            <td>~500К–1,5М ₽/год</td>
+            <td>Катя, личный бренд, сайт на Tilda, жмыхи + масла</td>
+            <td>D2C на личном бренде, хорошая упаковка смысла</td>
+          </tr>
+          <tr>
+            <td>4</td>
+            <td><strong>Тамбовский МаслоделЪ</strong><br/>@tambovskiy.maslodel</td>
+            <td>Тамбов</td>
+            <td>Сайт, Instagram, VK, Telegram, WB, офлайн-магазин</td>
+            <td>~3–8М ₽/год</td>
+            <td>ИП Домнышева, с 2022, 50+ SKU, AVPA Paris</td>
+            <td>Ближайшая следующая стадия для Кирилла</td>
+          </tr>
+          <tr>
+            <td>5</td>
+            <td><strong>Mladost (Младость)</strong><br/>@mladost.ru</td>
+            <td>Оренбург</td>
+            <td>Instagram, ВКонтакте, VK-маркет</td>
+            <td>~300К–1М ₽/год</td>
+            <td>Вячеслав и Наталья, только на заказ, сертифицировано</td>
+            <td>Классический микро-старт: VK + Instagram, без сайта</td>
+          </tr>
+          <tr>
+            <td>6</td>
+            <td><strong>Сыродавленное масло Самара</strong><br/>@sirodav_maslo</td>
+            <td>Самара</td>
+            <td>Instagram</td>
+            <td>~200К–700К ₽/год</td>
+            <td>15 видов, дубовый пресс, доставка по РФ</td>
+            <td>Минимальная цифровая упаковка</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- PLAYERS -->
+<section id="players">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-tag">02 · Карточки игроков</div>
+      <h2>6 подробных профилей</h2>
+    </div>
+
+    <!-- PLAYER 1 -->
+    <div class="player-card">
+      <div class="player-header">
+        <div class="player-number">01 · Боровск, Калужская обл.</div>
+        <div class="player-header-top">
+          <div>
+            <h3>Семя Жизни</h3>
+            <div class="player-meta">lifeseedoils.ru · Instagram @semyazhizni_oil · Telegram t.me/semyazhizni · с 2020 г.</div>
+          </div>
+          <span class="threat-badge threat-medium">Угроза: косвенная</span>
+        </div>
+      </div>
+      <div class="player-body">
+        <div class="grid-2">
+          <div class="player-section">
+            <h4>Каналы и модель</h4>
+            <ul class="list-styled">
+              <li>Instagram + Telegram + сайт (Tilda) + СДЭК</li>
+              <li>Производство под заказ (3–5 дней), затем СДЭК или курьер по Боровску/Обнинску</li>
+              <li>Заказ с 100% предоплатой через форму сайта</li>
+              <li>Оценка выручки: ~600К–2М ₽/год</li>
+            </ul>
+          </div>
+          <div class="player-section">
+            <h4>Продуктовая матрица</h4>
+            <ul class="list-styled">
+              <li>20+ видов сыродавленного масла (лён, тыква, кунжут, облепиха, подсолнечник и др.)</li>
+              <li>Дополнительно: травяные чаи, пасты (урбеч), мёд, ферментированный уксус</li>
+              <li>Льняное: 400 ₽/250 мл · Тыквенное: 800 ₽ · Подсолнечное: 700 ₽</li>
+              <li>Паста лён-облепиха: 700 ₽/250 мл · Бесплатная доставка от 6 000 ₽</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="grid-2" style="margin-top: 12px;">
+          <div class="player-section">
+            <h4>Что делает хорошо</h4>
+            <ul class="list-styled">
+              <li><strong>Личная история основателей:</strong> Андрей и Дарья Степановы — «семейная мануфактура». Лицо и история работают как элемент доверия</li>
+              <li><strong>Расширение корзины:</strong> масло — не единственный продукт. Чаи, пасты, уксус, мёд повышают средний чек</li>
+              <li><strong>Telegram как образовательный канал</strong> — не просто витрина, а контентный проект по осознанному питанию</li>
+              <li><strong>Производство под заказ</strong> → всегда свежий продукт → маркетинговый аргумент</li>
+            </ul>
+          </div>
+          <div class="player-section">
+            <h4>Что делает плохо / чего нет</h4>
+            <ul class="list-styled">
+              <li>Нет маркетплейсов (Ozon/WB) — ограничивает масштаб</li>
+              <li>Нет видеоконтента о производстве</li>
+              <li>Оформление заказа через форму сайта + ручная обработка — не автоматизировано</li>
+              <li>Прайс не обновлён («прайсы сейчас не совсем актуальны в связи с ростом цен»)</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="highlight-box">
+          <h4>Чему Кирилл может научиться</h4>
+          <p><strong>Расширение корзины работает:</strong> добавление чаёв, паст, мёда к маслам — логичный апселл с теми же ценностями. Кириллу не нужно ждать большой аудитории, чтобы поднять средний чек — нужно добавить 2–3 смежных продукта уже сейчас.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- PLAYER 2 -->
+    <div class="player-card">
+      <div class="player-header">
+        <div class="player-number">02 · Екатеринбург / Березовский</div>
+        <div class="player-header-top">
+          <div>
+            <h3>С.Маслодел</h3>
+            <div class="player-meta">smaslodel.ru · Офлайн-точки ПолонАмбар · СДЭК · год основания не установлен</div>
+          </div>
+          <span class="threat-badge threat-medium">Угроза: косвенная</span>
+        </div>
+      </div>
+      <div class="player-body">
+        <div class="grid-2">
+          <div class="player-section">
+            <h4>Каналы и модель</h4>
+            <ul class="list-styled">
+              <li>Гибридная: физические точки «ПолонАмбар» + собственный сайт на Flexbe с корзиной</li>
+              <li>Доставка: СДЭК, Почта России, по Екатеринбургу — самовывоз или Яндекс Go</li>
+              <li>Нет соцсетей в видимой зоне — сайт замкнут сам на себя</li>
+              <li>Оценка выручки: ~1–3М ₽/год (офлайн + интернет)</li>
+            </ul>
+          </div>
+          <div class="player-section">
+            <h4>Продуктовая матрица</h4>
+            <ul class="list-styled">
+              <li>16+ видов: миндаль, тыква, лён, кунжут, арахис, горчица, фундук, кешью, конопля, облепиха, амарант и др.</li>
+              <li>Подсолнечное: 250/500 мл ₽ · Льняное: 650 ₽ · Кунжут: 700/1300 ₽</li>
+              <li>Миндаль: 1 600 ₽ · Кедровое: 1 950/3 650 ₽ · Амарантовое: 12 000/20 000 ₽</li>
+              <li>Виноградная косточка: 4 200/8 000 ₽ — рекордный ценник кластера</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="grid-2" style="margin-top: 12px;">
+          <div class="player-section">
+            <h4>Что делает хорошо</h4>
+            <ul class="list-styled">
+              <li><strong>Офлайн + онлайн симбиоз:</strong> точки в ретейле дают постоянный поток, сайт — доставку по РФ</li>
+              <li><strong>Самый широкий ассортимент из кластера</strong> — 20 SKU, включая редкие позиции (амарант, виноградная косточка)</li>
+              <li><strong>Описания работают на продажу</strong> — каждое масло с конкретными сценариями: кулинария / кожа / спорт / здоровье</li>
+            </ul>
+          </div>
+          <div class="player-section">
+            <h4>Что делает плохо / чего нет</h4>
+            <ul class="list-styled">
+              <li>Нет соцсетей — сайт замкнут сам на себя, нет трафика извне</li>
+              <li>Нет маркетплейсов</li>
+              <li>Год основания и личная история основателя — отсутствуют на сайте</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="highlight-box">
+          <h4>Чему Кирилл может научиться</h4>
+          <p><strong>Описание через сценарий использования, а не через состав.</strong> У С.Маслодела каждое масло — не «богато Омега-3», а «для кухни — мягкий вкус, для кожи — разглаживает морщины, для спорта — восстанавливает мышцы». Кириллу стоит взять этот формат за образец для карточек товаров на сайте и в Telegram.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- PLAYER 3 -->
+    <div class="player-card">
+      <div class="player-header">
+        <div class="player-number">03 · Владивосток (предположительно)</div>
+        <div class="player-header-top">
+          <div>
+            <h3>YASNO MASLO</h3>
+            <div class="player-meta">yasnomaslo.ru · @yasno_maslo · Telegram yasnomaslo_vld · WhatsApp +7(977)339-74-83</div>
+          </div>
+          <span class="threat-badge threat-medium">Угроза: косвенная</span>
+        </div>
+      </div>
+      <div class="player-body">
+        <div class="grid-2">
+          <div class="player-section">
+            <h4>Каналы и модель</h4>
+            <ul class="list-styled">
+              <li>Instagram + Telegram + WhatsApp + сайт (Tilda) + СДЭК</li>
+              <li>Контакт через WhatsApp, Telegram или Viber — клиент выбирает</li>
+              <li>Образовательный раздел «Исследования по видам масел» — SEO + доверие</li>
+              <li>Оценка выручки: ~500К–1,5М ₽/год</li>
+            </ul>
+          </div>
+          <div class="player-section">
+            <h4>Продуктовая матрица</h4>
+            <ul class="list-styled">
+              <li>13 видов: подсолнечник, горчица, лён, кунжут, грецкий орех, кокос, миндаль, абрикосовая косточка, чёрный тмин, конопля, расторопша</li>
+              <li>Жмыхи (кокос, кедр, конопля, «салатная смесь») — дополнительный SKU</li>
+              <li>Подсолнечник: 350 ₽ · Лён: 500 ₽ · Кунжут/Грецкий орех: 600 ₽</li>
+              <li>Миндаль/Абрикосовая косточка: 800 ₽ · Чёрный тмин: 1 600 ₽ · Кедр: 2 100 ₽</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="grid-2" style="margin-top: 12px;">
+          <div class="player-section">
+            <h4>Что делает хорошо</h4>
+            <ul class="list-styled">
+              <li><strong>Личный бренд через имя:</strong> «Меня зовут Катя, основатель мастерской» — человеческий контакт, не безликий бренд</li>
+              <li><strong>Образовательный раздел</strong> «Исследования по видам масел» — органический SEO-трафик + доверие</li>
+              <li><strong>Жмыхи как дополнительный SKU</strong> — побочный продукт монетизируется (200–400 ₽/порция) без доп. затрат на сырьё</li>
+              <li><strong>Мультиканальная связь</strong> — клиент выбирает удобный канал</li>
+            </ul>
+          </div>
+          <div class="player-section">
+            <h4>Что делает плохо / чего нет</h4>
+            <ul class="list-styled">
+              <li>Две позиции out of stock (кедр, штирийская тыква) — потеря конверсии</li>
+              <li>Нет маркетплейсов</li>
+              <li>Нет отзывов на сайте</li>
+              <li>Нет описаний пользы под большинством товаров</li>
+              <li>Год основания и история не указаны</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="highlight-box">
+          <h4>Чему Кирилл может научиться</h4>
+          <p><strong>Жмыхи как быстрый апселл.</strong> Побочный продукт производства уже есть — его просто нужно упаковать и включить в заказ. У Кирилла жмых появляется при каждом отжиме — это готовый сопутствующий товар с высокой маржой и нулевыми доп. затратами на сырьё.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- PLAYER 4 -->
+    <div class="player-card">
+      <div class="player-header">
+        <div class="player-number">04 · Тамбов · С 2022 года</div>
+        <div class="player-header-top">
+          <div>
+            <h3>Тамбовский МаслоделЪ</h3>
+            <div class="player-meta">maslodel.press · @tambovskiy.maslodel · VK tambovskiymaslodel · Telegram t.me/tambovskiymaslodel · ИП Домнышева</div>
+          </div>
+          <span class="threat-badge threat-low">Угроза: незначительная (сейчас)</span>
+        </div>
+      </div>
+      <div class="player-body">
+        <div class="grid-2">
+          <div class="player-section">
+            <h4>Каналы и модель</h4>
+            <ul class="list-styled">
+              <li>Омниканальная: физический магазин (бульвар Энтузиастов 2И/1) + WooCommerce + WB + соцсети</li>
+              <li>Экскурсии на производство + дегустации — офлайн лид-магнит</li>
+              <li>WB-старт поздний (май 2025), основной оборот — офлайн + прямые продажи</li>
+              <li>Оценка выручки: ~3–8М ₽/год · 42 отзыва на Яндекс Картах, 125 фото</li>
+            </ul>
+          </div>
+          <div class="player-section">
+            <h4>Продуктовая матрица</h4>
+            <ul class="list-styled">
+              <li>50+ SKU: масла + ПП-десерты + суперфуды + чаи + мука + жмыхи + семена + шоколад + подарочные наборы + сертификаты</li>
+              <li>Кунжутное: 490/1050 ₽ · Конопляное: 650/1400 ₽ · Грецкий орех: 650/1400 ₽</li>
+              <li>Расторопша: 950/2050 ₽ · Кедровое: 1150/2300 ₽ · Чёрный тмин: 1450/3300 ₽</li>
+              <li>WB-ценник (скидки): 875–3 623 ₽</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="grid-2" style="margin-top: 12px;">
+          <div class="player-section">
+            <h4>Что делает хорошо</h4>
+            <ul class="list-styled">
+              <li><strong>Подарочная упаковка как отдельный продукт</strong> — наборы и сертификаты для корпоративных подарков и B2C-сезона</li>
+              <li><strong>Экскурсии с дегустациями</strong> — живой трафик, конверсия в постоянного покупателя</li>
+              <li><strong>Международные награды:</strong> AVPA Paris 3 года подряд — убедительный аргумент премиума</li>
+              <li><strong>Полная экосистема продуктов</strong> — клиент не уходит за смежными товарами</li>
+            </ul>
+          </div>
+          <div class="player-section">
+            <h4>Что делает плохо / чего нет</h4>
+            <ul class="list-styled">
+              <li>Поздно вышли на WB и маркетплейсы — потеряли несколько лет онлайн-охвата</li>
+              <li>Локализованы в Тамбове — без представительств в других городах</li>
+              <li>Сайт технически перегружен (popup с анимацией затрудняет навигацию)</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="highlight-box">
+          <h4>Чему Кирилл может научиться</h4>
+          <p><strong>Подарочные наборы — это отдельный канал продаж.</strong> Не нужно ждать большого ассортимента: набор из 3–5 масел в правильной упаковке — это B2C-подарок на НГ / 8 марта / дни рождения. <strong>Экскурсии на производство</strong> — бесплатный лид-магнит для Кирилла при офлайн-точке или рыночном присутствии. <strong>Тамбовский МаслоделЪ — модель того, чем может стать Кирилл через 2–3 года.</strong></p>
+        </div>
+      </div>
+    </div>
+
+    <!-- PLAYER 5 -->
+    <div class="player-card">
+      <div class="player-header">
+        <div class="player-number">05 · Оренбург</div>
+        <div class="player-header-top">
+          <div>
+            <h3>Mladost (Младость)</h3>
+            <div class="player-meta">@mladost.ru · VK vk.com/mladost_oil · VK-маркет · год основания не установлен</div>
+          </div>
+          <span class="threat-badge threat-low">Угроза: незначительная</span>
+        </div>
+      </div>
+      <div class="player-body">
+        <div class="grid-2">
+          <div class="player-section">
+            <h4>Каналы и модель</h4>
+            <ul class="list-styled">
+              <li>Instagram + ВКонтакте + VK-маркет — только прямые заказы через мессенджер</li>
+              <li>Нет сайта. Только на заказ. Локальная доставка (доставка по РФ не подтверждена)</li>
+              <li>VK-маркет: 14 товаров «Сыродавленное масло» + 17 товаров всего</li>
+              <li>Оценка выручки: ~300К–1М ₽/год</li>
+            </ul>
+          </div>
+          <div class="player-section">
+            <h4>Продуктовая матрица</h4>
+            <ul class="list-styled">
+              <li>Сыродавленные масла без контакта с металлом, давят в бочонках</li>
+              <li>Продукция сертифицирована</li>
+              <li>Смежные позиции: зелёная гречка (органик) — 200 ₽, смесь для салата — 150 ₽</li>
+              <li>Точные виды и цены масел: «уточнять в ЛС» — цены не в открытом доступе</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="grid-2" style="margin-top: 12px;">
+          <div class="player-section">
+            <h4>Что делает хорошо</h4>
+            <ul class="list-styled">
+              <li><strong>Сертификация продукции</strong> — снижает барьер недоверия к домашнему производству</li>
+              <li><strong>Органические дополнения</strong> (зелёная гречка, смесь для салата) — та же ЗОЖ-аудитория покупает всё в одном заказе</li>
+              <li><strong>Ручной труд как ценностное утверждение</strong> — «давим в бочонках» — прямой маркетинговый аргумент</li>
+            </ul>
+          </div>
+          <div class="player-section">
+            <h4>Что делает плохо / чего нет</h4>
+            <ul class="list-styled">
+              <li>Нет сайта — продажи полностью зависят от алгоритмов соцсетей</li>
+              <li>Нет Telegram-канала — самый растущий ЗОЖ-канал не используется</li>
+              <li>Цены не в открытом доступе — «цены уточнять в ЛС» = потеря части аудитории</li>
+              <li>VK-маркет без автоматической обработки заказов</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="highlight-box">
+          <h4>Чему Кирилл может научиться</h4>
+          <p><strong>Сертификация снимает один из главных страхов покупателя</strong> — «а вдруг это самодельный продукт в подвале». Даже при малом бюджете сертификация даёт конкурентный аргумент. <strong>Зелёная гречка и смеси для салата</strong> — простые позиции, которые покупает та же ЗОЖ-аудитория. Кирилл мог бы аналогично добавить 2–3 смежных SKU.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- PLAYER 6 -->
+    <div class="player-card">
+      <div class="player-header">
+        <div class="player-number">06 · Самара</div>
+        <div class="player-header-top">
+          <div>
+            <h3>Сыродавленное масло Самара</h3>
+            <div class="player-meta">@sirodav_maslo · Instagram · год основания не установлен</div>
+          </div>
+          <span class="threat-badge threat-low">Угроза: незначительная</span>
+        </div>
+      </div>
+      <div class="player-body">
+        <div class="grid-2">
+          <div class="player-section">
+            <h4>Каналы и модель</h4>
+            <ul class="list-styled">
+              <li>Instagram как единственный канал — витрина + заказы через Direct</li>
+              <li>Нет сайта, нет VK, нет Telegram</li>
+              <li>Доставка по Самаре и РФ</li>
+              <li>Оценка выручки: ~200К–700К ₽/год</li>
+            </ul>
+          </div>
+          <div class="player-section">
+            <h4>Продуктовая матрица</h4>
+            <ul class="list-styled">
+              <li>15 видов масел</li>
+              <li>Отжим на дубовом прессе — нишевый аргумент качества</li>
+              <li>Точный ассортимент и цены — Instagram закрыт без авторизации</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="grid-2" style="margin-top: 12px;">
+          <div class="player-section">
+            <h4>Что делает хорошо</h4>
+            <ul class="list-styled">
+              <li><strong>Дубовый пресс</strong> — нишевый аргумент, отличающий от металлических прессов</li>
+              <li><strong>15 видов</strong> — широкий ассортимент для одного Instagram-аккаунта</li>
+            </ul>
+          </div>
+          <div class="player-section">
+            <h4>Что делает плохо / чего нет</h4>
+            <ul class="list-styled">
+              <li>Единственный канал Instagram — полная зависимость от одной платформы</li>
+              <li>Нет диверсификации (сайт, Telegram, маркетплейс)</li>
+              <li>Данных о ценах, подписчиках, механике продаж — нет в открытом доступе</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="highlight-box">
+          <h4>Чему Кирилл может научиться</h4>
+          <p><strong>Дубовый пресс как маркетинговый аргумент.</strong> Материал пресса — это конкретный, верифицируемый факт о производстве, работающий как элемент дифференциации. Кириллу стоит явно указывать тип и материал своего пресса на всех площадках.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PATTERNS -->
+<section id="patterns">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-tag">03 · Паттерны выживания</div>
+      <h2>5 закономерностей стартовой стадии</h2>
+    </div>
+
+    <div class="grid-2">
+      <div class="card">
+        <h3>Паттерн 1: Стартовый канал</h3>
+        <p>Все 6 игроков начинали с Instagram или ВКонтакте как основным каналом. Младость (Оренбург) до сих пор работает только через VK + Instagram Direct — без сайта и Telegram. Самара — только Instagram. Первые клиенты у всех: знакомые, сарафан, публикации с хэштегами.</p>
+      </div>
+      <div class="card">
+        <h3>Паттерн 2: Первый контент</h3>
+        <p>Семья Жизни строит весь бренд через личную историю Андрея и Дарьи Степановых («мы живём в деревне после Москвы»). Тамбовский МаслоделЪ — история Юлии Домнышевой. <strong>Личный нарратив — не украшение, а инструмент:</strong> снижает барьер недоверия к домашнему производству.</p>
+      </div>
+      <div class="card">
+        <h3>Паттерн 3: Первая продажа</h3>
+        <p>Тамбовский МаслоделЪ: «к нам можно приехать, посмотреть производство, продегустировать». Самара: «давим по Самаре» (локальный самовывоз = прямой контакт). <strong>Первая продажа во всём кластере — это личный контакт,</strong> не интернет-магазин.</p>
+      </div>
+      <div class="card">
+        <h3>Паттерн 4: Удержание</h3>
+        <p>Семья Жизни: «Масло заканчивается — сразу к вам, никаких замен» (отзыв). Тамбовский МаслоделЪ: отзывы говорят о 2-летних покупателях. <strong>Механика удержания — не ретаргетинг, а качество продукта и личный контакт.</strong> Мессенджер (WhatsApp/Telegram) — основной инструмент возврата.</p>
+      </div>
+      <div class="card">
+        <h3>Паттерн 5: Потолок роста</h3>
+        <p>YASNO MASLO и Семья Жизни упираются в физический лимит производства (1–2 человека, ручной труд, 3–5 дней на партию). Младость и Самара-аккаунт — зависимость от одной платформы. <strong>Тамбовский МаслоделЪ преодолел этот потолок через физический магазин + WB — но только спустя 3 года.</strong></p>
+      </div>
+      <div class="card">
+        <h3>Контекст для Кирилла</h3>
+        <p>Кирилл находится в той же стартовой стадии, что и большинство игроков кластера. Его преимущество: <strong>он знает паттерны заранее</strong> — может пропустить ошибки и пойти напрямую к гибридной модели (Telegram + Ozon + офлайн-рынок), не теряя 2–3 года на проверку каналов.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- GAPS -->
+<section id="gaps">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-tag">04 · Пробелы рынка</div>
+      <h2>Чего не делает никто в кластере — 5 незанятых позиций</h2>
+      <p>Это возможности для Кирилла стать первым в кластере микроконкурентов.</p>
+    </div>
+
+    <div class="gap-item">
+      <div class="gap-header">
+        <div class="gap-num">1</div>
+        <h4>Telegram-бот для заказа</h4>
+      </div>
+      <div class="gap-body">
+        <p>Ни у одного из 6 игроков нет автоматизированного приёма заказов в Telegram. Везде: «напишите в Direct» или форма на сайте с ручной обработкой. <strong>Кирилл, выйдя с ботом — будет первым в кластере с автоматизацией заказа.</strong></p>
+      </div>
+    </div>
+
+    <div class="gap-item">
+      <div class="gap-header">
+        <div class="gap-num">2</div>
+        <h4>Ozon как основной канал</h4>
+      </div>
+      <div class="gap-body">
+        <p>Тамбовский МаслоделЪ вышел на WB только в 2025 году. Никто из микрокластера не представлен на Ozon как сформированный продавец. <strong>Окно открыто.</strong> У Масляного Короля (крупный игрок) — 50+ SKU на Ozon. Кирилл может занять нишу премиальных масел на Ozon до того, как её займут другие микроигроки.</p>
+      </div>
+    </div>
+
+    <div class="gap-item">
+      <div class="gap-header">
+        <div class="gap-num">3</div>
+        <h4>Образовательный контент в Telegram с привязкой к продажам</h4>
+      </div>
+      <div class="gap-body">
+        <p>Семья Жизни имеет TG-канал, но он отделён от продаж. <strong>Никто не строит воронку: образование → польза → покупка → повтор прямо внутри Telegram.</strong> Кирилл с его 20-летним опытом в сфере масел — идеальный кандидат на роль «эксперта по маслам» в Telegram.</p>
+      </div>
+    </div>
+
+    <div class="gap-item">
+      <div class="gap-header">
+        <div class="gap-num">4</div>
+        <h4>Подарочные наборы с системной логикой</h4>
+      </div>
+      <div class="gap-body">
+        <p>Тамбовский МаслоделЪ добавил эту категорию, остальные — нет. При стоимости набора 2 500–4 000 ₽ и нулевом почти маркетинге (НГ, 8 марта) — это незанятая ниша в кластере. <strong>Подарочные наборы масел холодного отжима — сезонный канал с высокой маржой, который не требует новой аудитории.</strong></p>
+      </div>
+    </div>
+
+    <div class="gap-item">
+      <div class="gap-header">
+        <div class="gap-num">5</div>
+        <h4>Конкретика: тип пресса + регион происхождения сырья</h4>
+      </div>
+      <div class="gap-body">
+        <p>Все говорят «натуральное, полезное». <strong>Никто не говорит конкретно: «наш пресс — [тип], сырьё — с Алтая/Краснодара, отжим в день заказа».  Конкретика — пустая позиция.</strong> Дубовый пресс (как у Самары) — нишевый аргумент, который верифицируется и запоминается. Кириллу стоит явно указывать тип и материал пресса везде.</p>
+      </div>
+    </div>
+
+    <div class="highlight-box" style="margin-top: 24px;">
+      <h4>Итоговый вывод для Кирилла</h4>
+      <ul>
+        <li>Микроконкуренты — не угроза, а <strong>навигационная карта</strong>: показывают, что работает (личная история, расширение корзины, жмыхи как апселл) и что нет (один канал, нет маркетплейсов, нет автоматизации)</li>
+        <li>Тамбовский МаслоделЪ — ближайший ориентир для Кирилла через 2–3 года: омниканал, магазин, международные награды</li>
+        <li>Кирилл может пройти путь кластера в 2 раза быстрее, потому что видит ошибки и возможности заранее</li>
+        <li><strong>5 пробелов — это 5 конкурентных преимуществ первого хода:</strong> бот, Ozon, образовательный TG, подарочные наборы, конкретика производства</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-brand">BrandOS</div>
+    <div class="footer-meta">
+      brand-os.ru
+      <span>·</span>
+      Магия Масел
+      <span>·</span>
+      M5 Профили конкурентов
+      <span>·</span>
+      Профиль 06: Микроконкуренты
+      <span>·</span>
+      2026
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>

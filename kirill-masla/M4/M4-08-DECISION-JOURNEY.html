@@ -1,0 +1,1246 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>M4-08 — Decision Journey · Магия Масел</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --brand: #2C5F2D;
+      --brand-dark: #1a4a1b;
+      --brand-light: #4a8f4b;
+      --brand-bg: #e8f5e9;
+      --accent: #D4AF37;
+      --accent-bg: #fdf8e8;
+      --n50: #f8fafc; --n100: #f1f5f9; --n200: #e2e8f0;
+      --n300: #cbd5e1; --n400: #94a3b8; --n500: #64748b;
+      --n600: #475569; --n700: #334155; --n800: #1e293b; --n900: #0f172a;
+      --success: #10b981; --warning: #f59e0b; --error: #ef4444; --info: #3b82f6;
+      --font: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      --shadow-card: 0 1px 3px 0 rgba(0,0,0,.05), 0 1px 2px -1px rgba(0,0,0,.05);
+      --shadow-hover: 0 10px 25px -5px rgba(0,0,0,.08), 0 8px 10px -6px rgba(0,0,0,.04);
+      --shadow-btn: 0 4px 14px 0 rgba(44,95,45,.35);
+      --r-sm:4px; --r-md:6px; --r-lg:8px; --r-xl:12px; --r-2xl:16px; --r-3xl:24px; --r-full:9999px;
+    }
+
+    body { font-family: var(--font); font-size: 16px; line-height: 1.6; color: var(--n600); background: var(--n100); }
+
+    @keyframes fade-up { 0%{opacity:0;transform:translateY(20px)} 100%{opacity:1;transform:translateY(0)} }
+    .fade-up { opacity:0; transform:translateY(20px); transition:opacity .6s ease-out, transform .6s ease-out; }
+    .fade-up.visible { opacity:1; transform:translateY(0); }
+
+    .container { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
+    .section { padding: 80px 0; }
+
+    /* Nav */
+    .nav-wrap {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 300;
+      background: rgba(255,255,255,.93); backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--n200); height: 64px;
+    }
+    .nav-inner { height:100%; display:flex; align-items:center; justify-content:space-between; }
+    .nav-logo img { height:40px; width:auto; display:block; }
+    .nav-links { display:flex; gap:20px; flex-wrap:wrap; }
+    .nav-links a { font-size:13px; font-weight:500; color:var(--n600); text-decoration:none; transition:color .2s; }
+    .nav-links a:hover { color:var(--brand); }
+    .nav-badge {
+      font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:.05em;
+      color:var(--brand); background:var(--brand-bg);
+      padding:5px 12px; border-radius:var(--r-full); white-space:nowrap;
+    }
+
+    /* Section header */
+    .section-header { margin-bottom:40px; }
+    .section-label {
+      display:inline-block; font-size:11px; font-weight:700; text-transform:uppercase;
+      letter-spacing:.08em; color:var(--brand); background:var(--brand-bg);
+      padding:4px 12px; border-radius:var(--r-full); margin-bottom:12px;
+    }
+    .section-title { font-size:30px; font-weight:600; color:var(--n900); line-height:1.25; margin-bottom:8px; }
+    .section-sub { font-size:16px; color:var(--n500); }
+
+    /* Grid */
+    .grid-2 { display:grid; grid-template-columns:repeat(auto-fit,minmax(340px,1fr)); gap:20px; }
+    .grid-3 { display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:20px; }
+
+    /* Badge */
+    .badge { display:inline-flex; align-items:center; padding:3px 10px; border-radius:var(--r-full); font-size:12px; font-weight:600; }
+    .badge-green { background:#d1fae5; color:#065f46; }
+    .badge-yellow { background:#fef3c7; color:#92400e; }
+    .badge-blue { background:#dbeafe; color:#1e40af; }
+    .badge-brand { background:var(--brand-bg); color:var(--brand-dark); }
+    .badge-accent { background:var(--accent-bg); color:#7a6000; }
+    .badge-red { background:#fee2e2; color:#991b1b; }
+    .badge-gray { background:var(--n100); color:var(--n500); }
+
+    /* Table */
+    .table-wrap { overflow-x:auto; border-radius:var(--r-2xl); border:1px solid var(--n200); margin:20px 0; }
+    table { width:100%; border-collapse:collapse; background:#fff; }
+    thead tr { background:var(--n50); border-bottom:2px solid var(--n200); }
+    th { padding:14px 18px; text-align:left; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.05em; color:var(--n500); }
+    td { padding:14px 18px; font-size:14px; color:var(--n600); border-bottom:1px solid var(--n200); }
+    tr:last-child td { border-bottom:none; }
+    tbody tr { transition:background .2s; }
+    tbody tr:hover { background:var(--n50); }
+    .td-num { font-size:13px; color:var(--n400); font-family:monospace; }
+
+    /* Alert */
+    .alert { display:flex; gap:14px; border-radius:var(--r-xl); padding:18px; margin:16px 0; }
+    .alert-warning { background:#fffbeb; border:1px solid #fde68a; border-left:4px solid var(--warning); }
+    .alert-error { background:#fff1f2; border:1px solid #fecdd3; border-left:4px solid var(--error); }
+    .alert-info { background:#eff6ff; border:1px solid #bfdbfe; border-left:4px solid var(--info); }
+    .alert-success { background:#f0fdf4; border:1px solid #bbf7d0; border-left:4px solid var(--success); }
+    .alert-brand { background:var(--brand-bg); border:1px solid #a5d6a7; border-left:4px solid var(--brand); }
+    .alert-icon { font-size:18px; flex-shrink:0; margin-top:1px; }
+
+    /* Card */
+    .card {
+      background:#fff; border-radius:var(--r-2xl); border:1px solid var(--n200);
+      padding:28px; box-shadow:var(--shadow-card);
+      transition:transform .3s ease, box-shadow .3s ease;
+    }
+    .card:hover { transform:translateY(-3px); box-shadow:var(--shadow-hover); }
+    .card-brand {
+      background: linear-gradient(135deg, var(--brand-bg) 0%, #fff 100%);
+      border-radius:var(--r-2xl); border:1px solid #a5d6a7; padding:28px; box-shadow:var(--shadow-card);
+    }
+    .card-accent {
+      background: var(--accent-bg);
+      border-radius:var(--r-2xl); border:1px solid #e8d87a; padding:28px; box-shadow:var(--shadow-card);
+    }
+    .card-title { font-size:16px; font-weight:700; color:var(--n900); margin-bottom:12px; }
+    .card-icon { font-size:24px; margin-bottom:12px; }
+
+    /* Stat cards */
+    .stat-card {
+      background:linear-gradient(135deg,var(--brand) 0%,var(--brand-dark) 100%);
+      border-radius:var(--r-2xl); padding:24px; color:#fff; box-shadow:var(--shadow-btn);
+    }
+    .stat-label { font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.05em; opacity:.75; margin-bottom:8px; }
+    .stat-value { font-size:28px; font-weight:700; line-height:1; margin-bottom:6px; }
+    .stat-desc { font-size:13px; opacity:.8; }
+
+    /* List item */
+    .list-item {
+      display:flex; gap:10px; align-items:flex-start;
+      padding:9px 0; border-bottom:1px solid var(--n100);
+      font-size:14px; color:var(--n600);
+    }
+    .list-item:last-child { border-bottom:none; }
+    .list-dot { width:8px; height:8px; border-radius:50%; background:var(--brand); flex-shrink:0; margin-top:6px; }
+    .list-dot-red { width:8px; height:8px; border-radius:50%; background:var(--error); flex-shrink:0; margin-top:6px; }
+
+    /* Status icons */
+    .s-ok { color:var(--success); font-weight:600; }
+    .s-warn { color:var(--warning); font-weight:600; }
+    .s-need { color:#f97316; font-weight:600; }
+
+    @media (max-width:768px) {
+      .nav-links { display:none; }
+      .section-title { font-size:24px; }
+      .grid-2, .grid-3 { grid-template-columns:1fr; }
+    }
+
+    /* Hero */
+    .hero {
+      background: linear-gradient(135deg, var(--brand-dark) 0%, var(--brand) 50%, var(--brand-light) 100%);
+      padding: 120px 0 80px; color:#fff; position:relative; overflow:hidden;
+    }
+    .hero::before {
+      content:''; position:absolute; inset:0;
+      background: radial-gradient(ellipse at 70% 50%, rgba(212,175,55,.15) 0%, transparent 60%);
+    }
+    .hero-inner { display:flex; align-items:center; gap:48px; flex-wrap:wrap; }
+    .hero-logo-wrap { flex-shrink:0; }
+    .hero-logo-wrap img { height:140px; width:auto; display:block; border-radius:var(--r-xl); }
+    .hero-content { flex:1; min-width:280px; }
+    .hero-badge {
+      display:inline-block; font-size:11px; font-weight:700; text-transform:uppercase;
+      letter-spacing:.1em; background:rgba(255,255,255,.15); color:#fff;
+      border:1px solid rgba(255,255,255,.3); padding:6px 16px;
+      border-radius:var(--r-full); margin-bottom:20px; backdrop-filter:blur(8px);
+    }
+    .hero-title { font-size:52px; font-weight:700; line-height:1.1; margin-bottom:16px; }
+    .hero-title span { color:var(--accent); }
+    .hero-sub { font-size:18px; opacity:.85; max-width:600px; margin-bottom:32px; line-height:1.6; }
+    .hero-meta { display:flex; gap:24px; flex-wrap:wrap; }
+    .hero-meta-item { display:flex; flex-direction:column; gap:3px; }
+    .hero-meta-label { font-size:10px; text-transform:uppercase; letter-spacing:.08em; opacity:.6; }
+    .hero-meta-value { font-size:14px; font-weight:600; }
+
+    @media (max-width:768px) {
+      .hero { padding: 100px 0 60px; }
+      .hero-title { font-size:34px; }
+      .hero-logo-wrap img { height:80px; }
+    }
+
+    /* Footer */
+    .footer { background:var(--n900); color:var(--n400); padding:40px 0; font-size:13px; }
+    .footer-inner { display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:16px; }
+    .footer-meta { display:flex; gap:20px; flex-wrap:wrap; }
+    .footer-meta-item { display:flex; flex-direction:column; gap:2px; }
+    .footer-meta-label { font-size:10px; text-transform:uppercase; letter-spacing:.05em; color:var(--n600); }
+    .footer-meta-value { font-size:12px; color:var(--n400); }
+
+    /* Timeline */
+    .timeline { position:relative; padding-left:32px; }
+    .timeline::before {
+      content:''; position:absolute; left:11px; top:0; bottom:0;
+      width:2px; background: linear-gradient(to bottom, var(--brand), var(--n300));
+    }
+    .timeline-item { position:relative; margin-bottom:20px; }
+    .timeline-dot {
+      position:absolute; left:-32px; top:14px;
+      width:22px; height:22px; border-radius:50%;
+      background:var(--brand); color:#fff;
+      font-size:11px; font-weight:700;
+      display:flex; align-items:center; justify-content:center;
+      border:2px solid #fff; box-shadow:0 0 0 2px var(--brand);
+    }
+    .timeline-dot-risk { background:var(--error); box-shadow:0 0 0 2px var(--error); }
+    .timeline-card {
+      background:#fff; border-radius:var(--r-xl); border:1px solid var(--n200);
+      padding:18px 20px; box-shadow:var(--shadow-card);
+    }
+    .timeline-stage { font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.06em; color:var(--brand); margin-bottom:4px; }
+    .timeline-title { font-size:15px; font-weight:700; color:var(--n900); margin-bottom:8px; }
+    .timeline-emotion { font-size:12px; color:var(--n500); font-style:italic; margin-bottom:8px; }
+    .timeline-text { font-size:13px; color:var(--n600); margin-bottom:8px; }
+    .timeline-thought {
+      font-size:13px; color:var(--n700); font-style:italic;
+      background:var(--n50); padding:10px 12px; border-radius:var(--r-md);
+      border-left:3px solid var(--brand-light); margin-bottom:8px;
+    }
+    .timeline-risk {
+      font-size:12px; color:#991b1b;
+      background:#fff1f2; padding:8px 12px; border-radius:var(--r-sm);
+      border-left:3px solid var(--error); margin-top:8px;
+    }
+    .timeline-help {
+      font-size:12px; color:var(--brand-dark);
+      background:var(--brand-bg); padding:8px 12px; border-radius:var(--r-sm);
+      border-left:3px solid var(--brand); margin-top:6px;
+    }
+    .timeline-touchpoint {
+      font-size:11px; color:var(--info);
+      background:#eff6ff; padding:5px 10px; border-radius:var(--r-full);
+      display:inline-block; margin-top:6px;
+    }
+
+    .segment-header {
+      background: linear-gradient(135deg, var(--brand-bg) 0%, #f0f9f0 100%);
+      border-radius:var(--r-2xl); border:1px solid #a5d6a7;
+      padding:20px 28px; margin-bottom:28px;
+    }
+    .segment-title { font-size:20px; font-weight:700; color:var(--n900); margin-bottom:4px; }
+    .segment-meta { font-size:14px; color:var(--n500); }
+    .segment-ltv { font-size:13px; color:var(--brand-dark); font-weight:600; margin-top:4px; }
+
+    /* Retention grid */
+    .retention-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:16px; }
+    .retention-card {
+      background:#fff; border-radius:var(--r-xl); border:1px solid var(--n200);
+      padding:20px; box-shadow:var(--shadow-card);
+    }
+    .retention-stage { font-size:11px; text-transform:uppercase; letter-spacing:.05em; color:var(--n500); margin-bottom:6px; }
+    .retention-lever { font-size:14px; font-weight:700; color:var(--n900); margin-bottom:6px; }
+    .retention-how { font-size:13px; color:var(--n600); }
+    .retention-seg { font-size:11px; color:var(--brand); font-weight:600; margin-top:8px; }
+
+    /* Loyalty loop */
+    .loyalty-loop {
+      background:#fff; border-radius:var(--r-2xl); border:1px solid var(--n200);
+      padding:32px; box-shadow:var(--shadow-card);
+    }
+    .loop-item {
+      background:var(--brand-bg); border:1px solid #a5d6a7;
+      border-radius:var(--r-xl); padding:16px 20px; margin-bottom:12px;
+      position:relative;
+    }
+    .loop-item-title { font-size:14px; font-weight:700; color:var(--brand-dark); margin-bottom:4px; }
+    .loop-item-sub { font-size:13px; color:var(--n600); }
+    .loop-arrow {
+      text-align:center; color:var(--brand); font-size:20px; margin:4px 0; line-height:1;
+    }
+
+    /* Priority items */
+    .priority-card {
+      background:#fff; border-radius:var(--r-2xl); border:1px solid var(--n200);
+      padding:24px; box-shadow:var(--shadow-card); border-left:4px solid var(--brand);
+      margin-bottom:16px;
+    }
+    .priority-num {
+      display:inline-flex; align-items:center; justify-content:center;
+      width:28px; height:28px; border-radius:50%; background:var(--brand); color:#fff;
+      font-size:13px; font-weight:700; margin-bottom:10px;
+    }
+    .priority-title { font-size:16px; font-weight:700; color:var(--n900); margin-bottom:6px; }
+    .priority-problem { font-size:13px; color:var(--error); margin-bottom:10px; }
+    .priority-solution { font-size:13px; color:var(--n700); margin-bottom:8px; }
+    .priority-effect { font-size:13px; color:var(--brand-dark); font-weight:600; }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav-wrap">
+  <div class="container">
+    <div class="nav-inner">
+      <div class="nav-logo"><img src="../../assets/logo-horizontal-light.png" alt="Магия Масел"></div>
+      <div class="nav-links">
+        <a href="#map">Сводная карта</a>
+        <a href="#segments">По сегментам</a>
+        <a href="#leaks">Точки слива</a>
+        <a href="#touchpoints">Touchpoints</a>
+        <a href="#emotion">Кривая эмоций</a>
+        <a href="#retention">Удержание</a>
+        <a href="#priorities">Приоритеты</a>
+      </div>
+      <div class="nav-badge">M4 · Документ 8/8</div>
+    </div>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="container">
+    <div class="hero-inner">
+      <div class="hero-logo-wrap">
+        <img src="../../assets/logo-badge-dark.png" alt="Магия Масел — Кирилл Бродский">
+      </div>
+      <div class="hero-content">
+        <div class="hero-badge">M4 · Аудитория · Документ 8 из 8</div>
+        <h1 class="hero-title">Decision <span>Journey</span></h1>
+        <p class="hero-sub">Полный путь клиента от первой мысли до повторной покупки. Точки слива и рычаги удержания.</p>
+        <div class="hero-meta">
+          <div class="hero-meta-item">
+            <span class="hero-meta-label">Клиент</span>
+            <span class="hero-meta-value">Кирилл Бродский</span>
+          </div>
+          <div class="hero-meta-item">
+            <span class="hero-meta-label">Дата</span>
+            <span class="hero-meta-value">31.03.2026</span>
+          </div>
+          <div class="hero-meta-item">
+            <span class="hero-meta-label">Версия</span>
+            <span class="hero-meta-value">1.0 (Opus)</span>
+          </div>
+          <div class="hero-meta-item">
+            <span class="hero-meta-label">Стадий пути</span>
+            <span class="hero-meta-value">7 стадий</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 1. ПРИНЦИП -->
+<section class="section fade-up">
+  <div class="container">
+    <div class="alert alert-brand">
+      <span class="alert-icon">💡</span>
+      <div>
+        <strong style="color:var(--brand-dark); display:block; margin-bottom:4px;">Путь, а не воронка</strong>
+        <p style="font-size:14px; color:var(--n600);">У покупателя масла Кирилла нет линейного маршрута «увидел → захотел → купил». Есть петли, откаты, замирания. <strong>Ключевой факт от Кирилла (29.03.2026):</strong> «Чаще уходит до покупки». Главные потери — между первым контактом и первой покупкой.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 2. СВОДНАЯ КАРТА -->
+<section class="section fade-up" id="map" style="padding-top:20px;">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-label">1. Сводная карта</div>
+      <h2 class="section-title">Полный путь — 7 стадий</h2>
+      <p class="section-sub">Стадия / действие / эмоция / touchpoint / риск слива / что помогает.</p>
+    </div>
+    <div class="table-wrap fade-up">
+      <table>
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Стадия</th>
+            <th>Что происходит</th>
+            <th>Эмоция</th>
+            <th>Touchpoint</th>
+            <th>Риск слива</th>
+            <th>Что помогает</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="td-num">1</td>
+            <td><strong>До осознания</strong></td>
+            <td style="font-size:13px;">Живёт без продукта. Масло = то, что стоит рядом с солью</td>
+            <td style="font-size:13px;">Спокойствие / фоновая тревога</td>
+            <td style="font-size:13px;">Нет / случайное упоминание</td>
+            <td style="font-size:13px; color:var(--error);">Нет точки входа — человек не ищет</td>
+            <td style="font-size:13px;">Триггер придёт извне</td>
+          </tr>
+          <tr>
+            <td class="td-num">2</td>
+            <td><strong>Первый триггер</strong></td>
+            <td style="font-size:13px;">Что-то щёлкнуло: врач назначил, подруга рассказала, в ресторане попробовал</td>
+            <td style="font-size:13px;">Интерес + нерешительность</td>
+            <td style="font-size:13px;">Врач / сарафан / отзовик</td>
+            <td style="font-size:13px; color:var(--error);">Импульс гаснет за 3–5 дней без следующего шага</td>
+            <td style="font-size:13px;">Образовательный контент в поиске</td>
+          </tr>
+          <tr>
+            <td class="td-num">3</td>
+            <td><strong>Поиск</strong></td>
+            <td style="font-size:13px;">47 товаров на Яндекс Маркете — паралич выбора. Читает отзывы часами</td>
+            <td style="font-size:13px;">Растерянность → усталость</td>
+            <td style="font-size:13px;">Яндекс Маркет / iRecommend / TG</td>
+            <td style="font-size:13px; color:var(--error);">Бросает из-за противоречивых отзывов</td>
+            <td style="font-size:13px;">Видео производства — конкретность пробивает шум</td>
+          </tr>
+          <tr>
+            <td class="td-num">4</td>
+            <td><strong>Первый контакт</strong></td>
+            <td style="font-size:13px;">Рынок: дегустация и разговор. Онлайн: пост / видео / ответ в личке</td>
+            <td style="font-size:13px;">Удивление: «объясняет, а не продаёт»</td>
+            <td style="font-size:13px;">Дорогомиловский / TG-канал / личка</td>
+            <td style="font-size:13px; color:var(--error);">Информационная перегрузка. Не понял с чего начать</td>
+            <td style="font-size:13px;">Дегустация + конкретный протокол</td>
+          </tr>
+          <tr>
+            <td class="td-num">5</td>
+            <td><strong>Момент решения</strong></td>
+            <td style="font-size:13px;">Протокол + малый объём 100 мл + честность = «ладно, попробую»</td>
+            <td style="font-size:13px;">Осторожный оптимизм</td>
+            <td style="font-size:13px;">Рынок (дегустация) / TG (личка)</td>
+            <td style="font-size:13px; color:var(--error);">Цена без объяснения. «Подумаю». Уход без QR</td>
+            <td style="font-size:13px;">100 мл = минимальный риск. QR → TG</td>
+          </tr>
+          <tr>
+            <td class="td-num">6</td>
+            <td><strong>Первый опыт</strong></td>
+            <td style="font-size:13px;">Открытие бутылки. Тмин жжёт — момент страха или восторга</td>
+            <td style="font-size:13px;">Страх («испорчено?») или радость</td>
+            <td style="font-size:13px;">Дом → сообщение Кириллу</td>
+            <td style="font-size:13px; color:var(--error);">Горечь без объяснения = бутылка в мусор</td>
+            <td style="font-size:13px;">Превентивное сообщение через 2–3 дня</td>
+          </tr>
+          <tr>
+            <td class="td-num">7</td>
+            <td><strong>Повтор / Отвал</strong></td>
+            <td style="font-size:13px;">Масло кончилось. Если ремайндер — покупает. Если нет — забывает</td>
+            <td style="font-size:13px;">Благодарность / инерция</td>
+            <td style="font-size:13px;">TG-ремайндер / личное сообщение</td>
+            <td style="font-size:13px; color:var(--error);">Нет ремайндера = потерян. Нет базы = потерян навсегда</td>
+            <td style="font-size:13px;">Ремайндер на 21–25 день. Личное, не бот</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- 3. ПУТИ ПО СЕГМЕНТАМ -->
+<section class="section fade-up" id="segments" style="background:#fff;">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-label">2. Путь по сегментам</div>
+      <h2 class="section-title">Детальный путь — 5 сегментов</h2>
+      <p class="section-sub">У каждого сегмента своя логика пути, свои точки страха и свои конвертеры.</p>
+    </div>
+
+    <!-- С1 -->
+    <div class="fade-up" style="margin-bottom:56px;">
+      <div class="segment-header">
+        <div class="segment-title">С1 — ФУНКЦИОНАЛЬНЫЙ · Татьяна, 47 лет</div>
+        <div class="segment-meta">Масло-якоря: тмин, расторопша, тыква</div>
+        <div class="segment-ltv">LTV: 15 000–30 000 ₽/год · Самый ценный сегмент</div>
+      </div>
+      <div class="timeline">
+        <div class="timeline-item">
+          <div class="timeline-dot">1</div>
+          <div class="timeline-card">
+            <div class="timeline-stage">До осознания</div>
+            <div class="timeline-title">Масло = то, что стоит на кухне</div>
+            <div class="timeline-thought">«Простуда и простуда — зима. Омегу все хвалят, но я разницы не чувствую»</div>
+            <div class="timeline-risk">Риск: человек не ищет — не найдёт. Без внешнего триггера стадия длится годами</div>
+          </div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-dot">2</div>
+          <div class="timeline-card">
+            <div class="timeline-stage">Первый триггер</div>
+            <div class="timeline-title">ЛОР назначил масло тмина</div>
+            <div class="timeline-thought">«Открыла маркетплейс, 47 позиций, все пишут "натуральное" — как понять?»</div>
+            <div class="timeline-touchpoint">Врач → Яндекс → Яндекс Маркет → TG-каналы про здоровье</div>
+            <div class="timeline-risk">Риск: паралич выбора. Откладывает на «потом»</div>
+            <div class="timeline-help">Помогает: образовательный контент в поиске — «Вам назначили тмин. Вот почему 90% покупают не то»</div>
+          </div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-dot">3</div>
+          <div class="timeline-card">
+            <div class="timeline-stage">Поиск</div>
+            <div class="timeline-title">Читает отзывы 2 часа. Выбирает «кто объясняет честно»</div>
+            <div class="timeline-thought">«Все говорят "холодный отжим" — как понять кто настоящий?»</div>
+            <div class="timeline-touchpoint">TG-канал Кирилла (видео производства)</div>
+            <div class="timeline-risk">Риск: не дошла до канала Кирилла — утонула в шуме</div>
+            <div class="timeline-help">Помогает: видео «Сегодня отжали тмин — первая партия марта». 42 секунды. Конкретность пробивает шум</div>
+          </div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-dot">4</div>
+          <div class="timeline-card">
+            <div class="timeline-stage">Первый контакт</div>
+            <div class="timeline-title">Дорогомиловский или TG-канал</div>
+            <div class="timeline-thought">«Видела канал — как принимать тмин? Он правда горчит?»</div>
+            <div class="timeline-touchpoint">Рынок (дегустация) / TG-канал (посты + личка)</div>
+            <div class="timeline-risk">Риск: вкус тмина — главный стоп для С1. «Горит — значит испорчено»</div>
+            <div class="timeline-help">Помогает: дегустация + предупреждение заранее. «Сейчас будет жечь — это нормально. Это тимохинон»</div>
+          </div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-dot">5</div>
+          <div class="timeline-card">
+            <div class="timeline-stage">Момент решения</div>
+            <div class="timeline-title">Берёт 100 мл — «попробую, не такие большие деньги»</div>
+            <div class="timeline-thought">«Ладно, 700 рублей — не катастрофа. Попробую»</div>
+            <div class="timeline-touchpoint">Рынок (касса) / TG (заказ в личке)</div>
+            <div class="timeline-risk">Риск: ушла без QR-кода — потеряна навсегда</div>
+            <div class="timeline-help">Помогает: 100 мл = минимальный риск. QR → TG прямо при покупке</div>
+          </div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-dot">6</div>
+          <div class="timeline-card">
+            <div class="timeline-stage">Первый опыт</div>
+            <div class="timeline-title">Открытие бутылки. Жжёт. Пугается. Пишет Кириллу</div>
+            <div class="timeline-thought">«Жжёт — это нормально? ...Ок, он предупредил. Через 3 недели — вроде бы легче»</div>
+            <div class="timeline-touchpoint">Дом → TG Кириллу → ответ за 2–4 часа</div>
+            <div class="timeline-risk">Риск: горечь без предупреждения = мусор. Если Кирилл не ответил быстро — паника → отказ</div>
+            <div class="timeline-help">Помогает: превентивное сообщение через 2–3 дня: «Тмин жжёт — это тимохинон. Вот схема на первые 3 дня»</div>
+          </div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-dot">7</div>
+          <div class="timeline-card">
+            <div class="timeline-stage">Повтор / Отвал</div>
+            <div class="timeline-title">Ремайндер → повтор → расширение (добавляет расторопшу)</div>
+            <div class="timeline-thought">«Как хорошо что напомнил — я уже собиралась, но забыла. Удобно — как подписка, только по-человечески»</div>
+            <div class="timeline-touchpoint">TG-ремайндер от Кирилла на 21–25 день</div>
+            <div class="timeline-risk">Риск: нет ремайндера = потеря. Нет базы = потерян навсегда</div>
+            <div class="timeline-help">Помогает: личный ремайндер. Вопрос «как масло?» перед предложением повтора</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- С2 -->
+    <div class="fade-up" style="margin-bottom:56px;">
+      <div class="segment-header">
+        <div class="segment-title">С2 — СЕМЕЙНЫЙ ЗОЖ · Ольга, 36 лет</div>
+        <div class="segment-meta">Масло-якоря: лён, кедр</div>
+        <div class="segment-ltv">LTV: 8 000–15 000 ₽/год · Потенциал перехода в С5</div>
+      </div>
+      <div class="timeline">
+        <div class="timeline-item">
+          <div class="timeline-dot">1</div>
+          <div class="timeline-card">
+            <div class="timeline-stage">Триггер</div>
+            <div class="timeline-title">Подруга в мамском чате или педиатр на осмотре</div>
+            <div class="timeline-thought">«Интересно. А оно не горчит? А детям точно можно? А как хранить?»</div>
+            <div class="timeline-help">Помогает: пост «Льняное для семьи: детям с 3 лет — 0,5 ч.л. в кашу. Хранить в холодильнике. После вскрытия — 60 дней»</div>
+          </div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-dot">2</div>
+          <div class="timeline-card">
+            <div class="timeline-stage">Поиск → Контакт</div>
+            <div class="timeline-title">Читает пост «Как хранить масло — 3 правила». Понимает почему её масло прокисало</div>
+            <div class="timeline-thought">«Так вот почему у меня прокисало! Этот человек объясняет — значит и продукт нормальный»</div>
+            <div class="timeline-risk">Риск: не нашла ответ на «можно ли детям» — ушла. Слишком медицинский язык — не её</div>
+          </div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-dot">3</div>
+          <div class="timeline-card">
+            <div class="timeline-stage">Решение → Опыт</div>
+            <div class="timeline-title">Берёт 100 мл. Ребёнок съел — ключевой момент</div>
+            <div class="timeline-thought">«Съел! Даже не заметил. Вот так и должно быть»</div>
+            <div class="timeline-risk">Риск: ребёнок выплюнул. Масло прогоркло (плохое хранение). Ушла без QR</div>
+            <div class="timeline-help">Помогает: инструкция на упаковке + карточка «Детям: 0,5 ч.л. в тёплую кашу»</div>
+          </div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-dot">7</div>
+          <div class="timeline-card">
+            <div class="timeline-stage">Повтор → Органический переход С2→С5</div>
+            <div class="timeline-title">Через 2 месяца: ногти перестали ломаться → заказывает миндальное для себя</div>
+            <div class="timeline-thought">«Замечаю что ногти — пошла читать канал. Пост про миндальное. Заказала»</div>
+            <div class="timeline-help">Помогает: через 6–8 недель вопрос Кирилла: «А вы сами как себя чувствуете?» — мостик в С5</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- С3 -->
+    <div class="fade-up" style="margin-bottom:56px;">
+      <div class="segment-header">
+        <div class="segment-title">С3 — КРАФТ-КОНТРОЛЁР · Андрей, 53 года</div>
+        <div class="segment-meta">Масло-якоря: тмин, тыква · Путь с откатом</div>
+        <div class="segment-ltv">LTV: 15 000–25 000 ₽/год · Критический сегмент — самый лояльный или самый опасный</div>
+      </div>
+      <div class="alert alert-warning fade-up" style="margin-bottom:20px;">
+        <span class="alert-icon">⚠️</span>
+        <div>
+          <strong style="color:#92400e; display:block; margin-bottom:4px;">Откатная логика С3</strong>
+          <p style="font-size:14px; color:var(--n600);">Классический путь 1→7 здесь НЕ работает. Андрей уже был на ступени 4–5 с другим производителем, получил негативный опыт и откатился. Нужна не образовательная цепочка, а <strong>восстановление доверия через неподдельные доказательства</strong>.</p>
+        </div>
+      </div>
+      <div class="timeline">
+        <div class="timeline-item">
+          <div class="timeline-dot" style="background:var(--error); box-shadow:0 0 0 2px var(--error);">!</div>
+          <div class="timeline-card">
+            <div class="timeline-stage">Стадия отката — «снова ищу, но никому не верю»</div>
+            <div class="timeline-title">Два года назад — горькое тыквенное, «так и должно быть» от поддержки. Выкинул. Не покупает</div>
+            <div class="timeline-thought">«Все пишут "натуральное" — а внутри непонятно что. Обжигался уже»</div>
+            <div class="timeline-risk">Риск: на этой стадии Андрей никого не ищет. Может быть здесь годами</div>
+            <div class="timeline-help">Помогает: контент «Тёмное стекло: почему мы никогда не разливаем в прозрачное». Или живая встреча на рынке</div>
+          </div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-dot">3</div>
+          <div class="timeline-card">
+            <div class="timeline-stage">Первый контакт (восстановление доверия)</div>
+            <div class="timeline-title">На рынке: тёмные бутылки. «Какой пресс?» — «Гидравлический». «Когда давили?» — конкретная дата</div>
+            <div class="timeline-thought">«Тёмное стекло — первый плюс. Дата конкретная — не "свежее", а день. Этот человек говорит на моём языке»</div>
+            <div class="timeline-risk">Риск: абстрактные заявления «всё свежее». Красивая этикетка без технических данных. Скидки — воспринимает как «избавляются от залежавшегося»</div>
+          </div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-dot">5</div>
+          <div class="timeline-card">
+            <div class="timeline-stage">Ключевой момент — реакция на жалобу</div>
+            <div class="timeline-title">Написал «тыквенное должно горчить?». Кирилл: «Не должно. Пришлите дату — разберёмся»</div>
+            <div class="timeline-thought">«Маркетплейс сказал "так и должно быть". Этот человек сказал "не должно, давайте разберёмся". Это совсем другое»</div>
+            <div class="timeline-risk">Риск: если Кирилл ответил бы «так и должно быть» — Андрей ушёл бы навсегда</div>
+          </div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-dot">7</div>
+          <div class="timeline-card">
+            <div class="timeline-stage">Повтор → Защитник бренда</div>
+            <div class="timeline-title">Приходит каждые 2–3 недели. Коллегам: «Есть один нормальный. Двое съездили»</div>
+            <div class="timeline-thought">«Наконец-то нашёл своего. Если кто скажет "холодный отжим — развод", я скажу: нет, просто ты не знаешь у кого брать»</div>
+            <div class="timeline-risk">Риск: один «плохой» опыт = уход навсегда + негативные отзывы. Нестабильность вкуса</div>
+            <div class="timeline-help">Помогает: объяснение сезонности заранее: «Весенний тмин чуть мягче осеннего — вот почему»</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- С4 + С5 -->
+    <div class="grid-2 fade-up">
+      <div>
+        <div class="segment-header">
+          <div class="segment-title">С4 — ГАСТРОНОМ · Михаил, 42 года</div>
+          <div class="segment-meta">Масло-якоря: кедр, грецкий, кунжут</div>
+          <div class="segment-ltv">LTV: 8 000–18 000 ₽/год · Подарочный сценарий активен</div>
+        </div>
+        <div class="card" style="margin-bottom:12px;">
+          <div class="card-title">Триггер</div>
+          <p style="font-size:14px; color:var(--n600);">В ресторане попробовал кедровое — «нежно-ореховый привкус». Или на рынке увидел стойку с разными маслами. Масло ассоциируется с кухней, не аптекой.</p>
+        </div>
+        <div class="card" style="margin-bottom:12px;">
+          <div class="card-title">Конвертер — дегустация</div>
+          <p style="font-size:14px; color:var(--n600);">Без дегустации — не покупает. Описание вкуса в тексте не заменяет пробу. На рынке: «Не берите всё — кедровое на пасту, грецкое к рукколе. Мог продать три бутылки, а сказал "две сейчас, одну потом"»</p>
+        </div>
+        <div class="card">
+          <div class="card-title">Повтор → Подарочный сценарий</div>
+          <p style="font-size:14px; color:var(--n600);">Через 5–6 недель: кедровое + кунжутное. К декабрю — набор «Кухня» в подарок другу-гастроному. Друг звонит: «Где взял? Хочу ещё». Каждый подаренный набор = новый клиент.</p>
+        </div>
+      </div>
+      <div>
+        <div class="segment-header">
+          <div class="segment-title">С5 — КРАСОТА ИЗНУТРИ · Елена, 33 года</div>
+          <div class="segment-meta">Масло-якоря: миндаль, кедр, конопля</div>
+          <div class="segment-ltv">LTV: 6 000–12 000 ₽/год · Самый длинный цикл до покупки</div>
+        </div>
+        <div class="card" style="margin-bottom:12px;">
+          <div class="card-title">Триггер</div>
+          <p style="font-size:14px; color:var(--n600);">Дерматолог: «Добавьте жирные кислоты из продуктов». На iRecommend: «Уменьшился волосопад». Слово «волосопад» — узнала себя.</p>
+        </div>
+        <div class="alert alert-error" style="margin-bottom:12px;">
+          <span class="alert-icon">🚨</span>
+          <div>
+            <strong style="color:#991b1b; font-size:13px; display:block; margin-bottom:3px;">Критическая точка — 30-й день</strong>
+            <p style="font-size:13px; color:var(--n600);">Стандартная точка слива для С5. Без объяснения механизма — 100% потеря. С объяснением — 70%+ удержание.</p>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title">Спасение — объяснение на 25–30 день</div>
+          <p style="font-size:14px; color:var(--n600);">Кирилл проактивно: «Первый месяц — это закладка фундамента. Структурные изменения видны к 60-му дню. Продолжайте — самое важное только начинается». Если бы написал «потерпите» — ушла бы. Объяснение механизма удержало.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 4. ТОЧКИ СЛИВА -->
+<section class="section fade-up" id="leaks">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-label">3. Точки слива</div>
+      <h2 class="section-title">Где теряем клиента и почему</h2>
+      <p class="section-sub">Кирилл подтвердил: «чаще уходит до покупки». Полная карта потерь по трём группам.</p>
+    </div>
+
+    <div class="section-label" style="margin-bottom:16px; background:#fee2e2; color:#991b1b;">До первой покупки (самые частые)</div>
+    <div class="table-wrap fade-up">
+      <table>
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Точка слива</th>
+            <th>Причина</th>
+            <th>Сигнал</th>
+            <th>Что сделать прямо сейчас</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="td-num">1</td>
+            <td style="font-weight:600; font-size:13px;">«Вернусь в следующий раз»</td>
+            <td style="font-size:13px;">Не понял отличия от магазинного. Скрытое «дорого»</td>
+            <td style="font-size:13px;">Вежливый уход без покупки</td>
+            <td style="font-size:13px;">Предложить 100 мл: «Попробуете сравнить с тем что дома». QR — не потерять контакт</td>
+          </tr>
+          <tr>
+            <td class="td-num">2</td>
+            <td style="font-weight:600; font-size:13px;">«Похожу подумаю»</td>
+            <td style="font-size:13px;">Не получил достаточно доказательств. Страх «неправильного» решения</td>
+            <td style="font-size:13px;">Кивает, но не берёт</td>
+            <td style="font-size:13px;">Дегустация. Дать точку отличия: «Посмотрите дату отжима у других — если нет, масло стоит полгода». QR</td>
+          </tr>
+          <tr>
+            <td class="td-num">3</td>
+            <td style="font-weight:600; font-size:13px;">Уход молча</td>
+            <td style="font-size:13px;">Перегруз информации. Не нашёл своё</td>
+            <td style="font-size:13px;">Слушал, кивал, ушёл</td>
+            <td style="font-size:13px;">Упростить выбор: «Три самых популярных: тмин — иммунитет, лён — Омега, кедровое — вкус». QR</td>
+          </tr>
+          <tr>
+            <td class="td-num">4</td>
+            <td style="font-weight:600; font-size:13px;">Ценовой шок</td>
+            <td style="font-size:13px;">Сравнивает с рафинированным (200 ₽/л), не с БАДами</td>
+            <td style="font-size:13px;">«А почему так?» и уходит</td>
+            <td style="font-size:13px;">Сместить фрейм: «Капсулы Омега — 1 200 за месяц. Бутылка — те же Омега, живые». «Из кг тмина — 200 мл масла»</td>
+          </tr>
+          <tr>
+            <td class="td-num">5</td>
+            <td style="font-weight:600; font-size:13px;">Паралич выбора онлайн</td>
+            <td style="font-size:13px;">47 позиций, все одинаковые</td>
+            <td style="font-size:13px;">Читает отзывы 2 часа, не покупает</td>
+            <td style="font-size:13px;">Контент с критериями: «4 признака настоящего холодного отжима». Видео производства</td>
+          </tr>
+          <tr>
+            <td class="td-num">6</td>
+            <td style="font-weight:600; font-size:13px;">Страх вкуса</td>
+            <td style="font-size:13px;">«Подруга сказала — горький как лекарство»</td>
+            <td style="font-size:13px;">Спрашивает про горечь, не решается</td>
+            <td style="font-size:13px;">Дегустация на рынке. Онлайн: пост «Масло тмина горчит — и вот почему это именно то, чего вы хотели»</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="alert alert-error fade-up">
+      <span class="alert-icon">🚨</span>
+      <div>
+        <strong style="color:#991b1b; display:block; margin-bottom:4px;">Системная причина потерь</strong>
+        <p style="font-size:14px; color:var(--n600);">Нет клиентской базы. Человек ушёл «подумать» = потерян навсегда. QR-код на точке + TG = приоритет номер один. Каждый ушедший без подписки — потерянный LTV в 15 000–30 000 ₽/год.</p>
+      </div>
+    </div>
+
+    <div class="section-label" style="margin-bottom:16px; margin-top:40px; background:#fffbeb; color:#92400e;">После первой покупки (до повтора)</div>
+    <div class="table-wrap fade-up">
+      <table>
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Точка слива</th>
+            <th>Причина</th>
+            <th>Сигнал</th>
+            <th>Что сделать прямо сейчас</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="td-num">7</td>
+            <td style="font-weight:600; font-size:13px;">Горечь/жжение при первом приёме</td>
+            <td style="font-size:13px;">Не был предупреждён о вкусе тмина/расторопши</td>
+            <td style="font-size:13px;">Пишет «горькое?» или выбрасывает молча</td>
+            <td style="font-size:13px;">Карточка-инструкция в упаковке. Превентивное сообщение через 2–3 дня: «Тмин жжёт — это тимохинон, норма»</td>
+          </tr>
+          <tr>
+            <td class="td-num">8</td>
+            <td style="font-weight:600; font-size:13px;">Масло испортилось</td>
+            <td style="font-size:13px;">Неправильное хранение (не в холодильнике)</td>
+            <td style="font-size:13px;">Не пишет — просто не возвращается</td>
+            <td style="font-size:13px;">Правила хранения: на этикетке, в карточке, в канале. «3 правила: холодильник + тёмная тара + 60 дней»</td>
+          </tr>
+          <tr>
+            <td class="td-num">9</td>
+            <td style="font-weight:600; font-size:13px;">«Не понял, помогло ли»</td>
+            <td style="font-size:13px;">Субъективность. Для С5 — через 30 дней «ничего не изменилось»</td>
+            <td style="font-size:13px;">Не пишет, не заказывает</td>
+            <td style="font-size:13px;">Честные временные рамки при покупке. Ремайндер на 21 день (С1) / 55 день (С5) с вопросом «как?»</td>
+          </tr>
+          <tr>
+            <td class="td-num">10</td>
+            <td style="font-weight:600; font-size:13px;">Забыл купить</td>
+            <td style="font-size:13px;">Инерция. «Завтра куплю» — четвёртый день</td>
+            <td style="font-size:13px;">Тишина</td>
+            <td style="font-size:13px;">Ремайндер лично: «Заканчивается? Отжали свежий вчера». Не бот — личное сообщение</td>
+          </tr>
+          <tr>
+            <td class="td-num">11</td>
+            <td style="font-weight:600; font-size:13px;">Ребёнок отказался (С2)</td>
+            <td style="font-size:13px;">Горький вкус в каше</td>
+            <td style="font-size:13px;">Не возвращается</td>
+            <td style="font-size:13px;">Рекомендовать мягкие масла для детей (лён, кедр). «В тёплую кашу — не заметит»</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="section-label" style="margin-bottom:16px; margin-top:40px; background:#eff6ff; color:#1e40af;">После нескольких покупок (отток регулярных)</div>
+    <div class="table-wrap fade-up">
+      <table>
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Точка слива</th>
+            <th>Причина</th>
+            <th>Сигнал</th>
+            <th>Что сделать прямо сейчас</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="td-num">12</td>
+            <td style="font-weight:600; font-size:13px;">Нестабильность вкуса</td>
+            <td style="font-size:13px;">Партия отличается от предыдущей</td>
+            <td style="font-size:13px;">Пишет «в прошлый раз было другое» или молча уходит</td>
+            <td style="font-size:13px;">Объяснять сезонность заранее: «Весенний тмин мягче осеннего — вот почему»</td>
+          </tr>
+          <tr>
+            <td class="td-num">13</td>
+            <td style="font-weight:600; font-size:13px;">Конфликт при возврате</td>
+            <td style="font-size:13px;">Клиент считает брак, Кирилл не согласен</td>
+            <td style="font-size:13px;">Негативный отзыв / уход</td>
+            <td style="font-size:13px;">Политика «сначала разберёмся, потом решим». Никогда «так и должно быть»</td>
+          </tr>
+          <tr>
+            <td class="td-num">14</td>
+            <td style="font-weight:600; font-size:13px;">Перерыв в ритуале</td>
+            <td style="font-size:13px;">Уехал в отпуск, заболел — ритуал сломался</td>
+            <td style="font-size:13px;">Перерыв 2+ месяца</td>
+            <td style="font-size:13px;">Сообщение через 45 дней: «Давно не заказывали — всё в порядке?»</td>
+          </tr>
+          <tr>
+            <td class="td-num">15</td>
+            <td style="font-weight:600; font-size:13px;">Логистическое неудобство</td>
+            <td style="font-size:13px;">Нет доставки. Ехать на рынок каждый раз — утомляет</td>
+            <td style="font-size:13px;">Интервалы между покупками растут</td>
+            <td style="font-size:13px;">Запустить доставку (приоритет). До запуска — предложить 250 мл вместо 100 (реже ездить)</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- 5. TOUCHPOINTS -->
+<section class="section fade-up" id="touchpoints" style="background:#fff;">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-label">4. Touchpoints</div>
+      <h2 class="section-title">Карта всех точек контакта</h2>
+      <p class="section-sub">Где и как клиент соприкасается с Кириллом — от первого касания до повторной покупки.</p>
+    </div>
+    <div class="table-wrap fade-up">
+      <table>
+        <thead>
+          <tr>
+            <th>Touchpoint</th>
+            <th>Стадия пути</th>
+            <th>Роль</th>
+            <th>Кто инициирует</th>
+            <th>Текущий статус</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Дорогомиловский рынок</strong></td>
+            <td style="font-size:13px;">4–5 (контакт → покупка)</td>
+            <td style="font-size:13px;">Главный конвертер. Дегустация + разговор проводят через все ступени за 10 минут</td>
+            <td style="font-size:13px;">Клиент приходит</td>
+            <td><span class="badge badge-green">Работает</span></td>
+          </tr>
+          <tr>
+            <td><strong>QR-код на рынке</strong></td>
+            <td style="font-size:13px;">5 (после покупки или вместо)</td>
+            <td style="font-size:13px;">Мост в онлайн. Сохраняет контакт ушедшего без покупки</td>
+            <td style="font-size:13px;">Кирилл предлагает</td>
+            <td><span class="badge badge-red">НЕ СУЩЕСТВУЕТ · Приоритет №1</span></td>
+          </tr>
+          <tr>
+            <td><strong>TG-канал</strong></td>
+            <td style="font-size:13px;">2–4 (образование → доверие)</td>
+            <td style="font-size:13px;">Образовательный контент, видео производства, протоколы</td>
+            <td style="font-size:13px;">Клиент подписывается</td>
+            <td><span class="badge badge-yellow">Существует. Контент нерегулярный</span></td>
+          </tr>
+          <tr>
+            <td><strong>TG-личка</strong></td>
+            <td style="font-size:13px;">4–5 (вопрос → покупка)</td>
+            <td style="font-size:13px;">Личная консультация. Самый высокий % конверсии</td>
+            <td style="font-size:13px;">Клиент пишет</td>
+            <td><span class="badge badge-yellow">Работает. Время ответа — слабое место</span></td>
+          </tr>
+          <tr>
+            <td><strong>TG-ремайндер</strong></td>
+            <td style="font-size:13px;">7 (повтор)</td>
+            <td style="font-size:13px;">Напоминание о повторной покупке. Не маркетинг — сервис</td>
+            <td style="font-size:13px;">Кирилл пишет (полуручной)</td>
+            <td><span class="badge badge-yellow">Частично. Нет системы</span></td>
+          </tr>
+          <tr>
+            <td><strong>Сарафан</strong></td>
+            <td style="font-size:13px;">2 (триггер)</td>
+            <td style="font-size:13px;">Самый дешёвый и тёплый канал привлечения</td>
+            <td style="font-size:13px;">Клиент рекомендует</td>
+            <td><span class="badge badge-green">Органический. Усилить контентом для пересылки</span></td>
+          </tr>
+          <tr>
+            <td><strong>Карточка в упаковке</strong></td>
+            <td style="font-size:13px;">6 (первый опыт)</td>
+            <td style="font-size:13px;">Инструкция по применению, хранению, объяснение вкуса</td>
+            <td style="font-size:13px;">Кирилл вкладывает</td>
+            <td><span class="badge badge-red">НЕ СУЩЕСТВУЕТ · Приоритет №2</span></td>
+          </tr>
+          <tr>
+            <td><strong>Отзовики</strong></td>
+            <td style="font-size:13px;">2–3 (поиск)</td>
+            <td style="font-size:13px;">Читают перед решением. Особенно С3 и С5</td>
+            <td style="font-size:13px;">Клиенты пишут</td>
+            <td><span class="badge badge-yellow">Нет стратегии по отзывам</span></td>
+          </tr>
+          <tr>
+            <td><strong>Подарочный набор</strong></td>
+            <td style="font-size:13px;">2→5 (перепрыгивает стадии)</td>
+            <td style="font-size:13px;">Получатель подарка = новый клиент на ступени 4–5</td>
+            <td style="font-size:13px;">Дарящий клиент</td>
+            <td><span class="badge badge-yellow">Формат есть. Нет карточки рецептов внутри</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- 6. ЭМОЦИОНАЛЬНАЯ КРИВАЯ -->
+<section class="section fade-up" id="emotion">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-label">5. Эмоциональная кривая</div>
+      <h2 class="section-title">Эмоциональный путь покупателя</h2>
+      <p class="section-sub">Пики доверия, провалы страха, точка инерции — и почему ремайндер критичен.</p>
+    </div>
+    <div class="card fade-up">
+      <pre style="font-size:12px; color:var(--n700); line-height:1.8; overflow-x:auto; font-family:monospace;">Эмоция
+  ↑
+  │
+  │     ★ ДЕГУСТАЦИЯ                                    ★ ПОВТОР
+  │     «Этот человек                                   «Как подписка,
+  │      объясняет!»              ★ ПРИВЫК               только по-человечески»
+  │         /\                    «Кажется стало                /\
+  │        /  \                    легче»                      /  \
+  │       /    \                    /\                        /    \
+  │      /      \                  /  \                      /      \
+──│─────/────────\────────────────/────\────────────────────/────────\──→ Время
+  │    /          \     ★ СТРАХ  /      \                 /          \
+  │   /     ★      \   «Горчит! /        \    ★          /            \
+  │  / ИНТЕРЕС      \ Испорч.?»/          \ ЗАБЫЛ      /              \
+  │ / «Врач сказал»  \       /\            \ купить    /
+  │/                   \    /  \            \/         /
+  │ ★ СПОКОЙСТВИЕ       \/     \          ★ ИНЕРЦИЯ  /
+  │ «У меня всё ок»           \         «Потом...» /
+  │                             \                  /
+  ↓                              \________________/
+                                  ↑ БЕЗ РЕМАЙНДЕРА = ОТВАЛ</pre>
+    </div>
+    <div class="grid-3" style="margin-top:24px;">
+      <div class="card fade-up" style="border-top:4px solid var(--brand);">
+        <div class="card-title">Пики</div>
+        <div class="list-item"><div class="list-dot"></div><div>Дегустация / первый пост — «наконец-то кто-то объясняет»</div></div>
+        <div class="list-item"><div class="list-dot"></div><div>Привыкание к ритуалу — «кажется работает»</div></div>
+        <div class="list-item"><div class="list-dot"></div><div>Ремайндер + повторная покупка — «удобно, как подписка»</div></div>
+      </div>
+      <div class="card fade-up" style="border-top:4px solid var(--error);">
+        <div class="card-title">Провалы</div>
+        <div class="list-item"><div class="list-dot-red"></div><div>Первое открытие бутылки — горечь/жжение = страх</div></div>
+        <div class="list-item"><div class="list-dot-red"></div><div>Отсутствие эффекта на 30-й день (С5)</div></div>
+        <div class="list-item"><div class="list-dot-red"></div><div>Инерция без ремайндера — выпадает из ритуала</div></div>
+      </div>
+      <div class="card fade-up" style="border-top:4px solid var(--warning);">
+        <div class="card-title">Ключевые вмешательства</div>
+        <div class="list-item"><div class="list-dot"></div><div>Превентивное объяснение вкуса (день 2–3)</div></div>
+        <div class="list-item"><div class="list-dot"></div><div>Поддержка на 25–30 день для С5</div></div>
+        <div class="list-item"><div class="list-dot"></div><div>Ремайндер на 21–25 день для С1/С3</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 7. РЫЧАГИ УДЕРЖАНИЯ -->
+<section class="section fade-up" id="retention" style="background:#fff;">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-label">6. Удержание</div>
+      <h2 class="section-title">Рычаги удержания и петля лояльности</h2>
+      <p class="section-sub">Что не даёт уйти на каждой стадии — и как работает петля повторных покупок.</p>
+    </div>
+
+    <div class="retention-grid fade-up" style="margin-bottom:48px;">
+      <div class="retention-card">
+        <div class="retention-stage">Первый контакт</div>
+        <div class="retention-lever">Объяснение, а не продажа</div>
+        <div class="retention-how">Кирилл объясняет механизм — человек чувствует уважение к интеллекту. Не «купите», а «вот почему»</div>
+        <div class="retention-seg">Все, особенно С1, С3, С5</div>
+      </div>
+      <div class="retention-card">
+        <div class="retention-stage">Первая покупка</div>
+        <div class="retention-lever">100 мл = минимальный риск</div>
+        <div class="retention-how">«Если не то — потерял 700 ₽, а не 2 500». Психологическая точка входа</div>
+        <div class="retention-seg">Все сегменты</div>
+      </div>
+      <div class="retention-card">
+        <div class="retention-stage">Первый опыт</div>
+        <div class="retention-lever">Превентивное объяснение вкуса</div>
+        <div class="retention-how">«Тмин жжёт — это тимохинон». Упреждает панику до того, как она возникла</div>
+        <div class="retention-seg">С1, С3</div>
+      </div>
+      <div class="retention-card">
+        <div class="retention-stage">Первая неделя</div>
+        <div class="retention-lever">Ответ в личке за 2–4 часа</div>
+        <div class="retention-how">Вопрос «это нормально?» = момент паники. Быстрый ответ = сохранённый клиент</div>
+        <div class="retention-seg">С1, С3, С5</div>
+      </div>
+      <div class="retention-card">
+        <div class="retention-stage">21–25 день</div>
+        <div class="retention-lever">Ремайндер</div>
+        <div class="retention-how">«Заканчивается? Отжали свежий» — не маркетинг, а сервис. Человек благодарен</div>
+        <div class="retention-seg">С1, С3, С4</div>
+      </div>
+      <div class="retention-card">
+        <div class="retention-stage">30 день (С5)</div>
+        <div class="retention-lever">Объяснение цикла</div>
+        <div class="retention-how">«60 дней — структурные изменения. Продолжайте» — удерживает на критической точке</div>
+        <div class="retention-seg">С5</div>
+      </div>
+      <div class="retention-card">
+        <div class="retention-stage">45–60 день</div>
+        <div class="retention-lever">Расширение линейки</div>
+        <div class="retention-how">«Попробуйте ещё кедровое / миндальное» — новый продукт = новый интерес</div>
+        <div class="retention-seg">С2→С5, С1, С4</div>
+      </div>
+      <div class="retention-card">
+        <div class="retention-stage">Регулярность</div>
+        <div class="retention-lever">Личное общение</div>
+        <div class="retention-how">Кирилл пишет сам, не бот. «Как масло?» перед «Купите ещё»</div>
+        <div class="retention-seg">Все сегменты</div>
+      </div>
+    </div>
+
+    <div class="grid-2 fade-up">
+      <div class="loyalty-loop">
+        <div class="card-title" style="margin-bottom:20px;">Петля лояльности</div>
+        <div class="loop-item">
+          <div class="loop-item-title">Повторная покупка</div>
+          <div class="loop-item-sub">Ремайндер 21–25 дней → «Удобно, как подписка, только по-человечески»</div>
+        </div>
+        <div class="loop-arrow">↓</div>
+        <div class="loop-item">
+          <div class="loop-item-title">Расширение чека</div>
+          <div class="loop-item-sub">100 мл → 250 мл · 1 масло → набор · С2 → С5 (ногти!)</div>
+        </div>
+        <div class="loop-arrow">↓</div>
+        <div class="loop-item">
+          <div class="loop-item-title">История у ужина</div>
+          <div class="loop-item-sub">«Есть один человек на Дорогомиловском...» Масло = социальная валюта</div>
+        </div>
+        <div class="loop-arrow">↓</div>
+        <div class="loop-item">
+          <div class="loop-item-title">Рекомендация</div>
+          <div class="loop-item-sub">С1: тихая · С2: мамский чат · С3: «мужикам с работы» · С4: гастрономам · С5: с фото расчёски</div>
+        </div>
+        <div class="loop-arrow">↓</div>
+        <div class="loop-item">
+          <div class="loop-item-title">Новый клиент</div>
+          <div class="loop-item-sub">Входит на ступени 3–4. Доверие дарителя/рекомендателя уже есть</div>
+        </div>
+        <div class="loop-arrow">↓</div>
+        <div class="loop-item">
+          <div class="loop-item-title">Подарочный набор</div>
+          <div class="loop-item-sub">Скрытый инструмент привлечения. Получатель = новый клиент без прохождения всей лестницы</div>
+        </div>
+      </div>
+      <div>
+        <div class="card" style="margin-bottom:20px;">
+          <div class="card-title">Механизм петли</div>
+          <p style="font-size:14px; color:var(--n600);">Покупатель потребляет не только масло — он потребляет <strong>историю производителя</strong> и пересказывает её. Кирилл продаёт масло и нарратив: «я знаю кто это сделал, и могу рассказать».</p>
+        </div>
+        <div class="card-brand">
+          <div class="card-title">Подарочный набор как воронка</div>
+          <p style="font-size:14px; color:var(--n700); margin-bottom:12px;">Каждый подаренный набор — потенциальный новый клиент. Получатель перепрыгивает стадии 1–3 через доверие дарителя.</p>
+          <p style="font-size:13px; font-style:italic; color:var(--n500);">Из DR ЦА: «Покупала в подарок, оставила себе»</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 8. ПРИОРИТЕТЫ -->
+<section class="section fade-up" id="priorities">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-label">7. Приоритеты</div>
+      <h2 class="section-title">Что починить прямо сейчас</h2>
+      <p class="section-sub">Семь приоритетов от критичного к менее срочному с конкретными действиями и ожидаемым эффектом.</p>
+    </div>
+
+    <div class="priority-card fade-up">
+      <div class="priority-num">1</div>
+      <div class="priority-title">QR-код на рынке — День 1</div>
+      <div class="priority-problem">Проблема: каждый ушедший без контакта = потерянный навсегда. Нет базы = нет ремайндеров = нет повторов.</div>
+      <div class="priority-solution">Решение: QR-код на столе → TG-канал. Фраза при уходе: «Подпишитесь — пишу когда свежая партия. Если решите позже — напишете».</div>
+      <div class="priority-effect">Эффект: десятки сохранённых контактов в месяц. Каждый = потенциальный LTV 15 000 ₽+/год</div>
+    </div>
+
+    <div class="priority-card fade-up">
+      <div class="priority-num">2</div>
+      <div class="priority-title">Карточка-инструкция в упаковке — Неделя 1</div>
+      <div class="priority-problem">Проблема: горечь тмина без предупреждения = бутылка в мусор. Неправильное хранение = масло испортилось = «плохой продукт».</div>
+      <div class="priority-solution">Решение: карточка A6 внутри каждой покупки. Сторона 1: протокол приёма. Сторона 2: 3 правила хранения + «если вкус непривычный — это нормально, вот почему» + QR.</div>
+      <div class="priority-effect">Эффект: снижает потери на стадии 6 (первый опыт) на 30–50%</div>
+    </div>
+
+    <div class="priority-card fade-up">
+      <div class="priority-num">3</div>
+      <div class="priority-title">Система ремайндеров — Неделя 2</div>
+      <div class="priority-problem">Проблема: самые ценные покупатели (С1, С3) забывают купить повторно. Не потому что разочарованы — потому что инерция.</div>
+      <div class="priority-solution">Решение: таблица (Google Sheets / Notion): имя + масло + дата покупки + дата ремайндера. Тайминг: С1 — 21–25 дней · С2 — 30–45 дней · С3 — 21–28 дней · С4 — 45–60 дней · С5 — 28–30 дней.</div>
+      <div class="priority-effect">Эффект: +30–50% повторных покупок. При LTV 15 000 ₽/год — каждый сохранённый клиент = 15 000 ₽</div>
+    </div>
+
+    <div class="priority-card fade-up">
+      <div class="priority-num">4</div>
+      <div class="priority-title">Превентивное сообщение через 2–3 дня — Неделя 2</div>
+      <div class="priority-problem">Проблема: момент первого открытия — момент страха. Горечь без объяснения = потеря.</div>
+      <div class="priority-solution">Шаблоны: Тмин — «Жжёт — это тимохинон. Начните с 0,5 ч.л., запейте тёплой водой» · Расторопша — «Мягкое тепло — это нормально» · Лён — «Если горчит — напишите, разберёмся. Свежее льняное не горчит»</div>
+      <div class="priority-effect">Эффект: упреждает жалобу. Создаёт ощущение заботы. Снижает потери на стадии 6</div>
+    </div>
+
+    <div class="priority-card fade-up">
+      <div class="priority-num">5</div>
+      <div class="priority-title">Ответ в личке за 2–4 часа — Постоянно</div>
+      <div class="priority-problem">Проблема: «слабое место — ответы клиентам» (Кирилл, 29.03). Каждый неотвеченный вопрос в личке = потерянный покупатель на стадии 4.</div>
+      <div class="priority-solution">Решение: два окна проверки сообщений — утром (8–9) и вечером (20–21). Шаблоны ответов на частые вопросы: горечь, хранение, детям, протокол.</div>
+      <div class="priority-effect">Эффект: прямая конверсия вопроса в покупку. Татьяна, Андрей, Елена — все купили после ответа в личке</div>
+    </div>
+
+    <div class="priority-card fade-up">
+      <div class="priority-num">6</div>
+      <div class="priority-title">Контент для пересылки — Недели 3–4</div>
+      <div class="priority-problem">Проблема: сарафан — главный канал привлечения, но нет контента, который легко переслать.</div>
+      <div class="priority-solution">Посты: «Можно ли детям льняное» · «Тмин горчит — почему это хорошо» · «4 заправки с маслом» · «Как хранить — 3 правила». Формат: текст + фото. В конце: «Если знаете кого-то кому это полезно — перешлите»</div>
+      <div class="priority-effect">Эффект: Ольга пересылает в мамский чат. Андрей — мужикам. Михаил — друзьям-гурманам</div>
+    </div>
+
+    <div class="priority-card fade-up" style="border-left-color:var(--n400);">
+      <div class="priority-num" style="background:var(--n400);">7</div>
+      <div class="priority-title">Доставка по Москве — Месяц 2–3</div>
+      <div class="priority-problem">Проблема: «доставки пока нет вообще» (Кирилл, 29.03). Регулярные покупатели устают ездить на рынок. Интервалы между покупками растут.</div>
+      <div class="priority-solution">Начать с простого: курьерская доставка по Москве через заказ в TG-личке. Без платформы, без сайта — просто «написали → оплатили → привезли».</div>
+      <div class="priority-effect">Эффект: снимает главный логистический барьер для перехода в регулярную покупку</div>
+    </div>
+
+    <div class="table-wrap fade-up" style="margin-top:40px;">
+      <table>
+        <thead>
+          <tr>
+            <th>Срок</th>
+            <th>Действие</th>
+            <th>Стадия пути</th>
+            <th>Сегменты</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td><span class="badge badge-red">День 1</span></td><td style="font-size:13px;">QR-код на столе рынка</td><td style="font-size:13px;">5 → 7</td><td style="font-size:13px;">Все</td></tr>
+          <tr><td><span class="badge badge-yellow">Неделя 1</span></td><td style="font-size:13px;">Карточка-инструкция в упаковке</td><td style="font-size:13px;">6</td><td style="font-size:13px;">Все</td></tr>
+          <tr><td><span class="badge badge-yellow">Неделя 2</span></td><td style="font-size:13px;">Таблица ремайндеров + первые сообщения</td><td style="font-size:13px;">7</td><td style="font-size:13px;">С1, С3</td></tr>
+          <tr><td><span class="badge badge-yellow">Неделя 2</span></td><td style="font-size:13px;">Шаблоны превентивных сообщений (день 2–3)</td><td style="font-size:13px;">6</td><td style="font-size:13px;">С1, С3</td></tr>
+          <tr><td><span class="badge badge-yellow">Неделя 3</span></td><td style="font-size:13px;">Шаблоны ответов на частые вопросы</td><td style="font-size:13px;">4</td><td style="font-size:13px;">Все</td></tr>
+          <tr><td><span class="badge badge-yellow">Недели 3–4</span></td><td style="font-size:13px;">4 поста для пересылки (дети, хранение, горечь, рецепты)</td><td style="font-size:13px;">2–3</td><td style="font-size:13px;">С1, С2, С3, С4</td></tr>
+          <tr><td><span class="badge badge-brand">Месяц 2</span></td><td style="font-size:13px;">Регулярный контент (2–3 поста/неделю)</td><td style="font-size:13px;">2–4</td><td style="font-size:13px;">Все</td></tr>
+          <tr><td><span class="badge badge-brand">Месяц 2–3</span></td><td style="font-size:13px;">Доставка по Москве</td><td style="font-size:13px;">7</td><td style="font-size:13px;">Все</td></tr>
+          <tr><td><span class="badge badge-brand">Месяц 3–4</span></td><td style="font-size:13px;">Beauty-контент для С5</td><td style="font-size:13px;">2–4</td><td style="font-size:13px;">С5</td></tr>
+          <tr><td><span class="badge badge-brand">Месяц 4–6</span></td><td style="font-size:13px;">Подарочный набор с карточкой рецептов</td><td style="font-size:13px;">5 + привлечение</td><td style="font-size:13px;">С4, подарок</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="container">
+    <div class="footer-inner">
+      <img src="../../assets/logo-horizontal-dark.png" alt="Магия Масел" style="height:32px; width:auto; opacity:.7;">
+      <div class="footer-meta">
+        <div class="footer-meta-item">
+          <span class="footer-meta-label">Клиент</span>
+          <span class="footer-meta-value">Кирилл Бродский</span>
+        </div>
+        <div class="footer-meta-item">
+          <span class="footer-meta-label">Документ</span>
+          <span class="footer-meta-value">M4 · 8 из 8</span>
+        </div>
+        <div class="footer-meta-item">
+          <span class="footer-meta-label">Версия</span>
+          <span class="footer-meta-value">1.0 (Opus) · 31.03.2026</span>
+        </div>
+        <div class="footer-meta-item">
+          <span class="footer-meta-label">Источники</span>
+          <span class="footer-meta-value">M2 DR ЦА + M3 Кирилл 29.03 + M4 все документы</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script>
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) entry.target.classList.add('visible');
+    });
+  }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+
+  document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
+</script>
+</body>
+</html>

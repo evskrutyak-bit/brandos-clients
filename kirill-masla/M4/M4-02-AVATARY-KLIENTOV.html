@@ -1,0 +1,779 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>M4-02 — Аватары клиентов · Магия Масел</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --brand: #2C5F2D;
+      --brand-dark: #1a4a1b;
+      --brand-light: #4a8f4b;
+      --brand-bg: #e8f5e9;
+      --accent: #D4AF37;
+      --accent-bg: #fdf8e8;
+      --n50: #f8fafc; --n100: #f1f5f9; --n200: #e2e8f0;
+      --n300: #cbd5e1; --n400: #94a3b8; --n500: #64748b;
+      --n600: #475569; --n700: #334155; --n800: #1e293b; --n900: #0f172a;
+      --success: #10b981; --warning: #f59e0b; --error: #ef4444; --info: #3b82f6;
+      --font: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      --shadow-card: 0 1px 3px 0 rgba(0,0,0,.05), 0 1px 2px -1px rgba(0,0,0,.05);
+      --shadow-hover: 0 10px 25px -5px rgba(0,0,0,.08), 0 8px 10px -6px rgba(0,0,0,.04);
+      --shadow-btn: 0 4px 14px 0 rgba(44,95,45,.35);
+      --r-sm:4px; --r-md:6px; --r-lg:8px; --r-xl:12px; --r-2xl:16px; --r-3xl:24px; --r-full:9999px;
+    }
+
+    body { font-family: var(--font); font-size: 16px; line-height: 1.6; color: var(--n600); background: var(--n100); }
+
+    @keyframes fade-up { 0%{opacity:0;transform:translateY(20px)} 100%{opacity:1;transform:translateY(0)} }
+    .fade-up { opacity:0; transform:translateY(20px); transition:opacity .6s ease-out, transform .6s ease-out; }
+    .fade-up.visible { opacity:1; transform:translateY(0); }
+
+    .container { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
+    .section { padding: 80px 0; }
+
+    /* Nav */
+    .nav-wrap {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 300;
+      background: rgba(255,255,255,.93); backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--n200); height: 64px;
+    }
+    .nav-inner { height:100%; display:flex; align-items:center; justify-content:space-between; }
+    .nav-logo img { height:40px; width:auto; display:block; }
+    .nav-links { display:flex; gap:20px; flex-wrap:wrap; }
+    .nav-links a { font-size:13px; font-weight:500; color:var(--n600); text-decoration:none; transition:color .2s; }
+    .nav-links a:hover { color:var(--brand); }
+    .nav-badge {
+      font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:.05em;
+      color:var(--brand); background:var(--brand-bg);
+      padding:5px 12px; border-radius:var(--r-full); white-space:nowrap;
+    }
+
+    /* Section header */
+    .section-header { margin-bottom:40px; }
+    .section-label {
+      display:inline-block; font-size:11px; font-weight:700; text-transform:uppercase;
+      letter-spacing:.08em; color:var(--brand); background:var(--brand-bg);
+      padding:4px 12px; border-radius:var(--r-full); margin-bottom:12px;
+    }
+    .section-title { font-size:30px; font-weight:600; color:var(--n900); line-height:1.25; margin-bottom:8px; }
+    .section-sub { font-size:16px; color:var(--n500); }
+
+    /* Grid */
+    .grid-2 { display:grid; grid-template-columns:repeat(auto-fit,minmax(340px,1fr)); gap:20px; }
+    .grid-3 { display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:20px; }
+
+    /* Badge */
+    .badge { display:inline-flex; align-items:center; padding:3px 10px; border-radius:var(--r-full); font-size:12px; font-weight:600; }
+    .badge-green { background:#d1fae5; color:#065f46; }
+    .badge-yellow { background:#fef3c7; color:#92400e; }
+    .badge-blue { background:#dbeafe; color:#1e40af; }
+    .badge-brand { background:var(--brand-bg); color:var(--brand-dark); }
+    .badge-accent { background:var(--accent-bg); color:#7a6000; }
+    .badge-red { background:#fee2e2; color:#991b1b; }
+    .badge-gray { background:var(--n100); color:var(--n500); }
+
+    /* Table */
+    .table-wrap { overflow-x:auto; border-radius:var(--r-2xl); border:1px solid var(--n200); margin:20px 0; }
+    table { width:100%; border-collapse:collapse; background:#fff; }
+    thead tr { background:var(--n50); border-bottom:2px solid var(--n200); }
+    th { padding:14px 18px; text-align:left; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.05em; color:var(--n500); }
+    td { padding:14px 18px; font-size:14px; color:var(--n600); border-bottom:1px solid var(--n200); }
+    tr:last-child td { border-bottom:none; }
+    tbody tr { transition:background .2s; }
+    tbody tr:hover { background:var(--n50); }
+    .td-num { font-size:13px; color:var(--n400); font-family:monospace; }
+
+    /* Alert */
+    .alert { display:flex; gap:14px; border-radius:var(--r-xl); padding:18px; margin:16px 0; }
+    .alert-warning { background:#fffbeb; border:1px solid #fde68a; border-left:4px solid var(--warning); }
+    .alert-error { background:#fff1f2; border:1px solid #fecdd3; border-left:4px solid var(--error); }
+    .alert-info { background:#eff6ff; border:1px solid #bfdbfe; border-left:4px solid var(--info); }
+    .alert-success { background:#f0fdf4; border:1px solid #bbf7d0; border-left:4px solid var(--success); }
+    .alert-brand { background:var(--brand-bg); border:1px solid #a5d6a7; border-left:4px solid var(--brand); }
+    .alert-icon { font-size:18px; flex-shrink:0; margin-top:1px; }
+
+    /* Card */
+    .card {
+      background:#fff; border-radius:var(--r-2xl); border:1px solid var(--n200);
+      padding:28px; box-shadow:var(--shadow-card);
+      transition:transform .3s ease, box-shadow .3s ease;
+    }
+    .card:hover { transform:translateY(-3px); box-shadow:var(--shadow-hover); }
+    .card-brand {
+      background: linear-gradient(135deg, var(--brand-bg) 0%, #fff 100%);
+      border-radius:var(--r-2xl); border:1px solid #a5d6a7; padding:28px; box-shadow:var(--shadow-card);
+    }
+    .card-accent {
+      background: var(--accent-bg);
+      border-radius:var(--r-2xl); border:1px solid #e8d87a; padding:28px; box-shadow:var(--shadow-card);
+    }
+    .card-title { font-size:16px; font-weight:700; color:var(--n900); margin-bottom:12px; }
+    .card-icon { font-size:24px; margin-bottom:12px; }
+
+    /* Stat cards */
+    .stat-card {
+      background:linear-gradient(135deg,var(--brand) 0%,var(--brand-dark) 100%);
+      border-radius:var(--r-2xl); padding:24px; color:#fff; box-shadow:var(--shadow-btn);
+    }
+    .stat-label { font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.05em; opacity:.75; margin-bottom:8px; }
+    .stat-value { font-size:28px; font-weight:700; line-height:1; margin-bottom:6px; }
+    .stat-desc { font-size:13px; opacity:.8; }
+
+    /* List item */
+    .list-item {
+      display:flex; gap:10px; align-items:flex-start;
+      padding:9px 0; border-bottom:1px solid var(--n100);
+      font-size:14px; color:var(--n600);
+    }
+    .list-item:last-child { border-bottom:none; }
+    .list-dot { width:8px; height:8px; border-radius:50%; background:var(--brand); flex-shrink:0; margin-top:6px; }
+    .list-dot-red { width:8px; height:8px; border-radius:50%; background:var(--error); flex-shrink:0; margin-top:6px; }
+
+    /* Status icons */
+    .s-ok { color:var(--success); font-weight:600; }
+    .s-warn { color:var(--warning); font-weight:600; }
+    .s-need { color:#f97316; font-weight:600; }
+
+    @media (max-width:768px) {
+      .nav-links { display:none; }
+      .section-title { font-size:24px; }
+      .grid-2, .grid-3 { grid-template-columns:1fr; }
+    }
+
+    /* Hero */
+    .hero {
+      background: linear-gradient(135deg, var(--brand-dark) 0%, var(--brand) 50%, var(--brand-light) 100%);
+      padding: 120px 0 80px; color:#fff; position:relative; overflow:hidden;
+    }
+    .hero::before {
+      content:''; position:absolute; inset:0;
+      background: radial-gradient(ellipse at 70% 50%, rgba(212,175,55,.15) 0%, transparent 60%);
+    }
+    .hero-inner { display:flex; align-items:center; gap:48px; flex-wrap:wrap; }
+    .hero-logo-wrap { flex-shrink:0; }
+    .hero-logo-wrap img { height:140px; width:auto; display:block; border-radius:var(--r-xl); }
+    .hero-content { flex:1; min-width:280px; }
+    .hero-badge {
+      display:inline-block; font-size:11px; font-weight:700; text-transform:uppercase;
+      letter-spacing:.1em; background:rgba(255,255,255,.15); color:#fff;
+      border:1px solid rgba(255,255,255,.3); padding:6px 16px;
+      border-radius:var(--r-full); margin-bottom:20px; backdrop-filter:blur(8px);
+    }
+    .hero-title { font-size:52px; font-weight:700; line-height:1.1; margin-bottom:16px; }
+    .hero-title span { color:var(--accent); }
+    .hero-sub { font-size:18px; opacity:.85; max-width:600px; margin-bottom:32px; line-height:1.6; }
+    .hero-meta { display:flex; gap:24px; flex-wrap:wrap; }
+    .hero-meta-item { display:flex; flex-direction:column; gap:3px; }
+    .hero-meta-label { font-size:10px; text-transform:uppercase; letter-spacing:.08em; opacity:.6; }
+    .hero-meta-value { font-size:14px; font-weight:600; }
+
+    @media (max-width:768px) {
+      .hero { padding: 100px 0 60px; }
+      .hero-title { font-size:34px; }
+      .hero-logo-wrap img { height:80px; }
+    }
+
+    /* Footer */
+    .footer { background:var(--n900); color:var(--n400); padding:40px 0; font-size:13px; }
+    .footer-inner { display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:16px; }
+    .footer-meta { display:flex; gap:20px; flex-wrap:wrap; }
+    .footer-meta-item { display:flex; flex-direction:column; gap:2px; }
+    .footer-meta-label { font-size:10px; text-transform:uppercase; letter-spacing:.05em; color:var(--n600); }
+    .footer-meta-value { font-size:12px; color:var(--n400); }
+
+    /* Avatar card */
+    .avatar-header {
+      display:flex; align-items:center; gap:20px; margin-bottom:20px;
+    }
+    .avatar-emoji {
+      font-size:48px; width:72px; height:72px; display:flex; align-items:center;
+      justify-content:center; background:var(--brand-bg); border-radius:var(--r-2xl); flex-shrink:0;
+    }
+    .avatar-name { font-size:22px; font-weight:700; color:var(--n900); }
+    .avatar-sub { font-size:14px; color:var(--n500); margin-top:4px; }
+    .quote-block {
+      background:var(--n50); border-left:3px solid var(--accent); border-radius:0 var(--r-lg) var(--r-lg) 0;
+      padding:14px 18px; margin:16px 0; font-size:14px; color:var(--n700); font-style:italic;
+    }
+    .journey-step {
+      display:flex; gap:12px; align-items:flex-start; padding:8px 0;
+      border-bottom:1px solid var(--n100); font-size:13px; color:var(--n600);
+    }
+    .journey-step:last-child { border-bottom:none; }
+    .journey-arrow { color:var(--brand); font-weight:700; flex-shrink:0; margin-top:2px; }
+    .ltv-row { display:flex; gap:12px; flex-wrap:wrap; margin-top:16px; }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav-wrap">
+  <div class="container">
+    <div class="nav-inner">
+      <div class="nav-logo"><img src="../../assets/logo-horizontal-light.png" alt="Магия Масел"></div>
+      <div class="nav-links">
+        <a href="#overview">Обзор</a>
+        <a href="#a1">А1 Татьяна</a>
+        <a href="#a2">А2 Ольга</a>
+        <a href="#a3">А3 Андрей</a>
+        <a href="#a4">А4 Михаил</a>
+        <a href="#a5">А5 Елена</a>
+        <a href="#matrix">Матрица</a>
+      </div>
+      <div class="nav-badge">M4 · Документ 2/8</div>
+    </div>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="container">
+    <div class="hero-inner">
+      <div class="hero-logo-wrap">
+        <img src="../../assets/logo-badge-dark.png" alt="Магия Масел — Кирилл Бродский">
+      </div>
+      <div class="hero-content">
+        <div class="hero-badge">M4 · Аудитория · Документ 2 из 8</div>
+        <h1 class="hero-title">Аватары <span>клиентов</span></h1>
+        <p class="hero-sub">Пять персон — контекст жизни, триггеры, барьеры, путь до покупки.</p>
+        <div class="hero-meta">
+          <div class="hero-meta-item">
+            <span class="hero-meta-label">Клиент</span>
+            <span class="hero-meta-value">Кирилл Бродский</span>
+          </div>
+          <div class="hero-meta-item">
+            <span class="hero-meta-label">Дата</span>
+            <span class="hero-meta-value">31.03.2026</span>
+          </div>
+          <div class="hero-meta-item">
+            <span class="hero-meta-label">Версия</span>
+            <span class="hero-meta-value">1.0 (Opus)</span>
+          </div>
+          <div class="hero-meta-item">
+            <span class="hero-meta-label">Аватаров</span>
+            <span class="hero-meta-value">5 персон</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 1. ОБЗОР -->
+<section class="section fade-up" id="overview">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-label">Принцип построения</div>
+      <h2 class="section-title">Не усреднённый тип — конкретный человек</h2>
+      <p class="section-sub">Источники: цифровая речь потребителей (Яндекс Маркет, iRecommend, Babyblog), наблюдения Кирилла с Дорогомиловского рынка, гипотезы M2, ответы 29.03.2026.</p>
+    </div>
+    <div class="alert alert-brand fade-up">
+      <span class="alert-icon">💡</span>
+      <div>
+        <strong style="color:var(--brand-dark); display:block; margin-bottom:4px;">Каждый аватар — это конкретный человек с историей</strong>
+        <p style="font-size:14px; color:var(--n600);">Не «женщины 35–55, ЗОЖ», а Татьяна из Теплого Стана, которой ЛОР сказал попить тмин, и она читала 47 отзывов на Яндекс Маркете два часа вечером. Цитаты — реальные фрагменты речи из DR ЦА.</p>
+      </div>
+    </div>
+    <div class="table-wrap fade-up">
+      <table>
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Аватар</th>
+            <th>Сегмент</th>
+            <th>Масло-якорь</th>
+            <th>LTV/год</th>
+            <th>Главный триггер</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="td-num">А1</td>
+            <td><strong>Татьяна, 47</strong></td>
+            <td><span class="badge badge-brand">С1 Функциональный</span></td>
+            <td>Тмин, расторопша</td>
+            <td class="td-num" style="color:var(--brand); font-weight:600;">15–30 тыс. ₽</td>
+            <td>Назначение врача</td>
+          </tr>
+          <tr>
+            <td class="td-num">А2</td>
+            <td><strong>Ольга, 36</strong></td>
+            <td><span class="badge badge-green">С2 Семейный ЗОЖ</span></td>
+            <td>Лён, кедр</td>
+            <td class="td-num">8–15 тыс. ₽</td>
+            <td>Контент / рынок</td>
+          </tr>
+          <tr>
+            <td class="td-num">А3</td>
+            <td><strong>Андрей, 53</strong></td>
+            <td><span class="badge badge-blue">С3 Крафт-контролёр</span></td>
+            <td>Тмин, тыква</td>
+            <td class="td-num" style="color:var(--brand); font-weight:600;">15–25 тыс. ₽</td>
+            <td>Рынок (жена привела)</td>
+          </tr>
+          <tr>
+            <td class="td-num">А4</td>
+            <td><strong>Михаил, 42</strong></td>
+            <td><span class="badge badge-accent">С4 Гастроном</span></td>
+            <td>Кедр, грецкий, кунжут</td>
+            <td class="td-num">8–18 тыс. ₽</td>
+            <td>Рынок / дегустация</td>
+          </tr>
+          <tr>
+            <td class="td-num">А5</td>
+            <td><strong>Елена, 33</strong></td>
+            <td><span class="badge badge-yellow">С5 Красота изнутри</span></td>
+            <td>Миндаль, конопля</td>
+            <td class="td-num">6–12 тыс. ₽</td>
+            <td>Отзыв / TG-канал</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- А1 ТАТЬЯНА -->
+<section class="section fade-up" id="a1" style="background:#fff;">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-label">Аватар А1 · С1 Функциональный</div>
+      <h2 class="section-title">Татьяна, 47 лет</h2>
+      <p class="section-sub">Бухгалтер в строительной компании, 18 лет на одном месте. Москва, Юго-Запад. ЛОР сказал попить тмин.</p>
+    </div>
+    <div class="grid-2 fade-up">
+      <div>
+        <div class="avatar-header">
+          <div class="avatar-emoji">👩</div>
+          <div>
+            <div class="avatar-name">Татьяна Владимировна</div>
+            <div class="avatar-sub">47 лет · Бухгалтер · Доход 95–120 тыс./мес. совместный</div>
+          </div>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <tbody>
+              <tr><td style="font-weight:600; width:40%;">Семья</td><td>Замужем, двое детей (21 и 16 лет)</td></tr>
+              <tr><td style="font-weight:600;">Город</td><td>Москва, Теплый Стан / Тропарёво</td></tr>
+              <tr><td style="font-weight:600;">Сегмент</td><td>С1а — «Назначил врач»</td></tr>
+              <tr><td style="font-weight:600;">Масло-якорь</td><td>Тмин, расторопша</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p style="font-size:14px; color:var(--n600); line-height:1.7; margin-top:16px;">Татьяна — человек, которого системность не пугает. Ведёт семейный бюджет в Excel. Когда ЛОР сказал «попробуйте масло чёрного тмина» — записала в блокнот, погуглила вечером, нашла Яндекс Маркет. Прочитала 47 отзывов, прежде чем добавить что-то в корзину.</p>
+        <p style="font-size:14px; color:var(--n600); line-height:1.7; margin-top:10px;">Таблетки вызывают внутреннее сопротивление: «я не больна, зачем пить химию». Масло — это еда, не лекарство. Это понятнее.</p>
+      </div>
+      <div>
+        <div class="card">
+          <div class="card-title">Психографика</div>
+          <div class="list-item"><div class="list-dot"></div><div><strong>Цели:</strong> Поддержать иммунитет без таблеток. Найти что-то, что «работает и можно объяснить»</div></div>
+          <div class="list-item"><div class="list-dot-red"></div><div><strong>Страхи:</strong> Купить испорченное. Пить месяц и не понять. Переплатить за ничто</div></div>
+          <div class="list-item"><div class="list-dot"></div><div><strong>Скрытое:</strong> Найти «своего» поставщика — как мясник на рынке в советском детстве, которому доверяли</div></div>
+          <div class="list-item"><div class="list-dot-red"></div><div><strong>Барьеры:</strong> Вкус тмина — шок для новичка. «Горит — значит испортилось». Непонятно, пить до или после еды</div></div>
+          <div class="list-item"><div class="list-dot"></div><div><strong>Убеждает:</strong> Конкретный протокол. Объяснение механизма. Честность о противопоказаниях</div></div>
+        </div>
+        <div class="quote-block" style="margin-top:16px;">«Мне ЛОР сказал попробовать масло тмина. Я читала в интернете, но там всё так противоречиво. Вы сами давите? А как понять, что свежее? И как правильно принимать — у меня желудок чувствительный…»</div>
+      </div>
+    </div>
+
+    <div class="grid-2 fade-up" style="margin-top:24px;">
+      <div class="card-brand">
+        <div class="card-title">Момент решения</div>
+        <p style="font-size:14px; color:var(--n600); line-height:1.7;">ЛОР на приёме в ноябре назначил тмин. Татьяна поехала на Дорогомиловский в субботу «посмотреть». Кирилл объяснил разницу гидравлики и шнека. <strong>«Наконец-то человек, который объясняет, а не продаёт»</strong>. Взяла 100 мл.</p>
+      </div>
+      <div class="card">
+        <div class="card-title">Путь до повтора</div>
+        <div class="journey-step"><div class="journey-arrow">→</div><div>Рекомендация ЛОРа → поиск на Яндекс Маркет (47 отзывов)</div></div>
+        <div class="journey-step"><div class="journey-arrow">→</div><div>Приезд на Дорогомиловский → объяснение тимохинона → покупка 100 мл</div></div>
+        <div class="journey-step"><div class="journey-arrow">→</div><div>Первые дни: горит → Кирилл объясняет → «нормально»</div></div>
+        <div class="journey-step"><div class="journey-arrow">→</div><div>Ремайндер Кирилла на 21-й день → повтор</div></div>
+        <div class="journey-step"><div class="journey-arrow">→</div><div>Через 3 месяца: + расторопша, рекомендует подруге</div></div>
+        <div class="ltv-row">
+          <span class="badge badge-green">LTV 15–30 тыс. ₽/год</span>
+          <span class="badge badge-brand">10–12 покупок в год</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="alert alert-warning fade-up">
+      <span class="alert-icon">⚠️</span>
+      <div>
+        <strong style="color:#92400e; display:block; margin-bottom:4px;">Точка слива А1</strong>
+        <p style="font-size:14px; color:var(--n600);">Если вкус напугал и некому объяснить. Если нет ремайндера — забудет купить. <strong>Ремайндер на 21–25 день спасает повторную покупку.</strong></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- А2 ОЛЬГА -->
+<section class="section fade-up" id="a2">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-label">Аватар А2 · С2 Семейный ЗОЖ</div>
+      <h2 class="section-title">Ольга, 36 лет</h2>
+      <p class="section-sub">Маркетолог в digital-агентстве. Муж (IT), двое детей: 8 и 4 года. Читает состав на упаковках. Москва, Митино.</p>
+    </div>
+    <div class="grid-2 fade-up">
+      <div>
+        <div class="avatar-header">
+          <div class="avatar-emoji">👩‍👧‍👦</div>
+          <div>
+            <div class="avatar-name">Ольга</div>
+            <div class="avatar-sub">36 лет · Маркетолог · Доход 80–110 тыс./мес. совместный</div>
+          </div>
+        </div>
+        <p style="font-size:14px; color:var(--n600); line-height:1.7; margin-top:16px;">Ольга читает состав на упаковках. Перешла на «нормальное» масло три года назад, когда начала разбираться в питании для детей. Льняное из магазина здорового питания один раз открыла — пахло странно, выкинула. С тех пор покупает маленькие бутылки.</p>
+        <p style="font-size:14px; color:var(--n600); line-height:1.7; margin-top:10px;">Масло для неё — это «добавить в кашу утром», «заправить салат», «дать ребёнку в еду». Кухня осознанная, но без фанатизма.</p>
+        <div class="quote-block" style="margin-top:16px;">«А это вот для детей можно? Льняное — в кашу? И как хранить после вскрытия? У меня как-то одно масло прокисло, выкинула половину...»</div>
+      </div>
+      <div>
+        <div class="card">
+          <div class="card-title">Психографика</div>
+          <div class="list-item"><div class="list-dot"></div><div><strong>Цели:</strong> Дать семье питание лучше среднего. Не заморачиваться, но понимать что ест</div></div>
+          <div class="list-item"><div class="list-dot-red"></div><div><strong>Страхи:</strong> Масло испортится, не успеют использовать. «Можно ли детям» — главный незакрытый вопрос</div></div>
+          <div class="list-item"><div class="list-dot"></div><div><strong>Скрытое:</strong> Найти удобного производителя «как подписка» — чтобы не думать, само приходило</div></div>
+          <div class="list-item"><div class="list-dot-red"></div><div><strong>Барьеры:</strong> Непонимание хранения. Ребёнок откажется есть — деньги на ветер</div></div>
+          <div class="list-item"><div class="list-dot"></div><div><strong>Убеждает:</strong> «Можно ли детям» — прямой честный ответ. Понятные применения</div></div>
+        </div>
+        <div class="card-brand" style="margin-top:16px;">
+          <div class="card-title">Ключевой момент доверия</div>
+          <p style="font-size:14px; color:var(--n700);">Дети съели кашу с льняным без возражений. <strong>Это важнее вкуса для взрослого</strong>. Если бы отказались — конец истории. Съели → доверие закреплено → LTV запущен.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid-3 fade-up" style="margin-top:24px;">
+      <div class="stat-card">
+        <div class="stat-label">LTV / год</div>
+        <div class="stat-value">8–15 тыс.</div>
+        <div class="stat-desc">Растёт при переходе С2 → С5</div>
+      </div>
+      <div class="card">
+        <div class="card-title">Триггер входа</div>
+        <p style="font-size:14px; color:var(--n600);">Пост в TG про ЗОЖ-питание + упоминание Дорогомиловского рынка. Поехала с мужем в субботу «просто пройтись». Взяла 100 мл льняного на пробу.</p>
+      </div>
+      <div class="card">
+        <div class="card-title">Органический переход С2 → С5</div>
+        <p style="font-size:14px; color:var(--n600);">Через 6–8 недель замечает: ногти перестали ломаться. Заходит в канал → пост про миндальное → заказывает уже <em>для себя</em>. Бесплатное расширение чека без маркетинга.</p>
+      </div>
+    </div>
+
+    <div class="alert alert-info fade-up">
+      <span class="alert-icon">ℹ️</span>
+      <div>
+        <strong style="color:#1e40af; display:block; margin-bottom:4px;">Контент-крючок для Ольги</strong>
+        <p style="font-size:14px; color:var(--n600);">«Можно ли детям» + «как добавить в кашу / салат» + правила хранения. Один пост закрывает все три тревоги и конвертирует сегмент С2.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- А3 АНДРЕЙ -->
+<section class="section fade-up" id="a3" style="background:#fff;">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-label">Аватар А3 · С3 Крафт-контролёр</div>
+      <h2 class="section-title">Андрей, 53 года</h2>
+      <p class="section-sub">Начальник отдела на производстве. Инженерный склад ума. Три года не покупал холодный отжим после плохого опыта с маркетплейсом.</p>
+    </div>
+    <div class="grid-2 fade-up">
+      <div>
+        <div class="avatar-header">
+          <div class="avatar-emoji">🔧</div>
+          <div>
+            <div class="avatar-name">Андрей</div>
+            <div class="avatar-sub">53 года · Начальник отдела · Доход 120–160 тыс./мес.</div>
+          </div>
+        </div>
+        <p style="font-size:14px; color:var(--n600); line-height:1.7; margin-top:16px;">Андрей обжигался. Два года назад купил тыквенное на маркетплейсе за 700 рублей. Прозрачная бутылка, горечь, написал в поддержку — «так и должно быть». Выкинул. С тех пор не покупал холодный отжим <strong>три года</strong>.</p>
+        <p style="font-size:14px; color:var(--n600); line-height:1.7; margin-top:10px;">Читает этикетку. Первое, что делает с любым маслом: смотрит тару (пластик — сразу нет), нюхает, пробует. Если горчит — внутренний стоп. Но когда узнал, что тмин должен жечь — переключился.</p>
+        <div class="quote-block" style="margin-top:16px;">«А у вас какой пресс — шнек или гидравлика? Потому что шнек окисляет. Я читал. И почему горчит? Это нормально для тыквенного? Ваше когда давили?»</div>
+      </div>
+      <div>
+        <div class="card">
+          <div class="card-title">Психографика</div>
+          <div class="list-item"><div class="list-dot"></div><div><strong>Цели:</strong> Найти производителя, которому можно доверять безусловно</div></div>
+          <div class="list-item"><div class="list-dot-red"></div><div><strong>Страхи:</strong> Подмена / смесь. Окисление при хранении. Один плохой опыт = уход навсегда</div></div>
+          <div class="list-item"><div class="list-dot"></div><div><strong>Скрытое:</strong> «Свой» человек на рынке — как мясник. Уверенность без проверки каждый раз</div></div>
+          <div class="list-item"><div class="list-dot-red"></div><div><strong>Барьеры:</strong> Недоверие к онлайну без личного знакомства. «Горечь» как стоп до объяснения</div></div>
+          <div class="list-item"><div class="list-dot"></div><div><strong>Убеждает:</strong> Видео производства. Дата отжима на этикетке. Тёмное стекло. Личный разговор</div></div>
+        </div>
+        <div class="alert alert-brand" style="margin-top:16px;">
+          <span class="alert-icon">🔑</span>
+          <div>
+            <strong style="color:var(--brand-dark); display:block; margin-bottom:4px;">Ключевой момент конверсии</strong>
+            <p style="font-size:14px; color:var(--n600);">Реакция Кирилла на жалобу: <em>«Не должно горчить — давайте разберёмся»</em>. Маркетплейс сказал «так и должно быть» — потерял клиента. Кирилл разобрался — приобрёл защитника бренда на 12–15 покупок в год.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card fade-up" style="margin-top:24px;">
+      <div class="card-title">Путь С3 — откатная логика</div>
+      <div style="display:flex; gap:8px; flex-wrap:wrap; align-items:center; font-size:13px; color:var(--n600);">
+        <span class="badge badge-green">Был на ступени 4–5</span>
+        <span>→</span>
+        <span class="badge badge-red">Негативный опыт → ступень 2</span>
+        <span>→</span>
+        <span class="badge badge-blue">Тёмное стекло + дата → ступень 3–4</span>
+        <span>→</span>
+        <span class="badge badge-green">100 мл без сюрпризов → самый лояльный</span>
+      </div>
+      <p style="font-size:13px; color:var(--n500); margin-top:12px;">После закрепления доверия — самый ценный покупатель. LTV 15–25 тыс./год + сарафан: «есть один нормальный». Двое коллег уже съездили.</p>
+    </div>
+  </div>
+</section>
+
+<!-- А4 МИХАИЛ -->
+<section class="section fade-up" id="a4">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-label">Аватар А4 · С4 Гастроном</div>
+      <h2 class="section-title">Михаил, 42 года</h2>
+      <p class="section-sub">Коммерческий директор. Готовит дома как хобби. Жена-дизайнер, один ребёнок. Москва, Хамовники. Доход 200–280 тыс./мес.</p>
+    </div>
+    <div class="grid-2 fade-up">
+      <div>
+        <div class="avatar-header">
+          <div class="avatar-emoji">👨‍🍳</div>
+          <div>
+            <div class="avatar-name">Михаил</div>
+            <div class="avatar-sub">42 года · Коммерческий директор · Доход 200–280 тыс./мес.</div>
+          </div>
+        </div>
+        <p style="font-size:14px; color:var(--n600); line-height:1.7; margin-top:16px;">Михаил готовит дома — и это удовольствие, не обязанность. В холодильнике несколько масел. Его давно раздражает нестабильность вкуса: «то нормально, то ощущение что старое». На фермерских рынках бывает регулярно.</p>
+        <p style="font-size:14px; color:var(--n600); line-height:1.7; margin-top:10px;">Здоровье — не главный мотив. Главный — <strong>вкус и «честный продукт»</strong>. «Полезное» воспринимает как бонус, не цель.</p>
+        <div class="quote-block" style="margin-top:16px;">«А это вот кедровое — оно на пасту подойдёт? Сильно ли перебивает вкус? Грецкое хорошо идёт на рукколу? У вас как на вкус — интенсивное или нежное?»</div>
+      </div>
+      <div class="grid-2" style="gap:16px; align-content:start;">
+        <div class="card">
+          <div class="card-icon">🎯</div>
+          <div class="card-title">Цели</div>
+          <p style="font-size:13px; color:var(--n600);">Масла с характером — не безвкусные. «Свой производитель» для кулинарных экспериментов.</p>
+        </div>
+        <div class="card">
+          <div class="card-icon">⚡</div>
+          <div class="card-title">Триггер</div>
+          <p style="font-size:13px; color:var(--n600);">Дорогомиловский рынок, субботняя прогулка. Дегустация кедрового — «вот это интересно». Взял кедровое + грецкое сразу.</p>
+        </div>
+        <div class="card">
+          <div class="card-icon">🎁</div>
+          <div class="card-title">Подарочный сценарий</div>
+          <p style="font-size:13px; color:var(--n600);">Набор трёх масел другу-гастроному — друг позвонил через неделю: «Где взял? Хочу ещё». Каждый набор = новый клиент.</p>
+        </div>
+        <div class="card">
+          <div class="card-icon">💬</div>
+          <div class="card-title">История у ужина</div>
+          <p style="font-size:13px; color:var(--n600);">«Есть один человек на Дорогомиловском, сам давит, гидравлический пресс». Масло = социальный капитал.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="alert alert-success fade-up" style="margin-top:24px;">
+      <span class="alert-icon">✅</span>
+      <div>
+        <strong style="color:#065f46; display:block; margin-bottom:4px;">Контент-крючок для Михаила</strong>
+        <p style="font-size:14px; color:var(--n600);">Конкретные рецепты + вкусовые характеристики каждого масла + «что с чем сочетать». <em>«Кедровое — на пасту, на финиш. Грецкое — с горькой зеленью и сыром. Не путайте, они разные»</em>.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- А5 ЕЛЕНА -->
+<section class="section fade-up" id="a5" style="background:#fff;">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-label">Аватар А5 · С5 Красота изнутри</div>
+      <h2 class="section-title">Елена, 33 года</h2>
+      <p class="section-sub">Менеджер проектов в IT-компании. Живёт одна. Москва, Митино. 1,5 года выпадают волосы. Кремы дают временный эффект.</p>
+    </div>
+    <div class="grid-2 fade-up">
+      <div>
+        <div class="avatar-header">
+          <div class="avatar-emoji">💆‍♀️</div>
+          <div>
+            <div class="avatar-name">Елена</div>
+            <div class="avatar-sub">33 года · IT, менеджер проектов · Доход 90–110 тыс./мес.</div>
+          </div>
+        </div>
+        <p style="font-size:14px; color:var(--n600); line-height:1.7; margin-top:16px;">Полтора года назад начало сильно выпадать волосы. Дерматолог сказала: «Попробуйте добавить жирные кислоты из продуктов». Лена начала читать. Нашла на iRecommend: <em>«Пила льняное — волосы перестали сыпаться»</em>. Слово «волосопад» — узнала себя.</p>
+        <p style="font-size:14px; color:var(--n600); line-height:1.7; margin-top:10px;">Ведёт заметки: что ела, какое самочувствие. При этом понимает: «я не знаю точно, это масло помогло или совпало». Это главный барьер.</p>
+        <div class="quote-block" style="margin-top:16px;">«А вот миндальное — оно для волос помогает? Я читала, что внутрь принимать. Как пить? Можно в еду добавлять, или обязательно натощак?»</div>
+      </div>
+      <div>
+        <div class="card">
+          <div class="card-title">Психографика</div>
+          <div class="list-item"><div class="list-dot"></div><div><strong>Цели:</strong> Улучшить состояние волос и кожи через питание. Найти простой курсовой ритуал</div></div>
+          <div class="list-item"><div class="list-dot-red"></div><div><strong>Страхи:</strong> Пройти курс и не понять, сработало ли. Потратить деньги впустую</div></div>
+          <div class="list-item"><div class="list-dot"></div><div><strong>Скрытое:</strong> Выглядеть лучше «не через кремы», а через здоровье изнутри</div></div>
+          <div class="list-item"><div class="list-dot-red"></div><div><strong>Барьеры:</strong> Субъективность эффекта. Первый месяц без результата — стандартная точка слива</div></div>
+          <div class="list-item"><div class="list-dot"></div><div><strong>Убеждает:</strong> Истории конкретных людей. Честный протокол. Объяснение цикла волоса (60 дней)</div></div>
+        </div>
+        <div class="card-brand" style="margin-top:16px;">
+          <div class="card-title">Удержание на 30-м дне</div>
+          <p style="font-size:14px; color:var(--n700);">«Уже месяц, не вижу разницы» — написала Кириллу. Кирилл объяснил: <em>«Цикл роста волоса — 60 дней минимум. Новые волосы получают питание сейчас»</em>. Без этого объяснения — 100% потеря. С объяснением — удержание.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid-3 fade-up" style="margin-top:24px;">
+      <div class="stat-card">
+        <div class="stat-label">Цикл до результата</div>
+        <div class="stat-value">60 дней</div>
+        <div class="stat-desc">Структурные изменения волоса/ногтя</div>
+      </div>
+      <div class="card">
+        <div class="card-title">Триггер входа</div>
+        <p style="font-size:14px; color:var(--n600);">Отзыв на iRecommend: «уменьшился волосопад». Ключевое слово — именно «волосопад». Нашла TG-канал Кирилла, пост с механизмом. Написала в личку.</p>
+      </div>
+      <div class="card">
+        <div class="card-title">Сарафан</div>
+        <p style="font-size:14px; color:var(--n600);">К концу второго месяца: ногти выросли, волосопад уменьшился. Сфотографировала расчёску. Подруге: «Я пью уже 2 месяца — реально». Подруга заказала.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- МАТРИЦА -->
+<section class="section fade-up" id="matrix">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-label">Сводная матрица</div>
+      <h2 class="section-title">Все пять аватаров в одном срезе</h2>
+    </div>
+    <div class="table-wrap fade-up">
+      <table>
+        <thead>
+          <tr>
+            <th>Параметр</th>
+            <th>А1 Татьяна</th>
+            <th>А2 Ольга</th>
+            <th>А3 Андрей</th>
+            <th>А4 Михаил</th>
+            <th>А5 Елена</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td style="font-weight:600;">Сегмент</td>
+            <td>С1 Функциональный</td>
+            <td>С2 Семейный ЗОЖ</td>
+            <td>С3 Крафт-контролёр</td>
+            <td>С4 Гастроном</td>
+            <td>С5 Красота</td>
+          </tr>
+          <tr>
+            <td style="font-weight:600;">Триггер входа</td>
+            <td>Врач (ЛОР)</td>
+            <td>Контент / рынок</td>
+            <td>Жена / рынок</td>
+            <td>Рынок / дегустация</td>
+            <td>Отзыв / TG</td>
+          </tr>
+          <tr>
+            <td style="font-weight:600;">Первый продукт</td>
+            <td>100 мл тмин</td>
+            <td>100 мл лён</td>
+            <td>100 мл тыква</td>
+            <td>100 мл кедр + грецкий</td>
+            <td>100 мл миндаль</td>
+          </tr>
+          <tr>
+            <td style="font-weight:600;">Главный страх</td>
+            <td>Испорченное / нет эффекта</td>
+            <td>Испортится / детям нельзя</td>
+            <td>Подмена / нестабильность</td>
+            <td>Нестабильный вкус</td>
+            <td>Нет ощущаемого эффекта</td>
+          </tr>
+          <tr>
+            <td style="font-weight:600;">Убеждающий аргумент</td>
+            <td>Протокол + механизм</td>
+            <td>«Детям можно» + хранение</td>
+            <td>Дата + гидравлика + тара</td>
+            <td>Вкус + рецепт</td>
+            <td>История + честный протокол</td>
+          </tr>
+          <tr>
+            <td style="font-weight:600;">LTV/год</td>
+            <td class="td-num" style="color:var(--brand); font-weight:600;">15–30 тыс. ₽</td>
+            <td class="td-num">8–15 тыс. ₽</td>
+            <td class="td-num" style="color:var(--brand); font-weight:600;">15–25 тыс. ₽</td>
+            <td class="td-num">8–18 тыс. ₽</td>
+            <td class="td-num">6–12 тыс. ₽</td>
+          </tr>
+          <tr>
+            <td style="font-weight:600;">Риск ухода</td>
+            <td>Нет ремайндера</td>
+            <td>Масло испортилось</td>
+            <td>Один сбой качества</td>
+            <td>Вкус изменился</td>
+            <td>Эффект не ощущается</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="grid-2 fade-up" style="margin-top:24px;">
+      <div class="alert alert-brand">
+        <span class="alert-icon">💡</span>
+        <div>
+          <strong style="color:var(--brand-dark); display:block; margin-bottom:4px;">Единое для всех пяти аватаров</strong>
+          <p style="font-size:14px; color:var(--n600);">Все пятеро начали с 100 мл — не потому что «дёшево», а потому что «малый риск». И все покупают не масло — они покупают объяснение от человека, которому доверяют.</p>
+        </div>
+      </div>
+      <div class="alert alert-warning">
+        <span class="alert-icon">⚠️</span>
+        <div>
+          <strong style="color:#92400e; display:block; margin-bottom:4px;">Ни один не пришёл через рекламу</strong>
+          <p style="font-size:14px; color:var(--n600);">Татьяна — врач. Ольга — подруга в чате. Андрей — жена. Михаил — рынок. Елена — iRecommend. Сарафан — главный канал привлечения.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="container">
+    <div class="footer-inner">
+      <div><img src="../../assets/logo-horizontal-dark.png" alt="Магия Масел" style="height:32px; width:auto; display:block; opacity:.7;"></div>
+      <div class="footer-meta">
+        <div class="footer-meta-item">
+          <span class="footer-meta-label">Документ</span>
+          <span class="footer-meta-value">M4-02 — Аватары клиентов</span>
+        </div>
+        <div class="footer-meta-item">
+          <span class="footer-meta-label">Клиент</span>
+          <span class="footer-meta-value">Кирилл Бродский</span>
+        </div>
+        <div class="footer-meta-item">
+          <span class="footer-meta-label">Дата</span>
+          <span class="footer-meta-value">31.03.2026</span>
+        </div>
+        <div class="footer-meta-item">
+          <span class="footer-meta-label">Версия</span>
+          <span class="footer-meta-value">1.0 (Opus)</span>
+        </div>
+        <div class="footer-meta-item">
+          <span class="footer-meta-label">Модуль</span>
+          <span class="footer-meta-value">M4 · Аудитория · 2/8</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script>
+  const obs = new IntersectionObserver((entries) => {
+    entries.forEach(e => { if(e.isIntersecting) { e.target.classList.add('visible'); obs.unobserve(e.target); } });
+  }, { threshold: 0.1 });
+  document.querySelectorAll('.fade-up').forEach(el => obs.observe(el));
+</script>
+</body>
+</html>

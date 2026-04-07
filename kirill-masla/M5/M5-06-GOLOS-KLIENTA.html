@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>M5-06 · Голос клиента — Магия Масел · BrandOS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --primary: #0ea5e9;
+  --primary-dark: #0284c7;
+  --primary-light: #7dd3fc;
+  --primary-bg: #e0f2fe;
+  --background: #ffffff;
+  --foreground: #0f172a;
+  --card-bg: hsl(0,0%,97%);
+  --border: #1C1C1E;
+  --muted: #64748b;
+  --radius: 4px;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: 'Inter', sans-serif; background: var(--background); color: var(--foreground); line-height: 1.75; font-size: 16px; }
+.container { max-width: 1200px; margin: 0 auto; padding: 0 1.5rem; }
+.nav { position: sticky; top: 0; background: white; border-bottom: 1px solid var(--border); z-index: 100; padding: 1rem 0; }
+.nav-container { display: flex; justify-content: space-between; align-items: center; gap: 2rem; }
+.nav-brand { font-size: 1rem; font-weight: 700; color: var(--foreground); white-space: nowrap; }
+.nav-brand span { color: var(--primary); }
+.nav-links { display: flex; gap: 1.5rem; list-style: none; overflow-x: auto; flex-wrap: wrap; }
+.nav-links a { color: var(--foreground); text-decoration: none; font-size: .875rem; font-weight: 500; white-space: nowrap; transition: color .2s; }
+.nav-links a:hover { color: var(--primary); }
+.hero { padding: 3.75rem 0; background: linear-gradient(135deg, rgba(255,255,255,.98) 0%, rgba(240,249,255,.95) 100%); }
+.hero-badge { display: inline-flex; align-items: center; gap: .5rem; padding: .5rem 1rem; background: var(--card-bg); border: 1px solid var(--border); border-radius: var(--radius); font-size: .875rem; font-weight: 600; margin-bottom: 1.5rem; color: var(--foreground); }
+.hero h1 { font-size: clamp(32px, 4vw, 51px); font-weight: 500; line-height: 1.2; letter-spacing: -.03em; margin-bottom: 1.5rem; }
+.hero-subtitle { font-size: 1.125rem; color: var(--muted); margin-bottom: 2rem; }
+.hero-meta { display: flex; gap: 2rem; flex-wrap: wrap; }
+.hero-meta-item { font-size: .875rem; color: var(--muted); }
+.hero-meta-item strong { color: var(--primary); font-weight: 600; }
+.section { padding: 2.5rem 0; }
+@media (min-width: 768px) { .section { padding: 3.75rem 0; } }
+.section-header { position: relative; margin-bottom: 32px; padding-top: 24px; }
+.section-header::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px; background: repeating-linear-gradient(to right, #9CA3AF 0, #9CA3AF 4px, transparent 4px, transparent 8px); }
+.section-tag { display: inline-block; font-size: .75rem; font-weight: 600; text-transform: uppercase; letter-spacing: .1em; color: var(--primary); margin-bottom: .5rem; }
+h2 { font-size: 32px; font-weight: 300; line-height: 1.2; letter-spacing: -.02em; margin-bottom: 1rem; }
+h3 { font-size: 20px; font-weight: 600; line-height: 1.3; margin-bottom: 1rem; }
+p { margin-bottom: 1rem; color: var(--muted); }
+p:last-child { margin-bottom: 0; }
+.card { border: 1px solid var(--border); border-radius: var(--radius); background: linear-gradient(135deg, rgba(255,255,255,.98) 0%, rgba(250,250,252,.95) 100%); padding: 1.5rem; }
+.card-title { font-size: 1.0625rem; font-weight: 600; margin-bottom: .75rem; color: var(--foreground); }
+.card-description { font-size: .9375rem; line-height: 1.75; color: var(--muted); }
+.card-accent { background: linear-gradient(135deg, rgba(14,165,233,.05) 0%, rgba(14,165,233,.02) 100%); border-color: rgba(14,165,233,.25); }
+.card-positive { background: linear-gradient(135deg, rgba(22,163,74,.04) 0%, rgba(22,163,74,.01) 100%); border-color: rgba(22,163,74,.2); }
+.card-negative { background: linear-gradient(135deg, rgba(239,68,68,.04) 0%, rgba(239,68,68,.01) 100%); border-color: rgba(239,68,68,.15); }
+.grid { display: grid; gap: 1.5rem; }
+.grid-2 { grid-template-columns: 1fr; }
+.grid-3 { grid-template-columns: 1fr; }
+@media (min-width: 768px) { .grid-2 { grid-template-columns: repeat(2, 1fr); } .grid-3 { grid-template-columns: repeat(3, 1fr); } }
+.highlight-box { background: linear-gradient(135deg, rgba(14,165,233,.05) 0%, rgba(14,165,233,.02) 100%); border: 1px solid rgba(14,165,233,.2); border-left: 4px solid var(--primary); padding: 1.25rem 1.5rem; border-radius: var(--radius); margin: 1.5rem 0; }
+.highlight-box p { margin: 0; font-size: 1rem; }
+.highlight-box strong { color: var(--primary); }
+.list-styled { list-style: none; padding: 0; }
+.list-styled li { padding-left: 1.5rem; margin-bottom: .75rem; position: relative; color: var(--muted); font-size: .9375rem; }
+.list-styled li::before { content: ''; position: absolute; left: 0; top: .65rem; width: 6px; height: 6px; background: var(--primary); border-radius: 50%; }
+.table-wrapper { overflow-x: auto; margin: 1.5rem 0; border: 1px solid var(--border); border-radius: var(--radius); }
+table { width: 100%; border-collapse: collapse; background: white; }
+th, td { padding: 1rem; text-align: left; border-bottom: 1px solid var(--border); }
+th { background: var(--card-bg); font-weight: 600; font-size: .8125rem; text-transform: uppercase; letter-spacing: .05em; color: var(--foreground); }
+td { font-size: .9375rem; color: var(--muted); }
+tr:last-child td { border-bottom: none; }
+tr:hover td { background: var(--card-bg); }
+.table-accent { color: var(--primary); font-weight: 600; }
+.quote-block { border-left: 3px solid var(--primary); padding: .75rem 1.25rem; margin: .75rem 0; background: rgba(14,165,233,.03); border-radius: 0 var(--radius) var(--radius) 0; }
+.quote-block p { color: var(--muted); font-style: italic; margin: 0; font-size: .9375rem; }
+.quote-negative { border-left-color: #ef4444; background: rgba(239,68,68,.02); }
+.lexicon-positive { background: #dcfce7; color: #16a34a; border: 1px solid rgba(22,163,74,.2); padding: 1rem 1.25rem; border-radius: var(--radius); margin: .5rem 0; }
+.lexicon-negative { background: #fee2e2; color: #dc2626; border: 1px solid rgba(239,68,68,.15); padding: 1rem 1.25rem; border-radius: var(--radius); margin: .5rem 0; }
+.lexicon-neutral { background: #f1f5f9; color: #475569; border: 1px solid rgba(71,85,105,.2); padding: 1rem 1.25rem; border-radius: var(--radius); margin: .5rem 0; }
+.footer { padding: 2rem 0; border-top: 1px solid var(--border); text-align: center; color: var(--muted); font-size: .875rem; }
+@media (max-width: 768px) { .container { padding: 0 1rem; } h2 { font-size: 24px; } h3 { font-size: 18px; } .nav-links { gap: .75rem; } .hero-meta { gap: 1rem; } }
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="container nav-container">
+    <div class="nav-brand">Brand<span>OS</span> · Документ</div>
+    <ul class="nav-links">
+      <li><a href="#volume">Объём отзывов</a></li>
+      <li><a href="#verbatim">Дословные отзывы</a></li>
+      <li><a href="#clusters">Кластеризация</a></li>
+      <li><a href="#needs">Незакрытые потребности</a></li>
+      <li><a href="#recommendations">Рекомендации</a></li>
+    </ul>
+  </div>
+</nav>
+
+<section class="hero">
+  <div class="container">
+    <div class="hero-badge">M5-06 · Конкурентный анализ · BrandOS</div>
+    <h1>Голос клиента<br><span style="color:var(--primary)">отзывы и UGC конкурентов</span></h1>
+    <p class="hero-subtitle">Кирилл Бродский · v1.0 · 03.04.2026</p>
+    <div class="hero-meta">
+      <span class="hero-meta-item"><strong>Клиент:</strong> Кирилл Бродский</span>
+      <span class="hero-meta-item"><strong>Модуль:</strong> M5 — Конкурентный анализ</span>
+      <span class="hero-meta-item"><strong>Артефакт:</strong> M5-06</span>
+      <span class="hero-meta-item"><strong>Источники:</strong> Ozon, WB, Яндекс.Маркет, iRecommend, КупилСказал</span>
+    </div>
+  </div>
+</section>
+
+<!-- Блок 1. Количественная картина -->
+<section class="section" id="volume">
+  <div class="container">
+    <div class="section-header">
+      <span class="section-tag">01 — Количественная картина отзывов</span>
+      <h2>Объём и рейтинги по конкурентам</h2>
+    </div>
+
+    <h3>Объём отзывов по конкурентам</h3>
+    <div class="table-wrapper">
+      <table>
+        <thead>
+          <tr><th>Конкурент</th><th>Ozon (отзывы)</th><th>WB (оценки)</th><th>Яндекс.Маркет</th><th>Итого (оценка)</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="table-accent">TRAWA</td>
+            <td>~3 086 (один артикул «Микс Сияние»)</td>
+            <td>~1 049 (льняное 250мл) + ~196 (тыквенное)</td>
+            <td>20 (Яндекс.Отзывы)</td>
+            <td><strong style="color:var(--foreground)">4 000–5 000</strong></td>
+          </tr>
+          <tr>
+            <td class="table-accent">Altaria</td>
+            <td>~330 × 5+ артикулов (льняное, тыквенное, облепиховое, авокадо, подсолнечное)</td>
+            <td>Присутствует</td>
+            <td>—</td>
+            <td><strong style="color:var(--foreground)">2 000–3 000</strong></td>
+          </tr>
+          <tr>
+            <td class="table-accent">Масляный Король</td>
+            <td>~9 226 (подсолнечное сыродавленное) + ~8 940 (виноградное) + ~28 (шиповника)</td>
+            <td>Присутствует</td>
+            <td>—</td>
+            <td><strong style="color:var(--foreground)">15 000–20 000</strong></td>
+          </tr>
+          <tr>
+            <td>Дом Кедра</td>
+            <td>Единичные отзывы на МП</td>
+            <td>Мало</td>
+            <td>—</td>
+            <td><strong style="color:var(--foreground)">&lt; 500</strong></td>
+          </tr>
+          <tr>
+            <td>Радость Здоровья</td>
+            <td>Не обнаружено</td>
+            <td>Не обнаружено</td>
+            <td>—</td>
+            <td><strong style="color:var(--foreground)">0</strong></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <p style="font-size:.875rem;">[веб, 03.04.2026]</p>
+
+    <div class="highlight-box">
+      <p><strong>Ключевое наблюдение:</strong> Масляный Король — абсолютный лидер по объёму отзывов (масс-маркет, низкая цена, высокий оборот через МП). TRAWA — лидер по качеству отзывов (рейтинг 4.9 на Ozon). Altaria — средний объём с хорошими рейтингами.</p>
+    </div>
+
+    <h3 style="margin-top: 2rem;">Рейтинги</h3>
+    <div class="table-wrapper">
+      <table>
+        <thead>
+          <tr><th>Конкурент</th><th>Ozon (рейтинг)</th><th>Комментарий</th></tr>
+        </thead>
+        <tbody>
+          <tr><td class="table-accent">TRAWA</td><td>4.9/5</td><td>Премиальная ниша, высокая лояльность</td></tr>
+          <tr><td class="table-accent">Altaria</td><td>~4.5–4.8/5 (оценка по сниппетам)</td><td>Хороший формат, есть нарекания по цене</td></tr>
+          <tr><td class="table-accent">Масляный Король</td><td>~4.3–4.5/5 (оценка)</td><td>Массовый сегмент, больше разброс мнений</td></tr>
+          <tr><td>Дом Кедра</td><td>Недостаточно данных</td><td>—</td></tr>
+          <tr><td>Радость Здоровья</td><td>—</td><td>Нет присутствия на МП</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- Блок 2. Дословные отзывы -->
+<section class="section" id="verbatim">
+  <div class="container">
+    <div class="section-header">
+      <span class="section-tag">02 — Дословные отзывы</span>
+      <h2>Что говорят покупатели</h2>
+    </div>
+
+    <div class="grid grid-2" style="gap: 1.5rem;">
+
+      <div class="card card-positive">
+        <div class="card-title">TRAWA — позитивные</div>
+        <div class="card-description">
+          <div class="quote-block">
+            <p>«Масло ооочень вкусное! Упаковано было хорошо»</p>
+          </div>
+          <p style="font-size:.8125rem; margin-bottom: .5rem; color:var(--primary);">Кластер: Вкус, Упаковка · Яндекс.Отзывы [веб, 03.04.2026]</p>
+          <div class="quote-block">
+            <p>«Масло ооочень вкусное! Рекомендую!»</p>
+          </div>
+          <p style="font-size:.8125rem; margin-bottom: .5rem; color:var(--primary);">Кластер: Вкус · Яндекс.Отзывы [веб, 03.04.2026]</p>
+          <div class="quote-block">
+            <p>«Свежее натуральное сыродавленное масло»</p>
+          </div>
+          <p style="font-size:.8125rem; margin-bottom: .5rem; color:var(--primary);">Кластер: Свежесть · Яндекс.Отзывы [веб, 03.04.2026]</p>
+          <div class="quote-block">
+            <p>«Очень свежее масло, пришло тщательно запакованное. Спасибо»</p>
+          </div>
+          <p style="font-size:.8125rem; margin-bottom: .5rem; color:var(--primary);">Кластер: Свежесть, Упаковка · Яндекс.Отзывы [веб, 03.04.2026]</p>
+          <div class="quote-block">
+            <p>«Вкус масла очень сбалансированный, мягкий. Продукт свежий. Очень понравилось. Заказала сразу ещё»</p>
+          </div>
+          <p style="font-size:.8125rem; margin-bottom: .5rem; color:var(--primary);">Кластер: Вкус, Свежесть, Повторная покупка · Ozon (сниппет) [веб, 03.04.2026]</p>
+          <div class="quote-block">
+            <p>«Очень хорошее масло»</p>
+          </div>
+          <p style="font-size:.8125rem; margin-bottom: .5rem; color:var(--primary);">Кластер: Общее · Яндекс.Отзывы [веб, 03.04.2026]</p>
+          <div class="quote-block">
+            <p>«Отличное масло»</p>
+          </div>
+          <p style="font-size:.8125rem; margin-bottom: .5rem; color:var(--primary);">Кластер: Общее · Яндекс.Отзывы [веб, 03.04.2026]</p>
+          <div class="quote-block">
+            <p>«Так вот какое — настоящее льняное, оно не горчит и такое вкусное!»</p>
+          </div>
+          <p style="font-size:.8125rem; color:var(--primary);">Кластер: Вкус · trawaoil.ru (цитата с главной) [веб, 03.04.2026]</p>
+        </div>
+      </div>
+
+      <div class="card card-negative">
+        <div class="card-title">TRAWA — негативные / нейтральные</div>
+        <div class="card-description">
+          <div class="quote-block quote-negative">
+            <p>«Не самого свежего отжима. Многим пришло совсем свежее, произведённое в ноябре. Я же получила 11 декабря...»</p>
+          </div>
+          <p style="font-size:.8125rem; margin-bottom: 1rem; color:#dc2626;">Кластер: Свежесть (ожидание vs реальность) · Яндекс.Отзывы [веб, 03.04.2026]</p>
+          <div class="highlight-box" style="margin: 0;">
+            <p><strong>Вывод по TRAWA:</strong> Доминируют позитивные отзывы о вкусе и свежести. Единственная жалоба — несоответствие ожидания «отжим после заказа» реальности (масло может быть отжато заранее, а не именно под конкретный заказ). Это уязвимость оффера.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="card card-positive">
+        <div class="card-title">Altaria — из отзывов</div>
+        <div class="card-description">
+          <div class="quote-block">
+            <p>«Масло полезное, нравится, что спрей, т.к. оно быстро окисляется и в бутылках нужно использовать в течении месяца»</p>
+          </div>
+          <p style="font-size:.8125rem; margin-bottom: 1rem; color:var(--primary);">Кластер: Формат (спрей), Хранение · Ozon (сниппет) [веб, 03.04.2026]</p>
+          <div class="highlight-box" style="margin: 0;">
+            <p><strong>Вывод по Altaria:</strong> Формат спрея = главное преимущество по мнению покупателей. Клиенты ценят именно решение проблемы окисления, а не само масло.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Масляный Король — из отзывов</div>
+        <div class="card-description">
+          <div class="quote-block quote-negative">
+            <p>«Получила Масло льняное Масляный Король нерафинированное. Объём 250 мл. Мне не понравилось, горькое»</p>
+          </div>
+          <p style="font-size:.8125rem; margin-bottom: .5rem; color:#dc2626;">Кластер: Вкус (негатив) · Ozon (сниппет) [веб, 03.04.2026]</p>
+          <div class="quote-block">
+            <p>«Мы не смешиваем наше масло с более дешевыми маслами. Натуральный 100% продукт» (ответ бренда)</p>
+          </div>
+          <p style="font-size:.8125rem; margin-bottom: .5rem; color:var(--primary);">Кластер: Доверие · КупилСказал [веб, 03.04.2026]</p>
+          <div class="quote-block">
+            <p>«Наша продукция не содержит генетически модифицированных организмов» (ответ бренда)</p>
+          </div>
+          <p style="font-size:.8125rem; margin-bottom: 1rem; color:var(--primary);">Кластер: Доверие · КупилСказал [веб, 03.04.2026]</p>
+          <div class="highlight-box" style="margin: 0;">
+            <p><strong>Вывод по Масляному Королю:</strong> Массовый сегмент. Жалобы на горечь льняного масла (типичная проблема — масло окислилось при хранении). Бренд отвечает на отзовиках — уже лучше, чем большинство. Но ответы шаблонные, не персональные.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" style="grid-column: 1 / -1;">
+        <div class="card-title">Общие отзывы о масле ХО (не привязаны к конкуренту)</div>
+        <div class="card-description">
+          <div class="grid grid-2" style="gap: .75rem; margin-top: .5rem;">
+            <div>
+              <div class="quote-block quote-negative">
+                <p>«На вкус и качество хорошее масло, но никогда не знаешь, холодного отжима из сырых семечек, как хочется, или это разбавленное ароматное масло»</p>
+              </div>
+              <p style="font-size:.8125rem; color:#dc2626;">Кластер: Доверие (скепсис) · Ozon [веб, 03.04.2026]</p>
+            </div>
+            <div>
+              <div class="quote-block">
+                <p>«Полезное масло для салата. Советую покупать»</p>
+              </div>
+              <p style="font-size:.8125rem; color:var(--primary);">Кластер: Применение · Ozon [веб, 03.04.2026]</p>
+            </div>
+            <div>
+              <div class="quote-block">
+                <p>«Масло очень понравилось. С нежным ароматом семечек. А самое главное, оно легко смывается со сковороды горячей водой, в отличие от магазинного»</p>
+              </div>
+              <p style="font-size:.8125rem; color:var(--primary);">Кластер: Вкус, Качество · Ozon (подсолнечное ХО) [веб, 03.04.2026]</p>
+            </div>
+            <div>
+              <div class="quote-block">
+                <p>«Я обожаю этот невероятный запах у масла»</p>
+              </div>
+              <p style="font-size:.8125rem; color:var(--primary);">Кластер: Вкус/Запах · iRecommend (рыжиковое) [веб, 03.04.2026]</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Блок 3. Кластеризация -->
+<section class="section" id="clusters">
+  <div class="container">
+    <div class="section-header">
+      <span class="section-tag">03 — Кластеризация отзывов</span>
+      <h2>Распределение по темам и лексикон клиентов</h2>
+    </div>
+
+    <h3>Распределение по темам (оценка на основе собранных данных)</h3>
+    <div class="table-wrapper">
+      <table>
+        <thead>
+          <tr><th>Кластер</th><th>Доля (оценка)</th><th>Что говорят</th><th>Тональность</th></tr>
+        </thead>
+        <tbody>
+          <tr><td class="table-accent">Вкус / запах</td><td>~35%</td><td>«вкусное», «не горчит», «горькое», «нежный аромат», «сбалансированный вкус»</td><td>Преимущественно позитив</td></tr>
+          <tr><td class="table-accent">Свежесть</td><td>~20%</td><td>«свежее», «не самого свежего отжима», «произведено в ноябре»</td><td>Позитив + единичные жалобы</td></tr>
+          <tr><td class="table-accent">Упаковка</td><td>~15%</td><td>«упаковано хорошо», «тщательно запакованное», «тёмное стекло»</td><td>Позитив</td></tr>
+          <tr><td class="table-accent">Формат / удобство</td><td>~10%</td><td>«нравится спрей», «быстро окисляется в бутылках»</td><td>Позитив (Altaria)</td></tr>
+          <tr><td class="table-accent">Цена</td><td>~10%</td><td>На масла TRAWA не жалуются на цену (премиальная аудитория). На Масляный Король — жалоб тоже нет (масс-маркет)</td><td>Нейтрально</td></tr>
+          <tr><td class="table-accent">Доверие / подлинность</td><td>~5%</td><td>«никогда не знаешь, холодного отжима или разбавленное»</td><td>Негатив (скепсис)</td></tr>
+          <tr><td class="table-accent">Доставка</td><td>~5%</td><td>Упоминается в контексте «пришло быстро», но не доминирует</td><td>Нейтрально</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3 style="margin-top: 2rem;">Language Mining: слова клиентов</h3>
+    <div class="grid grid-3" style="gap: 1rem; margin-top: 1rem;">
+      <div>
+        <div class="lexicon-positive">
+          <strong>Позитивный лексикон</strong>
+          <ul style="margin-top: .5rem; padding-left: 1rem;">
+            <li>«Свежее», «вкусное», «натуральное», «настоящее», «не горчит»</li>
+            <li>«Тщательно запакованное», «упаковано хорошо»</li>
+            <li>«Заказала сразу ещё» (триггер повторной покупки)</li>
+            <li>«Рекомендую!»</li>
+          </ul>
+        </div>
+      </div>
+      <div>
+        <div class="lexicon-negative">
+          <strong>Негативный лексикон</strong>
+          <ul style="margin-top: .5rem; padding-left: 1rem;">
+            <li>«Горькое» (льняное — типичная проблема окисления)</li>
+            <li>«Не самого свежего отжима» (разрыв обещания)</li>
+            <li>«Никогда не знаешь» (скепсис к подлинности)</li>
+            <li>«Разбавленное» (страх фальсификата)</li>
+          </ul>
+        </div>
+      </div>
+      <div>
+        <div class="lexicon-neutral">
+          <strong>Нейтральные паттерны</strong>
+          <ul style="margin-top: .5rem; padding-left: 1rem;">
+            <li>«Полезное масло для салата» (утилитарное восприятие)</li>
+            <li>«Масло очень понравилось» (общее без деталей)</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Блок 4. Незакрытые потребности -->
+<section class="section" id="needs">
+  <div class="container">
+    <div class="section-header">
+      <span class="section-tag">04 — Незакрытые потребности</span>
+      <h2>Что клиенты хотят, но не получают</h2>
+    </div>
+    <div class="table-wrapper">
+      <table>
+        <thead>
+          <tr><th>Потребность</th><th>Откуда видно</th><th>Кто мог бы закрыть</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="table-accent">Гарантия подлинности / свежести</td>
+            <td>«Никогда не знаешь, холодного отжима или разбавленное»</td>
+            <td>Кирилл: лабораторные анализы + видео отжима</td>
+          </tr>
+          <tr>
+            <td class="table-accent">Прозрачность процесса</td>
+            <td>«Не самого свежего отжима» — ожидание vs реальность</td>
+            <td>Кирилл: дата отжима на бутылке, видео конкретной партии</td>
+          </tr>
+          <tr>
+            <td class="table-accent">Защита от окисления</td>
+            <td>«Быстро окисляется в бутылках»</td>
+            <td>Altaria решает спреем. Кирилл: азотное заполнение, мелкая фасовка, инструкция по хранению</td>
+          </tr>
+          <tr>
+            <td class="table-accent">Помощь с выбором</td>
+            <td>Отзывы не сравнивают масла между собой. Покупатель не знает, что выбрать</td>
+            <td>Кирилл: квиз-подборщик, гайд «масло под задачу»</td>
+          </tr>
+          <tr>
+            <td class="table-accent">Объяснение горечи</td>
+            <td>«Горькое» — частая жалоба на льняное масло</td>
+            <td>Кирилл: образовательный контент «Почему льняное горчит и когда это нормально»</td>
+          </tr>
+          <tr>
+            <td class="table-accent">Персональный контакт</td>
+            <td>Ответы брендов шаблонные</td>
+            <td>Кирилл: личные ответы от производителя</td>
+          </tr>
+          <tr>
+            <td class="table-accent">Мини-формат на пробу</td>
+            <td>Покупатели заказывают большие объёмы, не попробовав</td>
+            <td>Кирилл: триальный набор 3 × 100 мл</td>
+          </tr>
+          <tr>
+            <td class="table-accent">Рецепты / применение</td>
+            <td>«Полезное масло для салата» — клиенты не знают, как ещё использовать</td>
+            <td>Кирилл: вкладыш с рецептами / QR-код на карточку с рецептами</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- Блок 5. Рекомендации -->
+<section class="section" id="recommendations">
+  <div class="container">
+    <div class="section-header">
+      <span class="section-tag">05 — Рекомендации для Кирилла</span>
+      <h2>Язык клиентов → офферы и контент</h2>
+    </div>
+
+    <h3>Язык клиентов → офферы</h3>
+    <div class="table-wrapper">
+      <table>
+        <thead>
+          <tr><th>Слова клиентов</th><th>Оффер для Кирилла</th></tr>
+        </thead>
+        <tbody>
+          <tr><td class="table-accent">«Свежее», «настоящее»</td><td>→ «Дата отжима на каждой бутылке. Видео вашей партии в Telegram»</td></tr>
+          <tr><td class="table-accent">«Не горчит»</td><td>→ «Льняное масло, которое не горчит — потому что отжато сегодня»</td></tr>
+          <tr><td class="table-accent">«Никогда не знаешь»</td><td>→ «Лабораторный анализ каждой партии — QR-код на этикетке»</td></tr>
+          <tr><td class="table-accent">«Тщательно запакованное»</td><td>→ «Тёмное стекло + крафт-упаковка + инструкция по хранению»</td></tr>
+          <tr><td class="table-accent">«Заказала сразу ещё»</td><td>→ «Подписка: свежее масло каждый месяц без повторного заказа»</td></tr>
+          <tr><td class="table-accent">«Нравится спрей»</td><td>→ Не копировать Altaria, но учесть: мелкая дозировка, удобный дозатор</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3 style="margin-top: 2rem;">Контент из отзывов</h3>
+    <div class="table-wrapper">
+      <table>
+        <thead>
+          <tr><th>Тема контента</th><th>Формат</th><th>Источник инсайта</th></tr>
+        </thead>
+        <tbody>
+          <tr><td class="table-accent">«Почему льняное масло горчит — и когда это нормально»</td><td>TG-пост + статья</td><td>Жалобы на горечь у Масляного Короля</td></tr>
+          <tr><td class="table-accent">«Как проверить, что масло настоящее ХО»</td><td>Reels + TG</td><td>Скепсис «никогда не знаешь»</td></tr>
+          <tr><td class="table-accent">«Что значит "отжим после заказа" и почему это важно»</td><td>TG-пост</td><td>Жалоба на TRAWA «не самого свежего»</td></tr>
+          <tr><td class="table-accent">«5 способов использовать льняное масло кроме салата»</td><td>Карусель IG</td><td>«Полезное масло для салата» — утилитарность</td></tr>
+          <tr><td class="table-accent">«Как хранить масло ХО, чтобы оно не испортилось»</td><td>TG + Дзен</td><td>«Быстро окисляется в бутылках»</td></tr>
+          <tr><td class="table-accent">Видео: «Отжимаю масло под ваш заказ — вот процесс»</td><td>Reels / Shorts</td><td>Потребность в прозрачности</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3 style="margin-top: 2rem;">Система работы с отзывами (с момента запуска продаж)</h3>
+    <div class="grid grid-2" style="gap: 1.5rem; margin-top: 1rem;">
+      <div class="card card-accent">
+        <div class="card-title">1. Каждый отзыв — личный ответ от Кирилла</div>
+        <div class="card-description">Не шаблон. Преимущество: ни один конкурент не делает это персонально. Ответы Масляного Короля на КупилСказал — шаблонные. TRAWA — неизвестно. У остальных ответов нет вообще.</div>
+      </div>
+      <div class="card">
+        <div class="card-title">2. Негативные отзывы → контент</div>
+        <div class="card-description">Каждая жалоба = тема для поста/Reels. «Масло горькое» → пост «Почему льняное горчит». «Не свежего отжима» → Reels с датой отжима и видео партии.</div>
+      </div>
+      <div class="card">
+        <div class="card-title">3. Позитивные отзывы → UGC</div>
+        <div class="card-description">Репост в TG/IG с разрешения. TRAWA делает это через @trawa_recept — можно масштабировать модель, адаптировав под личный бренд Кирилла.</div>
+      </div>
+      <div class="card">
+        <div class="card-title">4. NPS после каждого заказа</div>
+        <div class="card-description">TG-бот: «Оцените от 1 до 10». Данные → улучшение продукта и контента. Позволяет выявлять детракторов до публичного негатива.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Приложение: источники -->
+<section class="section">
+  <div class="container">
+    <div class="section-header">
+      <span class="section-tag">Приложение — Источники и ограничения</span>
+      <h2>Площадки и методология</h2>
+    </div>
+    <div class="grid grid-2">
+      <div class="card">
+        <div class="card-title">Площадки отзывов</div>
+        <div class="card-description">
+          <ul class="list-styled">
+            <li>Ozon: карточки товаров TRAWA, Altaria, Масляный Король</li>
+            <li>Wildberries: карточки товаров TRAWA, Altaria</li>
+            <li>Яндекс.Отзывы: TRAWA сыродавленное (20 отзывов, рейтинг 4.7)</li>
+            <li>iRecommend: общие отзывы на масла ХО</li>
+            <li>КупилСказал: Масляный Король</li>
+          </ul>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">Ограничения</div>
+        <div class="card-description">
+          <ul class="list-styled">
+            <li>Ozon и WB блокируют прямое извлечение текстов — данные из сниппетов и метаданных</li>
+            <li>Для полного VoC (50-100 дословных отзывов) требуется парсинг через Claude in Chrome или Python-скрипт через API МП</li>
+            <li>Отзывы на Дом Кедра и Радость Здоровья не обнаружены на МП</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="container">
+    <p>BrandOS · brand-os.ru · Магия Масел · M5 Конкурентный анализ · 2026</p>
+    <p style="margin-top: .5rem; font-size: .8125rem;">Артефакт M5-06 · Источники: Ozon, WB, Яндекс.Отзывы, iRecommend, КупилСказал · Дата исследования: 03.04.2026</p>
+  </div>
+</footer>
+
+</body>
+</html>

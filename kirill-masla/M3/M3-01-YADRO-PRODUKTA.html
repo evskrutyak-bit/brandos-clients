@@ -1,0 +1,804 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>M3-01 — Ядро продукта · Магия Масел · Кирилл Бродский</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --brand: #2C5F2D;
+      --brand-dark: #1a4a1b;
+      --brand-light: #4a8f4b;
+      --brand-bg: #e8f5e9;
+      --accent: #D4AF37;
+      --accent-bg: #fdf8e8;
+      --black: #0f172a;
+      --n50: #f8fafc; --n100: #f1f5f9; --n200: #e2e8f0;
+      --n300: #cbd5e1; --n400: #94a3b8; --n500: #64748b;
+      --n600: #475569; --n700: #334155; --n800: #1e293b; --n900: #0f172a;
+      --success: #10b981; --warning: #f59e0b; --error: #ef4444; --info: #3b82f6;
+      --font: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      --shadow-card: 0 1px 3px 0 rgba(0,0,0,.05), 0 1px 2px -1px rgba(0,0,0,.05);
+      --shadow-hover: 0 10px 25px -5px rgba(0,0,0,.08), 0 8px 10px -6px rgba(0,0,0,.04);
+      --shadow-btn: 0 4px 14px 0 rgba(44,95,45,.35);
+      --shadow-glow: 0 0 40px rgba(44,95,45,.15);
+      --r-sm:4px; --r-md:6px; --r-lg:8px; --r-xl:12px; --r-2xl:16px; --r-3xl:24px; --r-full:9999px;
+    }
+
+    body { font-family: var(--font); font-size: 16px; line-height: 1.6; color: var(--n600); background: var(--n100); }
+
+    @keyframes fade-up { 0%{opacity:0;transform:translateY(20px)} 100%{opacity:1;transform:translateY(0)} }
+    @keyframes pulse-glow { 0%,100%{box-shadow:0 0 20px rgba(44,95,45,.3)} 50%{box-shadow:0 0 40px rgba(44,95,45,.5)} }
+    @keyframes scale-in { 0%{opacity:0;transform:scale(.95)} 100%{opacity:1;transform:scale(1)} }
+
+    .fade-up { opacity:0; transform:translateY(20px); transition:opacity .6s ease-out, transform .6s ease-out; }
+    .fade-up.visible { opacity:1; transform:translateY(0); }
+
+    .container { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
+    .section { padding: 80px 0; }
+
+    /* Nav */
+    .nav-wrap {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 300;
+      background: rgba(255,255,255,.93); backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--n200); height: 64px;
+    }
+    .nav-inner { height:100%; display:flex; align-items:center; justify-content:space-between; }
+    .nav-logo img { height:40px; width:auto; display:block; }
+    .nav-links { display:flex; gap:20px; flex-wrap:wrap; }
+    .nav-links a { font-size:13px; font-weight:500; color:var(--n600); text-decoration:none; transition:color .2s; }
+    .nav-links a:hover { color:var(--brand); }
+    .nav-badge {
+      font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:.05em;
+      color:var(--brand); background:var(--brand-bg);
+      padding:5px 12px; border-radius:var(--r-full); white-space:nowrap;
+    }
+
+    /* Section header */
+    .section-header { margin-bottom:40px; }
+    .section-label {
+      display:inline-block; font-size:11px; font-weight:700; text-transform:uppercase;
+      letter-spacing:.08em; color:var(--brand); background:var(--brand-bg);
+      padding:4px 12px; border-radius:var(--r-full); margin-bottom:12px;
+    }
+    .section-title { font-size:30px; font-weight:600; color:var(--n900); line-height:1.25; margin-bottom:8px; }
+    .section-sub { font-size:16px; color:var(--n500); }
+
+    /* Card */
+    .card {
+      background:#fff; border-radius:var(--r-2xl); border:1px solid var(--n200);
+      padding:28px; box-shadow:var(--shadow-card);
+      transition:transform .3s ease, box-shadow .3s ease;
+    }
+    .card:hover { transform:translateY(-3px); box-shadow:var(--shadow-hover); }
+
+    /* Grid */
+    .grid-2 { display:grid; grid-template-columns:repeat(auto-fit,minmax(340px,1fr)); gap:20px; }
+    .grid-3 { display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:20px; }
+    .grid-4 { display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:16px; }
+
+    /* Badge */
+    .badge { display:inline-flex; align-items:center; padding:3px 10px; border-radius:var(--r-full); font-size:12px; font-weight:600; }
+    .badge-green { background:#d1fae5; color:#065f46; }
+    .badge-yellow { background:#fef3c7; color:#92400e; }
+    .badge-red { background:#fee2e2; color:#991b1b; }
+    .badge-blue { background:#dbeafe; color:#1e40af; }
+    .badge-brand { background:var(--brand-bg); color:var(--brand-dark); }
+    .badge-accent { background:var(--accent-bg); color:#7a6000; }
+
+    /* Table */
+    .table-wrap { overflow-x:auto; border-radius:var(--r-2xl); border:1px solid var(--n200); margin:20px 0; }
+    table { width:100%; border-collapse:collapse; background:#fff; }
+    thead tr { background:var(--n50); border-bottom:2px solid var(--n200); }
+    th { padding:14px 18px; text-align:left; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.05em; color:var(--n500); }
+    td { padding:14px 18px; font-size:14px; color:var(--n600); border-bottom:1px solid var(--n200); }
+    tr:last-child td { border-bottom:none; }
+    tbody tr { transition:background .2s; }
+    tbody tr:hover { background:var(--n50); }
+
+    /* Alert */
+    .alert { display:flex; gap:14px; border-radius:var(--r-xl); padding:18px; margin:16px 0; }
+    .alert-warning { background:#fffbeb; border:1px solid #fde68a; border-left:4px solid var(--warning); }
+    .alert-error { background:#fff1f2; border:1px solid #fecdd3; border-left:4px solid var(--error); }
+    .alert-info { background:#eff6ff; border:1px solid #bfdbfe; border-left:4px solid var(--info); }
+    .alert-success { background:#f0fdf4; border:1px solid #bbf7d0; border-left:4px solid var(--success); }
+    .alert-brand { background:var(--brand-bg); border:1px solid #a5d6a7; border-left:4px solid var(--brand); }
+    .alert-icon { font-size:18px; flex-shrink:0; margin-top:1px; }
+
+    /* Quote */
+    .quote-card {
+      background: linear-gradient(135deg, var(--n900) 0%, #1a3a1b 100%);
+      border-radius:var(--r-2xl); padding:28px; color:#fff;
+      border-left: 4px solid var(--accent);
+    }
+    .quote-text { font-size:17px; line-height:1.7; font-style:italic; color:#e2e8f0; margin-bottom:12px; }
+    .quote-author { font-size:13px; color:var(--accent); font-weight:600; }
+
+    /* Stat */
+    .stat-card {
+      background:linear-gradient(135deg,var(--brand) 0%,var(--brand-dark) 100%);
+      border-radius:var(--r-2xl); padding:24px; color:#fff;
+      box-shadow:var(--shadow-btn);
+    }
+    .stat-label { font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.05em; opacity:.75; margin-bottom:8px; }
+    .stat-value { font-size:32px; font-weight:700; line-height:1; margin-bottom:6px; }
+    .stat-desc { font-size:13px; opacity:.8; }
+
+    /* Timeline */
+    .timeline { position:relative; padding-left:28px; }
+    .timeline::before { content:''; position:absolute; left:8px; top:0; bottom:0; width:2px; background:var(--n200); }
+    .timeline-item { position:relative; margin-bottom:28px; }
+    .timeline-dot {
+      position:absolute; left:-24px; top:4px;
+      width:14px; height:14px; border-radius:50%;
+      background:var(--brand); border:3px solid #fff;
+      box-shadow:0 0 0 2px var(--brand);
+    }
+    .timeline-label { font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.05em; color:var(--brand); margin-bottom:4px; }
+    .timeline-title { font-size:15px; font-weight:600; color:var(--n900); margin-bottom:4px; }
+    .timeline-text { font-size:14px; color:var(--n600); }
+
+    /* Avatar card */
+    .avatar-card {
+      background:#fff; border-radius:var(--r-2xl); border:1px solid var(--n200);
+      padding:28px; box-shadow:var(--shadow-card);
+      border-top: 4px solid var(--brand);
+    }
+    .avatar-name { font-size:22px; font-weight:700; color:var(--n900); margin-bottom:4px; }
+    .avatar-segment { font-size:13px; color:var(--n500); margin-bottom:20px; }
+    .avatar-row { display:flex; gap:6px; flex-wrap:wrap; margin-bottom:12px; }
+    .avatar-key { font-size:12px; font-weight:600; color:var(--n700); min-width:100px; }
+    .detail-item { font-size:14px; color:var(--n600); padding:6px 0; border-bottom:1px solid var(--n100); }
+    .detail-item:last-child { border-bottom:none; }
+
+    /* Pain map */
+    .pain-level { font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.05em; margin-bottom:6px; }
+    .pain-surface { color:#0369a1; }
+    .pain-deep { color:#7c3aed; }
+    .pain-hidden { color:#be185d; }
+
+    /* Journey box */
+    .journey-box {
+      background: var(--n50); border:1px solid var(--n200); border-radius:var(--r-xl);
+      padding:20px; font-family:monospace; font-size:13px; line-height:1.8;
+      color:var(--n700); white-space:pre-wrap; overflow-x:auto;
+    }
+
+    /* Loss point */
+    .loss-point { color:var(--error); font-weight:600; }
+    .win-point { color:var(--success); font-weight:600; }
+
+    /* Divider */
+    .divider { height:1px; background:var(--n200); margin:32px 0; }
+
+    /* Tag list */
+    .tag-list { display:flex; flex-wrap:wrap; gap:8px; }
+    .tag { background:var(--brand-bg); color:var(--brand-dark); padding:4px 12px; border-radius:var(--r-full); font-size:13px; font-weight:500; }
+    .tag-avoid { background:#fee2e2; color:#991b1b; padding:4px 12px; border-radius:var(--r-full); font-size:13px; font-weight:500; }
+
+    /* Priority label */
+    .priority-core { background:#d1fae5; color:#065f46; }
+    .priority-important { background:#fed7aa; color:#9a3412; }
+    .priority-seasonal { background:#dbeafe; color:#1e40af; }
+    .priority-content { background:#fef9c3; color:#713f12; }
+
+    @media (max-width:768px) {
+      .nav-links { display:none; }
+      .section-title { font-size:24px; }
+      .grid-2, .grid-3, .grid-4 { grid-template-columns:1fr; }
+    }
+
+    /* Hero */
+    .hero {
+      background: linear-gradient(135deg, var(--brand-dark) 0%, var(--brand) 50%, var(--brand-light) 100%);
+      padding: 120px 0 80px; color:#fff; position:relative; overflow:hidden;
+    }
+    .hero::before {
+      content:''; position:absolute; inset:0;
+      background: radial-gradient(ellipse at 70% 50%, rgba(212,175,55,.15) 0%, transparent 60%);
+    }
+    .hero-inner { display:flex; align-items:center; gap:48px; flex-wrap:wrap; }
+    .hero-logo-wrap { flex-shrink:0; }
+    .hero-logo-wrap img { height:140px; width:auto; display:block; border-radius:var(--r-xl); }
+    .hero-content { flex:1; min-width:280px; }
+    .hero-badge {
+      display:inline-block; font-size:11px; font-weight:700; text-transform:uppercase;
+      letter-spacing:.1em; background:rgba(255,255,255,.15); color:#fff;
+      border:1px solid rgba(255,255,255,.3); padding:6px 16px;
+      border-radius:var(--r-full); margin-bottom:20px; backdrop-filter:blur(8px);
+    }
+    .hero-title { font-size:52px; font-weight:700; line-height:1.1; margin-bottom:16px; }
+    .hero-title span { color:var(--accent); }
+    .hero-sub { font-size:18px; opacity:.85; max-width:600px; margin-bottom:32px; line-height:1.6; }
+    .hero-meta { display:flex; gap:24px; flex-wrap:wrap; }
+    .hero-meta-item { display:flex; flex-direction:column; gap:3px; }
+    .hero-meta-label { font-size:10px; text-transform:uppercase; letter-spacing:.08em; opacity:.6; }
+    .hero-meta-value { font-size:14px; font-weight:600; }
+
+    @media (max-width:768px) {
+      .hero { padding: 100px 0 60px; }
+      .hero-title { font-size:34px; }
+      .hero-logo-wrap img { height:100px; }
+    }
+
+    /* Card variants */
+    .card-brand {
+      background: linear-gradient(135deg, var(--brand-bg) 0%, #fff 100%);
+      border-radius:var(--r-2xl); border:1px solid #a5d6a7;
+      padding:28px; box-shadow:var(--shadow-card);
+    }
+    .card-accent {
+      background: var(--accent-bg);
+      border-radius:var(--r-2xl); border:1px solid #e8d87a;
+      padding:28px; box-shadow:var(--shadow-card);
+    }
+    .card-before {
+      background:#fff; border-radius:var(--r-2xl); border:1px solid #fecdd3;
+      border-top:4px solid var(--error); padding:28px; box-shadow:var(--shadow-card);
+    }
+    .card-after {
+      background:#fff; border-radius:var(--r-2xl); border:1px solid #bbf7d0;
+      border-top:4px solid var(--success); padding:28px; box-shadow:var(--shadow-card);
+    }
+    .card-title { font-size:16px; font-weight:700; color:var(--n900); margin-bottom:16px; }
+    .card-icon { font-size:24px; margin-bottom:12px; }
+
+    /* List items */
+    .list-item {
+      display:flex; gap:10px; align-items:flex-start;
+      padding:10px 0; border-bottom:1px solid var(--n100);
+      font-size:14px; color:var(--n600);
+    }
+    .list-item:last-child { border-bottom:none; }
+    .list-dot { width:8px; height:8px; border-radius:50%; background:var(--brand); flex-shrink:0; margin-top:6px; }
+    .list-dot-red { width:8px; height:8px; border-radius:50%; background:var(--error); flex-shrink:0; margin-top:6px; }
+    .list-dot-green { width:8px; height:8px; border-radius:50%; background:var(--success); flex-shrink:0; margin-top:6px; }
+
+    /* JTBD cards */
+    .jtbd-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(300px,1fr)); gap:16px; }
+    .jtbd-card {
+      background:#fff; border-radius:var(--r-2xl); border:1px solid var(--n200);
+      padding:24px; box-shadow:var(--shadow-card); border-left:4px solid var(--brand);
+    }
+    .jtbd-label { font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.08em; color:var(--brand); margin-bottom:12px; }
+    .jtbd-text { font-size:14px; line-height:1.7; color:var(--n600); font-style:italic; }
+
+    /* Footer */
+    .footer {
+      background:var(--n900); color:var(--n400); padding:40px 0;
+      font-size:13px;
+    }
+    .footer-inner { display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:16px; }
+    .footer-brand { font-size:15px; font-weight:700; color:#fff; }
+    .footer-brand span { color:var(--accent); }
+    .footer-meta { display:flex; gap:20px; flex-wrap:wrap; }
+    .footer-meta-item { display:flex; flex-direction:column; gap:2px; }
+    .footer-meta-label { font-size:10px; text-transform:uppercase; letter-spacing:.05em; color:var(--n600); }
+    .footer-meta-value { font-size:12px; color:var(--n400); }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav-wrap">
+  <div class="container">
+    <div class="nav-inner">
+      <div class="nav-logo"><img src="../assets/logo-horizontal-light.png" alt="Магия Масел"></div>
+      <div class="nav-links">
+        <a href="#focus">Фокус</a>
+        <a href="#product">Продукт</a>
+        <a href="#jtbd">JTBD</a>
+        <a href="#mechanics">Механика</a>
+        <a href="#kirill">Кирилл</a>
+        <a href="#transform">Трансформация</a>
+        <a href="#promise">Обещание</a>
+        <a href="#matrix">Матрица</a>
+      </div>
+      <div class="nav-badge">M3 · Документ 1/7</div>
+    </div>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="container">
+    <div class="hero-inner">
+      <div class="hero-logo-wrap">
+        <img src="../assets/logo-badge-dark.png" alt="Магия Масел — Кирилл Бродский">
+      </div>
+      <div class="hero-content">
+        <div class="hero-badge">M3 · Продуктовая стратегия · Документ 1 из 7</div>
+        <h1 class="hero-title">Ядро <span>продукта</span></h1>
+        <p class="hero-sub">Кому служим, что продаём, зачем покупают — фундамент продуктовой стратегии Магии Масел.</p>
+        <div class="hero-meta">
+          <div class="hero-meta-item">
+            <span class="hero-meta-label">Клиент</span>
+            <span class="hero-meta-value">Кирилл Бродский</span>
+          </div>
+          <div class="hero-meta-item">
+            <span class="hero-meta-label">Дата</span>
+            <span class="hero-meta-value">27.03.2026</span>
+          </div>
+          <div class="hero-meta-item">
+            <span class="hero-meta-label">Версия</span>
+            <span class="hero-meta-value">2.0</span>
+          </div>
+          <div class="hero-meta-item">
+            <span class="hero-meta-label">Статус</span>
+            <span class="hero-meta-value">Пересобрана по ответам Кирилла</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ФОКУС -->
+<section class="section fade-up" id="focus">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-label">1. Фокус</div>
+      <h2 class="section-title">Кому и на каком переходе</h2>
+      <p class="section-sub">Точное определение целевого клиента и ключевого момента трансформации.</p>
+    </div>
+    <div class="grid-2">
+      <div class="card-brand fade-up">
+        <div class="card-icon">👥</div>
+        <div class="card-title">Кому мы служим</div>
+        <p style="font-size:15px; line-height:1.7; color:var(--n700);">
+          Женщины <strong>30–60 лет</strong>, ведущие ЗОЖ-образ жизни, которые хотят улучшить здоровье через питание — не через таблетки и БАДы, а через понятный, проверенный натуральный продукт с честным объяснением.
+        </p>
+      </div>
+      <div class="card-accent fade-up">
+        <div class="card-icon">🔄</div>
+        <div class="card-title">Ключевой переход</div>
+        <p style="font-size:15px; line-height:1.7; color:var(--n700);">
+          От <strong>«покупаю что попало в супермаркете»</strong><br>→ к <strong>«у меня есть свой производитель, которому я доверяю, и масло, которое подходит именно моим задачам»</strong>.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ПРОДУКТ -->
+<section class="section fade-up" id="product" style="background:#fff;">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-label">2. Продукт</div>
+      <h2 class="section-title">Что это такое</h2>
+      <p class="section-sub">Главный продукт и производственная реальность — факты без маркетинга.</p>
+    </div>
+
+    <div class="card fade-up" style="margin-bottom:24px;">
+      <p style="font-size:16px; line-height:1.7; color:var(--n700);">
+        <strong>Масла первого холодного отжима</strong> под конкретную задачу — здоровье, тело, кухня — в правильном формате, с честным объяснением и напоминанием на повтор.
+      </p>
+    </div>
+
+    <div class="alert alert-brand fade-up">
+      <span class="alert-icon">🏭</span>
+      <div>
+        <strong style="color:var(--brand-dark); display:block; margin-bottom:8px;">Производственная реальность (факты, не маркетинг)</strong>
+        <div class="list-item"><div class="list-dot"></div><span>Гидравлический пресс, холодный отжим (не шнек). Температура не поднимается выше 35–40°C → нет окисления</span></div>
+        <div class="list-item"><div class="list-dot"></div><span>Малые партии: 40–60 л/мес. Масло отжимается под спрос, не залёживается</span></div>
+        <div class="list-item"><div class="list-dot"></div><span>Тёмное стекло — защита от ультрафиолета. Дозатор — контроль дозировки</span></div>
+        <div class="list-item" style="border:none;"><div class="list-dot"></div><span>Государственные сертификаты на все масла. Сертификаты сырья — от поставщика</span></div>
+      </div>
+    </div>
+
+    <div class="section-header fade-up" style="margin-top:40px; margin-bottom:20px;">
+      <h3 style="font-size:18px; font-weight:600; color:var(--n900);">Текущая линейка (активная)</h3>
+    </div>
+    <div class="table-wrap fade-up">
+      <table>
+        <thead>
+          <tr>
+            <th>Масло</th>
+            <th>Роль</th>
+            <th>Себест. /л (с тарой)</th>
+            <th>Статус</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Чёрный тмин</strong></td>
+            <td>Флагман / Здоровье</td>
+            <td>2 000 ₽</td>
+            <td><span class="badge badge-green">Топ спроса и маржи</span></td>
+          </tr>
+          <tr>
+            <td><strong>Расторопша</strong></td>
+            <td>Флагман / Печень</td>
+            <td>1 000 ₽</td>
+            <td><span class="badge badge-green">Высокая маржа</span></td>
+          </tr>
+          <tr>
+            <td><strong>Тыква</strong></td>
+            <td>Флагман / Здоровье</td>
+            <td>2 800 ₽</td>
+            <td><span class="badge badge-yellow">Топ спроса, высокая себест.</span></td>
+          </tr>
+          <tr>
+            <td><strong>Миндаль</strong></td>
+            <td>Красота + кухня</td>
+            <td>2 400 ₽</td>
+            <td><span class="badge badge-brand">Активен</span></td>
+          </tr>
+          <tr>
+            <td><strong>Кедр</strong></td>
+            <td>Красота + иммунитет</td>
+            <td>2 000 ₽</td>
+            <td><span class="badge badge-brand">Активен</span></td>
+          </tr>
+          <tr>
+            <td><strong>Грецкий орех</strong></td>
+            <td>Мозг + кухня</td>
+            <td>1 500 ₽</td>
+            <td><span class="badge badge-brand">Активен</span></td>
+          </tr>
+          <tr>
+            <td><strong>Лён</strong></td>
+            <td>Здоровье / Сердце</td>
+            <td>700 ₽</td>
+            <td><span class="badge badge-brand">Активен, дёшево</span></td>
+          </tr>
+          <tr>
+            <td><strong>Подсолнечник</strong></td>
+            <td>Кухня / Вход</td>
+            <td>700 ₽</td>
+            <td><span class="badge badge-brand">Активен, дёшево</span></td>
+          </tr>
+          <tr>
+            <td><strong>Конопля</strong></td>
+            <td>Здоровье + тренд</td>
+            <td>н/д</td>
+            <td><span class="badge badge-blue">Запускается</span></td>
+          </tr>
+          <tr>
+            <td><strong>Кунжут</strong></td>
+            <td>Кухня + красота</td>
+            <td>н/д</td>
+            <td><span class="badge badge-blue">Запускается</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- JTBD -->
+<section class="section fade-up" id="jtbd">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-label">3. Зачем — Jobs To Be Done</div>
+      <h2 class="section-title">Работа, которую нанимают</h2>
+      <p class="section-sub">«Когда я [ситуация], я хочу [действие], чтобы [результат].»</p>
+    </div>
+    <div class="jtbd-grid">
+      <div class="jtbd-card fade-up">
+        <div class="jtbd-label">💊 Здоровье и профилактика</div>
+        <p class="jtbd-text">«Когда я хочу поддержать иммунитет / печень / ЖКТ без таблеток — я ищу понятный натуральный продукт с честным объяснением как применять и что ожидать.»</p>
+      </div>
+      <div class="jtbd-card fade-up">
+        <div class="jtbd-label">✨ Красота и кожа</div>
+        <p class="jtbd-text">«Когда у меня сухая кожа и волосы, и кремы снаружи не дают результата — я ищу решение изнутри: жиры, витамины, настоящее масло, а не маркетинг.»</p>
+      </div>
+      <div class="jtbd-card fade-up">
+        <div class="jtbd-label">🍳 Кухня и вкус</div>
+        <p class="jtbd-text">«Когда я готовлю и хочу добавить полезный и вкусный жир — я ищу масло с характером, не безвкусную рафинашку.»</p>
+      </div>
+      <div class="jtbd-card fade-up">
+        <div class="jtbd-label">🚪 Первая покупка / вход</div>
+        <p class="jtbd-text">«Когда я хочу попробовать холодный отжим, но боюсь потратить деньги на то, что не понравится — я ищу маленький формат без риска.»</p>
+      </div>
+      <div class="jtbd-card fade-up">
+        <div class="jtbd-label">🎁 Подарок</div>
+        <p class="jtbd-text">«Когда мне нужен осознанный подарок ЗОЖ-человеку — я ищу красивое, полезное, с историей.»</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- МЕХАНИКА ЦЕННОСТИ -->
+<section class="section fade-up" id="mechanics" style="background:#fff;">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-label">4. Как — Механика ценности</div>
+      <h2 class="section-title">Что отличает Магию Масел</h2>
+      <p class="section-sub">Рынок vs Кирилл — в чём принципиальная разница.</p>
+    </div>
+
+    <div class="table-wrap fade-up">
+      <table>
+        <thead>
+          <tr>
+            <th>Что делает рынок</th>
+            <th>Что делает Кирилл</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Продаёт «натуральное» без объяснений</td>
+            <td><strong>Объясняет: гидравлика ≠ шнек → почему это важно</strong></td>
+          </tr>
+          <tr>
+            <td>Обещает здоровье и красоту</td>
+            <td><strong>«Не панацея, посоветуйтесь с врачом»</strong></td>
+          </tr>
+          <tr>
+            <td>Безликий производитель</td>
+            <td><strong>Кирилл — лицо, голос и руки. Видно кто и как</strong></td>
+          </tr>
+          <tr>
+            <td>Купить и забыть</td>
+            <td><strong>Ремайндер когда заканчивается + подбор под задачу</strong></td>
+          </tr>
+          <tr>
+            <td>Один формат для всех</td>
+            <td><strong>100 мл вход + наборы под цель + 250 мл ритуал</strong></td>
+          </tr>
+          <tr>
+            <td>Маркетплейс без контакта</td>
+            <td><strong>Прямой контакт: офлайн точка + TG-канал</strong></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="section-header fade-up" style="margin-top:48px; margin-bottom:20px;">
+      <h3 style="font-size:18px; font-weight:600; color:var(--n900);">Механика продажи</h3>
+    </div>
+    <div class="grid-2">
+      <div class="card fade-up">
+        <div class="card-title">🏪 Офлайн (текущая)</div>
+        <div class="journey-box">Дорогомиловский рынок → Консультация → Проба → Покупка</div>
+        <p style="font-size:14px; color:var(--n500); margin-top:12px;">Конвертирует через: честность + объяснение + вкус</p>
+      </div>
+      <div class="card fade-up">
+        <div class="card-title">📱 Онлайн (строим)</div>
+        <div class="journey-box">Видео производства / образовательный контент → TG-канал →
+Подбор под задачу → 3×100 мл входной набор →
+Ремайндер на 21–25 день → Повторная покупка</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- РОЛЬ КИРИЛЛА -->
+<section class="section fade-up" id="kirill">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-label">5. Роль Кирилла</div>
+      <h2 class="section-title">Главная составляющая ценности</h2>
+      <p class="section-sub">Кирилл — не просто производитель. Он — сам продукт.</p>
+    </div>
+
+    <div class="avatar-card fade-up" style="margin-bottom:24px;">
+      <div class="avatar-name">Кирилл Бродский</div>
+      <div class="avatar-segment">Производитель · Лицо бренда · Консультант</div>
+      <div class="list-item">
+        <div class="list-dot"></div>
+        <span><strong>Инженерный опыт:</strong> 20 лет в нефтяной промышленности → контроль качества, регламенты, системный подход.</span>
+      </div>
+      <div class="list-item">
+        <div class="list-dot"></div>
+        <span><strong>Личная история:</strong> «До пяти лет назад я о здоровье не думал.» → личная трансформация = достоверность.</span>
+      </div>
+      <div class="list-item">
+        <div class="list-dot"></div>
+        <span><strong>Честность:</strong> Не давит, не обещает чудес, даёт попробовать, предупреждает о противопоказаниях.</span>
+      </div>
+      <div class="list-item" style="border:none;">
+        <div class="list-dot"></div>
+        <span><strong>Готов быть публичным:</strong> Видео производства, сторителлинг, лицо бренда. Решил однозначно.</span>
+      </div>
+    </div>
+
+    <div class="quote-card fade-up" style="margin-bottom:20px;">
+      <p class="quote-text">«Тёплый ремесленник с инженерным прошлым. Делает масло руками, знает каждое по имени, помогает выбрать под твою задачу — без давления и без лишних обещаний.»</p>
+      <div class="quote-author">Позиция бренда · Кирилл Бродский</div>
+    </div>
+
+    <div class="alert alert-warning fade-up">
+      <span class="alert-icon">⚠️</span>
+      <div>
+        <strong style="color:#92400e; display:block; margin-bottom:4px;">Корректировка от 29.03.2026</strong>
+        <p style="font-size:14px; color:var(--n600);">Кирилл выбрал образ <strong>«Тёплый Ремесленник»</strong> (основной) + <strong>«Консьерж-система»</strong> (доп.). Не «инженерный крафт».</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ТРАНСФОРМАЦИЯ -->
+<section class="section fade-up" id="transform" style="background:#fff;">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-label">6. Трансформация клиента</div>
+      <h2 class="section-title">До и после</h2>
+      <p class="section-sub">Путь клиента от первого контакта до лояльного покупателя.</p>
+    </div>
+    <div class="grid-2">
+      <div class="card-before fade-up">
+        <div class="card-icon">😔</div>
+        <div class="card-title" style="color:var(--error);">До</div>
+        <div class="list-item">
+          <div class="list-dot-red"></div>
+          <span>Покупает масло в супермаркете, не понимает разницу</span>
+        </div>
+        <div class="list-item">
+          <div class="list-dot-red"></div>
+          <span>Тратит деньги на БАДы, результата не видит</span>
+        </div>
+        <div class="list-item" style="border:none;">
+          <div class="list-dot-red"></div>
+          <span>Нет «своего» производителя которому доверяет</span>
+        </div>
+      </div>
+      <div class="card-after fade-up">
+        <div class="card-icon">✅</div>
+        <div class="card-title" style="color:var(--success);">После</div>
+        <div class="list-item">
+          <div class="list-dot-green"></div>
+          <span>Понимает холодный отжим и почему это важно</span>
+        </div>
+        <div class="list-item">
+          <div class="list-dot-green"></div>
+          <span>Знает какое масло и зачем именно ему/ей</span>
+        </div>
+        <div class="list-item">
+          <div class="list-dot-green"></div>
+          <span>Видит эффект: кожа, энергия, ощущения</span>
+        </div>
+        <div class="list-item" style="border:none;">
+          <div class="list-dot-green"></div>
+          <span>Получает напоминание когда заканчивается — не надо помнить самому</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ОБЕЩАНИЕ ЦЕННОСТИ -->
+<section class="section fade-up" id="promise">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-label">7. Обещание ценности</div>
+      <h2 class="section-title">Что мы обещаем и чем доказываем</h2>
+      <p class="section-sub">Главное обещание, доказательства и принципиальные ограничения.</p>
+    </div>
+
+    <div class="quote-card fade-up" style="margin-bottom:24px;">
+      <p class="quote-text">«Масло, которое подходит именно вашей задаче — отжато сегодня, с честным объяснением как применять, и напоминанием когда заканчивается.»</p>
+      <div class="quote-author">Главное обещание · Магия Масел</div>
+    </div>
+
+    <div class="section-header fade-up" style="margin-bottom:16px;">
+      <h3 style="font-size:16px; font-weight:600; color:var(--n900);">Доказательства</h3>
+    </div>
+    <div class="tag-list fade-up" style="margin-bottom:24px;">
+      <span class="tag">📹 Видео процесса производства</span>
+      <span class="tag">📅 Дата отжима на этикетке</span>
+      <span class="tag">📋 Госсертификат</span>
+      <span class="tag">🗣️ Кирилл лично объясняет как и зачем</span>
+      <span class="tag">↩️ Возврат если вкус не подошёл (онлайн)</span>
+    </div>
+
+    <div class="alert alert-error fade-up">
+      <span class="alert-icon">🚫</span>
+      <div>
+        <strong style="color:#991b1b; display:block; margin-bottom:8px;">Чего НЕТ (принципиально)</strong>
+        <div class="list-item"><div class="list-dot-red"></div><span>Обещания лечения и гарантированных результатов</span></div>
+        <div class="list-item"><div class="list-dot-red"></div><span>Давления «купи сейчас»</span></div>
+        <div class="list-item"><div class="list-dot-red"></div><span>Купажей и «волшебных смесей»</span></div>
+        <div class="list-item" style="border:none;"><div class="list-dot-red"></div><span>Капсул и порошков</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- МАТРИЦА -->
+<section class="section fade-up" id="matrix" style="background:#fff;">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-label">8. Матрица продукт × сегмент</div>
+      <h2 class="section-title">Кому что продаём</h2>
+      <p class="section-sub">Подтверждено Кириллом 29.03.2026 — 2 активных набора-вектора.</p>
+    </div>
+
+    <div class="table-wrap fade-up">
+      <table>
+        <thead>
+          <tr>
+            <th>Сегмент</th>
+            <th>Масла-якори</th>
+            <th>Входной формат</th>
+            <th>Набор</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Здоровье / профилактика</strong></td>
+            <td>Тмин, расторопша, тыква</td>
+            <td>100 мл</td>
+            <td><span class="badge badge-green">3×100 мл «Здоровье»</span></td>
+          </tr>
+          <tr>
+            <td><strong>Кухня и вкус</strong></td>
+            <td>Кедр, грецкий, кунжут</td>
+            <td>100 мл</td>
+            <td><span class="badge badge-brand">3×100 мл «Кухня»</span></td>
+          </tr>
+          <tr>
+            <td><strong>Подарок</strong></td>
+            <td>Тмин / миндаль / кедр</td>
+            <td>250 мл × 2–3</td>
+            <td><span class="badge badge-accent">Подарочный бокс (руками)</span></td>
+          </tr>
+          <tr>
+            <td><strong>Вход без риска</strong></td>
+            <td>Любое</td>
+            <td>100 мл × 1</td>
+            <td><span class="badge badge-blue">Один пробник</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="alert alert-info fade-up">
+      <span class="alert-icon">✅</span>
+      <div>
+        <strong style="color:#1e40af; display:block; margin-bottom:4px;">Подтверждение Кирилла · 29.03.2026</strong>
+        <p style="font-size:14px; color:var(--n600);">Кирилл подтвердил 2 набора-вектора: <strong>Здоровье</strong> + <strong>Кухня</strong>. Сегменты «Красота» и «Спорт» — убраны из активных векторов.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="container">
+    <div class="footer-inner">
+      <div>
+        <img src="../assets/logo-horizontal-dark.png" alt="Магия Масел" style="height:48px; width:auto; border-radius:var(--r-lg);">
+        <div style="margin-top:8px; font-size:12px; color:var(--n600);">BrandOS · Фабрика Контента v5</div>
+      </div>
+      <div class="footer-meta">
+        <div class="footer-meta-item">
+          <span class="footer-meta-label">Документ</span>
+          <span class="footer-meta-value">M3-01 — Ядро продукта</span>
+        </div>
+        <div class="footer-meta-item">
+          <span class="footer-meta-label">Модуль</span>
+          <span class="footer-meta-value">M3 · 1 из 7</span>
+        </div>
+        <div class="footer-meta-item">
+          <span class="footer-meta-label">Версия</span>
+          <span class="footer-meta-value">2.0 · 27.03.2026</span>
+        </div>
+        <div class="footer-meta-item">
+          <span class="footer-meta-label">Источники</span>
+          <span class="footer-meta-value">Ответы Кирилла 27.03 + мастер-синтез M2</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script>
+  // IntersectionObserver для fade-up анимаций
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+      }
+    });
+  }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+
+  document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
+</script>
+</body>
+</html>

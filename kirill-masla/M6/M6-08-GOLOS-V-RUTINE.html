@@ -1,0 +1,1109 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>M6-08 · Голос в рутине — Магия Масел · BrandOS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --primary: #0ea5e9;
+  --primary-dark: #0284c7;
+  --primary-light: #7dd3fc;
+  --primary-bg: #e0f2fe;
+  --background: #ffffff;
+  --foreground: #0f172a;
+  --card-bg: hsl(0,0%,97%);
+  --border: #1C1C1E;
+  --muted: #64748b;
+  --radius: 4px;
+  --green: #16a34a;
+  --green-bg: #f0fdf4;
+  --red: #dc2626;
+  --red-bg: #fef2f2;
+  --amber: #d97706;
+  --amber-bg: #fffbeb;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: 'Inter', sans-serif;
+  background: var(--background);
+  color: var(--foreground);
+  line-height: 1.75;
+  font-size: 16px;
+}
+
+.container { max-width: 1200px; margin: 0 auto; padding: 0 1.5rem; }
+
+/* Nav */
+.nav {
+  position: sticky;
+  top: 0;
+  background: white;
+  border-bottom: 1px solid var(--border);
+  z-index: 100;
+  padding: 1rem 0;
+}
+.nav-container { display: flex; justify-content: space-between; align-items: center; gap: 2rem; }
+.nav-brand { font-size: 1rem; font-weight: 700; color: var(--foreground); white-space: nowrap; }
+.nav-brand span { color: var(--primary); }
+.nav-links { display: flex; gap: 1.5rem; list-style: none; overflow-x: auto; flex-wrap: wrap; }
+.nav-links a {
+  color: var(--foreground);
+  text-decoration: none;
+  font-size: .875rem;
+  font-weight: 500;
+  white-space: nowrap;
+  transition: color .2s;
+}
+.nav-links a:hover { color: var(--primary); }
+.nav-links a.active { color: var(--primary); }
+
+/* Hero */
+.hero {
+  padding: 3.75rem 0;
+  background: linear-gradient(135deg, rgba(255,255,255,.98) 0%, rgba(240,249,255,.95) 100%);
+}
+.hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: .5rem;
+  padding: .5rem 1rem;
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  font-size: .875rem;
+  font-weight: 600;
+  margin-bottom: 1.5rem;
+  color: var(--foreground);
+}
+.hero h1 {
+  font-size: clamp(32px, 4vw, 51px);
+  font-weight: 500;
+  line-height: 1.2;
+  margin-bottom: 1rem;
+  max-width: 800px;
+}
+.hero h1 span { color: var(--primary); }
+.hero-sub {
+  font-size: 1.125rem;
+  color: var(--muted);
+  max-width: 680px;
+  margin-bottom: 2rem;
+}
+.hero-meta {
+  display: flex;
+  gap: 2rem;
+  flex-wrap: wrap;
+}
+.hero-meta-item { font-size: .875rem; color: var(--muted); }
+.hero-meta-item strong { color: var(--foreground); }
+
+/* Sections */
+.section { padding: 4rem 0; }
+.section + .section { border-top: 1px solid #f1f5f9; }
+
+.section-header { margin-bottom: 2.5rem; }
+.section-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: .5rem;
+  padding: .375rem .875rem;
+  background: var(--primary-bg);
+  border-radius: var(--radius);
+  font-size: .8rem;
+  font-weight: 600;
+  color: var(--primary-dark);
+  margin-bottom: 1rem;
+  text-transform: uppercase;
+  letter-spacing: .05em;
+}
+.section-title {
+  font-size: clamp(22px, 2.5vw, 30px);
+  font-weight: 600;
+  line-height: 1.3;
+  margin-bottom: .75rem;
+}
+.section-desc {
+  font-size: 1rem;
+  color: var(--muted);
+  max-width: 640px;
+}
+
+/* Intro block */
+.intro-box {
+  background: var(--card-bg);
+  border: 1px solid #e2e8f0;
+  border-left: 4px solid var(--primary);
+  border-radius: var(--radius);
+  padding: 1.5rem 2rem;
+  margin-bottom: 3rem;
+  font-size: .9375rem;
+  line-height: 1.8;
+  color: var(--foreground);
+}
+
+/* Situation cards */
+.situations-grid { display: flex; flex-direction: column; gap: 2rem; }
+
+.situation-card {
+  border: 1px solid #e2e8f0;
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+
+.situation-header {
+  padding: 1rem 1.5rem;
+  background: var(--card-bg);
+  border-bottom: 1px solid #e2e8f0;
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+}
+.situation-num {
+  flex-shrink: 0;
+  width: 2rem;
+  height: 2rem;
+  background: var(--primary);
+  color: white;
+  border-radius: var(--radius);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: .8rem;
+  font-weight: 700;
+}
+.situation-meta { flex: 1; }
+.situation-tag {
+  display: inline-block;
+  padding: .2rem .6rem;
+  background: var(--primary-bg);
+  color: var(--primary-dark);
+  border-radius: var(--radius);
+  font-size: .75rem;
+  font-weight: 600;
+  margin-bottom: .35rem;
+}
+.situation-title {
+  font-size: 1rem;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.situation-body { padding: 1.25rem 1.5rem; display: flex; flex-direction: column; gap: 1rem; }
+
+.msg-block { display: flex; flex-direction: column; gap: .5rem; }
+.msg-label {
+  font-size: .75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+  color: var(--muted);
+}
+.msg-incoming {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: var(--radius);
+  padding: .875rem 1rem;
+  font-size: .9375rem;
+  font-style: italic;
+  color: var(--muted);
+}
+.msg-outgoing {
+  background: var(--green-bg);
+  border: 1px solid #bbf7d0;
+  border-left: 3px solid var(--green);
+  border-radius: var(--radius);
+  padding: .875rem 1rem;
+  font-size: .9375rem;
+  line-height: 1.75;
+  white-space: pre-line;
+}
+.msg-note {
+  background: var(--amber-bg);
+  border: 1px solid #fde68a;
+  border-left: 3px solid var(--amber);
+  border-radius: var(--radius);
+  padding: .75rem 1rem;
+  font-size: .875rem;
+  color: #92400e;
+}
+.msg-note strong { color: #78350f; }
+
+/* Category header */
+.category-header {
+  margin: 3rem 0 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+.category-line { flex: 1; height: 1px; background: #e2e8f0; }
+.category-label {
+  font-size: .875rem;
+  font-weight: 700;
+  color: var(--muted);
+  white-space: nowrap;
+  text-transform: uppercase;
+  letter-spacing: .07em;
+}
+
+/* Taboo section */
+.taboo-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  gap: 1.25rem;
+}
+.taboo-card {
+  border: 1px solid #fecaca;
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+.taboo-header {
+  padding: .875rem 1.25rem;
+  background: var(--red-bg);
+  border-bottom: 1px solid #fecaca;
+  display: flex;
+  align-items: flex-start;
+  gap: .875rem;
+}
+.taboo-num {
+  flex-shrink: 0;
+  width: 1.75rem;
+  height: 1.75rem;
+  background: var(--red);
+  color: white;
+  border-radius: var(--radius);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: .75rem;
+  font-weight: 700;
+}
+.taboo-title { font-size: .9375rem; font-weight: 600; line-height: 1.4; }
+.taboo-body { padding: 1rem 1.25rem; display: flex; flex-direction: column; gap: .75rem; }
+.taboo-example {
+  background: var(--red-bg);
+  border: 1px solid #fecaca;
+  border-radius: var(--radius);
+  padding: .625rem .875rem;
+  font-size: .875rem;
+  font-style: italic;
+  color: #991b1b;
+}
+.taboo-why { font-size: .875rem; color: var(--muted); }
+.taboo-instead {
+  background: var(--green-bg);
+  border: 1px solid #bbf7d0;
+  border-radius: var(--radius);
+  padding: .625rem .875rem;
+  font-size: .875rem;
+  color: #166534;
+}
+
+/* Summary box */
+.summary-box {
+  background: var(--card-bg);
+  border: 1px solid #e2e8f0;
+  border-radius: var(--radius);
+  padding: 2rem;
+  margin-top: 3rem;
+}
+.summary-title { font-size: 1.125rem; font-weight: 600; margin-bottom: 1.25rem; }
+.summary-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 1rem; }
+.summary-item {
+  padding: 1rem;
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: var(--radius);
+  font-size: .875rem;
+}
+.summary-item strong { display: block; font-size: 1.25rem; color: var(--primary); margin-bottom: .25rem; }
+
+/* Footer */
+footer {
+  background: var(--card-bg);
+  border-top: 1px solid #e2e8f0;
+  padding: 2rem 0;
+  margin-top: 4rem;
+}
+.footer-inner {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+.footer-brand { font-weight: 700; font-size: .9375rem; }
+.footer-brand span { color: var(--primary); }
+.footer-meta { font-size: .8125rem; color: var(--muted); }
+
+@media (max-width: 640px) {
+  .nav-links { display: none; }
+  .taboo-grid { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<!-- Nav -->
+<nav class="nav">
+  <div class="container">
+    <div class="nav-container">
+      <div class="nav-brand">Магия Масел <span>·</span> BrandOS</div>
+      <ul class="nav-links">
+        <li><a href="M6-01-ARKHETIP-BRENDA.html">M6-01 Архетип</a></li>
+        <li><a href="M6-02-MISSIYA-I-TSENNOSTI.html">M6-02 Миссия</a></li>
+        <li><a href="M6-03-POZITSIONIROVANIE.html">M6-03 Позиционирование</a></li>
+        <li><a href="M6-04-BIG-IDEA.html">M6-04 Big Idea</a></li>
+        <li><a href="M6-05-ECG.html">M6-05 ECG</a></li>
+        <li><a href="M6-06-MESSAGING-SYSTEM.html">M6-06 Messaging</a></li>
+        <li><a href="M6-07-SMYSLOVYE-KLASTERY.html">M6-07 Кластеры</a></li>
+        <li><a href="M6-08-GOLOS-V-RUTINE.html" class="active">M6-08 Голос в рутине</a></li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<!-- Hero -->
+<section class="hero">
+  <div class="container">
+    <div class="hero-badge">M6-08 · Позиционирование</div>
+    <h1>Голос в <span>рутине</span></h1>
+    <p class="hero-sub">18 реальных ситуаций — вопросы, возражения, жалобы, подписи к контенту. Как именно звучит архетип Мастер-Хранитель в живом общении, а не в теории.</p>
+    <div class="hero-meta">
+      <div class="hero-meta-item"><strong>Версия:</strong> 1.0</div>
+      <div class="hero-meta-item"><strong>Дата:</strong> 03.04.2026</div>
+      <div class="hero-meta-item"><strong>Статус:</strong> Финал</div>
+      <div class="hero-meta-item"><strong>Источники:</strong> ARKHETIP-BRENDA, MESSAGING-SYSTEM, brand/voice-style</div>
+    </div>
+  </div>
+</section>
+
+<!-- Main -->
+<main>
+
+  <!-- Intro -->
+  <section class="section">
+    <div class="container">
+
+      <div class="intro-box">
+        <strong>Зачем этот документ.</strong> Архетип Мастер-Хранитель, Big Idea «Знать, что ешь», 12 смысловых кластеров — это система смыслов. Но когда Кирилл открывает личку и видит «какое масло при давлении?» — ему нужен не архетип, а фраза. Этот документ — коллекция готовых ответов в стиле бренда для 18 типичных ситуаций. Пользоваться как справочником: нашёл ситуацию, адаптировал под конкретный контекст, отправил.
+        <br><br>
+        <strong>Три правила голоса:</strong> (1) Факт вместо эпитета — не «наше масло лучшее», а «гидравлический пресс, температура 35°C, дата на бутылке». (2) Честность о противопоказаниях — всегда, даже если человек уже достал кошелёк. (3) Один следующий шаг — каждый ответ заканчивается конкретным действием, а не уходит в воздух.
+      </div>
+
+      <!-- Блок 1: Вопросы о масле -->
+      <div class="category-header">
+        <div class="category-line"></div>
+        <div class="category-label">01 — Вопросы о масле и применении</div>
+        <div class="category-line"></div>
+      </div>
+
+      <div class="situations-grid">
+
+        <div class="situation-card">
+          <div class="situation-header">
+            <div class="situation-num">1</div>
+            <div class="situation-meta">
+              <div class="situation-tag">Личка / Telegram</div>
+              <div class="situation-title">«Какое масло при высоком давлении?»</div>
+            </div>
+          </div>
+          <div class="situation-body">
+            <div class="msg-block">
+              <div class="msg-label">Входящее</div>
+              <div class="msg-incoming">Здравствуйте, подскажите, какое масло лучше при повышенном давлении?</div>
+            </div>
+            <div class="msg-block">
+              <div class="msg-label">Ответ</div>
+              <div class="msg-outgoing">Здравствуйте.
+
+Из того, что есть в линейке — чаще всего при гипертонии берут льняное и масло чёрного тмина. Разные механизмы.
+
+Льняное: Омега-3, поддерживает эластичность сосудов. Принимают по 1 чайной ложке утром с едой, курс 3 месяца.
+
+Тмин: тимохинон, противовоспалительный эффект. Но важно: при приёме антигипертензивных препаратов — проконсультируйтесь с врачом, может усиливать их действие.
+
+Расскажите немного о ситуации — препараты принимаете? Это поможет подобрать точнее.</div>
+            </div>
+            <div class="msg-note"><strong>Почему так:</strong> Не назначаем — подбираем. Сразу называем противопоказание. Задаём уточняющий вопрос, чтобы дать точный ответ, а не общий.</div>
+          </div>
+        </div>
+
+        <div class="situation-card">
+          <div class="situation-header">
+            <div class="situation-num">2</div>
+            <div class="situation-meta">
+              <div class="situation-tag">Личка / Telegram</div>
+              <div class="situation-title">«Можно ли давать детям? С какого возраста?»</div>
+            </div>
+          </div>
+          <div class="situation-body">
+            <div class="msg-block">
+              <div class="msg-label">Входящее</div>
+              <div class="msg-incoming">Добрый день! Можно ли детям давать масло? Ребёнку 4 года.</div>
+            </div>
+            <div class="msg-block">
+              <div class="msg-label">Ответ</div>
+              <div class="msg-outgoing">Добрый день!
+
+Да, с 4 лет — можно. Рекомендую льняное или кедровое.
+
+Льняное — Омега-3, для развития мозга и иммунитета. Начните с ½ чайной ложки в тёплую кашу или йогурт. Вкус нейтральный, ребёнок скорее всего не заметит.
+
+Кедровое — мягкий ореховый вкус, хорошо на хлеб. ½ чайной ложки в день.
+
+Важно: оба масла — только в блюда, не жарить. Хранить в холодильнике, использовать за 4–6 недель после вскрытия.
+
+Тмин и расторопшу детям до 7 лет не рекомендую — сильное воздействие на печень и желчный.
+
+Если есть аллергия на орехи — уточните, прежде чем давать кедровое.</div>
+            </div>
+            <div class="msg-note"><strong>Почему так:</strong> Конкретный возраст и дозировка. Сразу предупреждение про аллергию и про что нельзя. Практически: что с чем смешивать.</div>
+          </div>
+        </div>
+
+        <div class="situation-card">
+          <div class="situation-header">
+            <div class="situation-num">3</div>
+            <div class="situation-meta">
+              <div class="situation-tag">Личка / Telegram</div>
+              <div class="situation-title">«Как хранить? Сколько живёт после вскрытия?»</div>
+            </div>
+          </div>
+          <div class="situation-body">
+            <div class="msg-block">
+              <div class="msg-label">Входящее</div>
+              <div class="msg-incoming">Сколько хранится масло и куда его убирать?</div>
+            </div>
+            <div class="msg-block">
+              <div class="msg-label">Ответ</div>
+              <div class="msg-outgoing">После вскрытия — в холодильник, подальше от света. Тёмное стекло помогает, но не заменяет холод.
+
+Льняное и тыквенное — самые нестойкие, использовать за 4–6 недель.
+Тмин, расторопша, кедровое — немного дольше, до 8 недель.
+Миндальное и кунжутное — устойчивее, до 3 месяцев.
+
+Поэтому беру небольшие объёмы — 100–250 мл. Закончится раньше, чем успеет испортиться.
+
+Признак что масло потеряло качество: прогорклый, резкий запах или сильная горечь там, где её не должно быть. Если появилось — лучше не использовать.</div>
+            </div>
+            <div class="msg-note"><strong>Почему так:</strong> Конкретные сроки по каждому маслу. Объясняем логику малого объёма — не продажный аргумент, а практический. Говорим про признаки порчи честно.</div>
+          </div>
+        </div>
+
+        <div class="situation-card">
+          <div class="situation-header">
+            <div class="situation-num">4</div>
+            <div class="situation-meta">
+              <div class="situation-tag">Личка / Комментарий</div>
+              <div class="situation-title">«Это лечит? Вылечит мою болезнь?»</div>
+            </div>
+          </div>
+          <div class="situation-body">
+            <div class="msg-block">
+              <div class="msg-label">Входящее</div>
+              <div class="msg-incoming">А масло расторопши вылечит мою печень? У меня жировой гепатоз.</div>
+            </div>
+            <div class="msg-block">
+              <div class="msg-label">Ответ</div>
+              <div class="msg-outgoing">Честно: масло не лечит. Это еда, а не лекарство.
+
+Расторопша содержит силимарин — вещество с доказанным гепатопротекторным эффектом. Поддерживает печень, помогает при восстановлении. Но это поддержка, не лечение жировой болезни.
+
+При жировом гепатозе масло может быть частью рациона, но главное — диета, движение и работа с врачом. Масло это не заменит.
+
+Если вы уже наблюдаетесь у гастроэнтеролога — спросите у него, можно ли добавить. Я могу дать информацию о составе и как принимают, но назначение — не моя роль.</div>
+            </div>
+            <div class="msg-note"><strong>Почему так:</strong> Прямо говорим «не лечит». Объясняем что именно делает и как. Не отказываем в помощи — перенаправляем к врачу. Это и есть архетип Мастер-Хранитель: честность важнее продажи.</div>
+          </div>
+        </div>
+
+        <div class="situation-card">
+          <div class="situation-header">
+            <div class="situation-num">5</div>
+            <div class="situation-meta">
+              <div class="situation-tag">Личка / Первое сообщение</div>
+              <div class="situation-title">«Расскажите о вашем масле» — первый контакт</div>
+            </div>
+          </div>
+          <div class="situation-body">
+            <div class="msg-block">
+              <div class="msg-label">Входящее</div>
+              <div class="msg-incoming">Здравствуйте! Увидела вас в Instagram, расскажите про ваше масло.</div>
+            </div>
+            <div class="msg-block">
+              <div class="msg-label">Ответ</div>
+              <div class="msg-outgoing">Здравствуйте!
+
+Коротко: масла первого холодного отжима. Гидравлический пресс, температура не выше 35°C — активные вещества сохраняются. На каждой бутылке дата отжима: не «произведено в 2026», а конкретный день. Малые партии — 40–60 литров в месяц, масло не залёживается.
+
+Линейка: льняное, кедровое, тыквенное, расторопша, чёрный тмин, миндальное, грецкое, кунжутное.
+
+Чтобы подобрать что-то конкретное — скажите, для чего ищете? Есть какая-то задача по здоровью или просто хотите добавить в рацион?</div>
+            </div>
+            <div class="msg-note"><strong>Почему так:</strong> Три факта, не эпитеты. Дата — главный дифференциатор, называем первым. Заканчиваем вопросом — переходим к диалогу, не к монологу.</div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Блок 2: Возражения -->
+      <div class="category-header">
+        <div class="category-line"></div>
+        <div class="category-label">02 — Возражения и сомнения</div>
+        <div class="category-line"></div>
+      </div>
+
+      <div class="situations-grid">
+
+        <div class="situation-card">
+          <div class="situation-header">
+            <div class="situation-num">6</div>
+            <div class="situation-meta">
+              <div class="situation-tag">Личка / Возражение</div>
+              <div class="situation-title">«Дорого. На маркетплейсе то же самое дешевле»</div>
+            </div>
+          </div>
+          <div class="situation-body">
+            <div class="msg-block">
+              <div class="msg-label">Входящее</div>
+              <div class="msg-incoming">У вас 600 рублей за 100 мл, на Wildberries то же льняное 350. Почему так дорого?</div>
+            </div>
+            <div class="msg-block">
+              <div class="msg-label">Ответ</div>
+              <div class="msg-outgoing">Это честный вопрос.
+
+На маркетплейсе «льняное холодного отжима» — так написано на большинстве бутылок. Но: нет даты отжима, нет типа пресса, нет малого объёма. Как понять, что внутри?
+
+Разница в цене — это дата на этикетке, гидравлика (не шнек), партия 40–60 литров, которая не лежит месяцами на складе.
+
+Если вам важна именно цена — маркетплейс логичный выбор. Я не буду убеждать. Если важно знать что именно покупаете — тогда ко мне.</div>
+            </div>
+            <div class="msg-note"><strong>Почему так:</strong> Не оправдываемся и не атакуем конкурентов. Объясняем в чём разница фактами. Уважаем право человека выбрать дешевле — это и есть уважение к свободе выбора из миссии.</div>
+          </div>
+        </div>
+
+        <div class="situation-card">
+          <div class="situation-header">
+            <div class="situation-num">7</div>
+            <div class="situation-meta">
+              <div class="situation-tag">Личка / Возражение</div>
+              <div class="situation-title">«А чем докажете, что холодный отжим?»</div>
+            </div>
+          </div>
+          <div class="situation-body">
+            <div class="msg-block">
+              <div class="msg-label">Входящее</div>
+              <div class="msg-incoming">Все пишут "холодный отжим", а на деле никто не знает что там. Чем докажете?</div>
+            </div>
+            <div class="msg-block">
+              <div class="msg-label">Ответ</div>
+              <div class="msg-outgoing">Правильный скептицизм.
+
+Вот что есть: видео процесса отжима — пресс, сырьё, результат. Не постановка, реальный процесс. Могу скинуть последнее.
+
+Дата отжима на каждой бутылке — конкретный день. Если масло прогоркло или вкус странный — напишите, разберёмся и заменим.
+
+Анализ состава на конкретную партию — по запросу, если нужно.
+
+Приезжайте на Дорогомиловский рынок, попробуйте до покупки. Это самый быстрый способ проверить.</div>
+            </div>
+            <div class="msg-note"><strong>Почему так:</strong> Не обижаемся на скептицизм — поддерживаем его. Три уровня доказательств: видео, дата, анализ. Приглашаем проверить лично.</div>
+          </div>
+        </div>
+
+        <div class="situation-card">
+          <div class="situation-header">
+            <div class="situation-num">8</div>
+            <div class="situation-meta">
+              <div class="situation-tag">Личка / Возражение</div>
+              <div class="situation-title">«У вас нет сертификатов / нет лицензии»</div>
+            </div>
+          </div>
+          <div class="situation-body">
+            <div class="msg-block">
+              <div class="msg-label">Входящее</div>
+              <div class="msg-incoming">А сертификаты на масло есть? Это же еда, должна быть документация.</div>
+            </div>
+            <div class="msg-block">
+              <div class="msg-label">Ответ</div>
+              <div class="msg-outgoing">Да, документация есть.
+
+ИП оформлено, работаю легально. Декларация соответствия на продукт — есть. По запросу могу показать.
+
+Что касается анализов — делаю на конкретные партии при необходимости. Это честнее, чем один сертификат на всё производство раз в год.
+
+Если важно посмотреть документы перед покупкой — напишите, пришлю.</div>
+            </div>
+            <div class="msg-note"><strong>Почему так:</strong> Прямо и без оборонительности. Объясняем логику партионных анализов — это дополнительный аргумент, не слабость.</div>
+          </div>
+        </div>
+
+        <div class="situation-card">
+          <div class="situation-header">
+            <div class="situation-num">9</div>
+            <div class="situation-meta">
+              <div class="situation-tag">Комментарий / Личка</div>
+              <div class="situation-title">«Я уже пью льняное, зачем ваше?»</div>
+            </div>
+          </div>
+          <div class="situation-body">
+            <div class="msg-block">
+              <div class="msg-label">Входящее</div>
+              <div class="msg-incoming">Я уже покупаю льняное в магазине. Чем ваше лучше?</div>
+            </div>
+            <div class="msg-block">
+              <div class="msg-label">Ответ</div>
+              <div class="msg-outgoing">Зависит от того, что за масло в магазине.
+
+Если это рафинированное — это другой продукт. Омега-3 там частично разрушена при обработке.
+
+Если нерафинированное холодного отжима — вопрос в свежести. Посмотрите на дату производства: если это «2025 год» без конкретного дня, масло уже могло окислиться. Льняное особенно чувствительно.
+
+Если хотите — скажите что за бренд, посмотрим вместе. Я не пытаюсь убедить вас что там плохо — просто чтобы вы понимали разницу.</div>
+            </div>
+            <div class="msg-note"><strong>Почему так:</strong> Не атакуем магазинное масло огульно. Объясняем конкретную разницу. Предлагаем разобраться вместе — позиция эксперта, не продавца.</div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Блок 3: Жалобы -->
+      <div class="category-header">
+        <div class="category-line"></div>
+        <div class="category-label">03 — Жалобы и нестандартные ситуации</div>
+        <div class="category-line"></div>
+      </div>
+
+      <div class="situations-grid">
+
+        <div class="situation-card">
+          <div class="situation-header">
+            <div class="situation-num">10</div>
+            <div class="situation-meta">
+              <div class="situation-tag">Личка / Жалоба</div>
+              <div class="situation-title">«Масло горчит»</div>
+            </div>
+          </div>
+          <div class="situation-body">
+            <div class="msg-block">
+              <div class="msg-label">Входящее</div>
+              <div class="msg-incoming">Купила масло тмина, очень горькое. Это нормально?</div>
+            </div>
+            <div class="msg-block">
+              <div class="msg-label">Ответ</div>
+              <div class="msg-outgoing">Да, для тмина — нормально. Это тимохинон, основное активное вещество. Именно из-за него масло ценится. Горечь — признак того, что оно настоящее, не разбавленное.
+
+Если горечь очень интенсивная и неприятная — попробуйте принимать с мёдом или после еды, это смягчает.
+
+А вот если горчит льняное или кедровое — это уже проблема, признак окисления. Какое масло у вас?</div>
+            </div>
+            <div class="msg-note"><strong>Почему так:</strong> Разные ответы на горечь в зависимости от масла — это и есть экспертиза. Не отмахиваемся «так и должно быть», а объясняем механизм.</div>
+          </div>
+        </div>
+
+        <div class="situation-card">
+          <div class="situation-header">
+            <div class="situation-num">11</div>
+            <div class="situation-meta">
+              <div class="situation-tag">Личка / Жалоба</div>
+              <div class="situation-title">«Масло испортилось / странный запах»</div>
+            </div>
+          </div>
+          <div class="situation-body">
+            <div class="msg-block">
+              <div class="msg-label">Входящее</div>
+              <div class="msg-incoming">Открыла льняное — резкий неприятный запах. Использовала 2 недели, хранила в холодильнике.</div>
+            </div>
+            <div class="msg-block">
+              <div class="msg-label">Ответ</div>
+              <div class="msg-outgoing">Это не должно так пахнуть. Льняное при правильном хранении в холодильнике — 4–6 недель без проблем.
+
+Скажите, пожалуйста: бутылка тёмная или прозрачная? Крышка плотно закрывалась? Это поможет понять что произошло.
+
+Если масло действительно испортилось раньше срока — заменю. Это не разговор «так и должно быть».</div>
+            </div>
+            <div class="msg-note"><strong>Почему так:</strong> Не защищаемся, не ищем вину у покупателя. Задаём вопросы чтобы разобраться. Сразу говорим что заменим — это снимает напряжение.</div>
+          </div>
+        </div>
+
+        <div class="situation-card">
+          <div class="situation-header">
+            <div class="situation-num">12</div>
+            <div class="situation-meta">
+              <div class="situation-tag">Личка / Нестандарт</div>
+              <div class="situation-title">«Мне нельзя это масло» — противопоказание после покупки</div>
+            </div>
+          </div>
+          <div class="situation-body">
+            <div class="msg-block">
+              <div class="msg-label">Входящее</div>
+              <div class="msg-incoming">Купила масло расторопши, а врач сказал что мне нельзя — желчнокаменная болезнь в стадии обострения. Что делать?</div>
+            </div>
+            <div class="msg-block">
+              <div class="msg-label">Ответ</div>
+              <div class="msg-outgoing">Правильно сделали что уточнили у врача.
+
+При обострении желчнокаменной болезни — расторопша действительно не лучший момент. Силимарин стимулирует желчеотделение, при обострении это лишняя нагрузка.
+
+Предлагаю два варианта: вернуть — без вопросов. Или подержать до ремиссии — расторопша с хорошим сроком хранения, через 3–4 месяца при нормализации можно попробовать в малых дозах.
+
+Как вам удобнее?</div>
+            </div>
+            <div class="msg-note"><strong>Почему так:</strong> Подтверждаем противопоказание — не пытаемся уговорить всё равно принимать. Даём реальный выбор. Это и есть «честность без оговорок».</div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Блок 4: Комментарии и контент -->
+      <div class="category-header">
+        <div class="category-line"></div>
+        <div class="category-label">04 — Комментарии под постами и контентные подписи</div>
+        <div class="category-line"></div>
+      </div>
+
+      <div class="situations-grid">
+
+        <div class="situation-card">
+          <div class="situation-header">
+            <div class="situation-num">13</div>
+            <div class="situation-meta">
+              <div class="situation-tag">Комментарий / Пост</div>
+              <div class="situation-title">«А в чём разница с аптечным в капсулах?»</div>
+            </div>
+          </div>
+          <div class="situation-body">
+            <div class="msg-block">
+              <div class="msg-label">Входящее</div>
+              <div class="msg-incoming">Чем отличается от льняного в капсулах из аптеки? Там же то же самое.</div>
+            </div>
+            <div class="msg-block">
+              <div class="msg-label">Ответ</div>
+              <div class="msg-outgoing">Три отличия.
+
+Форма: масло в капсуле — это концентрат Омега-3, изолированный. Масло в бутылке — цельный продукт с лигнанами, витамином Е, полифенолами. Разный состав, разное действие.
+
+Дозировка: в капсуле зафиксировано точное количество. В масле вы регулируете сами. Для некоторых людей это плюс — гибкость, для других минус — нет чёткого протокола.
+
+Свежесть: капсула может лежать год на полке, масло — нет. Это не всегда критично для капсул (там стабилизаторы), но для масла свежесть — принципиальна.
+
+Капсулы удобнее для точного дозирования. Масло — для тех, кто хочет цельный продукт и понимает зачем.</div>
+            </div>
+            <div class="msg-note"><strong>Почему так:</strong> Не говорим «капсулы — плохо». Объясняем объективную разницу. Помогаем человеку самому выбрать что ему подходит.</div>
+          </div>
+        </div>
+
+        <div class="situation-card">
+          <div class="situation-header">
+            <div class="situation-num">14</div>
+            <div class="situation-meta">
+              <div class="situation-tag">Комментарий</div>
+              <div class="situation-title">«Слышала, льняное вызывает рак» — агрессивный комментарий</div>
+            </div>
+          </div>
+          <div class="situation-body">
+            <div class="msg-block">
+              <div class="msg-label">Входящее</div>
+              <div class="msg-incoming">Читала что льняное масло повышает риск рака простаты. Вы это скрываете!</div>
+            </div>
+            <div class="msg-block">
+              <div class="msg-label">Ответ</div>
+              <div class="msg-outgoing">Не скрываю — это реальная дискуссия в науке, стоит разобраться.
+
+Есть исследования 1990-х, которые показывали корреляцию между Омега-3 (в т.ч. ALA из льняного) и риском рака простаты у мужчин. Это не игнорируется.
+
+Более поздние мета-анализы картину уточнили: связь неоднозначна, зависит от дозировки и формы Омега-3. Умеренное потребление льняного масла (1 ч.л. в день) не показывает значимого риска.
+
+Мужчинам с высоким риском рака простаты или с диагнозом — рекомендую обсудить с онкологом перед началом приёма. Это честная позиция.</div>
+            </div>
+            <div class="msg-note"><strong>Почему так:</strong> Не защищаемся и не нападаем в ответ. Рассказываем про реальную дискуссию честно. Это гораздо убедительнее, чем «всё хорошо, не слушайте слухи».</div>
+          </div>
+        </div>
+
+        <div class="situation-card">
+          <div class="situation-header">
+            <div class="situation-num">15</div>
+            <div class="situation-meta">
+              <div class="situation-tag">Подпись к видео</div>
+              <div class="situation-title">Видео с рынка / процесс продажи</div>
+            </div>
+          </div>
+          <div class="situation-body">
+            <div class="msg-block">
+              <div class="msg-label">Контекст</div>
+              <div class="msg-incoming">Видео: Кирилл на Дорогомиловском, объясняет покупателю масло, показывает бутылку.</div>
+            </div>
+            <div class="msg-block">
+              <div class="msg-label">Подпись</div>
+              <div class="msg-outgoing">Дорогомиловский. Покупатель спрашивал про расторопшу — объяснял минут десять.
+
+Когда это нужно, как принимать, когда лучше воздержаться. Ушёл с 100 мл и ещё спрашивал про льняное.
+
+Не все покупают сразу. Некоторые возвращаются через неделю. Некоторые — через месяц. Нормально.
+
+Если хотите разобраться какое масло вам подойдёт — пишите в личку. Или приходите на рынок по субботам.</div>
+            </div>
+            <div class="msg-note"><strong>Почему так:</strong> Никакого «продал, доволен». Показываем процесс — объяснение, терпение, без давления. Это и есть голос бренда в действии.</div>
+          </div>
+        </div>
+
+        <div class="situation-card">
+          <div class="situation-header">
+            <div class="situation-num">16</div>
+            <div class="situation-meta">
+              <div class="situation-tag">Подпись к видео</div>
+              <div class="situation-title">Видео отжима / производственный процесс</div>
+            </div>
+          </div>
+          <div class="situation-body">
+            <div class="msg-block">
+              <div class="msg-label">Контекст</div>
+              <div class="msg-incoming">Видео: пресс работает, масло течёт, дата видна на экране термометра.</div>
+            </div>
+            <div class="msg-block">
+              <div class="msg-label">Подпись</div>
+              <div class="msg-outgoing">28 марта. Кедровый орех, гидравлический пресс. Температура — 33°C.
+
+Из 1 кг ореха выходит примерно 220 мл масла. Это не много. Поэтому 100 мл стоят не 200 рублей.
+
+Масло разлито сегодня. Дата на каждой бутылке — эта же.
+
+Кедровое в наличии: 100 мл и 250 мл.</div>
+            </div>
+            <div class="msg-note"><strong>Почему так:</strong> Дата, температура, выход — три факта. Объясняем цену через цифры, не через «качество». Заканчиваем наличием — не агрессивное CTA, просто информация.</div>
+          </div>
+        </div>
+
+        <div class="situation-card">
+          <div class="situation-header">
+            <div class="situation-num">17</div>
+            <div class="situation-meta">
+              <div class="situation-tag">Ответ под постом</div>
+              <div class="situation-title">«А можно в пост про конкурентов?» / Когда спрашивают про других</div>
+            </div>
+          </div>
+          <div class="situation-body">
+            <div class="msg-block">
+              <div class="msg-label">Входящее</div>
+              <div class="msg-incoming">А TRAWA чем хуже вашего? Там тоже холодный отжим пишут.</div>
+            </div>
+            <div class="msg-block">
+              <div class="msg-label">Ответ</div>
+              <div class="msg-outgoing">TRAWA — серьёзный игрок, они делают много правильных вещей.
+
+Разница в том, что я могу ответить на вопрос «когда именно отжато это масло» — и назвать конкретный день. Как устроено у них внутри — не знаю, не буду придумывать.
+
+Попробуйте оба — это честнее любого сравнения с моей стороны.</div>
+            </div>
+            <div class="msg-note"><strong>Почему так:</strong> Не атакуем конкурента. Называем свой конкретный аргумент (дата). Предлагаем самому сравнить — уверенная позиция, не оборонительная.</div>
+          </div>
+        </div>
+
+        <div class="situation-card">
+          <div class="situation-header">
+            <div class="situation-num">18</div>
+            <div class="situation-meta">
+              <div class="situation-tag">Личка / Повторный покупатель</div>
+              <div class="situation-title">«Спасибо, беру снова» — лояльный клиент</div>
+            </div>
+          </div>
+          <div class="situation-body">
+            <div class="msg-block">
+              <div class="msg-label">Входящее</div>
+              <div class="msg-incoming">Кирилл, снова хочу льняное. Уже третий раз беру — очень нравится. Как заказать?</div>
+            </div>
+            <div class="msg-block">
+              <div class="msg-label">Ответ</div>
+              <div class="msg-outgoing">Отлично, спасибо что возвращаетесь.
+
+Льняное сейчас есть, последний отжим — 1 апреля. Скажите объём: 100 мл или 250 мл?
+
+Если хотите попробовать что-то ещё к льняному — могу предложить тыквенное. По составу хорошо дополняет, разный спектр действия. Но это если интересно, без давления.</div>
+            </div>
+            <div class="msg-note"><strong>Почему так:</strong> Не сыплем благодарностями. Называем дату свежего отжима — сразу. Мягко предлагаем попробовать что-то ещё — не навязываем, а информируем.</div>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Taboos -->
+  <section class="section">
+    <div class="container">
+      <div class="section-header">
+        <div class="section-badge">Табу · 10 правил</div>
+        <h2 class="section-title">Как говорить нельзя</h2>
+        <p class="section-desc">Антипаттерны голоса бренда. Всё что противоречит архетипу Мастер-Хранитель и разрушает доверие.</p>
+      </div>
+
+      <div class="taboo-grid">
+
+        <div class="taboo-card">
+          <div class="taboo-header">
+            <div class="taboo-num">1</div>
+            <div class="taboo-title">Медицинские обещания</div>
+          </div>
+          <div class="taboo-body">
+            <div class="taboo-example">«Вылечит», «исцелит», «избавит от болезни», «лечебное масло»</div>
+            <div class="taboo-why">Масло — еда, не лекарство. Любое обещание лечения — юридически опасно и разрушает доверие при невыполнении.</div>
+            <div class="taboo-instead">✓ «Поддерживает», «содержит вещества с доказанным эффектом», «часть профилактики»</div>
+          </div>
+        </div>
+
+        <div class="taboo-card">
+          <div class="taboo-header">
+            <div class="taboo-num">2</div>
+            <div class="taboo-title">Давление на покупку</div>
+          </div>
+          <div class="taboo-body">
+            <div class="taboo-example">«Берите сейчас», «осталось 3 штуки», «только сегодня скидка», «не упустите»</div>
+            <div class="taboo-why">Противоречит ценности «уважение к свободе выбора». Покупка через тревогу — разовая, без лояльности.</div>
+            <div class="taboo-instead">✓ «Есть в наличии», «напишите, подберём», «приходите попробовать»</div>
+          </div>
+        </div>
+
+        <div class="taboo-card">
+          <div class="taboo-header">
+            <div class="taboo-num">3</div>
+            <div class="taboo-title">Пустые суперлативы</div>
+          </div>
+          <div class="taboo-body">
+            <div class="taboo-example">«Лучшее масло», «уникальный продукт», «революционное качество», «премиум»</div>
+            <div class="taboo-why">Слова без доказательств — маркетинговый шум. Аудитория С3 (крафт-контролёры) немедленно теряет доверие.</div>
+            <div class="taboo-instead">✓ «Гидравлический пресс, 33°C, дата отжима 28 марта»</div>
+          </div>
+        </div>
+
+        <div class="taboo-card">
+          <div class="taboo-header">
+            <div class="taboo-num">4</div>
+            <div class="taboo-title">Замалчивание противопоказаний</div>
+          </div>
+          <div class="taboo-body">
+            <div class="taboo-example">Промолчать про то, что масло не подходит человеку, лишь бы продать</div>
+            <div class="taboo-why">Главное табу бренда. Честность о противопоказаниях — смысловой кластер №1. Нарушение = разрушение архетипа.</div>
+            <div class="taboo-instead">✓ Всегда говорить о противопоказаниях, даже если человек уже достал кошелёк</div>
+          </div>
+        </div>
+
+        <div class="taboo-card">
+          <div class="taboo-header">
+            <div class="taboo-num">5</div>
+            <div class="taboo-title">Атака на конкурентов</div>
+          </div>
+          <div class="taboo-body">
+            <div class="taboo-example">«TRAWA — дрянь», «маркетплейсное масло — это вода», «в аптеке продают мусор»</div>
+            <div class="taboo-why">Позиция слабого. Мастер-Хранитель описывает своё ремесло, а не обсуждает чужое.</div>
+            <div class="taboo-instead">✓ «Я не знаю как у них — вот как у меня. Попробуйте оба, сравните.»</div>
+          </div>
+        </div>
+
+        <div class="taboo-card">
+          <div class="taboo-header">
+            <div class="taboo-num">6</div>
+            <div class="taboo-title">Корпоративный язык</div>
+          </div>
+          <div class="taboo-body">
+            <div class="taboo-example">«Наша компания стремится», «мы рады предложить», «с уважением, команда Магии Масел»</div>
+            <div class="taboo-why">Кирилл — конкретный человек, не безликая компания. Корпоративный язык уничтожает главный дифференциатор — личность.</div>
+            <div class="taboo-instead">✓ «Я», «напишите мне», «приходите, покажу»</div>
+          </div>
+        </div>
+
+        <div class="taboo-card">
+          <div class="taboo-header">
+            <div class="taboo-num">7</div>
+            <div class="taboo-title">Отмахивание от жалоб</div>
+          </div>
+          <div class="taboo-body">
+            <div class="taboo-example">«Так и должно быть», «это нормально», «вы неправильно хранили»</div>
+            <div class="taboo-why">Именно такие ответы — главная боль покупателей конкурентов (VoC M5). Повторить их — значит стать таким же.</div>
+            <div class="taboo-instead">✓ «Разберёмся. Это не должно так пахнуть / так горчить. Что произошло?»</div>
+          </div>
+        </div>
+
+        <div class="taboo-card">
+          <div class="taboo-header">
+            <div class="taboo-num">8</div>
+            <div class="taboo-title">Переход на «ты» без запроса</div>
+          </div>
+          <div class="taboo-body">
+            <div class="taboo-example">«Слушай, ты попробуй льняное», «тебе подойдёт», «ты не пожалеешь»</div>
+            <div class="taboo-why">Аудитория 30–60 лет, профессиональная. Обращение на «ты» без инициативы человека — нарушение дистанции.</div>
+            <div class="taboo-instead">✓ По умолчанию на «вы». Переход на «ты» — только если человек сам перешёл.</div>
+          </div>
+        </div>
+
+        <div class="taboo-card">
+          <div class="taboo-header">
+            <div class="taboo-num">9</div>
+            <div class="taboo-title">Избыточный энтузиазм</div>
+          </div>
+          <div class="taboo-body">
+            <div class="taboo-example">«Это просто потрясающее масло!!!», «вы не поверите какое оно вкусное!», «я в восторге!»</div>
+            <div class="taboo-why">Мастер-Хранитель — спокоен. Восторженность — маска, за которой нет фактов. Аудитория чувствует несоответствие.</div>
+            <div class="taboo-instead">✓ Спокойная уверенность. Факты говорят сами.</div>
+          </div>
+        </div>
+
+        <div class="taboo-card">
+          <div class="taboo-header">
+            <div class="taboo-num">10</div>
+            <div class="taboo-title">Сравнение с лекарствами</div>
+          </div>
+          <div class="taboo-body">
+            <div class="taboo-example">«Лучше, чем таблетки», «заменит лекарство», «натуральная альтернатива медикаментам»</div>
+            <div class="taboo-why">Юридически опасная зона. Масло — категория еды, не БАД и не лекарство. Такие заявления могут привлечь внимание Роспотребнадзора.</div>
+            <div class="taboo-instead">✓ «Поддерживает здоровье», «часть осознанного рациона», «инструмент профилактики»</div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Summary -->
+      <div class="summary-box">
+        <div class="summary-title">Структура документа</div>
+        <div class="summary-grid">
+          <div class="summary-item">
+            <strong>18</strong>
+            ситуаций с готовыми ответами
+          </div>
+          <div class="summary-item">
+            <strong>4</strong>
+            блока: вопросы, возражения, жалобы, контент
+          </div>
+          <div class="summary-item">
+            <strong>10</strong>
+            табу с примерами и альтернативами
+          </div>
+          <div class="summary-item">
+            <strong>1</strong>
+            архетип Мастер-Хранитель — единый голос
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="container">
+    <div class="footer-inner">
+      <div class="footer-brand">Магия Масел <span>·</span> BrandOS</div>
+      <div class="footer-meta">M6-08 · Голос в рутине · v1.0 · 03.04.2026 · Источники: ARKHETIP-BRENDA, MESSAGING-SYSTEM, brand/voice-style, M5 VoC</div>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>

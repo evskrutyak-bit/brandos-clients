@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>M3-07 — Риски продукта · Магия Масел · Кирилл Бродский</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --brand: #2C5F2D; --brand-dark: #1a4a1b; --brand-light: #4a8f4b; --brand-bg: #e8f5e9;
+      --accent: #D4AF37; --accent-bg: #fdf8e8;
+      --n50: #f8fafc; --n100: #f1f5f9; --n200: #e2e8f0; --n300: #cbd5e1;
+      --n400: #94a3b8; --n500: #64748b; --n600: #475569; --n700: #334155;
+      --n800: #1e293b; --n900: #0f172a;
+      --success: #10b981; --warning: #f59e0b; --error: #ef4444; --info: #3b82f6;
+      --font: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      --shadow-card: 0 1px 3px 0 rgba(0,0,0,.05), 0 1px 2px -1px rgba(0,0,0,.05);
+      --shadow-hover: 0 10px 25px -5px rgba(0,0,0,.08), 0 8px 10px -6px rgba(0,0,0,.04);
+      --r-lg:8px; --r-xl:12px; --r-2xl:16px; --r-full:9999px;
+    }
+
+    body { font-family: var(--font); font-size: 16px; line-height: 1.6; color: var(--n600); background: var(--n100); }
+    @keyframes fade-up { 0%{opacity:0;transform:translateY(20px)} 100%{opacity:1;transform:translateY(0)} }
+    .fade-up { opacity:0; transform:translateY(20px); transition:opacity .6s ease-out, transform .6s ease-out; }
+    .fade-up.visible { opacity:1; transform:translateY(0); }
+    .container { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
+    .section { padding: 80px 0; }
+
+    .nav-wrap { position:fixed; top:0; left:0; right:0; z-index:300; background:rgba(255,255,255,.93); backdrop-filter:blur(12px); border-bottom:1px solid var(--n200); height:64px; }
+    .nav-inner { height:100%; display:flex; align-items:center; justify-content:space-between; }
+    .nav-logo img { height:40px; width:auto; display:block; }
+    .nav-links { display:flex; gap:20px; flex-wrap:wrap; }
+    .nav-links a { font-size:13px; font-weight:500; color:var(--n600); text-decoration:none; transition:color .2s; }
+    .nav-links a:hover { color:var(--brand); }
+    .nav-badge { font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:.05em; color:var(--brand); background:var(--brand-bg); padding:5px 12px; border-radius:var(--r-full); white-space:nowrap; }
+
+    .section-header { margin-bottom:40px; }
+    .section-label { display:inline-block; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.08em; color:var(--brand); background:var(--brand-bg); padding:4px 12px; border-radius:var(--r-full); margin-bottom:12px; }
+    .section-title { font-size:30px; font-weight:600; color:var(--n900); line-height:1.25; margin-bottom:8px; }
+    .section-sub { font-size:16px; color:var(--n500); }
+
+    .grid-2 { display:grid; grid-template-columns:repeat(auto-fit,minmax(340px,1fr)); gap:20px; }
+    .grid-3 { display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:20px; }
+
+    .badge { display:inline-flex; align-items:center; padding:3px 10px; border-radius:var(--r-full); font-size:12px; font-weight:600; }
+    .badge-green { background:#d1fae5; color:#065f46; }
+    .badge-red { background:#fee2e2; color:#991b1b; }
+    .badge-yellow { background:#fef3c7; color:#92400e; }
+    .badge-brand { background:var(--brand-bg); color:var(--brand-dark); }
+
+    .table-wrap { overflow-x:auto; border-radius:var(--r-2xl); border:1px solid var(--n200); margin:20px 0; }
+    table { width:100%; border-collapse:collapse; background:#fff; }
+    thead tr { background:var(--n50); border-bottom:2px solid var(--n200); }
+    th { padding:14px 18px; text-align:left; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.05em; color:var(--n500); }
+    td { padding:14px 18px; font-size:14px; color:var(--n600); border-bottom:1px solid var(--n200); }
+    tr:last-child td { border-bottom:none; }
+    tbody tr { transition:background .2s; }
+    tbody tr:hover { background:var(--n50); }
+
+    .alert { display:flex; gap:14px; border-radius:var(--r-xl); padding:18px; margin:16px 0; }
+    .alert-error { background:#fff1f2; border:1px solid #fecdd3; border-left:4px solid var(--error); }
+    .alert-warning { background:#fffbeb; border:1px solid #fde68a; border-left:4px solid var(--warning); }
+    .alert-brand { background:var(--brand-bg); border:1px solid #a5d6a7; border-left:4px solid var(--brand); }
+    .alert-info { background:#eff6ff; border:1px solid #bfdbfe; border-left:4px solid var(--info); }
+    .alert-icon { font-size:18px; flex-shrink:0; margin-top:1px; }
+
+    /* Risk card */
+    .risk-card {
+      background:#fff; border-radius:var(--r-2xl); border:1px solid var(--n200);
+      padding:20px 24px; box-shadow:var(--shadow-card); margin-bottom:14px;
+      display:flex; gap:16px; align-items:flex-start;
+      transition:transform .3s ease, box-shadow .3s ease;
+    }
+    .risk-card:hover { transform:translateY(-2px); box-shadow:var(--shadow-hover); }
+    .risk-card.crit { border-left:4px solid var(--error); background:#fff8f8; }
+    .risk-card.important { border-left:4px solid var(--warning); }
+    .risk-card.moderate { border-left:4px solid var(--success); }
+
+    .risk-badge-wrap { flex-shrink:0; margin-top:2px; }
+    .risk-body { flex:1; }
+    .risk-title { font-size:15px; font-weight:700; color:var(--n900); margin-bottom:6px; }
+    .risk-text { font-size:13px; color:var(--n600); margin-bottom:8px; }
+    .risk-source { font-size:11px; color:var(--n400); }
+
+    /* Limit card */
+    .limit-card {
+      background:#fff; border-radius:var(--r-2xl); border:1px solid var(--n200);
+      padding:20px 24px; box-shadow:var(--shadow-card);
+      border-left:4px solid var(--n300);
+    }
+    .limit-title { font-size:14px; font-weight:700; color:var(--n700); margin-bottom:10px; }
+    .limit-item { font-size:14px; color:var(--n600); padding:6px 0; border-bottom:1px solid var(--n100); }
+    .limit-item:last-child { border-bottom:none; }
+
+    /* Module block */
+    .module-block {
+      background:#fff; border-radius:var(--r-2xl); border:1px solid var(--n200);
+      padding:20px 24px; box-shadow:var(--shadow-card); border-left:4px solid var(--brand);
+    }
+    .module-title { font-size:14px; font-weight:700; color:var(--brand); margin-bottom:10px; }
+
+    @media (max-width:768px) {
+      .nav-links { display:none; }
+      .section-title { font-size:24px; }
+      .grid-2, .grid-3 { grid-template-columns:1fr; }
+    }
+
+    .hero { background:linear-gradient(135deg,var(--brand-dark) 0%,var(--brand) 50%,var(--brand-light) 100%); padding:120px 0 80px; color:#fff; position:relative; overflow:hidden; }
+    .hero::before { content:''; position:absolute; inset:0; background:radial-gradient(ellipse at 70% 50%,rgba(212,175,55,.15) 0%,transparent 60%); }
+    .hero-inner { display:flex; align-items:center; gap:48px; flex-wrap:wrap; }
+    .hero-logo-wrap { flex-shrink:0; }
+    .hero-logo-wrap img { height:140px; width:auto; display:block; border-radius:var(--r-xl); }
+    .hero-content { flex:1; min-width:280px; }
+    .hero-badge { display:inline-block; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.1em; background:rgba(255,255,255,.15); color:#fff; border:1px solid rgba(255,255,255,.3); padding:6px 16px; border-radius:var(--r-full); margin-bottom:20px; backdrop-filter:blur(8px); }
+    .hero-title { font-size:52px; font-weight:700; line-height:1.1; margin-bottom:16px; }
+    .hero-title span { color:var(--accent); }
+    .hero-sub { font-size:18px; opacity:.85; max-width:600px; margin-bottom:32px; line-height:1.6; }
+    .hero-meta { display:flex; gap:24px; flex-wrap:wrap; }
+    .hero-meta-item { display:flex; flex-direction:column; gap:3px; }
+    .hero-meta-label { font-size:10px; text-transform:uppercase; letter-spacing:.08em; opacity:.6; }
+    .hero-meta-value { font-size:14px; font-weight:600; }
+    @media (max-width:768px) { .hero { padding:100px 0 60px; } .hero-title { font-size:34px; } .hero-logo-wrap img { height:80px; } }
+
+    .footer { background:var(--n900); color:var(--n400); padding:40px 0; font-size:13px; }
+    .footer-inner { display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:16px; }
+    .footer-meta { display:flex; gap:20px; flex-wrap:wrap; }
+    .footer-meta-item { display:flex; flex-direction:column; gap:2px; }
+    .footer-meta-label { font-size:10px; text-transform:uppercase; letter-spacing:.05em; color:var(--n600); }
+    .footer-meta-value { font-size:12px; color:var(--n400); }
+  </style>
+</head>
+<body>
+
+<nav class="nav-wrap">
+  <div class="container">
+    <div class="nav-inner">
+      <div class="nav-logo"><img src="../assets/logo-horizontal-light.png" alt="Магия Масел"></div>
+      <div class="nav-links">
+        <a href="#operational">Операционные</a>
+        <a href="#product">Продуктовые</a>
+        <a href="#comms">Коммуникации</a>
+        <a href="#segments">Сегменты</a>
+        <a href="#scale">Масштаб</a>
+        <a href="#next">Выводы</a>
+      </div>
+      <div class="nav-badge">M3 · Документ 7/7</div>
+    </div>
+  </div>
+</nav>
+
+<section class="hero">
+  <div class="container">
+    <div class="hero-inner">
+      <div class="hero-logo-wrap">
+        <img src="../assets/logo-badge-dark.png" alt="Магия Масел — Кирилл Бродский">
+      </div>
+      <div class="hero-content">
+        <div class="hero-badge">M3 · Продуктовая стратегия · Документ 7 из 7</div>
+        <h1 class="hero-title">Риски <span>продукта</span></h1>
+        <p class="hero-sub">Где продукт может не взлететь, какие сегменты не купят и что блокирует масштабирование.</p>
+        <div class="hero-meta">
+          <div class="hero-meta-item"><span class="hero-meta-label">Клиент</span><span class="hero-meta-value">Кирилл Бродский</span></div>
+          <div class="hero-meta-item"><span class="hero-meta-label">Дата</span><span class="hero-meta-value">30.03.2026</span></div>
+          <div class="hero-meta-item"><span class="hero-meta-label">Версия</span><span class="hero-meta-value">1.0</span></div>
+          <div class="hero-meta-item"><span class="hero-meta-label">Критических рисков</span><span class="hero-meta-value">4 🔴</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 7.1. ОПЕРАЦИОННЫЕ РИСКИ -->
+<section class="section fade-up" id="operational">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-label">7.1 · Операционные</div>
+      <h2 class="section-title">Операционные риски</h2>
+    </div>
+
+    <div class="risk-card crit fade-up">
+      <div class="risk-badge-wrap"><span class="badge badge-red">🔴 Критично</span></div>
+      <div class="risk-body">
+        <div class="risk-title">Нулевая клиентская база</div>
+        <div class="risk-text">Нет системы повторных покупок. Клиенты возвращаются случайно, нет QR на точке, нет контактов.</div>
+        <div class="risk-source">Источник: GIPOTEZY G-4.1</div>
+      </div>
+    </div>
+
+    <div class="risk-card crit fade-up">
+      <div class="risk-badge-wrap"><span class="badge badge-red">🔴 Критично</span></div>
+      <div class="risk-body">
+        <div class="risk-title">Кирилл = всё сам</div>
+        <div class="risk-text">Производство + продажи + общение + доставка. Узкое горлышко при любом росте.</div>
+        <div class="risk-source">Источник: G-4.3</div>
+      </div>
+    </div>
+
+    <div class="risk-card important fade-up">
+      <div class="risk-badge-wrap"><span class="badge badge-yellow">🟡 Важно</span></div>
+      <div class="risk-body">
+        <div class="risk-title">Нет доставки как системы</div>
+        <div class="risk-text">Вакуумная упаковка есть, но доставки как процесса нет.</div>
+        <div class="risk-source">Источник: ответы 29.03</div>
+      </div>
+    </div>
+
+    <div class="risk-card important fade-up">
+      <div class="risk-badge-wrap"><span class="badge badge-yellow">🟡 Важно</span></div>
+      <div class="risk-body">
+        <div class="risk-title">Потеря покупателей на рынке</div>
+        <div class="risk-text">Уходят со словами «Приду в следующий раз» / «Обойду рынок». Нет инструмента удержания.</div>
+        <div class="risk-source">Источник: ответы 29.03</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 7.1. ПРОДУКТОВЫЕ РИСКИ -->
+<section class="section fade-up" id="product" style="background:#fff;">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-label">7.1 · Продуктовые</div>
+      <h2 class="section-title">Продуктовые риски</h2>
+    </div>
+
+    <div class="risk-card important fade-up">
+      <div class="risk-badge-wrap"><span class="badge badge-yellow">🟡 Важно</span></div>
+      <div class="risk-body">
+        <div class="risk-title">Цена 10–15% ниже конкурентов</div>
+        <div class="risk-text">Когнитивный диссонанс: позиционируем как премиум, цена говорит «не совсем». «Хорошее дешевле хорошего» — не работает в премиум-категории.</div>
+        <div class="risk-source">Источник: GIPOTEZY G-3.1</div>
+      </div>
+    </div>
+
+    <div class="risk-card important fade-up">
+      <div class="risk-badge-wrap"><span class="badge badge-yellow">🟡 Важно</span></div>
+      <div class="risk-body">
+        <div class="risk-title">Нет лабораторного анализа</div>
+        <div class="risk-text">Позиционирование через «честность и прозрачность» требует цифр, которых пока нет в публичном виде.</div>
+        <div class="risk-source">Источник: GIPOTEZY G-1.4</div>
+      </div>
+    </div>
+
+    <div class="risk-card moderate fade-up">
+      <div class="risk-badge-wrap"><span class="badge badge-green">🟢 Умеренно</span></div>
+      <div class="risk-body">
+        <div class="risk-title">«30-дневный протокол» не проверен на клиентах</div>
+        <div class="risk-text">Сильный формат, но нет обратной связи с реальными пользователями. Риск несоответствия ожиданиям.</div>
+        <div class="risk-source">Источник: GIPOTEZY G-2.6</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 7.1. КОММУНИКАЦИОННЫЕ РИСКИ -->
+<section class="section fade-up" id="comms">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-label">7.1 · Коммуникации</div>
+      <h2 class="section-title">Коммуникационные риски</h2>
+    </div>
+
+    <div class="risk-card important fade-up">
+      <div class="risk-badge-wrap"><span class="badge badge-yellow">🟡 Важно</span></div>
+      <div class="risk-body">
+        <div class="risk-title">Медийность без системы</div>
+        <div class="risk-text">Кирилл готов быть лицом бренда, но контент-системы нет — риск нерегулярности публикаций и угасания аудитории.</div>
+      </div>
+    </div>
+
+    <div class="risk-card crit fade-up">
+      <div class="risk-badge-wrap"><span class="badge badge-red">🔴 Критично</span></div>
+      <div class="risk-body">
+        <div class="risk-title">Один канал привлечения</div>
+        <div class="risk-text">Сейчас 100% = Дорогомиловский рынок. Онлайн не запущен. Любой сбой на точке = потеря всех продаж.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 7.2. СЕГМЕНТЫ КОТОРЫЕ НЕ КУПЯТ -->
+<section class="section fade-up" id="segments" style="background:#fff;">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-label">7.2 · Сегменты</div>
+      <h2 class="section-title">Какие сегменты могут не купить</h2>
+    </div>
+    <div class="table-wrap fade-up">
+      <table>
+        <thead>
+          <tr>
+            <th>Сегмент</th>
+            <th>Почему не купят</th>
+            <th>Что с этим делать</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Биохакеры-хардкор</strong></td>
+            <td>Требуют лабораторные данные (жирнокислотный состав) — их нет в публичном виде</td>
+            <td>Приоритет: сделать паспорт качества с цифрами</td>
+          </tr>
+          <tr>
+            <td><strong>Ценовые покупатели</strong></td>
+            <td>4 500 ₽ за набор vs 350 ₽ в магазине — не видят разницы без объяснения</td>
+            <td>Контент: образование, сравнение, «75 ₽ в день»</td>
+          </tr>
+          <tr>
+            <td><strong>Спорт-сегмент</strong></td>
+            <td>Убран из продуктовых векторов. Слабая связка масел со спортивными задачами</td>
+            <td>Не фокус на этом этапе</td>
+          </tr>
+          <tr>
+            <td><strong>Красота-сегмент</strong></td>
+            <td>Не выделен как отдельный вектор. Масла идут поштучно без «красотного» нарратива</td>
+            <td>Второй приоритет после Здоровья и Кухни</td>
+          </tr>
+          <tr>
+            <td><strong>Маркетплейс-аудитория</strong></td>
+            <td>Привыкли покупать на Ozon/WB — там Кирилла нет и не будет</td>
+            <td>Сознательный отказ, не риск</td>
+          </tr>
+          <tr>
+            <td><strong>Клиенты без контекста</strong></td>
+            <td>Покупают «красивую бутылку» без понимания ценности → не возвращаются</td>
+            <td>Образовательный контент + консультация при каждой продаже</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- 7.3. МАСШТАБИРОВАНИЕ -->
+<section class="section fade-up" id="scale">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-label">7.3 · Масштаб</div>
+      <h2 class="section-title">Факторы масштабирования</h2>
+    </div>
+
+    <div class="alert alert-error fade-up">
+      <span class="alert-icon">⚙️</span>
+      <div>
+        <strong style="color:#991b1b; display:block; margin-bottom:4px;">Производственный потолок</strong>
+        <p style="font-size:14px; color:var(--n600);">2 пресса → 40–60 л/мес → 160–240 бутылок 250 мл<br>
+        <strong>Потолок выручки при текущей мощности:</strong> ~200–250К ₽/мес (офлайн)<br>
+        <strong>Масштабирование = новый пресс</strong> или оптимизация ассортимента (убрать низкомаржинальные позиции)<br>
+        <strong>Горизонт роста до 500К:</strong> возможен при онлайн-канале, но производство станет узким местом</p>
+      </div>
+    </div>
+
+    <div class="grid-2" style="margin-top:24px;">
+
+      <div class="limit-card fade-up" style="border-left-color:var(--error);">
+        <div class="limit-title" style="color:var(--error);">👤 Человеческое ограничение</div>
+        <div class="limit-item">Кирилл делает всё сам до стабилизации дохода</div>
+        <div class="limit-item"><strong>Точка делегирования:</strong> ~300–400К ₽/мес (помощник на рынок / упаковку)</div>
+        <div class="limit-item">Риск выгорания при одновременном запуске онлайн + работа на точке</div>
+      </div>
+
+      <div class="limit-card fade-up" style="border-left-color:var(--warning);">
+        <div class="limit-title" style="color:var(--warning);">💰 Финансовое давление</div>
+        <div class="limit-item">Аренда 100К ₽/мес = <strong>50% текущей выручки</strong></div>
+        <div class="limit-item">Любой сбой в продажах = операционный убыток</div>
+        <div class="limit-item"><strong>Буфер безопасности:</strong> цель 300К+ снижает давление аренды до 33%</div>
+      </div>
+
+    </div>
+
+    <div class="table-wrap fade-up" style="margin-top:24px;">
+      <table>
+        <thead>
+          <tr>
+            <th>Ограничение</th>
+            <th>Что блокирует</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Нет пресса 100 т</strong></td>
+            <td>Косметическая линейка (амарант, облепиха) — заблокирована полностью</td>
+          </tr>
+          <tr>
+            <td><strong>Нет 50 мл тары</strong></td>
+            <td>Пробники как отдельный продукт</td>
+          </tr>
+          <tr>
+            <td><strong>Сезонность сырья</strong></td>
+            <td>Некоторые масла могут быть недоступны в определённые периоды</td>
+          </tr>
+          <tr>
+            <td><strong>Москва only</strong></td>
+            <td>Доставка в регионы — не решена логистически</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="alert alert-brand fade-up">
+      <span class="alert-icon">✅</span>
+      <div>
+        <strong style="color:var(--brand-dark); display:block; margin-bottom:4px;">Стратегические ограничения (осознанные)</strong>
+        <p style="font-size:14px; color:var(--n600);">Макс. 2 канала за 90 дней ✅ · Нет маркетплейсов — сознательный отказ ✅ · СПб — в планах, но после стабилизации московской точки ✅</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ВЫВОДЫ ДЛЯ M4–M7 -->
+<section class="section fade-up" id="next" style="background:#fff;">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-label">Выводы</div>
+      <h2 class="section-title">Что должны решить следующие модули</h2>
+      <p class="section-sub">M3 выявил риски — M4–M7 их закрывают.</p>
+    </div>
+    <div class="grid-2">
+
+      <div class="module-block fade-up">
+        <div class="module-title">M4 — Глубинные инсайты ЦА</div>
+        <div style="font-size:14px; color:var(--n600);">
+          <div style="padding:7px 0; border-bottom:1px solid var(--n100);">Уточнить сегменты, готовые платить без лабораторных данных</div>
+          <div style="padding:7px 0;">Найти язык для ценового обоснования без агрессии</div>
+        </div>
+      </div>
+
+      <div class="module-block fade-up">
+        <div class="module-title">M5 — Позиционирование</div>
+        <div style="font-size:14px; color:var(--n600);">
+          <div style="padding:7px 0; border-bottom:1px solid var(--n100);">Решить ценовой когнитивный диссонанс: поднять цену или объяснить «почему чуть дешевле»</div>
+          <div style="padding:7px 0;">Выстроить доверие через доступные доказательства (сертификаты, видео, история)</div>
+        </div>
+      </div>
+
+      <div class="module-block fade-up">
+        <div class="module-title">M6 — GTM (Go-to-Market)</div>
+        <div style="font-size:14px; color:var(--n600);">
+          <div style="padding:7px 0; border-bottom:1px solid var(--n100);"><strong>Приоритет №1:</strong> QR на точке + TG-канал → клиентская база с первого дня</div>
+          <div style="padding:7px 0;"><strong>Приоритет №2:</strong> ремайндер-система до запуска онлайн-продаж</div>
+        </div>
+      </div>
+
+      <div class="module-block fade-up">
+        <div class="module-title">M7 — Контент-стратегия</div>
+        <div style="font-size:14px; color:var(--n600);">
+          <div style="padding:7px 0; border-bottom:1px solid var(--n100);">Образовательный контент = главный инструмент снятия ценового барьера</div>
+          <div style="padding:7px 0;">Прозрачность производства = главный инструмент доверия</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="container">
+    <div class="footer-inner">
+      <div>
+        <img src="../assets/logo-horizontal-dark.png" alt="Магия Масел" style="height:48px; width:auto; border-radius:var(--r-lg);">
+        <div style="margin-top:8px; font-size:12px; color:var(--n600);">BrandOS · Фабрика Контента v5</div>
+      </div>
+      <div class="footer-meta">
+        <div class="footer-meta-item"><span class="footer-meta-label">Документ</span><span class="footer-meta-value">M3-07 — Риски продукта</span></div>
+        <div class="footer-meta-item"><span class="footer-meta-label">Модуль</span><span class="footer-meta-value">M3 · 7 из 7</span></div>
+        <div class="footer-meta-item"><span class="footer-meta-label">Версия</span><span class="footer-meta-value">1.0 · 30.03.2026</span></div>
+        <div class="footer-meta-item"><span class="footer-meta-label">Источники</span><span class="footer-meta-value">GIPOTEZY · ответы Кирилла 29.03 · ARKHITEKTURA §6 · TSENOVAYA-MODEL</span></div>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script>
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => { if (entry.isIntersecting) entry.target.classList.add('visible'); });
+  }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+  document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
+</script>
+</body>
+</html>

@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>M4-03 — JTBD-карта · Магия Масел</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --brand: #2C5F2D; --brand-dark: #1a4a1b; --brand-light: #4a8f4b;
+      --brand-bg: #e8f5e9; --accent: #D4AF37; --accent-bg: #fdf8e8;
+      --n50: #f8fafc; --n100: #f1f5f9; --n200: #e2e8f0;
+      --n300: #cbd5e1; --n400: #94a3b8; --n500: #64748b;
+      --n600: #475569; --n700: #334155; --n800: #1e293b; --n900: #0f172a;
+      --success: #10b981; --warning: #f59e0b; --error: #ef4444; --info: #3b82f6;
+      --font: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      --shadow-card: 0 1px 3px 0 rgba(0,0,0,.05), 0 1px 2px -1px rgba(0,0,0,.05);
+      --shadow-hover: 0 10px 25px -5px rgba(0,0,0,.08), 0 8px 10px -6px rgba(0,0,0,.04);
+      --shadow-btn: 0 4px 14px 0 rgba(44,95,45,.35);
+      --r-sm:4px; --r-md:6px; --r-lg:8px; --r-xl:12px; --r-2xl:16px; --r-3xl:24px; --r-full:9999px;
+    }
+    body { font-family: var(--font); font-size: 16px; line-height: 1.6; color: var(--n600); background: var(--n100); }
+    @keyframes fade-up { 0%{opacity:0;transform:translateY(20px)} 100%{opacity:1;transform:translateY(0)} }
+    .fade-up { opacity:0; transform:translateY(20px); transition:opacity .6s ease-out, transform .6s ease-out; }
+    .fade-up.visible { opacity:1; transform:translateY(0); }
+    .container { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
+    .section { padding: 80px 0; }
+    .nav-wrap { position: fixed; top: 0; left: 0; right: 0; z-index: 300; background: rgba(255,255,255,.93); backdrop-filter: blur(12px); border-bottom: 1px solid var(--n200); height: 64px; }
+    .nav-inner { height:100%; display:flex; align-items:center; justify-content:space-between; }
+    .nav-logo img { height:40px; width:auto; display:block; }
+    .nav-links { display:flex; gap:20px; flex-wrap:wrap; }
+    .nav-links a { font-size:13px; font-weight:500; color:var(--n600); text-decoration:none; transition:color .2s; }
+    .nav-links a:hover { color:var(--brand); }
+    .nav-badge { font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:.05em; color:var(--brand); background:var(--brand-bg); padding:5px 12px; border-radius:var(--r-full); white-space:nowrap; }
+    .section-header { margin-bottom:40px; }
+    .section-label { display:inline-block; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.08em; color:var(--brand); background:var(--brand-bg); padding:4px 12px; border-radius:var(--r-full); margin-bottom:12px; }
+    .section-title { font-size:30px; font-weight:600; color:var(--n900); line-height:1.25; margin-bottom:8px; }
+    .section-sub { font-size:16px; color:var(--n500); }
+    .grid-2 { display:grid; grid-template-columns:repeat(auto-fit,minmax(340px,1fr)); gap:20px; }
+    .grid-3 { display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:20px; }
+    .badge { display:inline-flex; align-items:center; padding:3px 10px; border-radius:var(--r-full); font-size:12px; font-weight:600; }
+    .badge-green { background:#d1fae5; color:#065f46; }
+    .badge-yellow { background:#fef3c7; color:#92400e; }
+    .badge-blue { background:#dbeafe; color:#1e40af; }
+    .badge-brand { background:var(--brand-bg); color:var(--brand-dark); }
+    .badge-accent { background:var(--accent-bg); color:#7a6000; }
+    .badge-red { background:#fee2e2; color:#991b1b; }
+    .badge-gray { background:var(--n100); color:var(--n500); }
+    .table-wrap { overflow-x:auto; border-radius:var(--r-2xl); border:1px solid var(--n200); margin:20px 0; }
+    table { width:100%; border-collapse:collapse; background:#fff; }
+    thead tr { background:var(--n50); border-bottom:2px solid var(--n200); }
+    th { padding:14px 18px; text-align:left; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.05em; color:var(--n500); }
+    td { padding:14px 18px; font-size:14px; color:var(--n600); border-bottom:1px solid var(--n200); }
+    tr:last-child td { border-bottom:none; }
+    tbody tr { transition:background .2s; }
+    tbody tr:hover { background:var(--n50); }
+    .td-num { font-size:13px; color:var(--n400); font-family:monospace; }
+    .alert { display:flex; gap:14px; border-radius:var(--r-xl); padding:18px; margin:16px 0; }
+    .alert-warning { background:#fffbeb; border:1px solid #fde68a; border-left:4px solid var(--warning); }
+    .alert-info { background:#eff6ff; border:1px solid #bfdbfe; border-left:4px solid var(--info); }
+    .alert-success { background:#f0fdf4; border:1px solid #bbf7d0; border-left:4px solid var(--success); }
+    .alert-brand { background:var(--brand-bg); border:1px solid #a5d6a7; border-left:4px solid var(--brand); }
+    .alert-icon { font-size:18px; flex-shrink:0; margin-top:1px; }
+    .card { background:#fff; border-radius:var(--r-2xl); border:1px solid var(--n200); padding:28px; box-shadow:var(--shadow-card); transition:transform .3s ease, box-shadow .3s ease; }
+    .card:hover { transform:translateY(-3px); box-shadow:var(--shadow-hover); }
+    .card-brand { background: linear-gradient(135deg, var(--brand-bg) 0%, #fff 100%); border-radius:var(--r-2xl); border:1px solid #a5d6a7; padding:28px; box-shadow:var(--shadow-card); }
+    .card-accent { background: var(--accent-bg); border-radius:var(--r-2xl); border:1px solid #e8d87a; padding:28px; box-shadow:var(--shadow-card); }
+    .card-title { font-size:16px; font-weight:700; color:var(--n900); margin-bottom:12px; }
+    .card-icon { font-size:24px; margin-bottom:12px; }
+    .stat-card { background:linear-gradient(135deg,var(--brand) 0%,var(--brand-dark) 100%); border-radius:var(--r-2xl); padding:24px; color:#fff; box-shadow:var(--shadow-btn); }
+    .stat-label { font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.05em; opacity:.75; margin-bottom:8px; }
+    .stat-value { font-size:28px; font-weight:700; line-height:1; margin-bottom:6px; }
+    .stat-desc { font-size:13px; opacity:.8; }
+    .list-item { display:flex; gap:10px; align-items:flex-start; padding:9px 0; border-bottom:1px solid var(--n100); font-size:14px; color:var(--n600); }
+    .list-item:last-child { border-bottom:none; }
+    .list-dot { width:8px; height:8px; border-radius:50%; background:var(--brand); flex-shrink:0; margin-top:6px; }
+    @media (max-width:768px) { .nav-links { display:none; } .section-title { font-size:24px; } .grid-2, .grid-3 { grid-template-columns:1fr; } }
+    .hero { background: linear-gradient(135deg, var(--brand-dark) 0%, var(--brand) 50%, var(--brand-light) 100%); padding: 120px 0 80px; color:#fff; position:relative; overflow:hidden; }
+    .hero::before { content:''; position:absolute; inset:0; background: radial-gradient(ellipse at 70% 50%, rgba(212,175,55,.15) 0%, transparent 60%); }
+    .hero-inner { display:flex; align-items:center; gap:48px; flex-wrap:wrap; }
+    .hero-logo-wrap { flex-shrink:0; }
+    .hero-logo-wrap img { height:140px; width:auto; display:block; border-radius:var(--r-xl); }
+    .hero-content { flex:1; min-width:280px; }
+    .hero-badge { display:inline-block; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.1em; background:rgba(255,255,255,.15); color:#fff; border:1px solid rgba(255,255,255,.3); padding:6px 16px; border-radius:var(--r-full); margin-bottom:20px; backdrop-filter:blur(8px); }
+    .hero-title { font-size:52px; font-weight:700; line-height:1.1; margin-bottom:16px; }
+    .hero-title span { color:var(--accent); }
+    .hero-sub { font-size:18px; opacity:.85; max-width:600px; margin-bottom:32px; line-height:1.6; }
+    .hero-meta { display:flex; gap:24px; flex-wrap:wrap; }
+    .hero-meta-item { display:flex; flex-direction:column; gap:3px; }
+    .hero-meta-label { font-size:10px; text-transform:uppercase; letter-spacing:.08em; opacity:.6; }
+    .hero-meta-value { font-size:14px; font-weight:600; }
+    @media (max-width:768px) { .hero { padding: 100px 0 60px; } .hero-title { font-size:34px; } .hero-logo-wrap img { height:80px; } }
+    .footer { background:var(--n900); color:var(--n400); padding:40px 0; font-size:13px; }
+    .footer-inner { display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:16px; }
+    .footer-meta { display:flex; gap:20px; flex-wrap:wrap; }
+    .footer-meta-item { display:flex; flex-direction:column; gap:2px; }
+    .footer-meta-label { font-size:10px; text-transform:uppercase; letter-spacing:.05em; color:var(--n600); }
+    .footer-meta-value { font-size:12px; color:var(--n400); }
+    .jtbd-card { background:#fff; border-radius:var(--r-2xl); border:1px solid var(--n200); padding:24px; margin-bottom:16px; }
+    .jtbd-job { background:var(--n50); border-left:3px solid var(--brand); border-radius:0 var(--r-lg) var(--r-lg) 0; padding:14px 18px; margin:12px 0; font-size:14px; color:var(--n700); line-height:1.7; }
+    .jtbd-job em { color:var(--brand-dark); font-style:normal; font-weight:600; }
+    .quote-block { background:var(--n50); border-left:3px solid var(--accent); border-radius:0 var(--r-lg) var(--r-lg) 0; padding:14px 18px; margin:12px 0; font-size:13px; color:var(--n700); font-style:italic; }
+    .forces-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:16px; }
+    .force-item { border-radius:var(--r-xl); padding:14px; }
+    .force-push { background:#fff7ed; border:1px solid #fed7aa; }
+    .force-pull { background:#f0fdf4; border:1px solid #bbf7d0; }
+    .force-anxiety { background:#fff1f2; border:1px solid #fecdd3; }
+    .force-habit { background:#f8fafc; border:1px solid var(--n200); }
+    .force-title { font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.05em; margin-bottom:6px; }
+  </style>
+</head>
+<body>
+
+<nav class="nav-wrap">
+  <div class="container">
+    <div class="nav-inner">
+      <div class="nav-logo"><img src="../../assets/logo-horizontal-light.png" alt="Магия Масел"></div>
+      <div class="nav-links">
+        <a href="#matrix">Матрица</a>
+        <a href="#s1">С1 Функц.</a>
+        <a href="#s2">С2 Семья</a>
+        <a href="#s3">С3 Крафт</a>
+        <a href="#s4">С4 Гастроном</a>
+        <a href="#s5">С5 Красота</a>
+        <a href="#patterns">Инсайты</a>
+      </div>
+      <div class="nav-badge">M4 · Документ 3/8</div>
+    </div>
+  </div>
+</nav>
+
+<section class="hero">
+  <div class="container">
+    <div class="hero-inner">
+      <div class="hero-logo-wrap">
+        <img src="../../assets/logo-badge-dark.png" alt="Магия Масел — Кирилл Бродский">
+      </div>
+      <div class="hero-content">
+        <div class="hero-badge">M4 · Аудитория · Документ 3 из 8</div>
+        <h1 class="hero-title">JTBD — <span>карта задач</span></h1>
+        <p class="hero-sub">Функциональные, эмоциональные и социальные задачи × сегмент. Forces of Progress.</p>
+        <div class="hero-meta">
+          <div class="hero-meta-item"><span class="hero-meta-label">Клиент</span><span class="hero-meta-value">Кирилл Бродский</span></div>
+          <div class="hero-meta-item"><span class="hero-meta-label">Дата</span><span class="hero-meta-value">31.03.2026</span></div>
+          <div class="hero-meta-item"><span class="hero-meta-label">Версия</span><span class="hero-meta-value">1.0 (Opus)</span></div>
+          <div class="hero-meta-item"><span class="hero-meta-label">Сегментов</span><span class="hero-meta-value">5 × 3 слоя задач</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ПРИНЦИП -->
+<section class="section fade-up" id="matrix">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-label">Принцип JTBD</div>
+      <h2 class="section-title">Люди не покупают продукты — они нанимают их для выполнения задачи</h2>
+      <p class="section-sub">JTBD смотрит иначе, чем демография: в какой конкретный момент жизни, с какой задачей человек приходит к маслу Кирилла?</p>
+    </div>
+    <div class="grid-3 fade-up">
+      <div class="card">
+        <div class="card-icon">⚙️</div>
+        <div class="card-title">Функциональный слой</div>
+        <p style="font-size:14px; color:var(--n600);">Что практически нужно сделать: принять курсом, заменить БАДы, добавить в кашу детям, создать вкус в блюде.</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">💚</div>
+        <div class="card-title">Эмоциональный слой</div>
+        <p style="font-size:14px; color:var(--n600);">Что нужно почувствовать: контроль над здоровьем, спокойствие «я делаю правильное», уверенность без самообмана.</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">👥</div>
+        <div class="card-title">Социальный слой</div>
+        <p style="font-size:14px; color:var(--n600);">Как нужно выглядеть: «я нашёл свой метод», «я забочусь о близких», «я разбираюсь — меня не обманешь».</p>
+      </div>
+    </div>
+    <div class="alert alert-brand fade-up">
+      <span class="alert-icon">💡</span>
+      <div>
+        <strong style="color:var(--brand-dark); display:block; margin-bottom:4px;">Одна покупка — три слоя одновременно</strong>
+        <p style="font-size:14px; color:var(--n600);">Продукт, который понимает все три слоя — выигрывает коммуникацию. Именно поэтому Кирилл конвертирует лучше, чем Wildberries: он закрывает все три слоя в живом разговоре.</p>
+      </div>
+    </div>
+
+    <div class="section-header" style="margin-top:48px; margin-bottom:24px;">
+      <h2 class="section-title">Сводная матрица: сегмент × тип задачи</h2>
+    </div>
+    <div class="table-wrap fade-up">
+      <table>
+        <thead>
+          <tr>
+            <th>Сегмент</th>
+            <th>Функциональная задача</th>
+            <th>Эмоциональная задача</th>
+            <th>Социальная задача</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="badge badge-brand">С1 Функциональный</span></td>
+            <td>Принимать курсом — получить измеримый эффект</td>
+            <td>Почувствовать контроль над здоровьем</td>
+            <td>«Я нашёл свой метод»</td>
+          </tr>
+          <tr>
+            <td><span class="badge badge-green">С2 Семейный ЗОЖ</span></td>
+            <td>Кормить семью полезнее без революции в питании</td>
+            <td>Спокойствие «я делаю правильное»</td>
+            <td>«Я забочусь о близких»</td>
+          </tr>
+          <tr>
+            <td><span class="badge badge-blue">С3 Крафт-контролёр</span></td>
+            <td>Получить продукт без риска подмены/окисления</td>
+            <td>Уверенность в качестве без самообмана</td>
+            <td>«Я разбираюсь, меня не обманешь»</td>
+          </tr>
+          <tr>
+            <td><span class="badge badge-accent">С4 Гастроном</span></td>
+            <td>Создать вкусовой опыт дома на уровне ресторана</td>
+            <td>Удовольствие от экспериментов на кухне</td>
+            <td>«Я умею готовить по-настоящему»</td>
+          </tr>
+          <tr>
+            <td><span class="badge badge-yellow">С5 Красота изнутри</span></td>
+            <td>Решить проблему кожи/волос/ногтей изнутри</td>
+            <td>Надежда + спокойное ожидание результата</td>
+            <td>«Я слежу за собой по-взрослому»</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- С1 -->
+<section class="section fade-up" id="s1" style="background:#fff;">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-label">С1 — Функциональный</div>
+      <h2 class="section-title">Аватар: Татьяна, 47 лет. ЛОР сказал попробовать тмин.</h2>
+    </div>
+    <div class="grid-2 fade-up">
+      <div>
+        <div class="card-title" style="margin-bottom:12px;">Функциональные задачи</div>
+        <div class="jtbd-job">
+          <strong>Задача 1 — «Профилактика курсом»</strong><br>
+          Когда <em>я хочу поддержать иммунитет / решить конкретную проблему,</em> я хочу <em>найти продукт с чётким протоколом,</em> чтобы <em>ощутить реальный результат через 21–30 дней.</em>
+        </div>
+        <div class="jtbd-job">
+          <strong>Задача 2 — «Замена аптечных БАДов»</strong><br>
+          Когда <em>устаю принимать капсулы,</em> я хочу <em>заменить синтетику на живой пищевой источник тех же веществ,</em> чтобы <em>получать нутриенты из еды, а не из химического производства.</em>
+        </div>
+        <div class="jtbd-job">
+          <strong>Задача 3 — «Энергия и ясность ума»</strong><br>
+          Когда <em>ищу утренний протокол для ясности ума,</em> я хочу <em>добавить что-то работающее с первой ложки,</em> чтобы <em>войти в рабочий режим быстрее.</em>
+        </div>
+      </div>
+      <div>
+        <div class="card-title" style="margin-bottom:12px;">Forces of Progress — С1</div>
+        <div class="forces-grid">
+          <div class="force-item force-push">
+            <div class="force-title" style="color:#c2410c;">Push — толчок</div>
+            <p style="font-size:13px; color:var(--n600);">«БАДы из аптеки — непонятная синтетика», «магазинное масло неизвестно как хранилось», «капсулы дорогие и непонятно усваиваются ли»</p>
+          </div>
+          <div class="force-item force-pull">
+            <div class="force-title" style="color:#065f46;">Pull — притяжение</div>
+            <p style="font-size:13px; color:var(--n600);">Честный производитель объясняет. Видимый процесс отжима. Протоколы применения. Малые партии = свежесть. Дата на этикетке.</p>
+          </div>
+          <div class="force-item force-anxiety">
+            <div class="force-title" style="color:#9f1239;">Anxiety — тревога</div>
+            <p style="font-size:13px; color:var(--n600);">«А вдруг вкус тмина будет невыносимым?», «если не почувствую эффект — деньги впустую»</p>
+          </div>
+          <div class="force-item force-habit">
+            <div class="force-title" style="color:var(--n500);">Habit — инерция</div>
+            <p style="font-size:13px; color:var(--n600);">«Уже хожу в аптеку, там привычно», «беру на Wildberries — удобная доставка»</p>
+          </div>
+        </div>
+        <div class="quote-block" style="margin-top:16px;">
+          <em>«Пью столовую ложку — моментально включает мозг.»</em> — Яндекс Маркет, 19.02.2026
+        </div>
+        <div class="quote-block">
+          <em>«Назначил принимать ЛОР. Натощак, пол года.»</em> — Яндекс Маркет, 25.07.2025
+        </div>
+      </div>
+    </div>
+    <div class="grid-3 fade-up" style="margin-top:24px;">
+      <div class="card"><div class="card-icon">💚</div><div class="card-title">Эмоц.: контроль</div><p style="font-size:13px; color:var(--n600);">Масло с протоколом даёт ощущение: я делаю конкретное действие, я не пассивен. Это дороже любого обещанного результата.</p></div>
+      <div class="card"><div class="card-icon">🤝</div><div class="card-title">Эмоц.: доверие</div><p style="font-size:13px; color:var(--n600);">Найти Кирилла, который объясняет и показывает — это эмоциональная разгрузка. Больше не нужно гадать.</p></div>
+      <div class="card"><div class="card-icon">👥</div><div class="card-title">Социал.: «я в теме»</div><p style="font-size:13px; color:var(--n600);">«Есть один человек на Дорогомиловском...» — сарафан как социальная валидация. Знание о тимохиноне — часть идентичности.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- С2 -->
+<section class="section fade-up" id="s2">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-label">С2 — Семейный ЗОЖ</div>
+      <h2 class="section-title">Аватар: Ольга, 36 лет. Читает состав. Двое детей.</h2>
+    </div>
+    <div class="grid-2 fade-up">
+      <div>
+        <div class="card-title" style="margin-bottom:12px;">Функциональные задачи</div>
+        <div class="jtbd-job">
+          <strong>Задача 1 — «Полезнее, без революции»</strong><br>
+          Когда <em>хочу улучшить питание семьи, но не готова менять всё разом,</em> я хочу <em>заменить привычное масло на что-то лучше — просто,</em> чтобы <em>чувствовать, что делаю правильное для близких.</em>
+        </div>
+        <div class="jtbd-job">
+          <strong>Задача 2 — «Омега для детей без капсул»</strong><br>
+          Когда <em>педиатр упоминает Омега-3 для детей, а капсулы ребёнок отказывается глотать,</em> я хочу <em>добавить масло в кашу — незаметно и без скандала,</em> чтобы <em>закрыть потребность вкусно.</em>
+        </div>
+        <div class="jtbd-job">
+          <strong>Задача 3 — «Убрать рафинированное»</strong><br>
+          Когда <em>читаю про вред рафинированных масел,</em> я хочу <em>заменить привычное подсолнечное на живое — одним простым действием,</em> чтобы <em>убрать «плохое» без сложных изменений.</em>
+        </div>
+      </div>
+      <div>
+        <div class="card-title" style="margin-bottom:12px;">Forces of Progress — С2</div>
+        <div class="forces-grid">
+          <div class="force-item force-push">
+            <div class="force-title" style="color:#c2410c;">Push</div>
+            <p style="font-size:13px; color:var(--n600);">«Прочитала что рафинированное вредно», «педиатр упомянул омегу», «хочу улучшить питание — но не знаю с чего начать»</p>
+          </div>
+          <div class="force-item force-pull">
+            <div class="force-title" style="color:#065f46;">Pull</div>
+            <p style="font-size:13px; color:var(--n600);">Понятный состав без E-шек, простое применение, «можно детям», небольшой входной объём 100 мл</p>
+          </div>
+          <div class="force-item force-anxiety">
+            <div class="force-title" style="color:#9f1239;">Anxiety</div>
+            <p style="font-size:13px; color:var(--n600);">«Испортится до использования?», «ребёнку точно можно с 4 лет?», «вдруг не понравится — выброшу деньги»</p>
+          </div>
+          <div class="force-item force-habit">
+            <div class="force-title" style="color:var(--n500);">Habit</div>
+            <p style="font-size:13px; color:var(--n600);">«Уже есть оливковое — зачем ещё одно», «привыкла брать в Перекрёстке по пути»</p>
+          </div>
+        </div>
+        <div class="alert alert-success" style="margin-top:16px;">
+          <span class="alert-icon">✅</span>
+          <div>
+            <strong style="color:#065f46; display:block; margin-bottom:4px;">Один пост закрывает вход</strong>
+            <p style="font-size:13px; color:var(--n600);">«Льняное с 3 лет — 0,5 ч.л. в кашу. Хранить в холодильнике. После вскрытия — 60 дней. 100 мл — на 3 недели для семьи» — это весь нужный контент для С2.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- С3 -->
+<section class="section fade-up" id="s3" style="background:#fff;">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-label">С3 — Крафт-контролёр</div>
+      <h2 class="section-title">Аватар: Андрей, 53 года. Обжёгся — горькое, решил: испорчено.</h2>
+    </div>
+    <div class="grid-2 fade-up">
+      <div>
+        <div class="jtbd-job">
+          <strong>Задача 1 — «Гарантированно свежий»</strong><br>
+          Когда <em>уже обжигался на «холодном отжиме» с непонятной горечью,</em> я хочу <em>найти производителя с контролируемой свежестью и конкретной датой отжима,</em> чтобы <em>больше не угадывать.</em>
+        </div>
+        <div class="jtbd-job">
+          <strong>Задача 2 — «Понять что именно покупаю»</strong><br>
+          Когда <em>на этикетке всё красиво, но непонятно откуда сырьё и как давили,</em> я хочу <em>видеть процесс или читать честные технические объяснения,</em> чтобы <em>не чувствовать себя доверчивым.</em>
+        </div>
+        <div class="jtbd-job">
+          <strong>Задача 3 — «Найти своего — и не искать больше»</strong><br>
+          Когда <em>нашёл нормальный продукт с предсказуемым качеством,</em> я хочу <em>иметь возможность всегда брать у одного человека без лотереи.</em>
+        </div>
+      </div>
+      <div>
+        <div class="card">
+          <div class="card-title">Ключевой конфликт сегмента: «горечь»</div>
+          <div class="table-wrap" style="margin-top:0;">
+            <table>
+              <thead><tr><th>Масло</th><th>Горечь =</th><th>Коммуникация</th></tr></thead>
+              <tbody>
+                <tr><td>Тмин, расторопша</td><td><span class="badge badge-green">НОРМА</span></td><td>«Это тимохинон — так и должно быть»</td></tr>
+                <tr><td>Лён, кедр, подсолнечник</td><td><span class="badge badge-red">ПРОБЛЕМА</span></td><td>«Горечи быть не должно — вот как мы контролируем»</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="forces-grid" style="margin-top:16px;">
+          <div class="force-item force-push">
+            <div class="force-title" style="color:#c2410c;">Push</div>
+            <p style="font-size:13px; color:var(--n600);">Прошлый негативный опыт, разочарование в ноунеймах с маркетплейсов</p>
+          </div>
+          <div class="force-item force-pull">
+            <div class="force-title" style="color:#065f46;">Pull</div>
+            <p style="font-size:13px; color:var(--n600);">Дата отжима на каждой бутылке, тёмное стекло, объяснение горечи тмина</p>
+          </div>
+          <div class="force-item force-anxiety">
+            <div class="force-title" style="color:#9f1239;">Anxiety</div>
+            <p style="font-size:13px; color:var(--n600);">«Опять попадусь — а вдруг и он красиво рассказывает, а качество такое же?»</p>
+          </div>
+          <div class="force-item force-habit">
+            <div class="force-title" style="color:var(--n500);">Habit</div>
+            <p style="font-size:13px; color:var(--n600);">«Вообще перестал покупать холодный отжим — разочаровался»</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- С4 + С5 -->
+<section class="section fade-up" id="s4">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-label">С4 — Гастроном</div>
+      <h2 class="section-title">Аватар: Михаил, 42 года. Готовит сам. Оливковое на всё — скучно.</h2>
+    </div>
+    <div class="grid-2 fade-up">
+      <div>
+        <div class="jtbd-job">
+          <strong>Задача 1 — «Финишное масло для домашнего ресторана»</strong><br>
+          Когда <em>готовлю блюдо и хочу вкусовую точку — как в хорошем ресторане,</em> я хочу <em>добавить в финале масло с выраженным характером,</em> чтобы <em>блюдо зазвучало полнее.</em>
+        </div>
+        <div class="jtbd-job">
+          <strong>Задача 2 — «Разные масла под разные блюда»</strong><br>
+          Когда <em>одно оливковое на всё меня не устраивает,</em> я хочу <em>иметь линейку: ореховое для пасты, кунжутное для азиатского, кедровое для сырной доски.</em>
+        </div>
+        <div class="jtbd-job">
+          <strong>Задача 3 — «Подарок гурману с историей»</strong><br>
+          Когда <em>нужен подарок человеку, у которого «всё есть»,</em> я хочу <em>подарить что-то необычное с производственной историей,</em> чтобы <em>не дарить очередную безделушку.</em>
+        </div>
+      </div>
+      <div>
+        <div class="forces-grid">
+          <div class="force-item force-push">
+            <div class="force-title" style="color:#c2410c;">Push</div>
+            <p style="font-size:13px; color:var(--n600);">«Оливковое на всё надоело», «в супермаркете всё безликое», «нестабильный вкус от партии к партии»</p>
+          </div>
+          <div class="force-item force-pull">
+            <div class="force-title" style="color:#065f46;">Pull</div>
+            <p style="font-size:13px; color:var(--n600);">Линейка масел с характером, конкретные применения («кедровое — на пасту»), возможность взять несколько сразу</p>
+          </div>
+          <div class="force-item force-anxiety">
+            <div class="force-title" style="color:#9f1239;">Anxiety</div>
+            <p style="font-size:13px; color:var(--n600);">«Нестабилен ли вкус от партии к партии?», «не заглушит ли блюдо?»</p>
+          </div>
+          <div class="force-item force-habit">
+            <div class="force-title" style="color:var(--n500);">Habit</div>
+            <p style="font-size:13px; color:var(--n600);">«Уже есть хорошее итальянское оливковое», «на масло трачу по-минимуму»</p>
+          </div>
+        </div>
+        <div class="quote-block" style="margin-top:16px;"><em>«В послевкусии — нежно-ореховый привкус.»</em> — iRecommend, 08.02.2024</div>
+        <div class="quote-block"><em>«Идёт на ура — не перебивая вкус.»</em> — Яндекс Маркет, 15.05.2024</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section fade-up" id="s5" style="background:#fff;">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-label">С5 — Красота изнутри</div>
+      <h2 class="section-title">Аватар: Елена, 33 года. Кремы дают временный эффект. Начала изнутри.</h2>
+    </div>
+    <div class="alert alert-warning fade-up">
+      <span class="alert-icon">⚠️</span>
+      <div>
+        <strong style="color:#92400e; display:block; margin-bottom:4px;">Важно</strong>
+        <p style="font-size:14px; color:var(--n600);">Кирилл убрал вектор «Красота» из продуктовых наборов (29.03.2026). Сегмент реален — учитывать в контент-стратегии, без создания отдельного набора.</p>
+      </div>
+    </div>
+    <div class="grid-2 fade-up" style="margin-top:24px;">
+      <div>
+        <div class="jtbd-job">
+          <strong>Задача 1 — «Решить проблему изнутри, не снаружи»</strong><br>
+          Когда <em>кремы и маски дают временный результат,</em> я хочу <em>добавить в рацион правильные жиры курсом,</em> чтобы <em>изменить состояние кожи/волос/ногтей на клеточном уровне.</em>
+        </div>
+        <div class="jtbd-job">
+          <strong>Задача 2 — «Курс 30–60 дней с ожиданием»</strong><br>
+          Когда <em>хочу видеть прогресс, а не просто «принимать вообще»,</em> я хочу <em>выбрать масло под свою задачу и пройти курс,</em> чтобы <em>через месяц честно оценить.</em>
+        </div>
+      </div>
+      <div>
+        <div class="forces-grid">
+          <div class="force-item force-push">
+            <div class="force-title" style="color:#c2410c;">Push</div>
+            <p style="font-size:13px; color:var(--n600);">«Кремы дают временный эффект», «рыбий жир — рыбная отрыжка», «хочу натуральный базовый подход»</p>
+          </div>
+          <div class="force-item force-pull">
+            <div class="force-title" style="color:#065f46;">Pull</div>
+            <p style="font-size:13px; color:var(--n600);">Конкретный протокол + срок, честность об ожиданиях, реальные истории «ногти окрепли через 30 дней»</p>
+          </div>
+          <div class="force-item force-anxiety">
+            <div class="force-title" style="color:#9f1239;">Anxiety</div>
+            <p style="font-size:13px; color:var(--n600);">«Не увижу объективного эффекта», «как понять — масло помогло или само прошло?»</p>
+          </div>
+          <div class="force-item force-habit">
+            <div class="force-title" style="color:var(--n500);">Habit</div>
+            <p style="font-size:13px; color:var(--n600);">«Уже покупаю капсулы коллагена», «делаю маски — понятнее результат»</p>
+          </div>
+        </div>
+        <div class="quote-block" style="margin-top:16px;"><em>«Ногти заметно окрепли.»</em> — iRecommend, 24.07.2025</div>
+        <div class="quote-block"><em>«Уменьшился волосопад.»</em> — iRecommend, 24.07.2025</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ИНСАЙТЫ -->
+<section class="section fade-up" id="patterns">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-label">Межсегментные паттерны</div>
+      <h2 class="section-title">Неочевидные инсайты из пересечений</h2>
+    </div>
+    <div class="grid-2 fade-up">
+      <div class="card-brand">
+        <div class="card-title">Инсайт 1: Подарочный сценарий пронизывает несколько сегментов</div>
+        <p style="font-size:14px; color:var(--n600); line-height:1.7;">С1, С3, С4 — все три при правильном контексте покупают наборы как подарок. Это не отдельный сегмент — это <strong>ситуативный режим поведения</strong>. С1 дарит набор «Здоровье» другу-биохакеру. С4 дарит набор «Кухня» коллеге-гастроному.</p>
+      </div>
+      <div class="card">
+        <div class="card-title">Инсайт 2: «Горечь тмина» — один пост на два сегмента</div>
+        <p style="font-size:14px; color:var(--n600); line-height:1.7;">С1 должен узнать что горечь = норма (тимохинон). С3 должен узнать это <em>до</em> покупки. Пост «почему горчит масло тмина — и почему это хорошо» работает на оба сегмента с максимальным LTV одновременно.</p>
+      </div>
+      <div class="card">
+        <div class="card-title">Инсайт 3: Биохакер (С1б) ближе к С3</div>
+        <p style="font-size:14px; color:var(--n600); line-height:1.7;">Оба хотят объяснений и доказательств. Но биохакер хочет кислотный профиль и температуру, а С3 — просто честность без подробностей. Контент должен иметь два уровня: упрощённый + детальный.</p>
+      </div>
+      <div class="card">
+        <div class="card-title">Инсайт 4: С2 и С5 — одна женщина в разное время</div>
+        <p style="font-size:14px; color:var(--n600); line-height:1.7;">Ольга (С2) берёт льняное для семьи. Через 2 месяца замечает: кожа лучше. Переходит в режим С5 — заказывает миндальное для себя. Масло не меняется — меняется задача. Бесплатное расширение чека.</p>
+      </div>
+    </div>
+
+    <div class="alert alert-brand fade-up" style="margin-top:24px;">
+      <span class="alert-icon">🎯</span>
+      <div>
+        <strong style="color:var(--brand-dark); display:block; margin-bottom:4px;">Архизадача всей аудитории Кирилла</strong>
+        <p style="font-size:14px; color:var(--n600);">У каждого сегмента — своя версия: «как мясник из советского детства», «наконец-то честный без маркетинговой шелухи», «свой человек с живым продуктом». Но суть одна: <strong>смена отношения с транзакции на доверие</strong>. Это то, что продаёт Кирилл — не масло.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="container">
+    <div class="footer-inner">
+      <div><img src="../../assets/logo-horizontal-dark.png" alt="Магия Масел" style="height:32px; width:auto; display:block; opacity:.7;"></div>
+      <div class="footer-meta">
+        <div class="footer-meta-item"><span class="footer-meta-label">Документ</span><span class="footer-meta-value">M4-03 — JTBD-карта</span></div>
+        <div class="footer-meta-item"><span class="footer-meta-label">Клиент</span><span class="footer-meta-value">Кирилл Бродский</span></div>
+        <div class="footer-meta-item"><span class="footer-meta-label">Дата</span><span class="footer-meta-value">31.03.2026</span></div>
+        <div class="footer-meta-item"><span class="footer-meta-label">Версия</span><span class="footer-meta-value">1.0 (Opus)</span></div>
+        <div class="footer-meta-item"><span class="footer-meta-label">Модуль</span><span class="footer-meta-value">M4 · Аудитория · 3/8</span></div>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script>
+  const obs = new IntersectionObserver((entries) => {
+    entries.forEach(e => { if(e.isIntersecting) { e.target.classList.add('visible'); obs.unobserve(e.target); } });
+  }, { threshold: 0.1 });
+  document.querySelectorAll('.fade-up').forEach(el => obs.observe(el));
+</script>
+</body>
+</html>

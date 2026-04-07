@@ -1,0 +1,1117 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>M4-05 — Кастдев-пак · Магия Масел</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --brand: #2C5F2D;
+      --brand-dark: #1a4a1b;
+      --brand-light: #4a8f4b;
+      --brand-bg: #e8f5e9;
+      --accent: #D4AF37;
+      --accent-bg: #fdf8e8;
+      --n50: #f8fafc; --n100: #f1f5f9; --n200: #e2e8f0;
+      --n300: #cbd5e1; --n400: #94a3b8; --n500: #64748b;
+      --n600: #475569; --n700: #334155; --n800: #1e293b; --n900: #0f172a;
+      --success: #10b981; --warning: #f59e0b; --error: #ef4444; --info: #3b82f6;
+      --font: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      --shadow-card: 0 1px 3px 0 rgba(0,0,0,.05), 0 1px 2px -1px rgba(0,0,0,.05);
+      --shadow-hover: 0 10px 25px -5px rgba(0,0,0,.08), 0 8px 10px -6px rgba(0,0,0,.04);
+      --shadow-btn: 0 4px 14px 0 rgba(44,95,45,.35);
+      --r-sm:4px; --r-md:6px; --r-lg:8px; --r-xl:12px; --r-2xl:16px; --r-3xl:24px; --r-full:9999px;
+    }
+
+    body { font-family: var(--font); font-size: 16px; line-height: 1.6; color: var(--n600); background: var(--n100); }
+
+    @keyframes fade-up { 0%{opacity:0;transform:translateY(20px)} 100%{opacity:1;transform:translateY(0)} }
+    .fade-up { opacity:0; transform:translateY(20px); transition:opacity .6s ease-out, transform .6s ease-out; }
+    .fade-up.visible { opacity:1; transform:translateY(0); }
+
+    .container { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
+    .section { padding: 80px 0; }
+
+    /* Nav */
+    .nav-wrap {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 300;
+      background: rgba(255,255,255,.93); backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--n200); height: 64px;
+    }
+    .nav-inner { height:100%; display:flex; align-items:center; justify-content:space-between; }
+    .nav-logo img { height:40px; width:auto; display:block; }
+    .nav-links { display:flex; gap:20px; flex-wrap:wrap; }
+    .nav-links a { font-size:13px; font-weight:500; color:var(--n600); text-decoration:none; transition:color .2s; }
+    .nav-links a:hover { color:var(--brand); }
+    .nav-badge {
+      font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:.05em;
+      color:var(--brand); background:var(--brand-bg);
+      padding:5px 12px; border-radius:var(--r-full); white-space:nowrap;
+    }
+
+    /* Section header */
+    .section-header { margin-bottom:40px; }
+    .section-label {
+      display:inline-block; font-size:11px; font-weight:700; text-transform:uppercase;
+      letter-spacing:.08em; color:var(--brand); background:var(--brand-bg);
+      padding:4px 12px; border-radius:var(--r-full); margin-bottom:12px;
+    }
+    .section-title { font-size:30px; font-weight:600; color:var(--n900); line-height:1.25; margin-bottom:8px; }
+    .section-sub { font-size:16px; color:var(--n500); }
+
+    /* Grid */
+    .grid-2 { display:grid; grid-template-columns:repeat(auto-fit,minmax(340px,1fr)); gap:20px; }
+    .grid-3 { display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:20px; }
+
+    /* Badge */
+    .badge { display:inline-flex; align-items:center; padding:3px 10px; border-radius:var(--r-full); font-size:12px; font-weight:600; }
+    .badge-green { background:#d1fae5; color:#065f46; }
+    .badge-yellow { background:#fef3c7; color:#92400e; }
+    .badge-blue { background:#dbeafe; color:#1e40af; }
+    .badge-brand { background:var(--brand-bg); color:var(--brand-dark); }
+    .badge-accent { background:var(--accent-bg); color:#7a6000; }
+    .badge-red { background:#fee2e2; color:#991b1b; }
+    .badge-gray { background:var(--n100); color:var(--n500); }
+
+    /* Table */
+    .table-wrap { overflow-x:auto; border-radius:var(--r-2xl); border:1px solid var(--n200); margin:20px 0; }
+    table { width:100%; border-collapse:collapse; background:#fff; }
+    thead tr { background:var(--n50); border-bottom:2px solid var(--n200); }
+    th { padding:14px 18px; text-align:left; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.05em; color:var(--n500); }
+    td { padding:14px 18px; font-size:14px; color:var(--n600); border-bottom:1px solid var(--n200); }
+    tr:last-child td { border-bottom:none; }
+    tbody tr { transition:background .2s; }
+    tbody tr:hover { background:var(--n50); }
+    .td-num { font-size:13px; color:var(--n400); font-family:monospace; }
+
+    /* Alert */
+    .alert { display:flex; gap:14px; border-radius:var(--r-xl); padding:18px; margin:16px 0; }
+    .alert-warning { background:#fffbeb; border:1px solid #fde68a; border-left:4px solid var(--warning); }
+    .alert-error { background:#fff1f2; border:1px solid #fecdd3; border-left:4px solid var(--error); }
+    .alert-info { background:#eff6ff; border:1px solid #bfdbfe; border-left:4px solid var(--info); }
+    .alert-success { background:#f0fdf4; border:1px solid #bbf7d0; border-left:4px solid var(--success); }
+    .alert-brand { background:var(--brand-bg); border:1px solid #a5d6a7; border-left:4px solid var(--brand); }
+    .alert-icon { font-size:18px; flex-shrink:0; margin-top:1px; }
+
+    /* Card */
+    .card {
+      background:#fff; border-radius:var(--r-2xl); border:1px solid var(--n200);
+      padding:28px; box-shadow:var(--shadow-card);
+      transition:transform .3s ease, box-shadow .3s ease;
+    }
+    .card:hover { transform:translateY(-3px); box-shadow:var(--shadow-hover); }
+    .card-brand {
+      background: linear-gradient(135deg, var(--brand-bg) 0%, #fff 100%);
+      border-radius:var(--r-2xl); border:1px solid #a5d6a7; padding:28px; box-shadow:var(--shadow-card);
+    }
+    .card-accent {
+      background: var(--accent-bg);
+      border-radius:var(--r-2xl); border:1px solid #e8d87a; padding:28px; box-shadow:var(--shadow-card);
+    }
+    .card-title { font-size:16px; font-weight:700; color:var(--n900); margin-bottom:12px; }
+    .card-icon { font-size:24px; margin-bottom:12px; }
+
+    /* Stat cards */
+    .stat-card {
+      background:linear-gradient(135deg,var(--brand) 0%,var(--brand-dark) 100%);
+      border-radius:var(--r-2xl); padding:24px; color:#fff; box-shadow:var(--shadow-btn);
+    }
+    .stat-label { font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.05em; opacity:.75; margin-bottom:8px; }
+    .stat-value { font-size:28px; font-weight:700; line-height:1; margin-bottom:6px; }
+    .stat-desc { font-size:13px; opacity:.8; }
+
+    /* List item */
+    .list-item {
+      display:flex; gap:10px; align-items:flex-start;
+      padding:9px 0; border-bottom:1px solid var(--n100);
+      font-size:14px; color:var(--n600);
+    }
+    .list-item:last-child { border-bottom:none; }
+    .list-dot { width:8px; height:8px; border-radius:50%; background:var(--brand); flex-shrink:0; margin-top:6px; }
+    .list-dot-red { width:8px; height:8px; border-radius:50%; background:var(--error); flex-shrink:0; margin-top:6px; }
+
+    /* Status icons */
+    .s-ok { color:var(--success); font-weight:600; }
+    .s-warn { color:var(--warning); font-weight:600; }
+    .s-need { color:#f97316; font-weight:600; }
+
+    @media (max-width:768px) {
+      .nav-links { display:none; }
+      .section-title { font-size:24px; }
+      .grid-2, .grid-3 { grid-template-columns:1fr; }
+    }
+
+    /* Hero */
+    .hero {
+      background: linear-gradient(135deg, var(--brand-dark) 0%, var(--brand) 50%, var(--brand-light) 100%);
+      padding: 120px 0 80px; color:#fff; position:relative; overflow:hidden;
+    }
+    .hero::before {
+      content:''; position:absolute; inset:0;
+      background: radial-gradient(ellipse at 70% 50%, rgba(212,175,55,.15) 0%, transparent 60%);
+    }
+    .hero-inner { display:flex; align-items:center; gap:48px; flex-wrap:wrap; }
+    .hero-logo-wrap { flex-shrink:0; }
+    .hero-logo-wrap img { height:140px; width:auto; display:block; border-radius:var(--r-xl); }
+    .hero-content { flex:1; min-width:280px; }
+    .hero-badge {
+      display:inline-block; font-size:11px; font-weight:700; text-transform:uppercase;
+      letter-spacing:.1em; background:rgba(255,255,255,.15); color:#fff;
+      border:1px solid rgba(255,255,255,.3); padding:6px 16px;
+      border-radius:var(--r-full); margin-bottom:20px; backdrop-filter:blur(8px);
+    }
+    .hero-title { font-size:52px; font-weight:700; line-height:1.1; margin-bottom:16px; }
+    .hero-title span { color:var(--accent); }
+    .hero-sub { font-size:18px; opacity:.85; max-width:600px; margin-bottom:32px; line-height:1.6; }
+    .hero-meta { display:flex; gap:24px; flex-wrap:wrap; }
+    .hero-meta-item { display:flex; flex-direction:column; gap:3px; }
+    .hero-meta-label { font-size:10px; text-transform:uppercase; letter-spacing:.08em; opacity:.6; }
+    .hero-meta-value { font-size:14px; font-weight:600; }
+
+    @media (max-width:768px) {
+      .hero { padding: 100px 0 60px; }
+      .hero-title { font-size:34px; }
+      .hero-logo-wrap img { height:80px; }
+    }
+
+    /* Footer */
+    .footer { background:var(--n900); color:var(--n400); padding:40px 0; font-size:13px; }
+    .footer-inner { display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:16px; }
+    .footer-meta { display:flex; gap:20px; flex-wrap:wrap; }
+    .footer-meta-item { display:flex; flex-direction:column; gap:2px; }
+    .footer-meta-label { font-size:10px; text-transform:uppercase; letter-spacing:.05em; color:var(--n600); }
+    .footer-meta-value { font-size:12px; color:var(--n400); }
+
+    /* Interview-specific */
+    .interview-header {
+      background: linear-gradient(135deg, var(--brand-dark) 0%, var(--brand) 100%);
+      border-radius:var(--r-2xl); padding:24px 28px; color:#fff; margin-bottom:28px;
+    }
+    .interview-title { font-size:22px; font-weight:700; margin-bottom:6px; }
+    .interview-segment { font-size:14px; opacity:.8; font-style:italic; }
+    .interview-section { margin-bottom:60px; padding-bottom:60px; border-bottom:2px solid var(--n200); }
+    .interview-section:last-child { border-bottom:none; margin-bottom:0; }
+
+    .qa-card {
+      background:#fff; border-radius:var(--r-2xl); border:1px solid var(--n200);
+      padding:24px; box-shadow:var(--shadow-card); margin-bottom:16px;
+    }
+    .qa-label {
+      font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.06em;
+      color:var(--brand); background:var(--brand-bg); display:inline-block;
+      padding:3px 10px; border-radius:var(--r-full); margin-bottom:10px;
+    }
+    .qa-question {
+      font-size:14px; font-weight:600; color:var(--n700); margin-bottom:12px;
+      padding-bottom:10px; border-bottom:1px solid var(--n100);
+    }
+    blockquote {
+      border-left:3px solid var(--brand); padding:12px 16px;
+      background:var(--brand-bg); border-radius:0 var(--r-lg) var(--r-lg) 0;
+      font-size:14px; color:var(--n700); font-style:italic; margin:8px 0;
+    }
+    .insight-num {
+      display:inline-flex; align-items:center; justify-content:center;
+      width:28px; height:28px; border-radius:50%;
+      background:var(--brand); color:#fff; font-size:12px; font-weight:700;
+      flex-shrink:0; margin-right:12px;
+    }
+    .insight-card {
+      background:#fff; border-radius:var(--r-2xl); border:1px solid var(--n200);
+      padding:20px 24px; box-shadow:var(--shadow-card); margin-bottom:12px;
+      display:flex; align-items:flex-start; gap:0;
+      transition:transform .3s ease, box-shadow .3s ease;
+    }
+    .insight-card:hover { transform:translateY(-2px); box-shadow:var(--shadow-hover); }
+    .insight-content { flex:1; }
+    .insight-title { font-size:14px; font-weight:700; color:var(--n900); margin-bottom:6px; }
+    .insight-text { font-size:14px; color:var(--n600); }
+    .quote-card {
+      background:#fff; border-radius:var(--r-xl); border:1px solid var(--n200);
+      padding:16px 20px; box-shadow:var(--shadow-card); margin-bottom:10px;
+    }
+    .quote-source { font-size:11px; color:var(--n400); margin-top:6px; }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav-wrap">
+  <div class="container">
+    <div class="nav-inner">
+      <div class="nav-logo"><img src="../../assets/logo-horizontal-light.png" alt="Магия Масел"></div>
+      <div class="nav-links">
+        <a href="#principle">Принцип</a>
+        <a href="#a1">А1 — Татьяна</a>
+        <a href="#a2">А2 — Ольга</a>
+        <a href="#a3">А3 — Андрей</a>
+        <a href="#a4">А4 — Михаил</a>
+        <a href="#a5">А5 — Елена</a>
+        <a href="#patterns">Паттерны</a>
+        <a href="#insights">Инсайты</a>
+        <a href="#quotes">Цитаты</a>
+        <a href="#apply">Применение</a>
+      </div>
+      <div class="nav-badge">M4 · Документ 5/8</div>
+    </div>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="container">
+    <div class="hero-inner">
+      <div class="hero-logo-wrap">
+        <img src="../../assets/logo-badge-dark.png" alt="Магия Масел — Кирилл Бродский">
+      </div>
+      <div class="hero-content">
+        <div class="hero-badge">M4 · Аудитория · Документ 5 из 8</div>
+        <h1 class="hero-title">Кастдев-<span>пак</span></h1>
+        <p class="hero-sub">Имитационные интервью, паттерны решений, неожиданные инсайты, язык покупателей.</p>
+        <div class="hero-meta">
+          <div class="hero-meta-item">
+            <span class="hero-meta-label">Клиент</span>
+            <span class="hero-meta-value">Кирилл Бродский</span>
+          </div>
+          <div class="hero-meta-item">
+            <span class="hero-meta-label">Дата</span>
+            <span class="hero-meta-value">31.03.2026</span>
+          </div>
+          <div class="hero-meta-item">
+            <span class="hero-meta-label">Версия</span>
+            <span class="hero-meta-value">1.0 (Opus)</span>
+          </div>
+          <div class="hero-meta-item">
+            <span class="hero-meta-label">Интервью</span>
+            <span class="hero-meta-value">5 аватаров</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ПРИНЦИП -->
+<section class="section fade-up" id="principle">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-label">Принцип</div>
+      <h2 class="section-title">Что такое кастдев в этом контексте</h2>
+      <p class="section-sub">Это не реальные записанные интервью — это имитационные интервью, построенные на реальной речи покупателей.</p>
+    </div>
+    <div class="grid-2">
+      <div class="card fade-up">
+        <div class="card-icon">📊</div>
+        <div class="card-title">Источники данных</div>
+        <div class="list-item"><div class="list-dot"></div><span>Цифровая речь потребителей (Яндекс Маркет, iRecommend, Babyblog, Отзовик) — реальные слова реальных людей</span></div>
+        <div class="list-item"><div class="list-dot"></div><span>Прямые наблюдения с Дорогомиловского рынка (фразы которые Кирилл слышит)</span></div>
+        <div class="list-item"><div class="list-dot"></div><span>JTBD-матрица из M4-03 — задачи, барьеры, forces of progress</span></div>
+        <div class="list-item"><div class="list-dot"></div><span>Аватары из M4-02 — конкретные люди с историями</span></div>
+      </div>
+      <div class="card fade-up">
+        <div class="card-icon">🎯</div>
+        <div class="card-title">Зачем это нужно</div>
+        <div class="list-item"><div class="list-dot"></div><span>Понять не «что покупают», а <strong>в какой момент жизни и почему именно тогда</strong></span></div>
+        <div class="list-item"><div class="list-dot"></div><span>Выявить паттерны которые повторяются у разных сегментов</span></div>
+        <div class="list-item"><div class="list-dot"></div><span>Найти неочевидные инсайты, которые не видны из анкет и отзывов</span></div>
+        <div class="list-item"><div class="list-dot"></div><span>Дать Кириллу конкретные слова и сценарии для контента и продаж</span></div>
+      </div>
+    </div>
+    <div class="card fade-up" style="margin-top:20px;">
+      <div class="card-title">Структура каждого интервью (JTBD-таймлайн)</div>
+      <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:12px; margin-top:12px;">
+        <div style="text-align:center; padding:12px; background:var(--n50); border-radius:var(--r-lg);">
+          <div style="font-size:20px; margin-bottom:6px;">💭</div>
+          <div style="font-size:12px; font-weight:700; color:var(--brand);">1. Первая мысль</div>
+          <div style="font-size:12px; color:var(--n500);">Когда впервые возникла мысль «надо что-то изменить»</div>
+        </div>
+        <div style="text-align:center; padding:12px; background:var(--n50); border-radius:var(--r-lg);">
+          <div style="font-size:20px; margin-bottom:6px;">👀</div>
+          <div style="font-size:12px; font-weight:700; color:var(--brand);">2. Пассивное рассмотрение</div>
+          <div style="font-size:12px; color:var(--n500);">Узнаёт, смотрит, но не действует</div>
+        </div>
+        <div style="text-align:center; padding:12px; background:var(--n50); border-radius:var(--r-lg);">
+          <div style="font-size:20px; margin-bottom:6px;">⚡</div>
+          <div style="font-size:12px; font-weight:700; color:var(--brand);">3. Момент решения</div>
+          <div style="font-size:12px; color:var(--n500);">Что стало последней каплей / «щелчком»</div>
+        </div>
+        <div style="text-align:center; padding:12px; background:var(--n50); border-radius:var(--r-lg);">
+          <div style="font-size:20px; margin-bottom:6px;">🛒</div>
+          <div style="font-size:12px; font-weight:700; color:var(--brand);">4. Первая покупка</div>
+          <div style="font-size:12px; color:var(--n500);">Как, где, сколько, что почувствовал</div>
+        </div>
+        <div style="text-align:center; padding:12px; background:var(--n50); border-radius:var(--r-lg);">
+          <div style="font-size:20px; margin-bottom:6px;">🫙</div>
+          <div style="font-size:12px; font-weight:700; color:var(--brand);">5. Первый опыт</div>
+          <div style="font-size:12px; color:var(--n500);">Что происходит после открытия</div>
+        </div>
+        <div style="text-align:center; padding:12px; background:var(--n50); border-radius:var(--r-lg);">
+          <div style="font-size:20px; margin-bottom:6px;">🔄</div>
+          <div style="font-size:12px; font-weight:700; color:var(--brand);">6. Повторная покупка</div>
+          <div style="font-size:12px; color:var(--n500);">Что удержало / что чуть не потеряло</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- А1 — ТАТЬЯНА -->
+<section class="section fade-up" id="a1" style="background:#fff;">
+  <div class="container">
+    <div class="interview-section">
+      <div class="interview-header">
+        <div class="interview-title">Интервью А1 — Татьяна, 47 лет</div>
+        <div class="interview-segment">Сегмент С1а — «Назначил врач». Бухгалтер, 18 лет на одном месте. Тмин натощак.</div>
+      </div>
+
+      <div class="qa-card fade-up">
+        <div class="qa-label">1. Первая мысль</div>
+        <div class="qa-question">Когда впервые появилась мысль что надо что-то менять?</div>
+        <blockquote>«Ну, честно говоря, я давно ощущала что что-то не так. Анализы в норме — а ощущение, знаете, ватное. Голова после обеда тяжёлая. Простужалась раз в сезон — не тяжело, но постоянно. В общем-то жила с этим, думала — работа, стресс, всё такое.
+        <br><br>
+        Омега из аптеки стояла — Solgar, дорогущие капсулы. Пила три месяца, потом забыла купить. И непонятно — был ли эффект вообще. Синтетика какая-то.
+        <br><br>
+        А потом пошла к ЛОРу — уже третий раз за год. И он говорит: "Татьяна, попробуйте масло чёрного тмина. Есть данные по иммунному ответу, ничего радикального, просто натощак". Я записала в блокнот.»</blockquote>
+      </div>
+
+      <div class="qa-card fade-up">
+        <div class="qa-label">2. Пассивное рассмотрение</div>
+        <div class="qa-question">Что было дальше — сразу пошли искать?</div>
+        <blockquote>«Нет, не сразу. Я вечером загуглила — "масло чёрного тмина польза". Там куча статей. Но производителей много, и все пишут "натуральное, холодный отжим". Непонятно кому верить. Яндекс Маркет открыла — 47 позиций. Начала читать отзывы. Часа два читала в итоге.
+        <br><br>
+        Одна пишет "горлодер, как средство от клопов". Другой — "моментально включает мозг". Как понять кому верить?»</blockquote>
+        <div class="qa-question" style="margin-top:16px;">Почему не купили сразу на маркетплейсе?</div>
+        <blockquote>«Потому что в отзывах один пишет "горькое — выкинул, испорченное", другой — "горьковатое но работает". Ну и как понять? Плюс там в красивых пластиковых бутылках... Я как-то насторожилась. Стекло мне ближе — ощущение настоящего. А потом один комментарий попался — "берите у человека на Дорогомиловском, там сам давит". И всё.»</blockquote>
+      </div>
+
+      <div class="qa-card fade-up">
+        <div class="qa-label">3. Момент решения</div>
+        <div class="qa-question">А почему именно этот комментарий сработал?</div>
+        <blockquote>«Понимаете, "сам давит" — это другое. Это не завод. Это конкретный человек который понимает что делает. Я вот 18 лет работаю с одними и теми же — потому что знаю их. С незнакомым заводом такого доверия нет.
+        <br><br>
+        Знаете что ещё? Я вспомнила маму — она в молодости ходила к одному мяснику на рынке. Всегда к нему. Потому что знала — не обманет. Вот это ощущение "своего" — оно у меня засело.»</blockquote>
+      </div>
+
+      <div class="qa-card fade-up">
+        <div class="qa-label">4. Первая покупка</div>
+        <div class="qa-question">Опишите момент когда вы пришли на рынок и разговор с Кириллом.</div>
+        <blockquote>«Приехала в субботу. Нашла, спрашиваю: "вы сами давите?". Он говорит да, и начинает объяснять — гидравлика, маленькие партии, дата на этикетке. Я спросила: "А горечь — это нормально?". Вот тут он меня прям убедил. Объяснил про тимохинон — что горечь это и есть активное вещество, именно его нужно. И сразу показал как принимать: с мёдом, после еды первые три дня если желудок чувствительный. Конкретно. Без воды.»</blockquote>
+        <div class="qa-question" style="margin-top:16px;">Это и убедило?</div>
+        <blockquote>«Именно. Он не сказал "берите, не пожалеете". Он объяснил механизм. Я такое слышать люблю — не продажи, а суть. И цену не спрятал — сказал сколько стоит и почему. Я взяла 100 мл — "попробую, не такие большие деньги".»</blockquote>
+      </div>
+
+      <div class="qa-card fade-up">
+        <div class="qa-label">5. Первый опыт потребления</div>
+        <div class="qa-question">Что было когда открыли дома?</div>
+        <blockquote>«Открыла. Понюхала — специфически. Попробовала — жжёт сильно. Я чуть не испугалась. Прям мысль мелькнула — "может испорченное?" Хорошо, он предупредил. Написала ему — "жжёт сильно, это нормально?". Ответил через несколько часов: "Да, это тимохинон. Начните с половинки ложки, запейте тёплой водой". Я так и сделала. Постепенно привыкла.
+        <br><br>
+        Через три недели — не скажу что прям чудо, но утром стала вставать легче. И ватность после обеда — как-то мягче. Может совпадение. Но ощущение — "я делаю что-то конкретное для себя". Это важно.»</blockquote>
+      </div>
+
+      <div class="qa-card fade-up">
+        <div class="qa-label">6. Повторная покупка</div>
+        <div class="qa-question">Когда заказали второй раз?</div>
+        <blockquote>«Кирилл сам написал через три недели — "Татьяна, как масло, заканчивается?" Честно — я уже забыла что надо заказывать. Без этого сообщения — не знаю, когда бы купила. Может через месяц. Может через два. Он написал — я сразу взяла ещё. А потом ещё расторопшу добавила — подруга пожаловалась на печень, я ей рассказала, она спрашивает: "А где берёшь?"
+        <br><br>
+        Теперь у нас так: я беру тмин и расторопшу, подруга — расторопшу. Кирилл нам обеим пишет. Как подписка, только по-человечески.»</blockquote>
+      </div>
+
+      <div class="alert alert-brand fade-up">
+        <span class="alert-icon">💡</span>
+        <div>
+          <strong style="color:var(--brand-dark); display:block; margin-bottom:8px;">Ключевые инсайты из интервью Татьяны</strong>
+          <div class="list-item"><div class="list-dot"></div><span>Врач создаёт осведомлённость (ступень 2-3), Кирилл конвертирует (4-5). Конверсия происходит через объяснение механизма, а не через назначение</span></div>
+          <div class="list-item"><div class="list-dot"></div><span>«Горечь = испорчено» — главный стоп-сигнал, снятый до первого глотка. Без предупреждения — бутылка в мусор</span></div>
+          <div class="list-item"><div class="list-dot"></div><span>Ремайндер через 21 день — <strong>буквально спас повторную покупку</strong> (сама не вспомнила бы)</span></div>
+          <div class="list-item" style="border-bottom:none;"><div class="list-dot"></div><span>Сарафан запустился органично: подруга с болью → Татьяна поделилась. Не нужна реклама — нужен продукт, о котором хочется рассказать</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- А2 — ОЛЬГА -->
+<section class="section fade-up" id="a2">
+  <div class="container">
+    <div class="interview-section">
+      <div class="interview-header">
+        <div class="interview-title">Интервью А2 — Ольга, 36 лет</div>
+        <div class="interview-segment">Сегмент С2 — «Семейный ЗОЖ». Маркетолог в digital-агентстве. Муж (IT), двое детей: 8 и 4 года.</div>
+      </div>
+
+      <div class="qa-card fade-up">
+        <div class="qa-label">1. Первая мысль</div>
+        <div class="qa-question">Расскажите, как вы вообще начали думать про масла холодного отжима?</div>
+        <blockquote>«Я давно перешла на нормальное питание — читаю состав, избегаю всякой химии. Оливковое у нас стоит хорошее, испанское. Льняное купила в магазине здорового питания — педиатр вскользь сказал про омегу для детей, я и взяла.
+        <br><br>
+        Но с льняным из магазина — полное разочарование. Горьковатое. Один раз открыла — пахло странно, выкинула. Главное — я не знала как хранить правильно. Стояло на полке, не в холодильнике. Потом прочитала что надо в холодильник. Но сколько оно уже простояло?»</blockquote>
+      </div>
+
+      <div class="qa-card fade-up">
+        <div class="qa-label">2. Пассивное рассмотрение</div>
+        <div class="qa-question">Что изменилось — почему вы стали искать другого производителя?</div>
+        <blockquote>«Подруга написала в нашем чате мам — "девочки, кто берёт льняное? Нашла хорошего человека на Дорогомиловском, сам давит, объясняет как хранить и детям можно". И ссылка на TG. Я зашла, почитала пару постов. Там была статья: "Как хранить масло холодного отжима — 3 правила". Прочитала. Поняла почему моё прокисало — я хранила неправильно.
+        <br><br>
+        Ещё несколько дней читала канал. Меня очень волновал вопрос — детям точно можно? Там был отдельный пост про это. Конкретно: "льняное с 3 лет — пол чайной ложки в кашу". Мой ребёнок — 4 года. Окей, попробуем.»</blockquote>
+      </div>
+
+      <div class="qa-card fade-up">
+        <div class="qa-label">3. Момент решения</div>
+        <div class="qa-question">Что стало "последней каплей"?</div>
+        <blockquote>«Тот пост про хранение. Я вдруг поняла — я все эти годы выкидывала не плохое масло, а неправильно хранившееся. И вот этот человек, Кирилл, он просто объяснил три правила — и у меня встало на место. Если он так объясняет в канале, значит и продукт нормальный. Решила поехать.»</blockquote>
+      </div>
+
+      <div class="qa-card fade-up">
+        <div class="qa-label">4. Первая покупка</div>
+        <div class="qa-question">Первая покупка — как это было?</div>
+        <blockquote>«Мы с мужем поехали на рынок в субботу. Взяла 100 мл льняного — "на пробу". 850 рублей. Муж скривился на цену — "за льняное?". Но мне было важно попробовать именно это, от конкретного человека.
+        <br><br>
+        Спросила: "А детям можно?" Кирилл ответил подробно — какое с какого возраста, в каком количестве, как давать чтобы ребёнок не заметил. Не "можно", а "вот как именно".»</blockquote>
+      </div>
+
+      <div class="qa-card fade-up">
+        <div class="qa-label">5. Первый опыт потребления</div>
+        <div class="qa-question">Что произошло когда открыли дома?</div>
+        <blockquote>«Дома добавила в кашу утром. Ребёнок съел без возражений. Вот это был ключевой момент для меня — если бы отказался есть, всё, конец истории. Но съел — и я выдохнула.
+        <br><br>
+        Масло не горчило. Не пахло странно. Лёгкий ореховый привкус — даже приятно. Я думала — "вот, вот так и должно быть, оказывается".»</blockquote>
+        <div class="qa-question" style="margin-top:16px;">А вы сами заметили что-то?</div>
+        <blockquote>«Знаете, месяца через два я вдруг поняла — ногти не ломаются. Я их грызла в детстве, они всегда были плохие. А тут смотрю — выросли нормально, не слоятся. Я прям удивилась. Не связывала сначала — а потом вспомнила что именно в это время начала льняное.»</blockquote>
+      </div>
+
+      <div class="qa-card fade-up">
+        <div class="qa-label">6. Повторная покупка</div>
+        <div class="qa-question">Вы об этом написали Кириллу?</div>
+        <blockquote>«Написала в личку. Он ответил — что это да, омега-3 влияет на структуру ногтей. И спросил: хочу ли попробовать миндальное — "у него на это история ещё сильнее". Вот так я и купила миндальное — уже для себя. Уже не для семьи, а именно для себя.
+        <br><br>
+        Теперь беру льняное для всех и миндальное себе. Раз в месяц-полтора. Хранение освоила — в холодильнике, тёмная бутылка, не стоит долго после вскрытия. Всё логично.»</blockquote>
+      </div>
+
+      <div class="alert alert-brand fade-up">
+        <span class="alert-icon">💡</span>
+        <div>
+          <strong style="color:var(--brand-dark); display:block; margin-bottom:8px;">Ключевые инсайты из интервью Ольги</strong>
+          <div class="list-item"><div class="list-dot"></div><span>Триггер — <strong>«другая мама в чате»</strong>, не реклама. Сарафан в семейных чатах работает лучше любого таргета для С2</span></div>
+          <div class="list-item"><div class="list-dot"></div><span>Барьер «детям можно» решается одним конкретным постом (возраст + дозировка + способ применения). Без этого — вход в воронку закрыт</span></div>
+          <div class="list-item"><div class="list-dot"></div><span>Ребёнок съел = доверие закреплено — это «момент истины» для С2, важнее вкуса для взрослого</span></div>
+          <div class="list-item" style="border-bottom:none;"><div class="list-dot"></div><span>Органический переход С2 → С5: Ольга начала с льняного для семьи, через 2 месяца перешла на миндальное для себя — beauty-задача проявилась сама, без маркетинга</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- А3 — АНДРЕЙ -->
+<section class="section fade-up" id="a3" style="background:#fff;">
+  <div class="container">
+    <div class="interview-section">
+      <div class="interview-header">
+        <div class="interview-title">Интервью А3 — Андрей, 53 года</div>
+        <div class="interview-segment">Сегмент С3 — «Крафт-контролёр». Начальник отдела на производстве. Инженерный склад ума. Обжигался.</div>
+      </div>
+
+      <div class="qa-card fade-up">
+        <div class="qa-label">1. Первая мысль</div>
+        <div class="qa-question">Когда вы впервые начали интересоваться маслами холодного отжима?</div>
+        <blockquote>«Лет пять назад. Коллега рассказал — пьёт тыквенное для мужского здоровья. Я не из тех кто просто "пробует" — я читаю. Нашёл статьи, изучил состав, убедился что тыквенное реально содержит фитостерины и цинк. Научно обосновано. Решил попробовать.»</blockquote>
+      </div>
+
+      <div class="qa-card fade-up">
+        <div class="qa-label">2. Пассивное рассмотрение</div>
+        <div class="qa-question">И попробовали?</div>
+        <blockquote>«Два года назад купил на маркетплейсе. Тыквенное, 500 мл, 700 рублей. Думал — попробую. Пришло в прозрачной бутылке. Первое что бросилось в глаза — прозрачная. Ну ладно, вскрыл. Цвет светловатый — для тыквенного странно. Понюхал — специфически. Попробовал — горечь.
+        <br><br>
+        Написал в поддержку: "Возможно испорчено". Отвечали три дня, потом написали что "горечь характерна для данного продукта, спасибо за отзыв". Злость. Выкинул. С тех пор — не покупал холодный отжим вообще. Три года.»</blockquote>
+        <div class="qa-question" style="margin-top:16px;">Три года не покупали, но потребность осталась?</div>
+        <blockquote>«Конечно. Я читал про тыквенное — для мужского здоровья хорошо. И расторопшу хотел — печень беречь. Но доверия к рынку ноль. "Натуральное, холодный отжим" — это теперь для меня красная тряпка.»</blockquote>
+      </div>
+
+      <div class="qa-card fade-up">
+        <div class="qa-label">3. Момент решения</div>
+        <div class="qa-question">Что изменило ваше отношение?</div>
+        <blockquote>«Жена как-то привела меня на Дорогомиловский. Я шёл без ожиданий. Увидел стойку — тёмные бутылки. Вот это первый сигнал. Не прозрачные, не пластик — тёмное стекло. Подошёл.
+        <br><br>
+        Спросил: "Почему тёмное стекло?" Кирилл объяснил — окисление при свете, ускоренная порча. Я говорю: "А какой пресс?" — "Гидравлический". Объяснил разницу с шнеком. Я спрашиваю: "Когда давили вот это?" — он называет конкретную дату. На бутылке написано. Не "свежее" — конкретный день.
+        <br><br>
+        Я инженер. Я понимаю что значит контроль параметров. Этот человек говорит на моём языке.»</blockquote>
+      </div>
+
+      <div class="qa-card fade-up">
+        <div class="qa-label">4. Первая покупка</div>
+        <div class="qa-question">Вы сразу купили?</div>
+        <blockquote>«Нет. Я всё равно взял только 100 мл тыквенного. Сказал жене — "посмотрим". 100 мл — если выброшу, невелика потеря. Это мой способ проверки — малый объём, малый риск.»</blockquote>
+      </div>
+
+      <div class="qa-card fade-up">
+        <div class="qa-label">5. Первый опыт потребления</div>
+        <div class="qa-question">Что было дома?</div>
+        <blockquote>«Дома открыл — цвет правильный, тёмно-янтарный. Понюхал — нормально. Попробовал — горечь. И тут я уже другой: знал что спросить. Написал Кириллу — "тыквенное должно горчить?". Он ответил сразу: "Тыквенное не должно горчить. Вы из какой партии? Напишите дату на этикетке". Я написал. Он: "Это свежая партия, горечи быть не должно. Привезите или пришлю новое — разберёмся". Я обалдел.»</blockquote>
+        <div class="qa-question" style="margin-top:16px;">Почему обалдели?</div>
+        <blockquote>«Потому что с маркетплейса мне ответили "так и должно быть". А этот человек говорит — "не должно, давайте разберёмся". Это совсем другое отношение. В итоге оказалось что я перепутал — попробовал тмин, а не тыкву. Сам ошибся. Но реакция Кирилла меня зацепила — он не защищался, а разбирался.»</blockquote>
+      </div>
+
+      <div class="qa-card fade-up">
+        <div class="qa-label">6. Повторная покупка</div>
+        <div class="qa-question">Теперь вы постоянный покупатель?</div>
+        <blockquote>«Прихожу каждые две-три недели. Беру тыкву и расторопшу. Иногда тмин. Подписался на канал — читаю когда новая партия. Коллегам на работе рассказал — двое уже съездили. Так и сказал: "Есть один нормальный. Конкретный человек, сам давит, объясняет".
+        <br><br>
+        А знаете что интересно? Я теперь не просто покупатель. Я защитник. Если кто-то скажет "масла холодного отжима — развод", я скажу: "Нет, просто ты не знаешь у кого брать".»</blockquote>
+      </div>
+
+      <div class="alert alert-brand fade-up">
+        <span class="alert-icon">💡</span>
+        <div>
+          <strong style="color:var(--brand-dark); display:block; margin-bottom:8px;">Ключевые инсайты из интервью Андрея</strong>
+          <div class="list-item"><div class="list-dot"></div><span>Предыдущий негативный опыт <strong>не закрыл потребность</strong> — он закрыл только доверие к рынку. Потребность ждала правильного производителя 3 года</span></div>
+          <div class="list-item"><div class="list-dot"></div><span>«Дата на бутылке» — простой сигнал, который нельзя подделать. Для инженерного мышления это сильнее любого маркетингового утверждения</span></div>
+          <div class="list-item"><div class="list-dot"></div><span>Реакция Кирилла на жалобу («давайте разберёмся») — <strong>важнее безупречного качества</strong>. Маркетплейс потерял покупателя не из-за горечи, а из-за ответа "так и должно быть"</span></div>
+          <div class="list-item" style="border-bottom:none;"><div class="list-dot"></div><span>Рекомендации С3 точечные, но очень тёплые и защитные: «есть один нормальный». С3 не просто рекомендует — он защищает выбор</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- А4 — МИХАИЛ -->
+<section class="section fade-up" id="a4">
+  <div class="container">
+    <div class="interview-section">
+      <div class="interview-header">
+        <div class="interview-title">Интервью А4 — Михаил, 42 года</div>
+        <div class="interview-segment">Сегмент С4 — «Гастроном». Коммерческий директор. Готовит дома как хобби. Жена, двое детей.</div>
+      </div>
+
+      <div class="qa-card fade-up">
+        <div class="qa-label">1. Первая мысль</div>
+        <div class="qa-question">Как вы вообще пришли к маслам холодного отжима?</div>
+        <blockquote>«У меня стояло итальянское оливковое — хорошее, не дешёвое. Кунжутное для азиатских блюд. В общем-то хватало. Но оливковое на всё — это скучно. Как соль — необходимо, но нет характера.
+        <br><br>
+        Однажды был в ресторане, официант принёс брускетту с необычным маслом — ореховый привкус, лёгкая горчинка. Спросил: что это? Кедровое, говорит, от местного производителя. Вот тут что-то щёлкнуло — "местный производитель" с характером.»</blockquote>
+      </div>
+
+      <div class="qa-card fade-up">
+        <div class="qa-label">2. Пассивное рассмотрение</div>
+        <div class="qa-question">И вы сразу начали искать?</div>
+        <blockquote>«Не сразу. Поискал немного — нашёл несколько магазинов, везде дорого и непонятно откуда. Кедровое масло по 3000 за 250 мл — а кто давил, когда, как? Непонятно. Отложил.
+        <br><br>
+        Я не из тех кто бежит покупать. Я замечаю, запоминаю, жду подходящего случая.»</blockquote>
+      </div>
+
+      <div class="qa-card fade-up">
+        <div class="qa-label">3. Момент решения</div>
+        <div class="qa-question">Что произошло?</div>
+        <blockquote>«С женой в субботу на Дорогомиловском — она за сыром шла. Я по привычке смотрел что есть интересного. Увидел стойку с маслами. Подошёл, попробовал кедровое — и вот оно. Тот самый вкус. Нежно-ореховый, не перебивает. Как в том ресторане, но чище.
+        <br><br>
+        Знаете что меня убило? Кирилл сказал: "Попробуйте вот это на кончике ложки". Дал кедровое. Потом грецкое. Потом говорит: "Кедровое — на пасту, на финиш. Грецкое — с горькой зеленью и сыром. Не путайте, они разные". Конкретика. Не "всё полезное, берите". А "вот это — сюда, а вот это — туда".»</blockquote>
+      </div>
+
+      <div class="qa-card fade-up">
+        <div class="qa-label">4. Первая покупка</div>
+        <div class="qa-question">Что взяли?</div>
+        <blockquote>«Кедровое и грецкое сразу. По 100 мл. Хотел ещё кунжутное, но Кирилл сказал — "попробуйте эти два, потом кунжутное отдельно, там другой характер". Мне это понравилось — он мог продать три бутылки, а сказал "две сейчас, одна потом". Не давил.»</blockquote>
+      </div>
+
+      <div class="qa-card fade-up">
+        <div class="qa-label">5. Первый опыт потребления</div>
+        <div class="qa-question">Что было когда приготовили дома?</div>
+        <blockquote>«В воскресенье сделал пасту. Добавил кедровое в конце — буквально чайную ложку. Жена попробовала: "Что ты туда добавил? Вкусно". Я так и хотел — добавить слой, не перебить. Получилось.
+        <br><br>
+        Гости на следующей неделе — рассказал откуда масло. "Есть один человек на Дорогомиловском, сам давит, гидравлический пресс". Они спрашивают: "Там дорого?" Я говорю: "Дороже чем в магазине, но это другое".»</blockquote>
+        <div class="qa-question" style="margin-top:16px;">В чём для вас "другое"?</div>
+        <blockquote>«История. Я когда покупаю у Кирилла — я знаю кто это сделал. Знаю когда. Знаю как. Это не ящик на складе непонятно сколько стоявший. Это живой продукт с именем. За ужином можно рассказать. Для меня это важно — я люблю за столом рассказывать про продукты.»</blockquote>
+      </div>
+
+      <div class="qa-card fade-up">
+        <div class="qa-label">6. Повторная покупка</div>
+        <div class="qa-question">Подарки — это ваша идея или Кирилл предложил?</div>
+        <blockquote>«Сам придумал. Другу на день рождения — он гастроном, у него "всё есть". Набор три масла по 100 мл, красиво. И я объяснил: "Вот кедровое — в пасту, вот грецкое — в салат с горькой зеленью, вот кунжутное — в азиатские". Он позвонил через неделю: "Где ты взял? Хочу ещё".
+        <br><br>
+        Теперь у меня стоит всегда три-четыре масла. Кедровое — must have. Грецкое — для особых случаев. Кунжутное — для тайской. И это не просто масла — это мои инструменты на кухне. Как хороший нож.»</blockquote>
+      </div>
+
+      <div class="alert alert-brand fade-up">
+        <span class="alert-icon">💡</span>
+        <div>
+          <strong style="color:var(--brand-dark); display:block; margin-bottom:8px;">Ключевые инсайты из интервью Михаила</strong>
+          <div class="list-item"><div class="list-dot"></div><span>Вход — через <strong>вкус в ресторане</strong>, не через здоровье. Кулинарный триггер принципиально отличен от нутрицевтического — другой язык, другие доказательства</span></div>
+          <div class="list-item"><div class="list-dot"></div><span>«Местный производитель» — статусный сигнал для С4. Часть нарратива «я разбираюсь в еде и знаю где брать»</span></div>
+          <div class="list-item"><div class="list-dot"></div><span>История у ужина — <strong>социальная ценность</strong> масла важнее его нутрицевтических свойств для этого сегмента</span></div>
+          <div class="list-item" style="border-bottom:none;"><div class="list-dot"></div><span>Подарочный набор возник органически — нужен только формат (три масла + объяснение применения каждого). Рецепт на карточке внутри = идеальное дополнение</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- А5 — ЕЛЕНА -->
+<section class="section fade-up" id="a5" style="background:#fff;">
+  <div class="container">
+    <div class="interview-section">
+      <div class="interview-header">
+        <div class="interview-title">Интервью А5 — Елена, 33 года</div>
+        <div class="interview-segment">Сегмент С5 — «Красота изнутри». Менеджер проектов в IT-компании. Выпадение волос как точка входа.</div>
+      </div>
+
+      <div class="qa-card fade-up">
+        <div class="qa-label">1. Первая мысль</div>
+        <div class="qa-question">Расскажите с чего начался ваш интерес к маслам внутрь?</div>
+        <blockquote>«Полтора года назад у меня сильно начали выпадать волосы. Расчёска каждое утро — страшно смотреть. Сдала анализы — железо низкое, витамин D. Пила добавки три месяца, стало лучше, но "не совсем". Дерматолог говорит: "Попробуйте добавить жиры из продуктов — Омега-3, витамин Е". Я начала читать что именно.»</blockquote>
+      </div>
+
+      <div class="qa-card fade-up">
+        <div class="qa-label">2. Пассивное рассмотрение</div>
+        <div class="qa-question">Вы сразу нашли масла или что-то ещё пробовали?</div>
+        <blockquote>«Сначала рыбий жир в капсулах — дорого и неприятно. Отрыжка рыбная — ну это невозможно. Потом нашла на iRecommend — "пила льняное масло два месяца, волосы перестали сыпаться". Потом ещё одна — "миндальное, ногти стали крепче". Когда несколько человек пишут одно — начинаешь верить. Стала искать производителя.
+        <br><br>
+        Знаете что было ключевое? Одна женщина написала "уменьшился волосопад". Именно это слово — "волосопад". Я прям узнала себя. Кто-то понимает.»</blockquote>
+      </div>
+
+      <div class="qa-card fade-up">
+        <div class="qa-label">3. Момент решения</div>
+        <div class="qa-question">Как нашли канал Кирилла?</div>
+        <blockquote>«Гуглила "миндальное масло холодного отжима купить Москва". Нашла несколько — один TG-канал. Зашла, почитала посты. Там был пост — "почему жиры важны для волос: механизм". Не "купите наше масло" — а объяснение. Витамин Е, линолевая кислота, структура волосяного стержня. Я читаю такие вещи с удовольствием — люблю понимать почему.
+        <br><br>
+        Решила написать в личку.»</blockquote>
+      </div>
+
+      <div class="qa-card fade-up">
+        <div class="qa-label">4. Первая покупка</div>
+        <div class="qa-question">Вы написали в личку или просто заказали?</div>
+        <blockquote>«Написала: "Как принимать миндальное? Натощак обязательно?" Кирилл ответил: "Не обязательно натощак — можно добавить в йогурт или смузи. 1 ч.л. в день, курс 60 дней. Натощак чуть лучше усваивается, но и в еде работает". Вот это меня устроило — я не очень люблю масло натощак.
+        <br><br>
+        Заказала 100 мл миндального. Через пару дней забрала. 100 мл — мне хватит на месяц с лишним.»</blockquote>
+      </div>
+
+      <div class="qa-card fade-up">
+        <div class="qa-label">5. Первый опыт потребления</div>
+        <div class="qa-question">Что было на первом месяце?</div>
+        <blockquote>«Честно — ничего явного. Я даже расстроилась немного. Написала Кириллу — "уже месяц, не вижу разницы". Он ответил: "60 дней минимум для структурных изменений. Волос живёт своим циклом — новые волосы которые сейчас растут, получают питание. Результат будет виден когда они вырастут". Это меня убедило продолжать.
+        <br><br>
+        Если бы он написал "потерпите, будет лучше" — я бы не поняла почему. А он объяснил механизм. Я поняла — и подождала.»</blockquote>
+        <div class="qa-question" style="margin-top:16px;">Второй месяц — что изменилось?</div>
+        <blockquote>«К концу второго — смотрю на ногти. Они выросли. У меня ногти всегда ломались — с детства. А тут выросли и не сломались. И волосы — в расчёске заметно меньше. Не ноль, но заметно меньше. Я даже сфотографировала расчёску — "до" и "после". Показала подруге, она спрашивает: "Что ты делаешь?" Я рассказала. Она тоже заказала.»</blockquote>
+      </div>
+
+      <div class="qa-card fade-up">
+        <div class="qa-label">6. Повторная покупка</div>
+        <div class="qa-question">Что вас удержало на втором месяце, хотя первый был без результата?</div>
+        <blockquote>«Объяснение про цикл волоса. Это было понятное и честное. И ещё — я видела что Кирилл не дёргается, не обещает чудес. Он спокойно сказал "60 дней". Если бы обещал "через неделю увидите" — и через неделю ничего — я бы ушла. А он дал реальный срок — и он совпал.
+        <br><br>
+        Теперь беру миндальное постоянно. И начала кедровое — он сказал что для кожи зимой хорошо. Кожа у меня сухая — кремы помогают пока мажу. А изнутри — может, логичнее?»</blockquote>
+      </div>
+
+      <div class="alert alert-brand fade-up">
+        <span class="alert-icon">💡</span>
+        <div>
+          <strong style="color:var(--brand-dark); display:block; margin-bottom:8px;">Ключевые инсайты из интервью Елены</strong>
+          <div class="list-item"><div class="list-dot"></div><span>Первый месяц без ощущаемого эффекта — <strong>стандартная точка слива</strong> для С5. Удержала только честность про цикл волоса. Без объяснения механизма — потеря на 30-й день</span></div>
+          <div class="list-item"><div class="list-dot"></div><span>«Не люблю натощак» — барьер вкуса/привычки снимается простым «можно в йогурт». Альтернативный способ приёма = сохранённый покупатель</span></div>
+          <div class="list-item"><div class="list-dot"></div><span>Ведёт заметки и фотографирует расчёску — высокая самоотслеживаемость. Контент «как вести дневник курса» работает именно на С5</span></div>
+          <div class="list-item" style="border-bottom:none;"><div class="list-dot"></div><span>Отзыв на iRecommend запустил воронку, но <strong>механизм (объяснение Кирилла) закрыл сделку</strong>. Без личного ответа — покупка бы не состоялась</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ПАТТЕРНЫ -->
+<section class="section fade-up" id="patterns">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-label">Паттерны решений</div>
+      <h2 class="section-title">Cross-segment паттерны</h2>
+      <p class="section-sub">Что повторяется у разных сегментов несмотря на разные триггеры и мотивы.</p>
+    </div>
+
+    <div class="insight-card fade-up">
+      <div style="display:flex; align-items:flex-start; gap:16px;">
+        <div class="insight-num">1</div>
+        <div class="insight-content">
+          <div class="insight-title">«Объяснение важнее продукта»</div>
+          <div class="insight-text">Встречается у А1 (Татьяна), А3 (Андрей), А5 (Елена). Все три аватара в момент сомнения получили объяснение механизма — и это стало точкой принятия решения. Не цена, не акция. Каждый пост должен содержать «почему», а не только «что». Объяснение = продажа через уважение к интеллекту покупателя.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="insight-card fade-up">
+      <div style="display:flex; align-items:flex-start; gap:16px;">
+        <div class="insight-num">2</div>
+        <div class="insight-content">
+          <div class="insight-title">«Сарафан как доверие по цепочке»</div>
+          <div class="insight-text">Встречается у А1, А2, А3, А4. Ни один не пришёл через рекламу. Все — через доверенного человека из своего круга. При приходе через сарафан уровень доверия уже высокий — нужно не убеждать, а только не разочаровать. Упрощать возможность поделиться: «Отправьте другу». Контент должен быть таким, который легко переслать.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="insight-card fade-up">
+      <div style="display:flex; align-items:flex-start; gap:16px;">
+        <div class="insight-num">3</div>
+        <div class="insight-content">
+          <div class="insight-title">«100 мл = снятие риска, а не экономия»</div>
+          <div class="insight-text">Встречается у всех пятерых. Никто не начал с большого объёма. Все взяли 100 мл — но не потому что «дёшево», а потому что «если не то — невелика потеря». Для С3 — единственный вход после травмы доверия. Для С4 — «попробую в блюде». Для С1 — рациональное обоснование импульса. 100 мл — это психологическая точка входа с минимальным риском. Без этого формата нет онлайн-воронки.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="insight-card fade-up">
+      <div style="display:flex; align-items:flex-start; gap:16px;">
+        <div class="insight-num">4</div>
+        <div class="insight-content">
+          <div class="insight-title">«Ответ в личку = конверсия»</div>
+          <div class="insight-text">Встречается у А1 (вопрос про горечь), А5 (как принимать), А3 (тыквенное горчит?). Три аватара написали Кириллу в личку — и получили ответ, который конвертировал. Если бы не ответил — вероятно, ушли бы. Время ответа критично. Каждый неотвеченный вопрос в личке = потенциально потерянный покупатель на ступени 4. Максимум 4 часа на ответ в рабочее время.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="insight-card fade-up">
+      <div style="display:flex; align-items:flex-start; gap:16px;">
+        <div class="insight-num">5</div>
+        <div class="insight-content">
+          <div class="insight-title">«Первое открытие — момент страха»</div>
+          <div class="insight-text">Встречается у А1 (горит — испугалась), А3 (горьковато — стоп-сигнал), А2 (горьковатое льняное из магазина — выкинула). После первого открытия бутылки — момент тревоги. Решение: превентивное сообщение через 2–3 дня после покупки — «Если вкус кажется непривычным — это нормально. Вот что вы почувствуете и почему это хорошо». Упредить тревогу до звонка.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="insight-card fade-up">
+      <div style="display:flex; align-items:flex-start; gap:16px;">
+        <div class="insight-num">6</div>
+        <div class="insight-content">
+          <div class="insight-title">«Кирилл "не давит" — и это продаёт»</div>
+          <div class="insight-text">Встречается у всех пятерых. А1: объяснил, не уговаривал. А3: предложил вернуть, не оправдывался. А4: мог продать три бутылки, сказал «две сейчас». А5: дал реальный срок, не завышенные обещания. Тон коммуникации — главный продающий инструмент Кирилла. Тёплый, спокойный, ненавязчивый. В онлайн-контенте — то же самое. Без «последний день», без «успей».</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- НЕОЖИДАННЫЕ ИНСАЙТЫ -->
+<section class="section fade-up" id="insights" style="background:#fff;">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-label">Неожиданные инсайты</div>
+      <h2 class="section-title">8 инсайтов которые не видны из анкет</h2>
+      <p class="section-sub">Неочевидные выводы из имитационных интервью.</p>
+    </div>
+
+    <div class="grid-2">
+      <div class="card fade-up" style="border-top:4px solid var(--brand);">
+        <div class="card-icon">🎯</div>
+        <div class="card-title">Инсайт 1: Конкурент — не другой производитель масла, а «ничего не делать»</div>
+        <p style="font-size:14px; color:var(--n600);">Во всех пяти интервью «до» — люди не покупали холодный отжим вообще. Прямого конкурента-производителя нет. Главный конкурент — инерция и «потом куплю». Стратегия: не «чем мы лучше Х» — а «почему стоит начать сейчас».</p>
+      </div>
+
+      <div class="card fade-up" style="border-top:4px solid var(--accent);">
+        <div class="card-icon">⏰</div>
+        <div class="card-title">Инсайт 2: Ремайндер важнее любого контента</div>
+        <p style="font-size:14px; color:var(--n600);">Татьяна и Елена — самые ценные аватары по LTV — забыли купить повторно без внешнего напоминания. Не потому что разочаровались. Просто инерция. Нет ремайндера = потерянный регулярный покупатель. Это не маркетинг — это сервис. Человек благодарен за напоминание.</p>
+      </div>
+
+      <div class="card fade-up" style="border-top:4px solid var(--brand);">
+        <div class="card-icon">🍽️</div>
+        <div class="card-title">Инсайт 3: «История у ужина» — невидимый продукт</div>
+        <p style="font-size:14px; color:var(--n600);">Михаил рассказывает гостям откуда масло. Андрей говорит коллегам «есть один нормальный». Покупатели потребляют не только масло — они потребляют историю производителя и пересказывают её. История производства — социальная валюта покупателя.</p>
+      </div>
+
+      <div class="card fade-up" style="border-top:4px solid var(--info);">
+        <div class="card-icon">🔄</div>
+        <div class="card-title">Инсайт 4: С2 → С5 — один из самых дешёвых путей расширения чека</div>
+        <p style="font-size:14px; color:var(--n600);">Ольга купила льняное для семьи. Через 2 месяца обнаружила личный beauty-эффект. Перешла на миндальное для себя. Это бесплатное расширение. Нужно: в С2-контенте упоминать «некоторые покупательницы замечают улучшение ногтей через 2 месяца» + вопрос Кирилла в личке через 6–8 недель: «А вы сами как?»</p>
+      </div>
+
+      <div class="card fade-up" style="border-top:4px solid var(--warning);">
+        <div class="card-icon">⚠️</div>
+        <div class="card-title">Инсайт 5: «Горечь» — двусторонний сигнал, требующий двух разных объяснений</div>
+        <p style="font-size:14px; color:var(--n600);">У С3: горечь = испорчено → стоп-сигнал. У С1: горечь тмина = тимохинон → норма. Плюс третий случай: тмин, расторопша — горечь норма. Лён, кедр, подсолнечник — горечь = окисление = брак. Требуется два разных поста, два разных вкладыша — не одного «горечь бывает разная».</p>
+      </div>
+
+      <div class="card fade-up" style="border-top:4px solid var(--brand);">
+        <div class="card-icon">💰</div>
+        <div class="card-title">Инсайт 6: Цена называется последней — и это не случайность</div>
+        <p style="font-size:14px; color:var(--n600);">Ни в одном интервью цена не была главным барьером. Основные барьеры: вкус, безопасность для детей, «как хранить». Цена — завершающий вопрос, не первый. Не надо оправдываться за цену заранее. Объяснение ценности снимает ценовое сопротивление органически.</p>
+      </div>
+
+      <div class="card fade-up" style="border-top:4px solid var(--success);">
+        <div class="card-icon">🎁</div>
+        <div class="card-title">Инсайт 7: Подарок → личное потребление — скрытая конверсионная воронка</div>
+        <p style="font-size:14px; color:var(--n600);">Михаил подарил набор другу — друг позвонил через неделю: «Где ты взял?». Получатель подарка становится покупателем без прохождения всей лестницы — его перебрасывает сразу на ступень 4–5 через доверие дарителя. Каждый подаренный набор — потенциальный новый клиент.</p>
+      </div>
+
+      <div class="card fade-up" style="border-top:4px solid var(--error);">
+        <div class="card-icon">💔</div>
+        <div class="card-title">Инсайт 8: Голос тех, кого мы потеряли</div>
+        <p style="font-size:14px; color:var(--n600);">Агрессивные негативные отзывы в DR ЦА: «как будто синтетическое машинное масло», «это отрава». Это люди, которые пришли с ожиданием лекарства и столкнулись с реальным браком от других производителей. Каждое чужое разочарование на рынке — потенциальный будущий покупатель Кирилла. Контент «почему не всё масло одинаковое» работает именно на эту аудиторию.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ЦИТАТЫ -->
+<section class="section fade-up" id="quotes">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-label">Цитаты</div>
+      <h2 class="section-title">Язык покупателей — по сегментам</h2>
+      <p class="section-sub">Реальная речь из DR ЦА (Яндекс Маркет, iRecommend, Babyblog, Отзовик) + наблюдения на Дорогомиловском. Использовать как основу для языка контента.</p>
+    </div>
+
+    <div class="table-wrap fade-up">
+      <table>
+        <thead>
+          <tr>
+            <th>Сегмент</th>
+            <th>Цитата</th>
+            <th>Источник</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="badge badge-brand">С1 — Функциональный</span></td>
+            <td style="font-style:italic;">«Назначил принимать ЛОР. Натощак, пол года.»</td>
+            <td class="td-num">Яндекс Маркет, 25.07.2025</td>
+          </tr>
+          <tr>
+            <td><span class="badge badge-brand">С1</span></td>
+            <td style="font-style:italic;">«Пью столовую ложку — моментально включает мозг.»</td>
+            <td class="td-num">Яндекс Маркет, 19.02.2026</td>
+          </tr>
+          <tr>
+            <td><span class="badge badge-brand">С1</span></td>
+            <td style="font-style:italic;">«Терапевт сказал пропить омегу.»</td>
+            <td class="td-num">iRecommend, 18.04.2024</td>
+          </tr>
+          <tr>
+            <td><span class="badge badge-brand">С1</span></td>
+            <td style="font-style:italic;">«Анализы в норме, но ощущение — не норма.»</td>
+            <td class="td-num">паттерн из наблюдений (M2)</td>
+          </tr>
+          <tr>
+            <td><span class="badge badge-green">С2 — Семейный ЗОЖ</span></td>
+            <td style="font-style:italic;">«Растительное масло есть в рационе моей семьи.»</td>
+            <td class="td-num">iRecommend, 08.02.2024</td>
+          </tr>
+          <tr>
+            <td><span class="badge badge-green">С2</span></td>
+            <td style="font-style:italic;">«После вскрытия… хранить в холодильнике.»</td>
+            <td class="td-num">Babyblog, 04.05.2024</td>
+          </tr>
+          <tr>
+            <td><span class="badge badge-green">С2</span></td>
+            <td style="font-style:italic;">«Беру уже не в первый раз… подешевле — совсем не то.»</td>
+            <td class="td-num">Яндекс Маркет, 27.05.2025</td>
+          </tr>
+          <tr>
+            <td><span class="badge badge-yellow">С3 — Крафт-контролёр</span></td>
+            <td style="font-style:italic;">«не горчит — значит свежее. Дата… нормальная.»</td>
+            <td class="td-num">Яндекс Маркет, 03.11.2024</td>
+          </tr>
+          <tr>
+            <td><span class="badge badge-yellow">С3</span></td>
+            <td style="font-style:italic;">«масло… горькое, оно испорчено… окислилось.»</td>
+            <td class="td-num">iRecommend, 12.03.2026</td>
+          </tr>
+          <tr>
+            <td><span class="badge badge-yellow">С3</span></td>
+            <td style="font-style:italic;">«Тёмное стекло… защищает масло от солнечных лучей.»</td>
+            <td class="td-num">iRecommend, 08.02.2024</td>
+          </tr>
+          <tr>
+            <td><span class="badge badge-yellow">С3</span></td>
+            <td style="font-style:italic;">«Нашёл хорошего человека — рекомендую всем знакомым.»</td>
+            <td class="td-num">паттерн сарафана (M2)</td>
+          </tr>
+          <tr>
+            <td><span class="badge badge-accent">С4 — Гастроном</span></td>
+            <td style="font-style:italic;">«Идет на ура… не перебивая вкус.»</td>
+            <td class="td-num">Яндекс Маркет, 15.05.2024</td>
+          </tr>
+          <tr>
+            <td><span class="badge badge-accent">С4</span></td>
+            <td style="font-style:italic;">«…в послевкусии… нежно-ореховый привкус.»</td>
+            <td class="td-num">iRecommend, 08.02.2024</td>
+          </tr>
+          <tr>
+            <td><span class="badge badge-accent">С4</span></td>
+            <td style="font-style:italic;">«придаёт блюдам… ореховый привкус»</td>
+            <td class="td-num">Яндекс Маркет, 24.06.2025</td>
+          </tr>
+          <tr>
+            <td><span class="badge badge-blue">С5 — Красота изнутри</span></td>
+            <td style="font-style:italic;">«Ногти… заметно окрепли.»</td>
+            <td class="td-num">iRecommend, 24.07.2025</td>
+          </tr>
+          <tr>
+            <td><span class="badge badge-blue">С5</span></td>
+            <td style="font-style:italic;">«…уменьшился волосопад.»</td>
+            <td class="td-num">iRecommend, 24.07.2025</td>
+          </tr>
+          <tr>
+            <td><span class="badge badge-blue">С5</span></td>
+            <td style="font-style:italic;">«Кожа сухая — кремы помогают пока мажу.»</td>
+            <td class="td-num">паттерн из DR ЦА (M2)</td>
+          </tr>
+          <tr>
+            <td><span class="badge badge-red">Скептики</span></td>
+            <td style="font-style:italic;">«Как будто синтетическое машинное масло…»</td>
+            <td class="td-num">Яндекс Маркет, 24.06.2024</td>
+          </tr>
+          <tr>
+            <td><span class="badge badge-red">Скептики</span></td>
+            <td style="font-style:italic;">«…похоже… дешёвое подсолнечное… смесь»</td>
+            <td class="td-num">iRecommend, 13.04.2024</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="alert alert-brand fade-up" style="margin-top:24px;">
+      <span class="alert-icon">✍️</span>
+      <div>
+        <strong style="color:var(--brand-dark); display:block; margin-bottom:4px;">Как использовать эти цитаты</strong>
+        <p style="font-size:14px; color:var(--n600);">Это не скопированные отзывы — это язык аудитории. Когда контент говорит словами покупателей, он резонирует без объяснений. Использовать в хуках, подзаголовках, подписях к фото. Никогда — как поддельные отзывы.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ПРИМЕНЕНИЕ -->
+<section class="section fade-up" id="apply" style="background:#fff;">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-label">Применение</div>
+      <h2 class="section-title">Что делать с этими данными прямо сейчас</h2>
+      <p class="section-sub">Приоритизированный список действий с тайм-фреймом.</p>
+    </div>
+    <div class="table-wrap fade-up">
+      <table>
+        <thead>
+          <tr>
+            <th>Инсайт</th>
+            <th>Действие</th>
+            <th>Приоритет</th>
+            <th>Когда</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Объяснение = конверсия</strong></td>
+            <td>Каждый пост содержит «почему», не только «что»</td>
+            <td><span class="badge badge-red">★★★★★</span></td>
+            <td>Сейчас</td>
+          </tr>
+          <tr>
+            <td><strong>Ответ в личку = сделка</strong></td>
+            <td>Максимальное время ответа — 4 часа в рабочее время</td>
+            <td><span class="badge badge-red">★★★★★</span></td>
+            <td>Сейчас</td>
+          </tr>
+          <tr>
+            <td><strong>Ремайндер на 21–25 день</strong></td>
+            <td>Настроить систему: бот напоминает → Кирилл пишет лично</td>
+            <td><span class="badge badge-red">★★★★★</span></td>
+            <td>Неделя 1</td>
+          </tr>
+          <tr>
+            <td><strong>«Первое открытие» = страх</strong></td>
+            <td>Сообщение через 2–3 дня после покупки: «что вы почувствуете и почему это нормально»</td>
+            <td><span class="badge badge-yellow">★★★★☆</span></td>
+            <td>Неделя 1–2</td>
+          </tr>
+          <tr>
+            <td><strong>100 мл онлайн</strong></td>
+            <td>Запустить продажу 100 мл через TG-бот/личку — без этого нет воронки</td>
+            <td><span class="badge badge-yellow">★★★★☆</span></td>
+            <td>Неделя 1–2</td>
+          </tr>
+          <tr>
+            <td><strong>«Горечь» — два объяснения</strong></td>
+            <td>Отдельный пост/вкладыш для тмина-расторопши и отдельный для льна-кедра</td>
+            <td><span class="badge badge-yellow">★★★★☆</span></td>
+            <td>Неделя 2–3</td>
+          </tr>
+          <tr>
+            <td><strong>С2→С5 переход</strong></td>
+            <td>В личке через 6–8 недель: «а вы сами как себя чувствуете?»</td>
+            <td><span class="badge badge-brand">★★★☆☆</span></td>
+            <td>Месяц 2</td>
+          </tr>
+          <tr>
+            <td><strong>Подарочный набор</strong></td>
+            <td>Сделать формат «набор Кухня 3×100 мл» с карточками применения</td>
+            <td><span class="badge badge-brand">★★★☆☆</span></td>
+            <td>Месяц 2</td>
+          </tr>
+          <tr>
+            <td><strong>Контент для разочарованных</strong></td>
+            <td>Пост «почему не всё масло холодного отжима одинаковое» — ловить аудиторию С3</td>
+            <td><span class="badge badge-brand">★★★☆☆</span></td>
+            <td>Месяц 1</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="alert alert-brand fade-up" style="margin-top:32px;">
+      <span class="alert-icon">✍️</span>
+      <div>
+        <strong style="color:var(--brand-dark); display:block; margin-bottom:8px;">Цитаты как основа хуков для контента</strong>
+        <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:12px; margin-top:8px;">
+          <div style="background:#fff; border-radius:var(--r-lg); padding:12px 16px; border:1px solid var(--n200); font-size:13px; font-style:italic; color:var(--n700);">«Назначил ЛОР. Пол года натощак. Я нашёл где взять нормальное»</div>
+          <div style="background:#fff; border-radius:var(--r-lg); padding:12px 16px; border:1px solid var(--n200); font-size:13px; font-style:italic; color:var(--n700);">«Ложку на голодный желудок — моментально включает мозг»</div>
+          <div style="background:#fff; border-radius:var(--r-lg); padding:12px 16px; border:1px solid var(--n200); font-size:13px; font-style:italic; color:var(--n700);">«Масло горькое — значит испорченное? Не всегда. Вот почему»</div>
+          <div style="background:#fff; border-radius:var(--r-lg); padding:12px 16px; border:1px solid var(--n200); font-size:13px; font-style:italic; color:var(--n700);">«Три года не покупал холодный отжим. Потом нашёл одного нормального»</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="container">
+    <div class="footer-inner">
+      <div>
+        <img src="../../assets/logo-horizontal-dark.png" alt="Магия Масел" style="height:48px; width:auto; border-radius:var(--r-lg);">
+        <div style="margin-top:8px; font-size:12px; color:var(--n600);">BrandOS · Фабрика Контента v5</div>
+      </div>
+      <div class="footer-meta">
+        <div class="footer-meta-item">
+          <span class="footer-meta-label">Документ</span>
+          <span class="footer-meta-value">M4-05 — Кастдев-пак</span>
+        </div>
+        <div class="footer-meta-item">
+          <span class="footer-meta-label">Модуль</span>
+          <span class="footer-meta-value">M4 · 5 из 8</span>
+        </div>
+        <div class="footer-meta-item">
+          <span class="footer-meta-label">Дата</span>
+          <span class="footer-meta-value">31.03.2026</span>
+        </div>
+        <div class="footer-meta-item">
+          <span class="footer-meta-label">Версия</span>
+          <span class="footer-meta-value">1.0 (Opus)</span>
+        </div>
+        <div class="footer-meta-item">
+          <span class="footer-meta-label">Клиент</span>
+          <span class="footer-meta-value">Кирилл Бродский</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script>
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) entry.target.classList.add('visible');
+    });
+  }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+
+  document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
+</script>
+</body>
+</html>
