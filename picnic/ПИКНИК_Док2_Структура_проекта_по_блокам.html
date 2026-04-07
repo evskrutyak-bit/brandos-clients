@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Рынок «ПИКНИК» — Структура проекта по ключевым блокам | BrandOS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --brand:#0ea5e9;--brand-dark:#0284c7;--brand-light:#7dd3fc;--brand-bg:#e0f2fe;
+  --black:#0f172a;
+  --n50:#f8fafc;--n100:#f1f5f9;--n200:#e2e8f0;--n300:#cbd5e1;--n400:#94a3b8;
+  --n500:#64748b;--n600:#475569;--n700:#334155;--n800:#1e293b;--n900:#0f172a;
+  --success:#10b981;--warning:#f59e0b;--error:#ef4444;--info:#3b82f6;
+  --font:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;
+  --shadow-card:0 1px 3px 0 rgba(0,0,0,.05),0 1px 2px -1px rgba(0,0,0,.05);
+  --shadow-hover:0 10px 25px -5px rgba(0,0,0,.08),0 8px 10px -6px rgba(0,0,0,.04);
+  --shadow-btn:0 4px 14px 0 rgba(14,165,233,.35);
+  --r-sm:4px;--r-md:6px;--r-lg:8px;--r-xl:12px;--r-2xl:16px;--r-3xl:24px;--r-full:9999px;
+}
+body{font-family:var(--font);font-size:16px;line-height:1.6;color:var(--n600);background:var(--n100)}
+@keyframes pulse-glow{0%,100%{box-shadow:0 0 20px rgba(14,165,233,.3)}50%{box-shadow:0 0 40px rgba(14,165,233,.5)}}
+.fade-up{opacity:0;transform:translateY(20px);transition:opacity .6s ease-out,transform .6s ease-out}
+.fade-up.visible{opacity:1;transform:translateY(0)}
+.container{max-width:1100px;margin:0 auto;padding:0 24px}
+.section{padding:64px 0}
+.section-num{font-size:13px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--brand);margin-bottom:8px}
+.section-title{font-size:28px;font-weight:700;color:var(--n900);margin-bottom:8px;line-height:1.25}
+.section-subtitle{font-size:16px;color:var(--n500);margin-bottom:40px}
+
+/* Block card */
+.block-card{background:#fff;border-radius:var(--r-2xl);border:1px solid var(--n200);box-shadow:var(--shadow-card);margin-bottom:20px;overflow:hidden;transition:all .3s ease}
+.block-card:hover{box-shadow:var(--shadow-hover);transform:translateY(-2px)}
+.block-header{padding:24px 28px;display:flex;align-items:center;gap:16px;cursor:pointer;user-select:none}
+.block-num{width:44px;height:44px;border-radius:var(--r-xl);display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700;color:#fff;flex-shrink:0}
+.block-title{font-size:18px;font-weight:600;color:var(--n900);flex:1}
+.block-toggle{width:32px;height:32px;border-radius:50%;background:var(--n100);display:flex;align-items:center;justify-content:center;font-size:14px;color:var(--n500);transition:transform .3s;flex-shrink:0}
+.block-card.open .block-toggle{transform:rotate(180deg)}
+.block-body{max-height:0;overflow:hidden;transition:max-height .4s ease}
+.block-card.open .block-body{max-height:2000px}
+.block-content{padding:0 28px 28px}
+
+/* Sub-sections inside block */
+.sub-label{font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px;padding:6px 12px;border-radius:var(--r-full);display:inline-block}
+.sub-includes{color:#0369a1;background:var(--brand-bg)}
+.sub-exists{color:#065f46;background:#d1fae5}
+.sub-needs{color:#92400e;background:#fef3c7}
+.sub-text{font-size:15px;line-height:1.65;color:var(--n600);margin-bottom:20px}
+.sub-list{list-style:none;padding:0;margin:0 0 20px}
+.sub-list li{font-size:14px;line-height:1.6;color:var(--n600);padding:5px 0 5px 20px;position:relative}
+.sub-list li::before{content:'';position:absolute;left:4px;top:12px;width:6px;height:6px;border-radius:50%}
+.sub-list.green li::before{background:var(--success)}
+.sub-list.amber li::before{background:var(--warning)}
+.sub-list.blue li::before{background:var(--brand)}
+.block-divider{height:1px;background:var(--n200);margin:0 28px 20px}
+
+/* Alert */
+.alert{display:flex;gap:14px;border-radius:var(--r-xl);padding:18px 20px;margin:20px 0;font-size:14px;line-height:1.6}
+.alert-info{background:#eff6ff;border:1px solid #bfdbfe;border-left:4px solid var(--info);color:#1e40af}
+.alert-warning{background:#fffbeb;border:1px solid #fde68a;border-left:4px solid var(--warning);color:#92400e}
+.alert-red{background:#fef2f2;border:1px solid #fecaca;border-left:4px solid var(--error);color:#991b1b}
+
+/* Question cards */
+.q-group-title{font-size:13px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--n500);margin:24px 0 12px}
+.q-card{background:#fff;border:1px solid var(--n200);border-radius:var(--r-xl);padding:16px 20px;margin-bottom:10px;display:flex;gap:14px;align-items:flex-start;transition:all .2s}
+.q-card:hover{border-color:var(--brand-light);background:rgba(14,165,233,.02)}
+.q-num{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0}
+.q-num-critical{background:var(--brand);color:#fff}
+.q-num-important{background:var(--n200);color:var(--n700)}
+.q-text{font-size:15px;color:var(--n700);line-height:1.5}
+
+/* Progress */
+.progress-wrap{margin:10px 0}
+.progress-label{display:flex;justify-content:space-between;margin-bottom:5px}
+.progress-label span:first-child{font-size:13px;font-weight:500;color:var(--n700)}
+.progress-label span:last-child{font-size:13px;font-weight:700;color:var(--brand)}
+.progress-bar{height:7px;background:var(--n200);border-radius:var(--r-full);overflow:hidden}
+.progress-fill{height:100%;border-radius:var(--r-full);transition:width 1.2s ease}
+.fill-green{background:linear-gradient(90deg,#10b981,#059669)}
+.fill-amber{background:linear-gradient(90deg,#f59e0b,#d97706)}
+.fill-red{background:linear-gradient(90deg,#ef4444,#dc2626)}
+.fill-blue{background:linear-gradient(90deg,var(--brand),var(--brand-dark))}
+
+@media(max-width:768px){
+  .nav-links{display:none!important}
+  .hero-title{font-size:28px!important}
+  .block-header{padding:18px 20px}
+  .block-content{padding:0 20px 20px}
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav style="position:fixed;top:0;left:0;right:0;z-index:300;background:rgba(255,255,255,.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--n200);height:64px;">
+  <div class="container" style="height:100%;display:flex;align-items:center;justify-content:space-between;">
+    <div style="font-size:18px;font-weight:700;color:var(--n900);">BrandOS <span style="color:var(--brand);">·</span> <span style="font-weight:500;font-size:15px;color:var(--n600);">brand-os.ru</span></div>
+    <div class="nav-links" style="display:flex;gap:20px;">
+      <a href="#blocks" style="font-size:13px;font-weight:500;color:var(--n500);text-decoration:none;">Блоки</a>
+      <a href="#summary" style="font-size:13px;font-weight:500;color:var(--n500);text-decoration:none;">Выводы</a>
+      <a href="#questions" style="font-size:13px;font-weight:500;color:var(--n500);text-decoration:none;">Вопросы</a>
+    </div>
+    <div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--brand);background:var(--brand-bg);padding:6px 14px;border-radius:var(--r-full);">Документ 2 из 3</div>
+  </div>
+</nav>
+<div style="height:64px;"></div>
+
+<!-- HERO -->
+<header style="background:linear-gradient(135deg,var(--n900) 0%,#1a3348 50%,#0f2a1e 100%);padding:72px 0 64px;position:relative;overflow:hidden;">
+  <div style="position:absolute;top:-120px;right:-80px;width:450px;height:450px;border-radius:50%;background:radial-gradient(circle,rgba(245,158,11,.15) 0%,transparent 70%);pointer-events:none;"></div>
+  <div class="container" style="position:relative;z-index:1;">
+    <div style="display:inline-flex;align-items:center;gap:8px;background:rgba(245,158,11,.12);border:1px solid rgba(245,158,11,.25);color:#fbbf24;padding:7px 16px;border-radius:var(--r-full);font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;margin-bottom:24px;">
+      <span style="width:6px;height:6px;border-radius:50%;background:#f59e0b;animation:pulse-glow 2s infinite;"></span>
+      Рабочая карта проекта
+    </div>
+    <h1 class="hero-title" style="font-size:40px;line-height:1.15;letter-spacing:-.02em;font-weight:700;color:#fff;max-width:720px;margin-bottom:18px;">
+      Структура проекта<br>по ключевым блокам
+    </h1>
+    <p style="font-size:17px;line-height:1.6;color:var(--n400);max-width:620px;margin-bottom:36px;">
+      12 блоков, по каждому — что уже есть, что требует проработки. В конце — приоритизированные вопросы для следующего этапа.
+    </p>
+    <div style="display:flex;gap:28px;flex-wrap:wrap;">
+      <div style="color:var(--n400);font-size:13px;"><span style="color:var(--brand);font-weight:600;">Проект:</span> Рынок «ПИКНИК»</div>
+      <div style="color:var(--n400);font-size:13px;"><span style="color:var(--brand);font-weight:600;">Дата:</span> Апрель 2026</div>
+      <div style="color:var(--n400);font-size:13px;"><span style="color:var(--brand);font-weight:600;">Статус:</span> Не является КП</div>
+    </div>
+  </div>
+</header>
+
+<!-- INTRO -->
+<section class="section" style="padding-bottom:32px;">
+  <div class="container">
+    <div class="fade-up" style="background:#fff;border-radius:var(--r-2xl);border:1px solid var(--n200);padding:32px;box-shadow:var(--shadow-card);">
+      <p style="font-size:16px;line-height:1.7;color:var(--n700);">
+        На текущем этапе у проекта уже существует базовая пространственная, визуальная и организационная основа <span style="color:var(--n400);">(зафиксировано в Документе 1)</span>.
+      </p>
+      <p style="font-size:16px;line-height:1.7;color:var(--n700);margin-top:12px;">
+        Следующий шаг — <strong>не создание рынка с нуля</strong>, а системная сборка уже существующих решений в единую модель. Для этого проект раскладывается на 12 взаимосвязанных блоков.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- BLOCKS -->
+<section id="blocks" class="section" style="padding-top:24px;padding-bottom:40px;">
+  <div class="container">
+    <div class="section-num fade-up">12 ключевых блоков</div>
+    <div class="section-title fade-up">Карта проекта</div>
+    <div class="section-subtitle fade-up">Нажмите на блок, чтобы развернуть детали</div>
+
+<!-- BLOCK 1 -->
+<div class="block-card fade-up open" >
+  <div class="block-header">
+    <div class="block-num" style="background:var(--success);">01</div>
+    <div class="block-title">Объект и физическая инфраструктура</div>
+    <div class="block-toggle">▼</div>
+  </div>
+  <div class="block-body"><div class="block-divider"></div><div class="block-content">
+    <span class="sub-label sub-includes">Что включает</span>
+    <p class="sub-text">Локация, площадь, конфигурация пространства, входные группы, парковка, зона разгрузки, сервисная инфраструктура, доступность объекта.</p>
+    <span class="sub-label sub-exists">Что уже есть</span>
+    <ul class="sub-list green">
+      <li>Подтверждена локация: ТВЦ «Пикник», пгт. Новоивановское, ул. Западная, д. 4</li>
+      <li>Транспортная доступность (1,5 км от МКАД, остановка ОТ — 50 м, собственная парковка)</li>
+      <li>Сервисные зоны для посетителей и арендаторов</li>
+      <li>Планировочная логика торгового зала</li>
+    </ul>
+    <span class="sub-label sub-needs">Что требует фиксации</span>
+    <ul class="sub-list amber">
+      <li>Финальные параметры площади (2 350 или 3 000 м²)</li>
+      <li>Финальная вместимость (55 или 155 арендных мест)</li>
+      <li>Технические ограничения объекта</li>
+      <li>Фактическая степень готовности площадки к запуску</li>
+    </ul>
+  </div></div>
+</div>
+
+<!-- BLOCK 2 -->
+<div class="block-card fade-up open" >
+  <div class="block-header">
+    <div class="block-num" style="background:var(--success);">02</div>
+    <div class="block-title">Планировочная и функциональная логика</div>
+    <div class="block-toggle">▼</div>
+  </div>
+  <div class="block-body"><div class="block-divider"></div><div class="block-content">
+    <span class="sub-label sub-includes">Что включает</span>
+    <p class="sub-text">Зонирование, распределение торговых категорий, логика движения посетителей, размещение арендаторов, общественные и сервисные зоны, точки притяжения.</p>
+    <span class="sub-label sub-exists">Что уже есть</span>
+    <ul class="sub-list green">
+      <li>Планировочное решение разработано</li>
+      <li>Торговые категории распределены по зонам</li>
+      <li>Выделены функциональные зоны: фотозона, детский уголок, фудкорт, кофейня</li>
+    </ul>
+    <span class="sub-label sub-needs">Что требует проработки</span>
+    <ul class="sub-list amber">
+      <li>Подтверждение коммерческой логики размещения категорий</li>
+      <li>Приоритетность зон (какие трафикообразующие)</li>
+      <li>Логика распределения арендаторов по привлекательности и потоку</li>
+    </ul>
+  </div></div>
+</div>
+
+<!-- BLOCK 3 -->
+<div class="block-card fade-up open" >
+  <div class="block-header">
+    <div class="block-num" style="background:var(--warning);">03</div>
+    <div class="block-title">Товарная матрица и концепция ассортимента</div>
+    <div class="block-toggle">▼</div>
+  </div>
+  <div class="block-body"><div class="block-divider"></div><div class="block-content">
+    <span class="sub-label sub-exists">Что уже есть</span>
+    <ul class="sub-list green">
+      <li>В дизайн-концепции отражены 15+ товарных направлений</li>
+    </ul>
+    <span class="sub-label sub-needs">Что требует проработки</span>
+    <ul class="sub-list amber">
+      <li>Продуктовая стратегия рынка как единой системы</li>
+      <li>Доли категорий и их приоритетность</li>
+      <li>Обязательные vs. второстепенные категории</li>
+      <li>Недостающие категории</li>
+      <li>Логика отличия от конкурентов по ассортименту</li>
+    </ul>
+  </div></div>
+</div>
+
+<!-- BLOCK 4 -->
+<div class="block-card fade-up open" >
+  <div class="block-header">
+    <div class="block-num" style="background:var(--warning);">04</div>
+    <div class="block-title">Арендаторы и арендная стратегия</div>
+    <div class="block-toggle">▼</div>
+  </div>
+  <div class="block-body"><div class="block-divider"></div><div class="block-content">
+    <span class="sub-label sub-exists">Что уже есть</span>
+    <ul class="sub-list green">
+      <li>Ведётся работа по привлечению арендаторов</li>
+      <li>Используется сайт с оффером под размещение</li>
+      <li>Есть пространственная и категорийная база для набора</li>
+    </ul>
+    <span class="sub-label sub-needs">Что требует проработки</span>
+    <ul class="sub-list amber">
+      <li>Фактический список арендаторов и статусы переговоров</li>
+      <li>Доля занятых / свободных мест</li>
+      <li>Критерии отбора и отсечения</li>
+      <li>Логика якорей</li>
+      <li>Воронка по набору арендаторов</li>
+      <li>Аргументы под разные типы арендаторов</li>
+    </ul>
+  </div></div>
+</div>
+
+<!-- BLOCK 5 -->
+<div class="block-card fade-up open" >
+  <div class="block-header">
+    <div class="block-num" style="background:var(--error);">05</div>
+    <div class="block-title">Бренд и позиционирование</div>
+    <div class="block-toggle">▼</div>
+  </div>
+  <div class="block-body"><div class="block-divider"></div><div class="block-content">
+    <span class="sub-label sub-exists">Что уже есть</span>
+    <ul class="sub-list green">
+      <li>Название, логотип, фирменный знак</li>
+      <li>Фирменные цвета, шрифтовая основа</li>
+      <li>Базовая визуальная айдентика, интегрированная в интерьер</li>
+    </ul>
+    <span class="sub-label sub-needs">Что требует проработки</span>
+    <ul class="sub-list amber">
+      <li>Бренд-платформа</li>
+      <li>Позиционирование в одном ясном тезисе</li>
+      <li>Аргумент, почему именно этот рынок</li>
+      <li>Описание ценности для арендаторов и посетителей</li>
+      <li>Коммуникационные формулировки для наружной, digital- и PR-подачи</li>
+    </ul>
+  </div></div>
+</div>
+
+<!-- BLOCK 6 -->
+<div class="block-card fade-up open" >
+  <div class="block-header">
+    <div class="block-num" style="background:var(--success);">06</div>
+    <div class="block-title">Интерьерная и визуальная реализация</div>
+    <div class="block-toggle">▼</div>
+  </div>
+  <div class="block-body"><div class="block-divider"></div><div class="block-content">
+    <span class="sub-label sub-exists">Что уже есть</span>
+    <ul class="sub-list green">
+      <li>Полная дизайн-концепция интерьера</li>
+      <li>Блок проработан на высоком уровне</li>
+    </ul>
+    <span class="sub-label sub-needs">Что требует уточнения</span>
+    <ul class="sub-list amber">
+      <li>Статус утверждения и реализации концепции</li>
+      <li>Соответствие визуального образа маркетинговому образу проекта</li>
+      <li>Правила использования визуальной системы вне интерьера</li>
+    </ul>
+  </div></div>
+</div>
+
+<!-- BLOCK 7 -->
+<div class="block-card fade-up open" >
+  <div class="block-header">
+    <div class="block-num" style="background:var(--warning);">07</div>
+    <div class="block-title">Сайт и digital-упаковка</div>
+    <div class="block-toggle">▼</div>
+  </div>
+  <div class="block-body"><div class="block-divider"></div><div class="block-content">
+    <span class="sub-label sub-exists">Что уже есть</span>
+    <ul class="sub-list green">
+      <li>Текущая версия посадочной страницы (B2B)</li>
+      <li>Оффер, преимущества, CTA, контакты</li>
+    </ul>
+    <span class="sub-label sub-needs">Что требует проработки</span>
+    <ul class="sub-list amber">
+      <li>Роль сайта в общей системе проекта</li>
+      <li>Разделение на B2B и B2C коммуникацию</li>
+      <li>Актуализация формулировок и цифр</li>
+      <li>Логика воронки через сайт</li>
+      <li>Требования к будущей версии</li>
+    </ul>
+  </div></div>
+</div>
+
+<!-- BLOCK 8 -->
+<div class="block-card fade-up open" >
+  <div class="block-header">
+    <div class="block-num" style="background:var(--error);">08</div>
+    <div class="block-title">Целевая аудитория и сценарии посещения</div>
+    <div class="block-toggle">▼</div>
+  </div>
+  <div class="block-body"><div class="block-divider"></div><div class="block-content">
+    <span class="sub-label sub-exists">Что уже есть</span>
+    <ul class="sub-list green">
+      <li>Общая гипотеза о массовом посетителе (локация, доступность, формат)</li>
+    </ul>
+    <span class="sub-label sub-needs">Что требует проработки</span>
+    <ul class="sub-list amber">
+      <li>Сегментация аудитории</li>
+      <li>Ядро трафика vs. вторичная аудитория</li>
+      <li>Сценарии посещения и частота</li>
+      <li>Триггеры выбора</li>
+      <li>Отличие в восприятии посетителя</li>
+    </ul>
+  </div></div>
+</div>
+
+<!-- BLOCK 9 -->
+<div class="block-card fade-up open" >
+  <div class="block-header">
+    <div class="block-num" style="background:var(--error);">09</div>
+    <div class="block-title">Маркетинговая стратегия запуска</div>
+    <div class="block-toggle">▼</div>
+  </div>
+  <div class="block-body"><div class="block-divider"></div><div class="block-content">
+    <span class="sub-label sub-exists">Что уже есть</span>
+    <ul class="sub-list green">
+      <li>Сформулирован запрос на маркетинговую стратегию</li>
+      <li>Визуальная и пространственная база для упаковки</li>
+      <li>Озвучены амбиции: масштабный запуск, медийность</li>
+    </ul>
+    <span class="sub-label sub-needs">Что требует проработки</span>
+    <ul class="sub-list amber">
+      <li>Стратегия запуска и карта каналов</li>
+      <li>Логика B2B и B2C коммуникации</li>
+      <li>План pre-opening</li>
+      <li>План открытия</li>
+      <li>План первых 90 дней</li>
+      <li>KPI по каждому этапу</li>
+    </ul>
+  </div></div>
+</div>
+
+<!-- BLOCK 10 -->
+<div class="block-card fade-up open" >
+  <div class="block-header">
+    <div class="block-num" style="background:var(--error);">10</div>
+    <div class="block-title">Финансовая модель и бизнес-логика</div>
+    <div class="block-toggle">▼</div>
+  </div>
+  <div class="block-body"><div class="block-divider"></div><div class="block-content">
+    <span class="sub-label sub-exists">Что уже есть</span>
+    <p class="sub-text" style="color:var(--error);font-weight:500;">Полноценный финансовый / бизнес-план отсутствует.</p>
+    <span class="sub-label sub-needs">Что требует проработки</span>
+    <ul class="sub-list amber">
+      <li>Модель доходов и план по выручке</li>
+      <li>Ориентиры по трафику и среднему чеку</li>
+      <li>Финансовая цель проекта</li>
+      <li>Допустимый маркетинговый бюджет</li>
+      <li>Ориентиры по окупаемости</li>
+      <li>Базовая unit-логика</li>
+    </ul>
+    <div class="alert alert-red">
+      <span style="font-size:18px;">⚠️</span>
+      <div>Без этого блока невозможно рассчитать ни маркетинговый бюджет, ни целевую проходимость, ни KPI запуска. Любая стратегия без финансовой рамки — набор гипотез без точки опоры.</div>
+    </div>
+  </div></div>
+</div>
+
+<!-- BLOCK 11 -->
+<div class="block-card fade-up open" >
+  <div class="block-header">
+    <div class="block-num" style="background:var(--error);">11</div>
+    <div class="block-title">Конкуренты и рыночный контекст</div>
+    <div class="block-toggle">▼</div>
+  </div>
+  <div class="block-body"><div class="block-divider"></div><div class="block-content">
+    <span class="sub-label sub-exists">Что уже есть</span>
+    <ul class="sub-list green">
+      <li>Ориентация на действующие рынки (Даниловский, Драгомиловский, Фуд Сити)</li>
+      <li>Обсуждалось внешнее предложение по геомаркетингу</li>
+    </ul>
+    <span class="sub-label sub-needs">Что требует проработки</span>
+    <ul class="sub-list amber">
+      <li>Карта конкурентов (прямых и косвенных)</li>
+      <li>Сравнительный анализ</li>
+      <li>Реальные конкуренты: рынки, сетевые магазины, доставка</li>
+      <li>Локальный контекст</li>
+      <li>Доказательная база по трафику и спросу</li>
+    </ul>
+  </div></div>
+</div>
+
+<!-- BLOCK 12 -->
+<div class="block-card fade-up open" >
+  <div class="block-header">
+    <div class="block-num" style="background:var(--warning);">12</div>
+    <div class="block-title">Рабочая логика проекта и принятие решений</div>
+    <div class="block-toggle">▼</div>
+  </div>
+  <div class="block-body"><div class="block-divider"></div><div class="block-content">
+    <span class="sub-label sub-exists">Что уже есть</span>
+    <ul class="sub-list green">
+      <li>Инвестор — конечный ЛПР</li>
+      <li>Наталья — представитель проекта и рабочий контакт</li>
+    </ul>
+    <span class="sub-label sub-needs">Что требует уточнения</span>
+    <ul class="sub-list amber">
+      <li>Кто принимает промежуточные решения</li>
+      <li>Кто согласует контент, визуал, маркетинг</li>
+      <li>Кто отвечает за рабочий контур внутри проекта</li>
+      <li>Кто собирает и подтверждает данные со стороны заказчика</li>
+    </ul>
+  </div></div>
+</div>
+
+  </div>
+</section>
+
+<!-- SUMMARY -->
+<section id="summary" class="section" style="background:#fff;padding-top:56px;padding-bottom:56px;">
+  <div class="container">
+    <div class="section-num fade-up">Общий вывод</div>
+    <div class="section-title fade-up">Где находятся основные дефициты</div>
+    <div class="section-subtitle fade-up">Проект силён в пространстве и визуале. Дыры — в стратегии, финансах и маркетинге.</div>
+
+    <div class="fade-up" style="background:#fff;border:1px solid var(--n200);border-radius:var(--r-2xl);padding:32px;box-shadow:var(--shadow-card);">
+      <div class="progress-wrap">
+        <div class="progress-label"><span>🟢 Пространство и интерьер</span><span>90%</span></div>
+        <div class="progress-bar"><div class="progress-fill fill-green" style="width:90%;"></div></div>
+      </div>
+      <div class="progress-wrap">
+        <div class="progress-label"><span>🟢 Визуальная идентификация</span><span>70%</span></div>
+        <div class="progress-bar"><div class="progress-fill fill-green" style="width:70%;"></div></div>
+      </div>
+      <div class="progress-wrap">
+        <div class="progress-label"><span>🟡 Товарная структура</span><span>60%</span></div>
+        <div class="progress-bar"><div class="progress-fill fill-amber" style="width:60%;"></div></div>
+      </div>
+      <div class="progress-wrap">
+        <div class="progress-label"><span>🟡 Арендная стратегия</span><span>40%</span></div>
+        <div class="progress-bar"><div class="progress-fill fill-amber" style="width:40%;"></div></div>
+      </div>
+      <div class="progress-wrap">
+        <div class="progress-label"><span>🔴 Digital-присутствие</span><span>25%</span></div>
+        <div class="progress-bar"><div class="progress-fill fill-red" style="width:25%;"></div></div>
+      </div>
+      <div class="progress-wrap">
+        <div class="progress-label"><span>🔴 Позиционирование и бренд-платформа</span><span>10%</span></div>
+        <div class="progress-bar"><div class="progress-fill fill-red" style="width:10%;"></div></div>
+      </div>
+      <div class="progress-wrap">
+        <div class="progress-label"><span>🔴 Целевая аудитория</span><span>5%</span></div>
+        <div class="progress-bar"><div class="progress-fill fill-red" style="width:5%;"></div></div>
+      </div>
+      <div class="progress-wrap">
+        <div class="progress-label"><span>🔴 Маркетинговая стратегия</span><span>0%</span></div>
+        <div class="progress-bar"><div class="progress-fill fill-red" style="width:0%;"></div></div>
+      </div>
+      <div class="progress-wrap">
+        <div class="progress-label"><span>🔴 Финансовая модель</span><span>0%</span></div>
+        <div class="progress-bar"><div class="progress-fill fill-red" style="width:0%;"></div></div>
+      </div>
+    </div>
+
+    <div class="fade-up alert alert-info" style="margin-top:24px;">
+      <span style="font-size:20px;">💡</span>
+      <div>
+        <div style="font-weight:600;margin-bottom:4px;">Ключевой вывод</div>
+        <div>Основные дефициты находятся не в дизайне, а в стратегическом, финансовом, маркетинговом и коммуникационном слоях. Именно они определяют не то, как проект выглядит, а то, <strong>как он будет работать, заполняться, продвигаться и восприниматься рынком</strong>.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- QUESTIONS -->
+<section id="questions" class="section" style="padding-top:56px;padding-bottom:56px;">
+  <div class="container">
+    <div class="section-num fade-up">Вопросы для следующего этапа</div>
+    <div class="section-title fade-up">17 вопросов, разделённых по приоритету</div>
+    <div class="section-subtitle fade-up">Ответы позволят перейти к предметной работе</div>
+
+    <!-- CRITICAL -->
+    <div class="fade-up" style="margin-bottom:40px;">
+      <div style="display:inline-flex;align-items:center;gap:8px;background:var(--brand);color:#fff;padding:8px 18px;border-radius:var(--r-full);font-size:13px;font-weight:600;text-transform:uppercase;letter-spacing:.04em;margin-bottom:20px;">
+        🔑 Критичные — без них нельзя двигаться дальше
+      </div>
+
+      <div class="q-group-title">По объекту и параметрам</div>
+      <div class="q-card"><div class="q-num q-num-critical">1</div><div class="q-text">Какая площадь и какое количество мест являются финально актуальными? <span style="color:var(--n400);font-size:13px;">(В разных источниках — 2 350 / 3 000 м² и 55 / 155 мест.)</span></div></div>
+      <div class="q-card"><div class="q-num q-num-critical">2</div><div class="q-text">На какой стадии реализации находится объект сейчас?</div></div>
+
+      <div class="q-group-title">По арендаторам</div>
+      <div class="q-card"><div class="q-num q-num-critical">3</div><div class="q-text">Сколько мест уже занято / подтверждено / в переговорах?</div></div>
+      <div class="q-card"><div class="q-num q-num-critical">4</div><div class="q-text">Есть ли якорные арендаторы?</div></div>
+
+      <div class="q-group-title">По экономике и целям</div>
+      <div class="q-card"><div class="q-num q-num-critical">5</div><div class="q-text">Есть ли хотя бы черновой финансовый расчёт проекта?</div></div>
+      <div class="q-card"><div class="q-num q-num-critical">6</div><div class="q-text">Какие целевые показатели по трафику, выручке и заполняемости считаются ориентиром?</div></div>
+      <div class="q-card"><div class="q-num q-num-critical">7</div><div class="q-text">Какой маркетинговый бюджет рассматривается как допустимый?</div></div>
+
+      <div class="q-group-title">По управлению</div>
+      <div class="q-card"><div class="q-num q-num-critical">8</div><div class="q-text">Кто принимает промежуточные решения и согласует материалы?</div></div>
+    </div>
+
+    <!-- IMPORTANT -->
+    <div class="fade-up">
+      <div style="display:inline-flex;align-items:center;gap:8px;background:var(--n700);color:#fff;padding:8px 18px;border-radius:var(--r-full);font-size:13px;font-weight:600;text-transform:uppercase;letter-spacing:.04em;margin-bottom:20px;">
+        📋 Важные — усилят картину и точность решений
+      </div>
+
+      <div class="q-group-title">По концепции и ассортименту</div>
+      <div class="q-card"><div class="q-num q-num-important">9</div><div class="q-text">Какие категории являются стратегически приоритетными?</div></div>
+      <div class="q-card"><div class="q-num q-num-important">10</div><div class="q-text">Какие категории нежелательны или вторичны?</div></div>
+
+      <div class="q-group-title">По бренду и коммуникации</div>
+      <div class="q-card"><div class="q-num q-num-important">11</div><div class="q-text">Есть ли зафиксированное позиционирование рынка в одном-двух тезисах?</div></div>
+      <div class="q-card"><div class="q-num q-num-important">12</div><div class="q-text">Что рынок должен обещать арендаторам?</div></div>
+      <div class="q-card"><div class="q-num q-num-important">13</div><div class="q-text">Что рынок должен обещать конечным посетителям?</div></div>
+
+      <div class="q-group-title">По сайту и digital</div>
+      <div class="q-card"><div class="q-num q-num-important">14</div><div class="q-text">Рассматривается ли отдельный сайт для конечных посетителей (B2C), или на текущем этапе нужен только арендаторский?</div></div>
+
+      <div class="q-group-title">По маркетингу</div>
+      <div class="q-card"><div class="q-num q-num-important">15</div><div class="q-text">Нужна ли стратегия только на привлечение посетителей или также на донабор арендаторов?</div></div>
+      <div class="q-card"><div class="q-num q-num-important">16</div><div class="q-text">Какие показатели инвестор считает главным результатом маркетинга?</div></div>
+
+      <div class="q-group-title">По конкурентам</div>
+      <div class="q-card"><div class="q-num q-num-important">17</div><div class="q-text">Какой рынок у инвестора уже работает? Какие показатели проходимости?</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- NEXT STEP -->
+<section class="section" style="background:#fff;padding-top:48px;padding-bottom:48px;">
+  <div class="container">
+    <div class="fade-up" style="text-align:center;max-width:640px;margin:0 auto;">
+      <div class="section-num" style="text-align:center;">Следующий шаг</div>
+      <div class="section-title" style="text-align:center;margin-bottom:16px;">Документ 3 из 3</div>
+      <p style="font-size:16px;color:var(--n500);line-height:1.6;">
+        В следующем документе — в каких блоках мы можем участвовать, в каком формате и почему это имеет смысл делать именно через нас.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer style="background:var(--n900);padding:48px 0;">
+  <div class="container">
+    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:24px;">
+      <div>
+        <div style="font-size:20px;font-weight:700;color:#fff;">BrandOS <span style="color:var(--brand);">·</span> Рынок «ПИКНИК»</div>
+        <div style="font-size:14px;color:var(--n500);">brand-os.ru · Апрель 2026</div>
+      </div>
+    </div>
+    <div style="height:1px;background:rgba(255,255,255,.08);margin:28px 0;"></div>
+    <div style="font-size:13px;color:var(--n600);">© 2026 BrandOS · brand-os.ru · Документ подготовлен в рамках предварительной проработки проекта · Конфиденциально</div>
+  </div>
+</footer>
+
+<script>
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach((e, i) => {
+    if (e.isIntersecting) {
+      setTimeout(() => e.target.classList.add('visible'), i * 80);
+    }
+  });
+}, { threshold: 0.1 });
+document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
+
+const sections = document.querySelectorAll('section[id]');
+const navLinks = document.querySelectorAll('nav a[href^="#"]');
+window.addEventListener('scroll', () => {
+  let current = '';
+  sections.forEach(s => {
+    if (window.scrollY >= s.offsetTop - 100) current = s.id;
+  });
+  navLinks.forEach(a => {
+    a.style.color = a.getAttribute('href') === '#' + current ? '#0ea5e9' : '';
+  });
+});
+</script>
+</body>
+</html>

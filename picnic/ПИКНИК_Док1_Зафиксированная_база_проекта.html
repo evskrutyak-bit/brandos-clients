@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Рынок «ПИКНИК» — Зафиксированная база проекта | BrandOS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --brand: #0ea5e9;
+  --brand-dark: #0284c7;
+  --brand-light: #7dd3fc;
+  --brand-bg: #e0f2fe;
+  --black: #0f172a;
+  --n50: #f8fafc; --n100: #f1f5f9; --n200: #e2e8f0;
+  --n300: #cbd5e1; --n400: #94a3b8; --n500: #64748b;
+  --n600: #475569; --n700: #334155; --n800: #1e293b; --n900: #0f172a;
+  --success: #10b981; --warning: #f59e0b; --error: #ef4444; --info: #3b82f6;
+  --font: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  --shadow-card: 0 1px 3px 0 rgba(0,0,0,.05), 0 1px 2px -1px rgba(0,0,0,.05);
+  --shadow-hover: 0 10px 25px -5px rgba(0,0,0,.08), 0 8px 10px -6px rgba(0,0,0,.04);
+  --shadow-btn: 0 4px 14px 0 rgba(14,165,233,.35);
+  --shadow-glow: 0 0 40px rgba(14,165,233,.15);
+  --r-sm:4px; --r-md:6px; --r-lg:8px; --r-xl:12px; --r-2xl:16px; --r-3xl:24px; --r-full:9999px;
+  /* Picnic accent */
+  --picnic-green: #2d8a4e;
+  --picnic-red: #c0392b;
+}
+body { font-family: var(--font); font-size: 16px; line-height: 1.6; color: var(--n600); background: var(--n100); }
+@keyframes shimmer { 0%{transform:translateX(-100%)} 100%{transform:translateX(200%)} }
+@keyframes fade-up { 0%{opacity:0;transform:translateY(20px)} 100%{opacity:1;transform:translateY(0)} }
+@keyframes pulse-glow { 0%,100%{box-shadow:0 0 20px rgba(14,165,233,.3)} 50%{box-shadow:0 0 40px rgba(14,165,233,.5)} }
+.fade-up { opacity:0; transform:translateY(20px); transition:opacity .6s ease-out, transform .6s ease-out; }
+.fade-up.visible { opacity:1; transform:translateY(0); }
+.container { max-width: 1100px; margin: 0 auto; padding: 0 24px; }
+.section { padding: 64px 0; }
+
+/* Section titles */
+.section-title { font-size: 28px; font-weight: 700; color: var(--n900); margin-bottom: 8px; line-height: 1.25; }
+.section-subtitle { font-size: 16px; color: var(--n500); margin-bottom: 40px; }
+.section-num { font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: .05em; color: var(--brand); margin-bottom: 8px; }
+
+/* Cards */
+.card { background: #fff; border-radius: var(--r-2xl); border: 1px solid var(--n200); padding: 28px; box-shadow: var(--shadow-card); transition: all .3s ease; margin-bottom: 16px; }
+.card:hover { transform: translateY(-3px); box-shadow: var(--shadow-hover); }
+.card-title { font-size: 17px; font-weight: 600; color: var(--n900); margin-bottom: 8px; }
+.card-text { font-size: 15px; line-height: 1.65; color: var(--n600); }
+
+/* Icon circle */
+.icon-circle { width: 42px; height: 42px; border-radius: var(--r-xl); display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
+.icon-blue { background: var(--brand-bg); color: var(--brand); }
+.icon-green { background: #d1fae5; color: #065f46; }
+.icon-amber { background: #fef3c7; color: #92400e; }
+.icon-red { background: #fee2e2; color: #991b1b; }
+
+/* Badge */
+.badge { display: inline-flex; align-items: center; padding: 4px 12px; border-radius: var(--r-full); font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: .04em; }
+.badge-green { background: #d1fae5; color: #065f46; }
+.badge-amber { background: #fef3c7; color: #92400e; }
+.badge-blue { background: var(--brand-bg); color: #0369a1; }
+
+/* Grid */
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+
+/* Category tags */
+.cat-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
+.cat-tag { background: var(--n50); border: 1px solid var(--n200); border-radius: var(--r-full); padding: 6px 14px; font-size: 13px; font-weight: 500; color: var(--n700); transition: all .2s; }
+.cat-tag:hover { background: var(--brand-bg); border-color: var(--brand-light); color: var(--brand-dark); }
+
+/* Progress */
+.progress-wrap { margin: 12px 0; }
+.progress-label { display: flex; justify-content: space-between; margin-bottom: 6px; }
+.progress-label span:first-child { font-size: 14px; font-weight: 500; color: var(--n700); }
+.progress-label span:last-child { font-size: 14px; font-weight: 700; color: var(--brand); }
+.progress-bar { height: 8px; background: var(--n200); border-radius: var(--r-full); overflow: hidden; }
+.progress-fill { height: 100%; border-radius: var(--r-full); background: linear-gradient(90deg, var(--brand) 0%, var(--brand-dark) 100%); transition: width 1.2s ease; }
+
+/* Alert */
+.alert { display: flex; gap: 14px; border-radius: var(--r-xl); padding: 18px 20px; margin: 20px 0; font-size: 14px; }
+.alert-info { background: #eff6ff; border: 1px solid #bfdbfe; border-left: 4px solid var(--info); color: #1e40af; }
+.alert-warning { background: #fffbeb; border: 1px solid #fde68a; border-left: 4px solid var(--warning); color: #92400e; }
+
+@media (max-width: 768px) {
+  .grid-2, .grid-3 { grid-template-columns: 1fr; }
+  .nav-links { display: none !important; }
+  .hero-title { font-size: 28px !important; }
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav style="position:fixed;top:0;left:0;right:0;z-index:300;background:rgba(255,255,255,.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--n200);height:64px;">
+  <div class="container" style="height:100%;display:flex;align-items:center;justify-content:space-between;">
+    <div style="font-size:18px;font-weight:700;color:var(--n900);">
+      BrandOS <span style="color:var(--brand);">·</span> <span style="font-weight:500;font-size:15px;color:var(--n600);">brand-os.ru</span>
+    </div>
+    <div class="nav-links" style="display:flex;gap:20px;">
+      <a href="#overview" style="font-size:13px;font-weight:500;color:var(--n500);text-decoration:none;transition:color .2s;">Обзор</a>
+      <a href="#space" style="font-size:13px;font-weight:500;color:var(--n500);text-decoration:none;transition:color .2s;">Пространство</a>
+      <a href="#brand" style="font-size:13px;font-weight:500;color:var(--n500);text-decoration:none;transition:color .2s;">Бренд</a>
+      <a href="#digital" style="font-size:13px;font-weight:500;color:var(--n500);text-decoration:none;transition:color .2s;">Digital</a>
+      <a href="#status" style="font-size:13px;font-weight:500;color:var(--n500);text-decoration:none;transition:color .2s;">Статус</a>
+    </div>
+    <div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--brand);background:var(--brand-bg);padding:6px 14px;border-radius:var(--r-full);">
+      Документ 1 из 3
+    </div>
+  </div>
+</nav>
+<div style="height:64px;"></div>
+
+<!-- HERO -->
+<header style="background:linear-gradient(135deg, var(--n900) 0%, #1a3348 50%, #0f2a1e 100%);padding:72px 0 64px;position:relative;overflow:hidden;">
+  <div style="position:absolute;top:-120px;right:-80px;width:450px;height:450px;border-radius:50%;background:radial-gradient(circle, rgba(45,138,78,.2) 0%, transparent 70%);pointer-events:none;"></div>
+  <div style="position:absolute;bottom:-80px;left:-60px;width:350px;height:350px;border-radius:50%;background:radial-gradient(circle, rgba(14,165,233,.12) 0%, transparent 70%);pointer-events:none;"></div>
+  <div class="container" style="position:relative;z-index:1;">
+    <div style="display:inline-flex;align-items:center;gap:8px;background:rgba(14,165,233,.12);border:1px solid rgba(14,165,233,.25);color:var(--brand-light);padding:7px 16px;border-radius:var(--r-full);font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;margin-bottom:24px;">
+      <span style="width:6px;height:6px;border-radius:50%;background:var(--brand);animation:pulse-glow 2s infinite;"></span>
+      Фиксация текущего состояния
+    </div>
+    <h1 class="hero-title" style="font-size:40px;line-height:1.15;letter-spacing:-.02em;font-weight:700;color:#fff;max-width:720px;margin-bottom:18px;">
+      Зафиксированная база проекта<br>
+      <span style="color:var(--brand-light);">Рынок «ПИКНИК»</span>
+    </h1>
+    <p style="font-size:17px;line-height:1.6;color:var(--n400);max-width:600px;margin-bottom:36px;">
+      Текущие решения, сформированные материалы и уровень готовности проекта на момент начала стратегической проработки.
+    </p>
+    <div style="display:flex;gap:28px;flex-wrap:wrap;">
+      <div style="color:var(--n400);font-size:13px;"><span style="color:var(--brand);font-weight:600;">Проект:</span> Рынок «ПИКНИК»</div>
+      <div style="color:var(--n400);font-size:13px;"><span style="color:var(--brand);font-weight:600;">Локация:</span> Одинцово, Можайское шоссе</div>
+      <div style="color:var(--n400);font-size:13px;"><span style="color:var(--brand);font-weight:600;">Дата:</span> Апрель 2026</div>
+      <div style="color:var(--n400);font-size:13px;"><span style="color:var(--brand);font-weight:600;">Подготовил:</span> BrandOS</div>
+    </div>
+  </div>
+</header>
+
+<!-- SECTION: KEY METRICS -->
+<section id="overview" class="section" style="padding-bottom:40px;">
+  <div class="container">
+    <div class="section-num fade-up">01 — Обзор проекта</div>
+    <div class="section-title fade-up">Ключевые параметры</div>
+    <div class="section-subtitle fade-up">На основании полученных материалов и предварительной коммуникации</div>
+
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin-bottom:32px;">
+      <div class="fade-up card" style="text-align:center;padding:24px 16px;">
+        <div style="font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--n500);margin-bottom:8px;">Торговый зал</div>
+        <div style="font-size:34px;font-weight:700;color:var(--n900);line-height:1;">2 350</div>
+        <div style="font-size:13px;color:var(--n400);margin-top:4px;">м²</div>
+      </div>
+      <div class="fade-up card" style="text-align:center;padding:24px 16px;">
+        <div style="font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--n500);margin-bottom:8px;">Арендных мест</div>
+        <div style="font-size:34px;font-weight:700;color:var(--n900);line-height:1;">55</div>
+        <div style="font-size:13px;color:var(--n400);margin-top:4px;">торговых точек</div>
+      </div>
+      <div class="fade-up card" style="text-align:center;padding:24px 16px;">
+        <div style="font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--n500);margin-bottom:8px;">Фудкорт</div>
+        <div style="font-size:34px;font-weight:700;color:var(--n900);line-height:1;">5</div>
+        <div style="font-size:13px;color:var(--n400);margin-top:4px;">точек питания</div>
+      </div>
+      <div class="fade-up card" style="text-align:center;padding:24px 16px;">
+        <div style="font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--n500);margin-bottom:8px;">До МКАД</div>
+        <div style="font-size:34px;font-weight:700;color:var(--n900);line-height:1;">1,5</div>
+        <div style="font-size:13px;color:var(--n400);margin-top:4px;">км по Можайскому шоссе</div>
+      </div>
+    </div>
+
+    <!-- Project description -->
+    <div class="fade-up card" style="padding:32px;">
+      <div style="display:flex;align-items:flex-start;gap:16px;">
+        <div class="icon-circle icon-blue">📍</div>
+        <div>
+          <div class="card-title">О проекте</div>
+          <p class="card-text">
+            Рынок «ПИКНИК» — новый продовольственный рынок натуральных фермерских продуктов, размещаемый в одноимённом торгово-выставочном центре в пгт. Новоивановское (г. Одинцово, ул. Западная, д. 4). Расположен на Можайском шоссе в 1,5 км от МКАД. Развитая сеть общественного транспорта и собственная парковка обеспечивают доступность для массового посетителя. Рядом — музей ретроавтомобилей, что учтено в стилистике бренда.
+          </p>
+          <p class="card-text" style="margin-top:12px;">
+            Проект рассматривается как объект высокого уровня с амбициозной целью — создать современное, удобное, узнаваемое и конкурентоспособное торговое пространство. Планируемое открытие — <strong>июль–август 2026</strong>.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SECTION: SPACE & INTERIOR -->
+<section id="space" class="section" style="background:#fff;padding-top:64px;padding-bottom:64px;">
+  <div class="container">
+    <div class="section-num fade-up">02 — Пространство и интерьер</div>
+    <div class="section-title fade-up">Уже сформированная база</div>
+    <div class="section-subtitle fade-up">Дизайн-концепция, планировка, освещение, материалы и навигация</div>
+
+    <div class="grid-2">
+      <!-- Дизайн-концепция -->
+      <div class="fade-up card" style="padding:28px;">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px;">
+          <div class="icon-circle icon-green">✓</div>
+          <div class="card-title" style="margin-bottom:0;">Дизайн-концепция интерьера</div>
+        </div>
+        <p class="card-text">Подготовлена полная дизайн-концепция: характеристики объекта, планировочные решения, визуализации интерьера. Стилистика — лофт с конструктивными элементами: тёмный металл, серый бетон, текстура дуба, открытый потолок.</p>
+        <div style="margin-top:12px;"><span class="badge badge-green">✓ Готово</span></div>
+      </div>
+
+      <!-- Планировка -->
+      <div class="fade-up card" style="padding:28px;">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px;">
+          <div class="icon-circle icon-green">✓</div>
+          <div class="card-title" style="margin-bottom:0;">Планировочная структура</div>
+        </div>
+        <p class="card-text">Определены все основные зоны: торговые места, фудкорт, кофейня, фотозона, детский уголок, сервисные зоны для посетителей и арендаторов. Заложена внутренняя логика размещения товарных направлений.</p>
+        <div style="margin-top:12px;"><span class="badge badge-green">✓ Готово</span></div>
+      </div>
+
+      <!-- Освещение -->
+      <div class="fade-up card" style="padding:28px;">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px;">
+          <div class="icon-circle icon-green">✓</div>
+          <div class="card-title" style="margin-bottom:0;">Концепция освещения</div>
+        </div>
+        <p class="card-text">Комбинированная система: общее освещение (линейные LED-светильники 4000K) и локальное акцентное освещение торговых зон (споты на шинопроводе с соответствующим цветовым спектром для подсветки продуктов).</p>
+        <div style="margin-top:12px;"><span class="badge badge-green">✓ Готово</span></div>
+      </div>
+
+      <!-- Навигация -->
+      <div class="fade-up card" style="padding:28px;">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px;">
+          <div class="icon-circle icon-green">✓</div>
+          <div class="card-title" style="margin-bottom:0;">Навигация и декор</div>
+        </div>
+        <p class="card-text">Проработаны варианты фризов с вывесками, навесов, декоративных конструкций. Несколько вариантов исполнения — от фанерных реек до композита с инкрустацией и LED-подсветкой. Световые буквы 180–250 мм.</p>
+        <div style="margin-top:12px;"><span class="badge badge-green">✓ Готово</span></div>
+      </div>
+    </div>
+
+    <!-- Materials -->
+    <div class="fade-up card" style="padding:28px;margin-top:16px;">
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px;">
+        <div class="icon-circle icon-green">✓</div>
+        <div class="card-title" style="margin-bottom:0;">Материалы отделки</div>
+      </div>
+      <p class="card-text">Зафиксирована палитра: полы — керамогранит светло-серый с тёмными вставками; потолок — покраска, графит RAL 7024; стены и колонны — моющаяся краска F487 (Тиккурила); оборудование — антрацит RAL 7016; деревянные детали — цвет «дуб»; цветная плитка в торговых зонах. Колонны до 1,5 м — керамогранит в цветах пола.</p>
+      <div style="margin-top:12px;"><span class="badge badge-green">✓ Готово</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- SECTION: PRODUCT ZONES -->
+<section class="section" style="padding-top:56px;padding-bottom:56px;">
+  <div class="container">
+    <div class="section-num fade-up">03 — Товарная структура</div>
+    <div class="section-title fade-up">Предусмотренные категории и зоны</div>
+    <div class="section-subtitle fade-up">Распределение торговых направлений внутри пространства</div>
+
+    <div class="fade-up card" style="padding:32px;">
+      <p class="card-text" style="margin-bottom:16px;">В рамках дизайн-концепции определён полный набор продуктовых и функциональных зон рынка:</p>
+      <div class="cat-tags">
+        <span class="cat-tag">🥩 Мясо</span>
+        <span class="cat-tag">🍖 Мясная гастрономия</span>
+        <span class="cat-tag">🧀 Молочные продукты / сыры</span>
+        <span class="cat-tag">🐟 Рыба и морепродукты</span>
+        <span class="cat-tag">🍗 Птица</span>
+        <span class="cat-tag">🫘 Бакалея</span>
+        <span class="cat-tag">🍞 Пекарня</span>
+        <span class="cat-tag">🥚 Яйцо</span>
+        <span class="cat-tag">🍲 Кулинария</span>
+        <span class="cat-tag">🍎 Фрукты и овощи</span>
+        <span class="cat-tag">🍬 Конфеты</span>
+        <span class="cat-tag">🥜 Сухофрукты / орехи / мёд</span>
+        <span class="cat-tag">🌶 Национальные продукты</span>
+        <span class="cat-tag">☕ Чай / кофе / кофейня</span>
+        <span class="cat-tag">🍔 Фудкорт (5 точек)</span>
+        <span class="cat-tag">📸 Фотозона</span>
+        <span class="cat-tag">👶 Детский уголок</span>
+      </div>
+      <p class="card-text" style="margin-top:20px;color:var(--n500);font-size:14px;">Базовая товарно-зональная логика сформирована. Дальнейшая стратегическая проработка — в отдельном документе.</p>
+    </div>
+  </div>
+</section>
+
+<!-- SECTION: BRAND -->
+<section id="brand" class="section" style="background:#fff;padding-top:56px;padding-bottom:56px;">
+  <div class="container">
+    <div class="section-num fade-up">04 — Визуальная идентификация</div>
+    <div class="section-title fade-up">Брендовая и визуальная база</div>
+    <div class="section-subtitle fade-up">Логотип, цвета, шрифты и система айдентики</div>
+
+    <div class="grid-2">
+      <div class="fade-up card" style="padding:28px;">
+        <div class="card-title">Логотип и фирменный знак</div>
+        <p class="card-text">Разработан логотип и фирменный блок. Центр композиции — буква П в овале с продуктовой стилизацией. Стилизация под автомобильную эмблему — осознанная привязка к соседнему музею ретроавтомобилей, что создаёт уникальную идентичность и местный контекст.</p>
+        <div style="margin-top:12px;"><span class="badge badge-green">✓ Есть</span></div>
+      </div>
+
+      <div class="fade-up card" style="padding:28px;">
+        <div class="card-title">Цветовая система</div>
+        <p class="card-text" style="margin-bottom:14px;">Зафиксированы основные фирменные цвета бренда:</p>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;">
+          <div style="display:flex;align-items:center;gap:8px;">
+            <div style="width:28px;height:28px;border-radius:6px;background:#c0392b;border:1px solid rgba(0,0,0,.1);"></div>
+            <span style="font-size:13px;font-weight:500;color:var(--n700);">Красный</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px;">
+            <div style="width:28px;height:28px;border-radius:6px;background:#2d8a4e;border:1px solid rgba(0,0,0,.1);"></div>
+            <span style="font-size:13px;font-weight:500;color:var(--n700);">Зелёный</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px;">
+            <div style="width:28px;height:28px;border-radius:6px;background:#1a1a1a;border:1px solid rgba(0,0,0,.1);"></div>
+            <span style="font-size:13px;font-weight:500;color:var(--n700);">Чёрный</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px;">
+            <div style="width:28px;height:28px;border-radius:6px;background:#f1c40f;border:1px solid rgba(0,0,0,.1);"></div>
+            <span style="font-size:13px;font-weight:500;color:var(--n700);">Жёлтый (доп.)</span>
+          </div>
+        </div>
+        <div style="margin-top:14px;"><span class="badge badge-green">✓ Есть</span></div>
+      </div>
+
+      <div class="fade-up card" style="padding:28px;">
+        <div class="card-title">Типографика</div>
+        <p class="card-text">Основной шрифт бренда — a_BosaNovaCps. Шрифт для заголовков — Roboto. Фирменные фоны — белый и чёрный.</p>
+        <div style="margin-top:12px;"><span class="badge badge-green">✓ Есть</span></div>
+      </div>
+
+      <div class="fade-up card" style="padding:28px;">
+        <div class="card-title">Интеграция в пространство</div>
+        <p class="card-text">Визуальная система уже интегрирована в интерьерную концепцию — навигацию, вывески, цветовые акценты торговых зон. Это не просто логотип, а работающая связка бренда и пространства.</p>
+        <div style="margin-top:12px;"><span class="badge badge-green">✓ Есть</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SECTION: DIGITAL -->
+<section id="digital" class="section" style="padding-top:56px;padding-bottom:56px;">
+  <div class="container">
+    <div class="section-num fade-up">05 — Digital-присутствие</div>
+    <div class="section-title fade-up">Сайт и цифровая точка входа</div>
+    <div class="section-subtitle fade-up">Текущая версия посадочной страницы</div>
+
+    <div class="fade-up card" style="padding:32px;">
+      <div style="display:flex;align-items:flex-start;gap:16px;">
+        <div class="icon-circle icon-blue">🌐</div>
+        <div>
+          <div class="card-title">Сайт / посадочная страница</div>
+          <p class="card-text">
+            На текущем этапе у проекта существует сайт, используемый для работы с потенциальными арендаторами. Страница содержит визуальную подачу проекта, оффер для B2B-аудитории, ключевые преимущества объекта, блок с призывом к действию и контактную информацию.
+          </p>
+          <p class="card-text" style="margin-top:10px;">
+            Цифровая точка входа создана — её дальнейшая роль, наполнение и маркетинговая функция для конечных посетителей (B2C) требуют отдельной системной проработки.
+          </p>
+          <div style="margin-top:14px;display:flex;gap:8px;">
+            <span class="badge badge-green">✓ B2B-лендинг есть</span>
+            <span class="badge badge-amber">⚠ B2C-направление не охвачено</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SECTION: ORG -->
+<section class="section" style="background:#fff;padding-top:56px;padding-bottom:56px;">
+  <div class="container">
+    <div class="section-num fade-up">06 — Организационная готовность</div>
+    <div class="section-title fade-up">Текущая рабочая активность по проекту</div>
+    <div class="section-subtitle fade-up">Команда, арендаторы, распределение ролей</div>
+
+    <div class="grid-2">
+      <div class="fade-up card" style="padding:28px;">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px;">
+          <div class="icon-circle icon-blue">👥</div>
+          <div class="card-title" style="margin-bottom:0;">Работа с арендаторами</div>
+        </div>
+        <p class="card-text">Набор арендаторов уже ведётся. Команда проекта выезжает на действующие рынки (Даниловский, Драгомиловский, Фуд Сити), изучает ассортимент, витрины и подачу, проводит переговоры и приглашает на площадку.</p>
+      </div>
+
+      <div class="fade-up card" style="padding:28px;">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px;">
+          <div class="icon-circle icon-blue">⚙️</div>
+          <div class="card-title" style="margin-bottom:0;">Распределение ролей</div>
+        </div>
+        <p class="card-text">Проект имеет рабочую структуру: отдельный контур по интерьеру и дизайну, контур по взаимодействию с арендаторами и пищевой безопасности, управленческий и координационный контур со стороны инвестора.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SECTION: STATUS SUMMARY -->
+<section id="status" class="section" style="padding-top:56px;padding-bottom:40px;">
+  <div class="container">
+    <div class="section-num fade-up">07 — Итоговая картина</div>
+    <div class="section-title fade-up">Уровень готовности по слоям</div>
+    <div class="section-subtitle fade-up">Что уже собрано и где находятся основные дефициты</div>
+
+    <!-- Progress bars -->
+    <div class="fade-up card" style="padding:32px;">
+      <div class="progress-wrap">
+        <div class="progress-label"><span>Пространство и интерьер</span><span>90%</span></div>
+        <div class="progress-bar"><div class="progress-fill" style="width:90%;"></div></div>
+      </div>
+      <div class="progress-wrap">
+        <div class="progress-label"><span>Визуальная идентификация</span><span>70%</span></div>
+        <div class="progress-bar"><div class="progress-fill" style="width:70%;"></div></div>
+      </div>
+      <div class="progress-wrap">
+        <div class="progress-label"><span>Товарная структура</span><span>60%</span></div>
+        <div class="progress-bar"><div class="progress-fill" style="width:60%;"></div></div>
+      </div>
+      <div class="progress-wrap">
+        <div class="progress-label"><span>Digital-присутствие</span><span>30%</span></div>
+        <div class="progress-bar"><div class="progress-fill" style="width:30%;"></div></div>
+      </div>
+      <div class="progress-wrap">
+        <div class="progress-label"><span>Позиционирование и бренд-платформа</span><span>10%</span></div>
+        <div class="progress-bar"><div class="progress-fill" style="width:10%;"></div></div>
+      </div>
+      <div class="progress-wrap">
+        <div class="progress-label"><span>Маркетинговая стратегия</span><span>0%</span></div>
+        <div class="progress-bar"><div class="progress-fill" style="width:0%;"></div></div>
+      </div>
+      <div class="progress-wrap">
+        <div class="progress-label"><span>Финансовая / бизнес-модель</span><span>0%</span></div>
+        <div class="progress-bar"><div class="progress-fill" style="width:0%;"></div></div>
+      </div>
+    </div>
+
+    <!-- Alert -->
+    <div class="fade-up alert alert-info" style="margin-top:24px;">
+      <span style="font-size:20px;">💡</span>
+      <div>
+        <div style="font-weight:600;margin-bottom:4px;">Ключевой вывод</div>
+        <div>Проект имеет сильный фундамент в части пространства, интерьера и визуального образа. Это не начальная идея — это объект с частично собранной архитектурой решений. Следующий шаг — стратегическая сборка, которая свяжет все существующие элементы в работающую систему: бренд, позиционирование, маркетинг, запуск.</div>
+      </div>
+    </div>
+
+    <!-- What's missing -->
+    <div class="fade-up card" style="padding:28px;margin-top:20px;border-left:4px solid var(--warning);">
+      <div class="card-title" style="color:var(--n900);">Блоки, требующие формирования</div>
+      <p class="card-text" style="margin-top:8px;">
+        При наличии сильной исходной базы на текущем этапе ещё не сформированы: полноценный брендбук, целостная маркетинговая стратегия, единая рамка позиционирования, маркетинговая логика запуска, система коммуникации с конечной аудиторией, а также финансовый и бизнес-план проекта.
+      </p>
+      <p class="card-text" style="margin-top:10px;font-weight:500;color:var(--n700);">
+        Именно эти слои определяют не то, как проект выглядит, а то, как он будет работать, заполняться, продвигаться и восприниматься рынком.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- SECTION: NEXT -->
+<section class="section" style="background:#fff;padding-top:48px;padding-bottom:48px;">
+  <div class="container">
+    <div class="fade-up" style="text-align:center;max-width:640px;margin:0 auto;">
+      <div class="section-num" style="text-align:center;">Следующий шаг</div>
+      <div class="section-title" style="text-align:center;margin-bottom:16px;">Документ 2 из 3</div>
+      <p style="font-size:16px;color:var(--n500);line-height:1.6;">
+        В следующем документе — структура проекта по ключевым блокам: что должно быть проработано, текущий статус каждого блока и перечень вопросов для дальнейшего этапа.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer style="background:var(--n900);padding:48px 0;">
+  <div class="container">
+    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:24px;">
+      <div>
+        <div style="font-size:20px;font-weight:700;color:#fff;margin-bottom:8px;">
+          BrandOS <span style="color:var(--brand);">·</span> Рынок «ПИКНИК»
+        </div>
+        <div style="font-size:14px;color:var(--n500);">brand-os.ru · Апрель 2026</div>
+      </div>
+    </div>
+    <div style="height:1px;background:rgba(255,255,255,.08);margin:28px 0;"></div>
+    <div style="font-size:13px;color:var(--n600);">
+      © 2026 BrandOS · brand-os.ru · Документ подготовлен в рамках предварительной проработки проекта · Конфиденциально
+    </div>
+  </div>
+</footer>
+
+<script>
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach((e, i) => {
+    if (e.isIntersecting) {
+      setTimeout(() => e.target.classList.add('visible'), i * 80);
+    }
+  });
+}, { threshold: 0.1 });
+document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
+
+const sections = document.querySelectorAll('section[id]');
+const navLinks = document.querySelectorAll('nav a[href^="#"]');
+window.addEventListener('scroll', () => {
+  let current = '';
+  sections.forEach(s => {
+    if (window.scrollY >= s.offsetTop - 100) current = s.id;
+  });
+  navLinks.forEach(a => {
+    a.style.color = a.getAttribute('href') === '#' + current ? '#0ea5e9' : '';
+  });
+});
+</script>
+
+</body>
+</html>
