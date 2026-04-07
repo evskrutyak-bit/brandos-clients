@@ -1,0 +1,871 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Синтез после Deep Research · Рынок РФ | BrandOS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --brand: #0ea5e9;
+  --brand-dark: #0284c7;
+  --brand-light: #7dd3fc;
+  --brand-bg: #e0f2fe;
+  --black: #0f172a;
+  --n50: #f8fafc; --n100: #f1f5f9; --n200: #e2e8f0;
+  --n300: #cbd5e1; --n400: #94a3b8; --n500: #64748b;
+  --n600: #475569; --n700: #334155; --n800: #1e293b; --n900: #0f172a;
+  --success: #10b981; --warning: #f59e0b; --error: #ef4444; --info: #3b82f6;
+  --font: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  --shadow-card: 0 1px 3px 0 rgba(0,0,0,.05), 0 1px 2px -1px rgba(0,0,0,.05);
+  --shadow-hover: 0 10px 25px -5px rgba(0,0,0,.08), 0 8px 10px -6px rgba(0,0,0,.04);
+  --shadow-btn: 0 4px 14px 0 rgba(14,165,233,.35);
+  --shadow-glow: 0 0 40px rgba(14,165,233,.15);
+  --r-sm:4px; --r-md:6px; --r-lg:8px; --r-xl:12px; --r-2xl:16px; --r-3xl:24px; --r-full:9999px;
+}
+
+body { font-family: var(--font); font-size: 16px; line-height: 1.6; color: var(--n600); background: var(--n100); }
+
+@keyframes shimmer { 0%{transform:translateX(-100%)} 100%{transform:translateX(200%)} }
+@keyframes fade-up { 0%{opacity:0;transform:translateY(20px)} 100%{opacity:1;transform:translateY(0)} }
+@keyframes pulse-glow { 0%,100%{box-shadow:0 0 20px rgba(14,165,233,.3)} 50%{box-shadow:0 0 40px rgba(14,165,233,.5)} }
+
+.fade-up { opacity:0; transform:translateY(20px); transition:opacity .6s ease-out, transform .6s ease-out; }
+.fade-up.visible { opacity:1; transform:translateY(0); }
+
+.container { max-width: 1400px; margin: 0 auto; padding: 0 32px; }
+.section { padding: 72px 0; }
+
+/* Sidebar */
+.sidebar-nav {
+  position:fixed; left:0; top:0; bottom:0; width:260px; z-index:300;
+  background:rgba(15,23,42,.97); backdrop-filter:blur(12px);
+  padding:24px 0; overflow-y:auto; transition:transform .3s ease;
+}
+.sidebar-nav .logo { padding:0 24px; margin-bottom:32px; }
+.sidebar-nav .logo span { font-size:18px; font-weight:700; color:#fff; }
+.sidebar-nav .logo small { display:block; font-size:11px; color:var(--n500); margin-top:4px; text-transform:uppercase; letter-spacing:.05em; }
+.sidebar-nav a {
+  display:flex; align-items:center; gap:10px;
+  padding:10px 24px; font-size:13px; font-weight:500; color:var(--n400);
+  text-decoration:none; transition:all .2s ease; border-left:3px solid transparent;
+}
+.sidebar-nav a:hover, .sidebar-nav a.active { color:#fff; background:rgba(14,165,233,.08); border-left-color:var(--brand); }
+.sidebar-nav a .num { font-size:11px; font-weight:600; color:var(--brand); min-width:20px; }
+
+.main-content { margin-left:260px; }
+
+@media (max-width:1024px) {
+  .sidebar-nav { transform:translateX(-100%); }
+  .sidebar-nav.open { transform:translateX(0); }
+  .main-content { margin-left:0; }
+  .burger { display:flex !important; }
+}
+.burger {
+  display:none; position:fixed; top:16px; left:16px; z-index:400;
+  width:44px; height:44px; border-radius:var(--r-xl); background:var(--n900);
+  align-items:center; justify-content:center; cursor:pointer; border:none; color:#fff; font-size:20px;
+}
+
+/* Tables */
+.bo-table { width:100%; border-collapse:collapse; background:#fff; }
+.bo-table thead tr { background:var(--n50); border-bottom:2px solid var(--n200); }
+.bo-table th { padding:14px 18px; text-align:left; font-size:12px; font-weight:600; text-transform:uppercase; letter-spacing:.05em; color:var(--n500); }
+.bo-table td { padding:14px 18px; font-size:14px; color:var(--n600); border-bottom:1px solid var(--n200); vertical-align:top; }
+.bo-table tbody tr:hover { background:var(--n50); }
+
+/* Card */
+.card {
+  background:#fff; border-radius:var(--r-2xl);
+  border:1px solid var(--n200); padding:28px;
+  box-shadow:var(--shadow-card); transition:all .3s ease;
+}
+.card:hover { transform:translateY(-3px); box-shadow:var(--shadow-hover); }
+
+.section-title { font-size:30px; line-height:1.25; font-weight:600; color:var(--n900); margin-bottom:12px; letter-spacing:-.01em; }
+.section-subtitle { font-size:16px; line-height:1.6; color:var(--n500); max-width:750px; margin-bottom:40px; }
+.section-label {
+  display:inline-flex; align-items:center; gap:8px;
+  font-size:12px; font-weight:600; text-transform:uppercase; letter-spacing:.05em;
+  color:var(--brand); margin-bottom:16px;
+}
+.section-label::before { content:''; width:24px; height:2px; background:var(--brand); border-radius:2px; }
+
+.sub-title { font-size:20px; font-weight:600; color:var(--n800); margin-bottom:16px; margin-top:36px; }
+
+.bo-list { list-style:none; padding:0; }
+.bo-list li { position:relative; padding-left:24px; margin-bottom:14px; font-size:15px; line-height:1.7; color:var(--n600); }
+.bo-list li::before { content:''; position:absolute; left:0; top:10px; width:8px; height:8px; border-radius:50%; background:var(--brand); opacity:.6; }
+
+.num-list { list-style:none; padding:0; counter-reset:item; }
+.num-list li { position:relative; padding-left:36px; margin-bottom:16px; font-size:15px; line-height:1.7; color:var(--n600); counter-increment:item; }
+.num-list li::before {
+  content:counter(item); position:absolute; left:0; top:2px;
+  width:24px; height:24px; border-radius:50%; background:var(--brand-bg); color:var(--brand);
+  font-size:12px; font-weight:700; display:flex; align-items:center; justify-content:center;
+}
+
+.badge { display:inline-flex; align-items:center; background:var(--brand-bg); color:#0369a1; padding:4px 12px; border-radius:var(--r-full); font-size:12px; font-weight:600; text-transform:uppercase; letter-spacing:.03em; }
+.badge-green { background:#d1fae5; color:#065f46; }
+.badge-yellow { background:#fef3c7; color:#92400e; }
+.badge-red { background:#fee2e2; color:#991b1b; }
+.badge-purple { background:#f3e8ff; color:#6b21a8; }
+
+.highlight-box { display:flex; gap:16px; border-radius:var(--r-xl); padding:20px; margin:20px 0; }
+.highlight-box.info { background:#eff6ff; border:1px solid #bfdbfe; border-left:4px solid var(--info); }
+.highlight-box.warning { background:#fffbeb; border:1px solid #fde68a; border-left:4px solid var(--warning); }
+.highlight-box.success { background:#ecfdf5; border:1px solid #a7f3d0; border-left:4px solid var(--success); }
+.highlight-box.error { background:#fef2f2; border:1px solid #fecaca; border-left:4px solid var(--error); }
+
+.two-col { display:grid; grid-template-columns:1fr 1fr; gap:24px; }
+@media (max-width:768px) { .two-col { grid-template-columns:1fr; } }
+.three-col { display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:20px; }
+
+/* Hypothesis card */
+.hyp-card { background:#fff; border-radius:var(--r-2xl); border:1px solid var(--n200); padding:0; box-shadow:var(--shadow-card); transition:all .3s ease; overflow:hidden; }
+.hyp-card:hover { transform:translateY(-3px); box-shadow:var(--shadow-hover); }
+.hyp-card .hyp-header { padding:20px 24px; border-bottom:1px solid var(--n200); display:flex; align-items:center; gap:12px; }
+.hyp-card .hyp-num { width:32px; height:32px; border-radius:50%; background:var(--brand); color:#fff; font-size:14px; font-weight:700; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+.hyp-card .hyp-title { font-size:15px; font-weight:600; color:var(--n900); line-height:1.4; }
+.hyp-card .hyp-body { padding:20px 24px; }
+.hyp-card .hyp-row { margin-bottom:12px; }
+.hyp-card .hyp-label { font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:.05em; color:var(--n500); margin-bottom:4px; }
+.hyp-card .hyp-text { font-size:14px; line-height:1.6; color:var(--n600); }
+
+/* Question card */
+.q-card { background:#fff; border-radius:var(--r-2xl); border:1px solid var(--n200); padding:24px; box-shadow:var(--shadow-card); transition:all .3s ease; display:flex; gap:16px; align-items:flex-start; }
+.q-card:hover { transform:translateY(-3px); box-shadow:var(--shadow-hover); }
+.q-num { width:32px; height:32px; border-radius:50%; background:var(--n900); color:#fff; font-size:13px; font-weight:700; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+
+@media print {
+  @page { size: landscape; margin: 1cm; }
+  .sidebar-nav { display:none; }
+  .main-content { margin-left:0; }
+  .fade-up { opacity:1 !important; transform:none !important; }
+}
+</style>
+</head>
+<body>
+
+<button class="burger" onclick="document.querySelector('.sidebar-nav').classList.toggle('open')">☰</button>
+
+<nav class="sidebar-nav">
+  <div class="logo">
+    <span>BrandOS <span style="color:var(--brand);">·</span> Синтез</span>
+    <small>Магия Масел · DR Рынок РФ</small>
+  </div>
+  <a href="#hero"><span class="num">00</span> Обзор</a>
+  <a href="#understand"><span class="num">01</span> Что мы поняли</a>
+  <a href="#observations"><span class="num">02</span> Наблюдения</a>
+  <a href="#confirmed"><span class="num">03</span> Подтверждённое</a>
+  <a href="#contradictions"><span class="num">04</span> Противоречия</a>
+  <a href="#keep"><span class="num">05</span> Не потерять</a>
+  <a href="#hypotheses"><span class="num">06</span> Основные гипотезы</a>
+  <a href="#alt-hyp"><span class="num">07</span> Альтернативные</a>
+  <a href="#early"><span class="num">08</span> Рано обсуждать</a>
+  <a href="#questions"><span class="num">09</span> Вопросы клиенту</a>
+  <a href="#table"><span class="num">10</span> Таблица фиксации</a>
+  <a href="#next"><span class="num">11</span> Следующие этапы</a>
+</nav>
+
+<div class="main-content">
+
+<!-- HERO -->
+<header id="hero" style="background:linear-gradient(135deg,var(--n900) 0%,#1e3a5f 100%);padding:80px 0;position:relative;overflow:hidden;">
+  <div style="position:absolute;top:-100px;right:-100px;width:500px;height:500px;border-radius:50%;background:radial-gradient(circle,rgba(14,165,233,.2) 0%,transparent 70%);pointer-events:none;"></div>
+  <div style="position:absolute;bottom:-80px;left:20%;width:300px;height:300px;border-radius:50%;background:radial-gradient(circle,rgba(16,185,129,.1) 0%,transparent 70%);pointer-events:none;"></div>
+  <div class="container" style="position:relative;z-index:1;">
+    <div style="display:inline-flex;align-items:center;gap:8px;background:rgba(14,165,233,.15);border:1px solid rgba(14,165,233,.3);color:var(--brand-light);padding:8px 16px;border-radius:var(--r-full);font-size:13px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;margin-bottom:24px;">
+      <span style="width:6px;height:6px;border-radius:50%;background:var(--brand);animation:pulse-glow 2s infinite;"></span>
+      Часть 1–5 · Синтез после Deep Research
+    </div>
+    <h1 style="font-size:40px;line-height:1.15;letter-spacing:-.02em;font-weight:600;color:#fff;max-width:900px;margin-bottom:20px;">
+      Синтез исследования рынка РФ: гипотезы, наблюдения и вопросы клиенту
+    </h1>
+    <p style="font-size:18px;line-height:1.6;color:var(--n400);max-width:750px;margin-bottom:40px;">
+      Аналитический документ по итогам Deep Research рынка премиальных масел. Синтез выводов, гипотезы для обсуждения с клиентом, таблица фиксации реакции и план следующих этапов.
+    </p>
+    <div style="display:flex;gap:32px;flex-wrap:wrap;">
+      <div style="color:var(--n400);font-size:14px;"><span style="color:var(--brand);font-weight:600;">Клиент:</span> Кирилл Бродский · Магия Масел</div>
+      <div style="color:var(--n400);font-size:14px;"><span style="color:var(--brand);font-weight:600;">Формат:</span> Синтез + Гипотезы + Вопросы</div>
+      <div style="color:var(--n400);font-size:14px;"><span style="color:var(--brand);font-weight:600;">Документ:</span> 5 частей</div>
+    </div>
+  </div>
+</header>
+
+<!-- ===== ЧАСТЬ 1. СИНТЕЗ ===== -->
+
+<!-- UNDERSTAND -->
+<section id="understand" class="section">
+  <div class="container">
+    <div class="section-label">01 · Часть 1. Синтез</div>
+    <h2 class="section-title">Главное, что мы теперь понимаем</h2>
+    <p class="section-subtitle">Семь ключевых выводов из исследования рынка</p>
+
+    <div class="three-col">
+      <!-- 1 -->
+      <div class="card fade-up" style="border-top:3px solid var(--brand);">
+        <div style="font-size:12px;font-weight:700;color:var(--brand);margin-bottom:8px;">① РЫНОК СМЫСЛОВ</div>
+        <p style="font-size:14px;line-height:1.7;color:var(--n600);">
+          Рынок премиальных масел в России — это не чётко выделенная статистическая категория, а набор пересекающихся потребительских сценариев: функциональность, гастрономия, крафт, beauty, спорт, подарок, осознанный ЗОЖ. Проект выходит не в «рынок масел вообще», а в <strong>рынок смыслов, привычек и доверия</strong>.
+        </p>
+      </div>
+      <!-- 2 -->
+      <div class="card fade-up" style="border-top:3px solid var(--success);">
+        <div style="font-size:12px;font-weight:700;color:var(--success);margin-bottom:8px;">② ДОВЕРИЕ + ПРОЗРАЧНОСТЬ + ПОВТОР</div>
+        <p style="font-size:14px;line-height:1.7;color:var(--n600);">
+          Конкуренция идёт не только по вкусу и даже не только по сырью. Она идёт по связке <strong>доверие + прозрачность + удобство повторной покупки</strong>. Это видно в сервисных механиках, в обещаниях игроков, в трендах маркировки и в роли D2C-сайтов.
+        </p>
+      </div>
+      <!-- 3 -->
+      <div class="card fade-up" style="border-top:3px solid var(--warning);">
+        <div style="font-size:12px;font-weight:700;color:var(--warning);margin-bottom:8px;">③ ФОРМАТЫ: 250 МЛ + 100 МЛ</div>
+        <p style="font-size:14px;line-height:1.7;color:var(--n600);">
+          250 мл — главный рыночный объём, 100 мл — главный входной формат. Мини-форматы, наборы и «миксы по цели» уже есть в рынке — эти идеи не выдуманы, но и не являются пустой нишей без конкуренции.
+        </p>
+      </div>
+      <!-- 4 -->
+      <div class="card fade-up" style="border-top:3px solid var(--info);">
+        <div style="font-size:12px;font-weight:700;color:var(--info);margin-bottom:8px;">④ TELEGRAM — СЕРВИС, НЕ ВХОД</div>
+        <p style="font-size:14px;line-height:1.7;color:var(--n600);">
+          Мессенджерный сценарий не выглядит фантазией. Но рынок показывает его скорее как <strong>сервисную механику для повторной покупки и снижения трения</strong>, а не как самостоятельный основной массовый канал первого знакомства. Первичное касание — маркетплейсы, ритейл, e-commerce.
+        </p>
+      </div>
+      <!-- 5 -->
+      <div class="card fade-up" style="border-top:3px solid var(--error);">
+        <div style="font-size:12px;font-weight:700;color:var(--error);margin-bottom:8px;">⑤ ЦЕНА 2000 ₽ = ПРЕМИУМ</div>
+        <p style="font-size:14px;line-height:1.7;color:var(--n600);">
+          Заявленная цена ~2000 ₽ за 250 мл — попадает не в «среднюю полку», а в заметно премиальный слой. Рынок допускает такие цены, но там, где цена оправдывается редким сырьём, крафтом, историей, доказательностью и премиальной подачей. <strong>Голое «у нас хорошее масло» не взлетает.</strong>
+        </p>
+      </div>
+      <!-- 6 -->
+      <div class="card fade-up" style="border-top:3px solid #7c3aed;">
+        <div style="font-size:12px;font-weight:700;color:#7c3aed;margin-bottom:8px;">⑥ РИСК ОБЕЩАНИЙ</div>
+        <p style="font-size:14px;line-height:1.7;color:var(--n600);">
+          Рынок тяготеет к языку функциональности и «пользы», но тут же лежит и риск. Многие игроки заходят на территорию обещаний «для печени», «для иммунитета» — правовая и коммуникационная скользкая зона. Усиливается регуляторный фон: маркировка, прослеживаемость, нормы хранения, показатели окисления.
+        </p>
+      </div>
+      <!-- 7 -->
+      <div class="card fade-up" style="border-top:3px solid var(--n700);">
+        <div style="font-size:12px;font-weight:700;color:var(--n700);margin-bottom:8px;">⑦ НЕСКОЛЬКО ЛОГИК ВХОДА</div>
+        <p style="font-size:14px;line-height:1.7;color:var(--n600);">
+          Рынок подтверждает сразу несколько логик входа — через крафт/свежесть, функциональность/нутрицевтичность, гастрономию и подарочный формат. Степень зрелости разная: самые зрелые — <strong>функциональный, гастрономический и «осознанный ЗОЖ»</strong>; более тонкие — биохакинг с доказательностью, beauty и спорт.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- OBSERVATIONS -->
+<section id="observations" class="section" style="background:#fff;">
+  <div class="container">
+    <div class="section-label">02 · Ключевые наблюдения</div>
+    <h2 class="section-title">15 наблюдений из исследования</h2>
+    <p class="section-subtitle">Фактическая база для формирования гипотез и стратегических решений</p>
+
+    <div class="two-col">
+      <div class="fade-up">
+        <ol class="num-list">
+          <li>Открытые данные почти не позволяют посчитать отдельный денежный объём именно премиальных масел холодного отжима; рынок приходится собирать через прокси: e-commerce, ритейл, D2C, цены, форматы, офферы.</li>
+          <li>Массовый сектор масел в РФ живёт по логике большого сырьевого и экспортного рынка, а премиальная специалка — по логике конечного потребителя, доверия и сценариев потребления.</li>
+          <li>250 мл — главный якорный формат для регулярного потребления; 100 мл — формат входа, пробы и функционального курса; 500 мл — уже более хозяйственный или «выгодный» сценарий.</li>
+          <li>50 мл существует, но не как массовый стандарт, а как нишевый premium-entry для редких масел.</li>
+          <li>Ценовая вилка в 250 мл огромная: от массового слоя ниже 500 ₽ по отдельным функциональным маслам до 1200–1500 ₽ и выше в премиуме, а по ореховым и редким — до 2000–3000 ₽ и выше.</li>
+          <li>Функциональный сегмент — самый заметный по зрелости: массово присутствует, имеет покупаемость и опирается на общий рост рынка нутрицевтики.</li>
+          <li>Биохакинг и доказательность видны в рынке, но как отдельный слой пока не доминируют в масс-выдаче; это скорее тонкая надстройка над функциональным сегментом.</li>
+          <li>Крафтовые игроки продают свежесть через модель «после заказа», малые партии и ремесленный процесс. Это не маргинальный кейс, а реальная рыночная модель.</li>
+        </ol>
+      </div>
+      <div class="fade-up">
+        <ol class="num-list" style="counter-reset:item 8;">
+          <li>Гастрономический сегмент в крупных городах зрелый: нормально живёт в премиальном ритейле и поддерживается ценой, происхождением и кухонным сценарием использования.</li>
+          <li>Маркетплейсы — главный каталог категории и точка первого сравнения; D2C — главная площадка, где объясняется, за что вообще платить больше.</li>
+          <li>Telegram уже появляется как инфраструктура повторной покупки и снижения трения, но как массовый первичный канал рынок пока не подтверждён.</li>
+          <li>Подписки и автоповторы есть, но пока выглядят нишевыми механиками отдельных игроков, а не рыночным стандартом.</li>
+          <li>Наборы-знакомства и подарочные наборы устойчиво присутствуют; рынок их знает и принимает.</li>
+          <li>В коммуникации премиума доминируют три типа обещаний: свежесть/технология, происхождение/редкость, польза/функциональность.</li>
+          <li>Слабое место рынка — избыток формулировок на грани медицинских обещаний при недостатке реально предъявляемой доказательной базы.</li>
+        </ol>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CONFIRMED -->
+<section id="confirmed" class="section">
+  <div class="container">
+    <div class="section-label">03 · Перекрёстное подтверждение</div>
+    <h2 class="section-title">Что подтверждается из нескольких частей исследования</h2>
+    <p class="section-subtitle">Самые надёжные выводы — те, что повторяются в разных срезах данных</p>
+
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:20px;">
+      <div class="card fade-up" style="border-left:4px solid var(--brand);">
+        <div style="font-size:13px;font-weight:600;color:var(--brand);margin-bottom:8px;">САМОЕ НАДЁЖНОЕ</div>
+        <div style="font-size:17px;font-weight:600;color:var(--n900);margin-bottom:12px;">Доверие + Сервис + Повтор</div>
+        <p style="font-size:14px;line-height:1.7;color:var(--n600);">
+          Рынок уже собран вокруг этой логики. Повторяется и в каналах, и в офферах, и в трендах, и в форматах. Подбор, подписка, «после заказа», правильное хранение, упрощение повторной покупки — устойчивый паттерн.
+        </p>
+      </div>
+      <div class="card fade-up" style="border-left:4px solid var(--success);">
+        <div style="font-size:13px;font-weight:600;color:var(--success);margin-bottom:8px;">ВТОРОЕ ПО НАДЁЖНОСТИ</div>
+        <div style="font-size:17px;font-weight:600;color:var(--n900);margin-bottom:12px;">100/250 мл — ядро категории</div>
+        <p style="font-size:14px;line-height:1.7;color:var(--n600);">
+          Повторяется в ценовой картине, форматах рынка и сверке гипотез проекта. Здесь рынок уже очень ясно разговаривает.
+        </p>
+      </div>
+      <div class="card fade-up" style="border-left:4px solid var(--warning);">
+        <div style="font-size:13px;font-weight:600;color:var(--warning);margin-bottom:8px;">ТРЕТЬЕ</div>
+        <div style="font-size:17px;font-weight:600;color:var(--n900);margin-bottom:12px;">Каналы ≠ дубли</div>
+        <p style="font-size:14px;line-height:1.7;color:var(--n600);">
+          Маркетплейсы и D2C выполняют разные роли. Маркетплейс — витрина и сравнение; D2C — объяснение премиальности; мессенджеры — упрощение сервиса и повтора; офлайн — доверие и дегустация. Один из самых надёжных выводов.
+        </p>
+      </div>
+      <div class="card fade-up" style="border-left:4px solid var(--info);">
+        <div style="font-size:13px;font-weight:600;color:var(--info);margin-bottom:8px;">ЧЕТВЁРТОЕ</div>
+        <div style="font-size:17px;font-weight:600;color:var(--n900);margin-bottom:12px;">Рынок тяготеет к функциональности</div>
+        <p style="font-size:14px;line-height:1.7;color:var(--n600);">
+          Не только к гастрономии. Подтверждается и сегментацией, и ценовым разрывом, и трендом роста нутрицевтики, и самими формулировками в карточках.
+        </p>
+      </div>
+      <div class="card fade-up" style="border-left:4px solid #7c3aed;">
+        <div style="font-size:13px;font-weight:600;color:#7c3aed;margin-bottom:8px;">ПЯТОЕ</div>
+        <div style="font-size:17px;font-weight:600;color:var(--n900);margin-bottom:12px;">Доказательность усиливается средой</div>
+        <p style="font-size:14px;line-height:1.7;color:var(--n600);">
+          Не только желанием отдельных брендов. Сходятся маркировка, требования к хранению, нормирование показателей окисления и рост спроса на «понятную пользу».
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTRADICTIONS -->
+<section id="contradictions" class="section" style="background:#fff;">
+  <div class="container">
+    <div class="section-label">04 · Противоречия и находки</div>
+    <h2 class="section-title">Где есть противоречия или неожиданные находки</h2>
+
+    <div style="display:grid;gap:20px;">
+      <div class="highlight-box warning fade-up" style="margin:0;">
+        <span style="font-size:24px;flex-shrink:0;">⚡</span>
+        <div>
+          <div style="font-weight:600;color:#92400e;margin-bottom:6px;font-size:16px;">Доказательность vs. Реальность</div>
+          <div style="font-size:15px;color:#92400e;line-height:1.7;">Рынок говорит, что доказательность важна, но в реальном поле чаще продают не через лабораторную строгость, а через слова, стиль, легенду и «полезные» обещания. Ожидание доверия растёт, а фактический стандарт подтверждения — неровный.</div>
+        </div>
+      </div>
+      <div class="highlight-box info fade-up" style="margin:0;">
+        <span style="font-size:24px;flex-shrink:0;">🔄</span>
+        <div>
+          <div style="font-weight:600;color:#1e40af;margin-bottom:6px;font-size:16px;">Подписка: логика есть, стандарт — нет</div>
+          <div style="font-size:15px;color:#1e40af;line-height:1.7;">Подписка и ремайндер логически очень подходят категории, но по открытому рынку это пока не массовая норма. Идея подтверждается концептуально, но не как стандарт поведения рынка.</div>
+        </div>
+      </div>
+      <div class="highlight-box info fade-up" style="margin:0;">
+        <span style="font-size:24px;flex-shrink:0;">💬</span>
+        <div>
+          <div style="font-weight:600;color:#1e40af;margin-bottom:6px;font-size:16px;">Telegram: перспективен, но не зрел</div>
+          <div style="font-size:15px;color:#1e40af;line-height:1.7;">Исследование не даёт основания считать Telegram уже зрелым главным каналом входа. Скорее растущая сервисная надстройка, а не замена маркетплейсам и витринам.</div>
+        </div>
+      </div>
+      <div class="highlight-box error fade-up" style="margin:0;">
+        <span style="font-size:24px;flex-shrink:0;">💰</span>
+        <div>
+          <div style="font-weight:600;color:#991b1b;margin-bottom:6px;font-size:16px;">Цена ≠ фильтр премиума</div>
+          <div style="font-size:15px;color:#991b1b;line-height:1.7;">Рынок допускает премиальные цены, но рядом существует широкий пласт «функциональных масел» по низким ценам. Цена сама по себе не отделяет премиум от непремиума — <strong>её должен отделять смысл</strong>.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- KEEP -->
+<section id="keep" class="section">
+  <div class="container">
+    <div class="section-label">05 · Что важно не потерять</div>
+    <h2 class="section-title">Критически важные выводы для следующих этапов</h2>
+
+    <div class="two-col">
+      <div class="card fade-up" style="border:2px solid var(--brand);">
+        <div style="font-size:20px;margin-bottom:8px;">🎯</div>
+        <div style="font-size:16px;font-weight:600;color:var(--n900);margin-bottom:12px;">Сегментация по мотивации, не по виду масла</div>
+        <p style="font-size:14px;line-height:1.7;color:var(--n600);">На следующих этапах смотреть не «кто продаёт льняное или тыквенное», а кто продаёт <strong>курс, вкус, ритуал, заботу, статус, пользу</strong>.</p>
+      </div>
+      <div class="card fade-up" style="border:2px solid var(--warning);">
+        <div style="font-size:20px;margin-bottom:8px;">💎</div>
+        <div style="font-size:16px;font-weight:600;color:var(--n900);margin-bottom:12px;">Цена 2000 ₽ = нужны дополнительные опоры</div>
+        <p style="font-size:14px;line-height:1.7;color:var(--n600);">Сырьё, происхождение, хранение, доказательная подача, сервис. Это не рекомендация — это факт рыночного устройства.</p>
+      </div>
+      <div class="card fade-up" style="border:2px solid var(--success);">
+        <div style="font-size:20px;margin-bottom:8px;">🔀</div>
+        <div style="font-size:16px;font-weight:600;color:var(--n900);margin-bottom:12px;">Различие ролей каналов</div>
+        <p style="font-size:14px;line-height:1.7;color:var(--n600);">Маркетплейс, D2C, Telegram, офлайн — это не дубли, а <strong>разные функции в одном пути клиента</strong>.</p>
+      </div>
+      <div class="card fade-up" style="border:2px solid var(--error);">
+        <div style="font-size:20px;margin-bottom:8px;">⚠️</div>
+        <div style="font-size:16px;font-weight:600;color:var(--n900);margin-bottom:12px;">Риск коммуникации</div>
+        <p style="font-size:14px;line-height:1.7;color:var(--n600);">Рынок любит язык «пользы», но быстро уходит в зону спорных и слабо подтверждённых обещаний. Важно для конкурентов, продукта и ЦА одновременно.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== ЧАСТЬ 2. ГИПОТЕЗЫ ===== -->
+
+<!-- MAIN HYPOTHESES -->
+<section id="hypotheses" class="section" style="background:#fff;">
+  <div class="container">
+    <div class="section-label">06 · Часть 2. Основные гипотезы</div>
+    <h2 class="section-title">7 гипотез для обсуждения с клиентом</h2>
+    <p class="section-subtitle">Каждая гипотеза — структурированная позиция с основаниями, возможными проверками и неясностями</p>
+
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(420px,1fr));gap:24px;">
+
+      <!-- H1 -->
+      <div class="hyp-card fade-up">
+        <div class="hyp-header" style="background:rgba(14,165,233,.04);">
+          <div class="hyp-num">1</div>
+          <div class="hyp-title">Самый понятный вход — функциональные масла с премиальной подачей, а не чистая гастрономия</div>
+        </div>
+        <div class="hyp-body">
+          <div class="hyp-row"><div class="hyp-label">Суть</div><div class="hyp-text">Проще входить туда, где уже есть зрелый спрос на «масло под задачу».</div></div>
+          <div class="hyp-row"><div class="hyp-label">На чём основана</div><div class="hyp-text">Функциональный сегмент описан как наиболее зрелый и массово присутствующий; поддержан ростом нутрицевтики, покупаемостью на маркетплейсах и привычкой к курсовому потреблению.</div></div>
+          <div class="hyp-row"><div class="hyp-label">Почему может сработать</div><div class="hyp-text">Логика «подбор под цель + ритуал + повтор» естественно ложится именно на эту мотивацию.</div></div>
+          <div class="hyp-row"><div class="hyp-label">Что подтверждает</div><div class="hyp-text">Высокая зрелость функционального сегмента, цены 250 мл до 1500–2600 ₽ в functional SKU, курсовой тип потребления.</div></div>
+          <div class="hyp-row"><div class="hyp-label">Что неясно</div><div class="hyp-text">Какой именно use-case для аудитории окажется сильнее — здоровье, режим, beauty, спорт.</div></div>
+          <div class="hyp-row"><div class="hyp-label">Как проверить</div><div class="hyp-text">На следующем этапе отдельно проверить приоритетные сценарии потребления и силу спроса по каждой цели.</div></div>
+        </div>
+      </div>
+
+      <!-- H2 -->
+      <div class="hyp-card fade-up">
+        <div class="hyp-header" style="background:rgba(14,165,233,.04);">
+          <div class="hyp-num">2</div>
+          <div class="hyp-title">Цена 2000 ₽ за 250 мл рыночно возможна, но только вне «обычной полки»</div>
+        </div>
+        <div class="hyp-body">
+          <div class="hyp-row"><div class="hyp-label">Суть</div><div class="hyp-text">Проект может жить с такой ценой, если воспринимается как редкий, крафтовый, доказательный или ритуальный продукт.</div></div>
+          <div class="hyp-row"><div class="hyp-label">На чём основана</div><div class="hyp-text">Премиум-полка по 250 мл уже есть, особенно в ореховых, редких и D2C-позициях.</div></div>
+          <div class="hyp-row"><div class="hyp-label">Почему может сработать</div><div class="hyp-text">Рынок уже признаёт высокий чек, когда цена подкреплена смыслом, подачей и сервисом.</div></div>
+          <div class="hyp-row"><div class="hyp-label">Что подтверждает</div><div class="hyp-text">Диапазон 1200–1500 ₽ и выше в премиуме, доходящий до 2000–3000 ₽ и более для части SKU.</div></div>
+          <div class="hyp-row"><div class="hyp-label">Что неясно</div><div class="hyp-text">Какие именно доказательства рынок считает достаточными для этой линейки.</div></div>
+          <div class="hyp-row"><div class="hyp-label">Как проверить</div><div class="hyp-text">В конкурентном анализе сравнить, чем обосновываются высокие цены у топовых игроков.</div></div>
+        </div>
+      </div>
+
+      <!-- H3 -->
+      <div class="hyp-card fade-up">
+        <div class="hyp-header" style="background:rgba(14,165,233,.04);">
+          <div class="hyp-num">3</div>
+          <div class="hyp-title">«Масляный консьерж» даёт максимальное преимущество не в первой продаже, а в повторной</div>
+        </div>
+        <div class="hyp-body">
+          <div class="hyp-row"><div class="hyp-label">Суть</div><div class="hyp-text">Ценность модели сильнее раскрывается после первого опыта продукта.</div></div>
+          <div class="hyp-row"><div class="hyp-label">На чём основана</div><div class="hyp-text">Рынок показывает Telegram, mini-app, подписки, подбор, быстрый повтор, сервисные механики именно как инструменты удержания и снижения трения.</div></div>
+          <div class="hyp-row"><div class="hyp-label">Почему может сработать</div><div class="hyp-text">Масла — повторяемый и заканчивающийся продукт, а сама категория просит консультацию и напоминание.</div></div>
+          <div class="hyp-row"><div class="hyp-label">Что подтверждает</div><div class="hyp-text">Сервисные кейсы, подписки, mini-app в мессенджере, разделение ролей каналов.</div></div>
+          <div class="hyp-row"><div class="hyp-label">Что неясно</div><div class="hyp-text">Насколько часто реальные покупатели хотят именно сопровождение, а не просто докупить знакомый SKU.</div></div>
+          <div class="hyp-row"><div class="hyp-label">Как проверить</div><div class="hyp-text">В ЦА-исследовании отдельно изучить мотив повторной покупки и ожидания по сервису.</div></div>
+        </div>
+      </div>
+
+      <!-- H4 -->
+      <div class="hyp-card fade-up">
+        <div class="hyp-header" style="background:rgba(14,165,233,.04);">
+          <div class="hyp-num">4</div>
+          <div class="hyp-title">Telegram реалистичен как основной сервисный канал, но не доказан как главный канал первого входа</div>
+        </div>
+        <div class="hyp-body">
+          <div class="hyp-row"><div class="hyp-label">Суть</div><div class="hyp-text">TG может быть «домом бренда», но не единственной машиной первичного спроса.</div></div>
+          <div class="hyp-row"><div class="hyp-label">На чём основана</div><div class="hyp-text">Исследование отводит первое касание маркетплейсам и e-commerce, а Telegram — повтору, удобству, ботам и mini-app.</div></div>
+          <div class="hyp-row"><div class="hyp-label">Почему может сработать</div><div class="hyp-text">У канала низкое трение и он хорошо соединяется с ритуалом, ремайндером и быстрым заказом.</div></div>
+          <div class="hyp-row"><div class="hyp-label">Что подтверждает</div><div class="hyp-text">Роль маркетплейсов как каталога и роль Telegram как канала повтора.</div></div>
+          <div class="hyp-row"><div class="hyp-label">Что неясно</div><div class="hyp-text">Можно ли масштабно приводить холодную аудиторию сразу в Telegram в этой нише.</div></div>
+          <div class="hyp-row"><div class="hyp-label">Как проверить</div><div class="hyp-text">Изучить лучшие практики конкурентов и реальный путь клиента до Telegram.</div></div>
+        </div>
+      </div>
+
+      <!-- H5 -->
+      <div class="hyp-card fade-up">
+        <div class="hyp-header" style="background:rgba(16,185,129,.06);">
+          <div class="hyp-num" style="background:var(--success);">5</div>
+          <div class="hyp-title">Наборы-знакомства и наборы «под цель» — одна из самых подтверждённых рыночных гипотез</div>
+        </div>
+        <div class="hyp-body">
+          <div class="hyp-row"><div class="hyp-label">Суть</div><div class="hyp-text">Наборы для входа и сценарные наборы уже рыночно легитимны.</div></div>
+          <div class="hyp-row"><div class="hyp-label">На чём основана</div><div class="hyp-text">Исследование фиксирует устойчивое присутствие подарочных наборов, миксов по цели и наборов на маркетплейсах.</div></div>
+          <div class="hyp-row"><div class="hyp-label">Почему может сработать</div><div class="hyp-text">Набор снимает барьер выбора и переводит продукт из «одной бутылки» в сценарий.</div></div>
+          <div class="hyp-row"><div class="hyp-label">Что подтверждает</div><div class="hyp-text">Наличие 3×100, 5×50, миксов по цели и подарочных наборов.</div></div>
+          <div class="hyp-row"><div class="hyp-label">Что неясно</div><div class="hyp-text">Какой тип набора сильнее — пробный, курсовой или подарочный.</div></div>
+          <div class="hyp-row"><div class="hyp-label">Как проверить</div><div class="hyp-text">В продуктовом анализе разложить наборы по цели, цене и сценарию использования.</div></div>
+        </div>
+      </div>
+
+      <!-- H6 -->
+      <div class="hyp-card fade-up">
+        <div class="hyp-header" style="background:rgba(16,185,129,.06);">
+          <div class="hyp-num" style="background:var(--success);">6</div>
+          <div class="hyp-title">Крафт/свежесть — зона, где конкуренция ниже, чем в массово-функциональной полке</div>
+        </div>
+        <div class="hyp-body">
+          <div class="hyp-row"><div class="hyp-label">Суть</div><div class="hyp-text">Выигрывать можно не в массовой полезности, а в доверии к производственному процессу.</div></div>
+          <div class="hyp-row"><div class="hyp-label">На чём основана</div><div class="hyp-text">Крафтовый сегмент описан как нишевый, но устойчивый, с моделью «после заказа», малыми партиями и ремесленным TOV.</div></div>
+          <div class="hyp-row"><div class="hyp-label">Почему может сработать</div><div class="hyp-text">Здесь меньше прямого сравнения с дешёвыми functional SKU.</div></div>
+          <div class="hyp-row"><div class="hyp-label">Что подтверждает</div><div class="hyp-text">Отдельный крафтовый сегмент, средняя зрелость, цены 680–1490 ₽ и выше, сильная связка со свежестью.</div></div>
+          <div class="hyp-row"><div class="hyp-label">Что неясно</div><div class="hyp-text">Насколько широкий спрос у этой модели и можно ли из неё вырасти быстрее, чем из функционального слоя.</div></div>
+          <div class="hyp-row"><div class="hyp-label">Как проверить</div><div class="hyp-text">Сравнить у конкурентов крафтовую модель по ассортименту, частоте контента и объяснению цены.</div></div>
+        </div>
+      </div>
+
+      <!-- H7 -->
+      <div class="hyp-card fade-up">
+        <div class="hyp-header" style="background:rgba(124,58,237,.06);">
+          <div class="hyp-num" style="background:#7c3aed;">7</div>
+          <div class="hyp-title">Доказательность может стать сильной зоной отличия, потому что рынок говорит больше, чем показывает</div>
+        </div>
+        <div class="hyp-body">
+          <div class="hyp-row"><div class="hyp-label">Суть</div><div class="hyp-text">Пространство для отстройки там, где слова рынка уже созрели, а исполнение ещё не стало нормой.</div></div>
+          <div class="hyp-row"><div class="hyp-label">На чём основана</div><div class="hyp-text">Регуляторный фон, нормы по показателям окисления, маркировка, но реальная доказательная подача в коммуникации — неровная.</div></div>
+          <div class="hyp-row"><div class="hyp-label">Почему может сработать</div><div class="hyp-text">Растёт ожидание прослеживаемости и понятности.</div></div>
+          <div class="hyp-row"><div class="hyp-label">Что подтверждает</div><div class="hyp-text">Тренд маркировки, нормирование кислотного/перекисного числа, пробел между обещаниями и подтверждением.</div></div>
+          <div class="hyp-row"><div class="hyp-label">Что неясно</div><div class="hyp-text">Насколько аудитория реально считывает и ценит такие доказательства в момент покупки.</div></div>
+          <div class="hyp-row"><div class="hyp-label">Как проверить</div><div class="hyp-text">В ЦА-исследовании выяснить, какие именно сигналы доверия работают на решение о покупке.</div></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ALT HYPOTHESES -->
+<section id="alt-hyp" class="section">
+  <div class="container">
+    <div class="section-label">07 · Альтернативные гипотезы</div>
+    <h2 class="section-title">Гипотезы 8–11</h2>
+    <p class="section-subtitle">Дополнительные направления, требующие проверки</p>
+
+    <div class="two-col">
+      <div class="card fade-up" style="border-left:4px solid var(--n400);">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">
+          <span style="width:28px;height:28px;border-radius:50%;background:var(--n300);color:var(--n700);font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;">8</span>
+          <span style="font-size:15px;font-weight:600;color:var(--n900);">Гастрономический сегмент — более простой вход для премиальной цены</span>
+        </div>
+        <p style="font-size:14px;line-height:1.7;color:var(--n600);margin-bottom:8px;">
+          <strong>Основание:</strong> Гастрономический сегмент зрелый в крупных городах, хорошо живёт в премиальном ритейле и легче оправдывает высокую цену через вкус, происхождение и статус.
+        </p>
+        <p style="font-size:14px;color:var(--n500);"><em>Что неясно: насколько эта логика бьётся с текущим позиционированием проекта.</em></p>
+      </div>
+
+      <div class="card fade-up" style="border-left:4px solid var(--n400);">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">
+          <span style="width:28px;height:28px;border-radius:50%;background:var(--n300);color:var(--n700);font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;">9</span>
+          <span style="font-size:15px;font-weight:600;color:var(--n900);">Подарочный сегмент — не ядро бизнеса, а высокомаржинальные всплески</span>
+        </div>
+        <p style="font-size:14px;line-height:1.7;color:var(--n600);margin-bottom:8px;">
+          <strong>Основание:</strong> Подарочные наборы устойчиво есть в рынке, но сам сегмент описан как средний по зрелости и сезонный.
+        </p>
+        <p style="font-size:14px;color:var(--n500);"><em>Что неясно: есть ли у проекта визуальная и упаковочная база для такого слоя.</em></p>
+      </div>
+
+      <div class="card fade-up" style="border-left:4px solid var(--n400);">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">
+          <span style="width:28px;height:28px;border-radius:50%;background:var(--n300);color:var(--n700);font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;">10</span>
+          <span style="font-size:15px;font-weight:600;color:var(--n900);">Beauty-сегмент — подслой функционального, а не самостоятельная ниша</span>
+        </div>
+        <p style="font-size:14px;line-height:1.7;color:var(--n600);margin-bottom:8px;">
+          <strong>Основание:</strong> «Красота изнутри» есть, но описана как размытая и пересекающаяся с wellness-дискурсом.
+        </p>
+        <p style="font-size:14px;color:var(--n500);"><em>Что неясно: может ли быть основным драйвером, а не дополнительной линией коммуникации.</em></p>
+      </div>
+
+      <div class="card fade-up" style="border-left:4px solid var(--n400);">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">
+          <span style="width:28px;height:28px;border-radius:50%;background:var(--n300);color:var(--n700);font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;">11</span>
+          <span style="font-size:15px;font-weight:600;color:var(--n900);">Спорт/восстановление — лучше как расширение, а не первая ниша</span>
+        </div>
+        <p style="font-size:14px;line-height:1.7;color:var(--n600);margin-bottom:8px;">
+          <strong>Основание:</strong> Сегмент есть, но зрелость оценена как низко-средняя, выглядит подслоем функционального питания, а не отдельным большим рынком масел.
+        </p>
+        <p style="font-size:14px;color:var(--n500);"><em>Что неясно: как сильно спортивная аудитория воспринимает масла как отдельный инструмент.</em></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TOO EARLY -->
+<section id="early" class="section" style="background:#fff;">
+  <div class="container">
+    <div class="section-label">08 · Что пока рано обсуждать</div>
+    <h2 class="section-title">Гипотезы 12–14: преждевременные</h2>
+
+    <div class="three-col">
+      <div class="highlight-box warning fade-up" style="margin:0;flex-direction:column;gap:12px;">
+        <div style="display:flex;align-items:center;gap:10px;">
+          <span style="font-size:20px;">⏳</span>
+          <div style="font-weight:600;color:#92400e;font-size:15px;">12. Подписка как главный рычаг роста</div>
+        </div>
+        <div style="font-size:14px;color:#92400e;line-height:1.7;">Исследование подтверждает наличие механики, но не её массовость. Сначала нужно понять поведение ЦА и реальную готовность к автоповтору.</div>
+      </div>
+      <div class="highlight-box warning fade-up" style="margin:0;flex-direction:column;gap:12px;">
+        <div style="display:flex;align-items:center;gap:10px;">
+          <span style="font-size:20px;">⏳</span>
+          <div style="font-weight:600;color:#92400e;font-size:15px;">13. Корпоративные боксы как важное направление</div>
+        </div>
+        <div style="font-size:14px;color:#92400e;line-height:1.7;">Подарочные форматы подтверждаются, а вот корпоративный формат в исследовании не выглядит массово подтверждённым.</div>
+      </div>
+      <div class="highlight-box warning fade-up" style="margin:0;flex-direction:column;gap:12px;">
+        <div style="display:flex;align-items:center;gap:10px;">
+          <span style="font-size:20px;">⏳</span>
+          <div style="font-weight:600;color:#92400e;font-size:15px;">14. «Биохакинг» как отдельный большой рынок внутри масел</div>
+        </div>
+        <div style="font-size:14px;color:#92400e;line-height:1.7;">Исследование показывает наличие этого слоя, но пока скорее как смысловую надстройку, чем как явно доминирующий автономный сегмент.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== ЧАСТЬ 3. ВОПРОСЫ КЛИЕНТУ ===== -->
+
+<section id="questions" class="section">
+  <div class="container">
+    <div class="section-label">09 · Часть 3. Вопросы клиенту</div>
+    <h2 class="section-title">8 вопросов для обсуждения</h2>
+    <p class="section-subtitle">Каждый вопрос привязан к конкретному выводу из исследования</p>
+
+    <div style="display:grid;gap:16px;">
+      <div class="q-card fade-up">
+        <div class="q-num">1</div>
+        <div><p style="font-size:15px;line-height:1.7;color:var(--n700);">Из всех сценариев потребления что тебе ближе как основа бренда: <strong>курс под цель, крафтовая свежесть, гастрономия или премиальный подарок</strong>? Исследование показывает, что это разные рынки внутри одной категории.</p></div>
+      </div>
+      <div class="q-card fade-up">
+        <div class="q-num">2</div>
+        <div><p style="font-size:15px;line-height:1.7;color:var(--n700);">Готов ли ты подтверждать цену <strong>2000 ₽ за 250 мл</strong> не только продуктом, но и дополнительными доказательствами качества, происхождения и хранения? Рынок показывает, что без этого цена попадает в напряжённую зону.</p></div>
+      </div>
+      <div class="q-card fade-up">
+        <div class="q-num">3</div>
+        <div><p style="font-size:15px;line-height:1.7;color:var(--n700);">Какой сценарий для тебя важнее: <strong>первая продажа через витрину или повторная покупка через сервис</strong>? Исследование показывает, что «консьержность» сильнее раскрывается именно на повторе.</p></div>
+      </div>
+      <div class="q-card fade-up">
+        <div class="q-num">4</div>
+        <div><p style="font-size:15px;line-height:1.7;color:var(--n700);">Насколько тебе органично заходить в <strong>функциональный сегмент</strong> и говорить про use-case «под задачу», а не только про вкус и качество? Функциональный слой сейчас выглядит самым зрелым.</p></div>
+      </div>
+      <div class="q-card fade-up">
+        <div class="q-num">5</div>
+        <div><p style="font-size:15px;line-height:1.7;color:var(--n700);">Хочешь ли ты строить бренд больше как <strong>крафтовый производитель свежего продукта</strong> или как <strong>премиальную систему подбора и ритуалов</strong>? Исследование показывает, что это две разные логики преимущества.</p></div>
+      </div>
+      <div class="q-card fade-up">
+        <div class="q-num">6</div>
+        <div><p style="font-size:15px;line-height:1.7;color:var(--n700);">Насколько ты готов делать упор на <strong>наборы и мини-форматы</strong>, если рынок уже подтверждает их как нормальный способ входа в категорию?</p></div>
+      </div>
+      <div class="q-card fade-up">
+        <div class="q-num">7</div>
+        <div><p style="font-size:15px;line-height:1.7;color:var(--n700);">Какую роль ты видишь у <strong>Telegram</strong>: дом бренда и повторная продажа или основной канал привлечения? Исследование пока подтверждает первое сильнее, чем второе.</p></div>
+      </div>
+      <div class="q-card fade-up">
+        <div class="q-num">8</div>
+        <div><p style="font-size:15px;line-height:1.7;color:var(--n700);">Готов ли ты сознательно отказаться от спорных «лечебных» формулировок и строить язык бренда на <strong>доказуемости, хранении, прозрачности и сценариях применения</strong>? Исследование показывает, что рынок тут перегрет обещаниями.</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== ЧАСТЬ 4. ТАБЛИЦА ===== -->
+
+<section id="table" class="section" style="background:#fff;">
+  <div class="container">
+    <div class="section-label">10 · Часть 4. Таблица фиксации</div>
+    <h2 class="section-title">Таблица фиксации реакции клиента</h2>
+    <p class="section-subtitle">Для заполнения на встрече: реакция, комментарий, статус и следующее действие</p>
+
+    <div class="fade-up" style="overflow-x:auto;border-radius:var(--r-2xl);border:1px solid var(--n200);">
+      <table class="bo-table" style="min-width:900px;">
+        <thead>
+          <tr>
+            <th style="width:35%;">Гипотеза</th>
+            <th style="width:12%;">Реакция клиента</th>
+            <th style="width:18%;">Комментарий клиента</th>
+            <th style="width:18%;">Статус</th>
+            <th style="width:17%;">Что делаем дальше</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td style="font-weight:500;color:var(--n700);">Самый понятный вход — функциональные масла с премиальной подачей</td>
+            <td style="color:var(--n400);font-style:italic;">—</td>
+            <td style="color:var(--n400);font-style:italic;">—</td>
+            <td style="color:var(--n400);font-style:italic;">подтверждена / отклонена / требует проверки</td>
+            <td style="color:var(--n400);font-style:italic;">—</td>
+          </tr>
+          <tr>
+            <td style="font-weight:500;color:var(--n700);">Цена 2000 ₽ за 250 мл рыночно возможна только вне обычной полки</td>
+            <td style="color:var(--n400);font-style:italic;">—</td>
+            <td style="color:var(--n400);font-style:italic;">—</td>
+            <td style="color:var(--n400);font-style:italic;">—</td>
+            <td style="color:var(--n400);font-style:italic;">—</td>
+          </tr>
+          <tr>
+            <td style="font-weight:500;color:var(--n700);">Модель «масляный консьерж» сильнее работает на повторной покупке</td>
+            <td style="color:var(--n400);font-style:italic;">—</td>
+            <td style="color:var(--n400);font-style:italic;">—</td>
+            <td style="color:var(--n400);font-style:italic;">—</td>
+            <td style="color:var(--n400);font-style:italic;">—</td>
+          </tr>
+          <tr>
+            <td style="font-weight:500;color:var(--n700);">Telegram реалистичен как сервисный канал, но не доказан как канал первого входа</td>
+            <td style="color:var(--n400);font-style:italic;">—</td>
+            <td style="color:var(--n400);font-style:italic;">—</td>
+            <td style="color:var(--n400);font-style:italic;">—</td>
+            <td style="color:var(--n400);font-style:italic;">—</td>
+          </tr>
+          <tr>
+            <td style="font-weight:500;color:var(--n700);">Наборы-знакомства и наборы «под цель» — одна из самых подтверждённых гипотез</td>
+            <td style="color:var(--n400);font-style:italic;">—</td>
+            <td style="color:var(--n400);font-style:italic;">—</td>
+            <td style="color:var(--n400);font-style:italic;">—</td>
+            <td style="color:var(--n400);font-style:italic;">—</td>
+          </tr>
+          <tr>
+            <td style="font-weight:500;color:var(--n700);">Крафт/свежесть — зона, где конкуренция может быть ниже</td>
+            <td style="color:var(--n400);font-style:italic;">—</td>
+            <td style="color:var(--n400);font-style:italic;">—</td>
+            <td style="color:var(--n400);font-style:italic;">—</td>
+            <td style="color:var(--n400);font-style:italic;">—</td>
+          </tr>
+          <tr>
+            <td style="font-weight:500;color:var(--n700);">Доказательность может стать сильной зоной отличия</td>
+            <td style="color:var(--n400);font-style:italic;">—</td>
+            <td style="color:var(--n400);font-style:italic;">—</td>
+            <td style="color:var(--n400);font-style:italic;">—</td>
+            <td style="color:var(--n400);font-style:italic;">—</td>
+          </tr>
+          <tr>
+            <td style="font-weight:500;color:var(--n700);">Гастрономический сегмент — более простой вход для премиальной цены</td>
+            <td style="color:var(--n400);font-style:italic;">—</td>
+            <td style="color:var(--n400);font-style:italic;">—</td>
+            <td style="color:var(--n400);font-style:italic;">—</td>
+            <td style="color:var(--n400);font-style:italic;">—</td>
+          </tr>
+          <tr>
+            <td style="font-weight:500;color:var(--n700);">Подарочный сегмент — не ядро бизнеса, а высокомаржинальный дополнительный слой</td>
+            <td style="color:var(--n400);font-style:italic;">—</td>
+            <td style="color:var(--n400);font-style:italic;">—</td>
+            <td style="color:var(--n400);font-style:italic;">—</td>
+            <td style="color:var(--n400);font-style:italic;">—</td>
+          </tr>
+          <tr>
+            <td style="font-weight:500;color:var(--n700);">Beauty-сегмент лучше работает как подслой функционального сегмента</td>
+            <td style="color:var(--n400);font-style:italic;">—</td>
+            <td style="color:var(--n400);font-style:italic;">—</td>
+            <td style="color:var(--n400);font-style:italic;">—</td>
+            <td style="color:var(--n400);font-style:italic;">—</td>
+          </tr>
+          <tr>
+            <td style="font-weight:500;color:var(--n700);">Спорт/восстановление лучше рассматривать как расширение, а не первую нишу</td>
+            <td style="color:var(--n400);font-style:italic;">—</td>
+            <td style="color:var(--n400);font-style:italic;">—</td>
+            <td style="color:var(--n400);font-style:italic;">—</td>
+            <td style="color:var(--n400);font-style:italic;">—</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ===== ЧАСТЬ 5. СЛЕДУЮЩИЕ ЭТАПЫ ===== -->
+
+<section id="next" class="section">
+  <div class="container">
+    <div class="section-label">11 · Часть 5. Следующие этапы</div>
+    <h2 class="section-title">Что брать в следующие этапы</h2>
+    <p class="section-subtitle">Конкретные задания для каждого исследовательского трека</p>
+
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:24px;">
+
+      <div class="card fade-up" style="border-top:3px solid var(--brand);">
+        <div style="font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--brand);margin-bottom:12px;">Исследование конкурентов</div>
+        <p style="font-size:14px;line-height:1.7;color:var(--n600);">
+          Смотреть не только цены и ассортимент, а прежде всего: какую роль играет у конкурента свежесть, как он объясняет цену, какие доказательства показывает, как строит путь от первой покупки к повторной, как использует наборы, мини-форматы и сервис. Отдельно проверить, кто реально умеет соединять premium-цену с понятной рациональной опорой.
+        </p>
+      </div>
+
+      <div class="card fade-up" style="border-top:3px solid var(--success);">
+        <div style="font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--success);margin-bottom:12px;">Исследование ЦА</div>
+        <p style="font-size:14px;line-height:1.7;color:var(--n600);">
+          Проверить, какой сегмент реально самый живой для этого проекта: функциональность, крафт-свежесть, гастрономия, beauty, спорт, подарок. Отдельно изучить, какие сигналы доверия важнее: происхождение, вкус, «после заказа», тёмное стекло, правила хранения, QR, лабораторность, понятная схема применения.
+        </p>
+      </div>
+
+      <div class="card fade-up" style="border-top:3px solid var(--warning);">
+        <div style="font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--warning);margin-bottom:12px;">Продуктовый анализ</div>
+        <p style="font-size:14px;line-height:1.7;color:var(--n600);">
+          Глубже разложить роли форматов: 100 мл как вход, 250 мл как ядро, 50 мл как нишевый premium-entry, 500 мл как хозяйственная/выгодная логика. Отдельно сравнить наборы-знакомства, наборы «под цель», подарочные наборы, миксы и подписочные сценарии.
+        </p>
+      </div>
+
+      <div class="card fade-up" style="border-top:3px solid #7c3aed;">
+        <div style="font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:#7c3aed;margin-bottom:12px;">Исследование мирового рынка</div>
+        <p style="font-size:14px;line-height:1.7;color:var(--n600);">
+          Сравнивать не «рынок масел вообще», а четыре конкретные модели: функциональные масла как нутрицевтика, крафтовая свежесть и отжим под заказ, гастрономический премиум, сервисная модель с подпиской/ремайндером/комьюнити. Именно эти модели уже читаются в РФ и дадут нормальное сопоставление.
+        </p>
+      </div>
+
+    </div>
+
+    <!-- Final summary -->
+    <div class="fade-up" style="margin-top:48px;background:linear-gradient(135deg,var(--n900) 0%,#1e3a5f 100%);border-radius:var(--r-2xl);padding:40px;color:#fff;">
+      <div style="font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--brand-light);margin-bottom:16px;">Итог в одном предложении</div>
+      <p style="font-size:18px;line-height:1.7;color:var(--n300);">
+        Исследование подтверждает, что проект выходит не в пустоту, а в уже сложившийся рынок, где есть спрос на премиальные масла, понятные форматы и сервис, но <strong style="color:#fff;">главная борьба будет идти не за «ещё одно масло», а за доверие, смысл цены и удобство повторной покупки</strong>.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer style="background:var(--n900);padding:48px 0;">
+  <div class="container">
+    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:24px;">
+      <div>
+        <div style="font-size:20px;font-weight:700;color:#fff;margin-bottom:8px;">
+          BrandOS <span style="color:var(--brand);">·</span> Синтез после Deep Research
+        </div>
+        <div style="font-size:14px;color:var(--n500);">Подготовлено для Кирилла Бродского · Магия Масел</div>
+      </div>
+    </div>
+    <div style="height:1px;background:rgba(255,255,255,.08);margin:32px 0;"></div>
+    <div style="font-size:13px;color:var(--n600);">© 2026 BrandOS · Конфиденциальный документ</div>
+  </div>
+</footer>
+
+</div>
+
+<script>
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach((e, i) => {
+    if (e.isIntersecting) {
+      setTimeout(() => e.target.classList.add('visible'), i * 80);
+    }
+  });
+}, { threshold: 0.1 });
+document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
+
+const sections = document.querySelectorAll('section[id], header[id]');
+const navLinks = document.querySelectorAll('.sidebar-nav a[href^="#"]');
+window.addEventListener('scroll', () => {
+  let current = '';
+  sections.forEach(s => {
+    if (window.scrollY >= s.offsetTop - 120) current = s.id;
+  });
+  navLinks.forEach(a => {
+    a.classList.toggle('active', a.getAttribute('href') === '#' + current);
+  });
+});
+
+if (window.innerWidth <= 1024) {
+  navLinks.forEach(a => a.addEventListener('click', () => document.querySelector('.sidebar-nav').classList.remove('open')));
+}
+</script>
+</body>
+</html>

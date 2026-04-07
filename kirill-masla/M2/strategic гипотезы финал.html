@@ -1,0 +1,810 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Стратегический синтез — Кирилл Масла</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --brand: #0ea5e9;
+  --brand-dark: #0284c7;
+  --brand-light: #7dd3fc;
+  --brand-bg: #e0f2fe;
+  --black: #0f172a;
+  --n50: #f8fafc; --n100: #f1f5f9; --n200: #e2e8f0;
+  --n300: #cbd5e1; --n400: #94a3b8; --n500: #64748b;
+  --n600: #475569; --n700: #334155; --n800: #1e293b; --n900: #0f172a;
+  --success: #10b981; --warning: #f59e0b; --error: #ef4444; --info: #3b82f6;
+  --font: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  --shadow-card: 0 1px 3px 0 rgba(0,0,0,.05), 0 1px 2px -1px rgba(0,0,0,.05);
+  --shadow-hover: 0 10px 25px -5px rgba(0,0,0,.08), 0 8px 10px -6px rgba(0,0,0,.04);
+  --shadow-btn: 0 4px 14px 0 rgba(14,165,233,.35);
+  --shadow-glow: 0 0 40px rgba(14,165,233,.15);
+  --r-sm:4px; --r-md:6px; --r-lg:8px; --r-xl:12px; --r-2xl:16px; --r-3xl:24px; --r-full:9999px;
+  --olive: #6b7a4e; --olive-bg: #f0f3eb; --olive-dark: #4a5635;
+  --gold: #b8860b; --gold-bg: #fdf8eb;
+}
+body { font-family: var(--font); font-size: 16px; line-height: 1.6; color: var(--n600); background: var(--n100); }
+@keyframes shimmer { 0%{transform:translateX(-100%)} 100%{transform:translateX(200%)} }
+@keyframes pulse-glow { 0%,100%{box-shadow:0 0 20px rgba(107,122,78,.3)} 50%{box-shadow:0 0 40px rgba(107,122,78,.5)} }
+.fade-up { opacity:0; transform:translateY(20px); transition:opacity .6s ease-out, transform .6s ease-out; }
+.fade-up.visible { opacity:1; transform:translateY(0); }
+.container { max-width: 1100px; margin: 0 auto; padding: 0 24px; }
+.section { padding: 64px 0; }
+h2.section-title { font-size: 28px; font-weight: 700; color: var(--n900); margin-bottom: 12px; }
+.section-subtitle { font-size: 16px; color: var(--n500); margin-bottom: 40px; }
+.card { background:#fff; border-radius:var(--r-2xl); border:1px solid var(--n200); padding:28px; box-shadow:var(--shadow-card); margin-bottom:16px; transition: all .3s ease; }
+.card:hover { box-shadow: var(--shadow-hover); transform: translateY(-2px); }
+.badge { display:inline-flex; align-items:center; padding:4px 12px; border-radius:var(--r-full); font-size:12px; font-weight:600; text-transform:uppercase; letter-spacing:.04em; }
+.badge-strong { background:#d1fae5; color:#065f46; }
+.badge-medium { background:#fef3c7; color:#92400e; }
+.badge-weak { background:#fee2e2; color:#991b1b; }
+.badge-info { background:var(--brand-bg); color:#0369a1; }
+.badge-olive { background: var(--olive-bg); color: var(--olive-dark); }
+.hyp-grid { display: grid; gap: 16px; }
+table.bt { width:100%; border-collapse:collapse; background:#fff; }
+table.bt thead tr { background:var(--n50); border-bottom:2px solid var(--n200); }
+table.bt th { padding:14px 16px; text-align:left; font-size:12px; font-weight:600; text-transform:uppercase; letter-spacing:.04em; color:var(--n500); }
+table.bt td { padding:14px 16px; font-size:14px; color:var(--n600); border-bottom:1px solid var(--n200); }
+table.bt tr:hover td { background:var(--n50); }
+.alert { display:flex; gap:14px; border-radius:var(--r-xl); padding:18px; margin:16px 0; }
+.alert-info { background:#eff6ff; border:1px solid #bfdbfe; border-left:4px solid var(--info); }
+.alert-warn { background:#fffbeb; border:1px solid #fde68a; border-left:4px solid var(--warning); }
+.alert-risk { background:#fef2f2; border:1px solid #fecaca; border-left:4px solid var(--error); }
+.fork-card { background: #fff; border-radius: var(--r-2xl); border: 1px solid var(--n200); overflow: hidden; margin-bottom: 20px; }
+.fork-header { padding: 20px 28px; background: linear-gradient(135deg, var(--n900), #1e3a5f); color: #fff; }
+.fork-body { padding: 24px 28px; }
+.fork-option { padding: 16px; border-radius: var(--r-xl); background: var(--n50); margin-bottom: 12px; border-left: 4px solid var(--n300); }
+.fork-option.recommended { border-left-color: var(--success); background: #f0fdf4; }
+.timeline-item { position: relative; padding-left: 32px; margin-bottom: 28px; }
+.timeline-item::before { content: ''; position: absolute; left: 10px; top: 24px; bottom: -28px; width: 2px; background: var(--n200); }
+.timeline-item:last-child::before { display: none; }
+.timeline-dot { position: absolute; left: 4px; top: 6px; width: 14px; height: 14px; border-radius: 50%; background: var(--olive); border: 3px solid #fff; box-shadow: 0 0 0 2px var(--olive); }
+.nav-link { font-size:13px; font-weight:500; color:var(--n500); text-decoration:none; padding: 4px 0; transition: color .2s; }
+.nav-link:hover, .nav-link.active { color: var(--olive); }
+@media(max-width:768px) {
+  .container { padding: 0 16px; }
+  .section { padding: 40px 0; }
+  h2.section-title { font-size: 22px; }
+  .stat-grid { grid-template-columns: 1fr 1fr !important; }
+  .nav-links { display: none !important; }
+  table.bt { font-size: 12px; }
+  table.bt th, table.bt td { padding: 10px 8px; }
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav style="position:fixed;top:0;left:0;right:0;z-index:300;background:rgba(255,255,255,.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--n200);height:56px;">
+<div class="container" style="height:100%;display:flex;align-items:center;justify-content:space-between;">
+  <div style="font-size:16px;font-weight:700;color:var(--n900);">Кирилл Масла <span style="color:var(--olive);">·</span> Синтез</div>
+  <div class="nav-links" style="display:flex;gap:20px;">
+    <a href="#overview" class="nav-link">Обзор</a>
+    <a href="#facts" class="nav-link">Факты</a>
+    <a href="#hypotheses" class="nav-link">Гипотезы</a>
+    <a href="#forks" class="nav-link">Развилки</a>
+    <a href="#session" class="nav-link">Сессия</a>
+    <a href="#next" class="nav-link">Далее</a>
+  </div>
+  <div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--olive);background:var(--olive-bg);padding:5px 12px;border-radius:var(--r-full);">Стратегия · Март 2026</div>
+</div>
+</nav>
+<div style="height:56px;"></div>
+
+<!-- HERO -->
+<header style="background:linear-gradient(135deg, var(--n900) 0%, #1e3a5f 50%, #2d3b2e 100%);padding:72px 0 64px;position:relative;overflow:hidden;">
+<div style="position:absolute;top:-120px;right:-80px;width:400px;height:400px;border-radius:50%;background:radial-gradient(circle,rgba(107,122,78,.25) 0%,transparent 70%);pointer-events:none;"></div>
+<div style="position:absolute;bottom:-80px;left:-60px;width:300px;height:300px;border-radius:50%;background:radial-gradient(circle,rgba(184,134,11,.15) 0%,transparent 70%);pointer-events:none;"></div>
+<div class="container" style="position:relative;z-index:1;">
+  <div style="display:inline-flex;align-items:center;gap:8px;background:rgba(107,122,78,.2);border:1px solid rgba(107,122,78,.4);color:#a3b88c;padding:7px 14px;border-radius:var(--r-full);font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;margin-bottom:20px;">
+    <span style="width:6px;height:6px;border-radius:50%;background:var(--olive);animation:pulse-glow 2s infinite;"></span>
+    Финальный синтез · Все исследования
+  </div>
+  <h1 style="font-size:40px;line-height:1.15;letter-spacing:-.02em;font-weight:700;color:#fff;max-width:750px;margin-bottom:16px;">От исследований — к решениям</h1>
+  <p style="font-size:17px;line-height:1.6;color:var(--n400);max-width:620px;margin-bottom:36px;">Стратегический мост между данными семи исследований и ключевыми выборами для проекта «Кирилл Масла». Документ для стратегической сессии с клиентом.</p>
+  <div style="display:flex;gap:28px;flex-wrap:wrap;">
+    <div style="color:var(--n400);font-size:13px;"><span style="color:var(--olive);font-weight:600;">Клиент:</span> Кирилл Бродский</div>
+    <div style="color:var(--n400);font-size:13px;"><span style="color:var(--olive);font-weight:600;">Источники:</span> 7 исследований</div>
+    <div style="color:var(--n400);font-size:13px;"><span style="color:var(--olive);font-weight:600;">Дата:</span> Март 2026</div>
+  </div>
+</div>
+</header>
+
+<!-- STAT GRID -->
+<div class="container" style="margin-top:-32px;position:relative;z-index:2;">
+<div class="stat-grid" style="display:grid;grid-template-columns:repeat(4,1fr);gap:16px;">
+  <div class="card fade-up" style="text-align:center;padding:20px;">
+    <div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--n500);margin-bottom:6px;">Рынок РФ к 2030</div>
+    <div style="font-size:30px;font-weight:700;color:var(--n900);line-height:1;">$1,14 млрд</div>
+    <div style="font-size:12px;color:var(--success);font-weight:500;margin-top:4px;">CAGR 4,7%</div>
+  </div>
+  <div class="card fade-up" style="text-align:center;padding:20px;">
+    <div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--n500);margin-bottom:6px;">Биохакинг-сегмент</div>
+    <div style="font-size:30px;font-weight:700;color:var(--n900);line-height:1;">16,5%</div>
+    <div style="font-size:12px;color:var(--success);font-weight:500;margin-top:4px;">Самый быстрый CAGR</div>
+  </div>
+  <div class="card fade-up" style="text-align:center;padding:20px;">
+    <div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--n500);margin-bottom:6px;">Конкурентов с подпиской</div>
+    <div style="font-size:30px;font-weight:700;color:var(--error);line-height:1;">0</div>
+    <div style="font-size:12px;color:var(--n500);font-weight:500;margin-top:4px;">из 16 исследованных</div>
+  </div>
+  <div class="card fade-up" style="text-align:center;padding:20px;background:linear-gradient(135deg,var(--olive),var(--olive-dark));color:#fff;border:none;">
+    <div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;opacity:.75;margin-bottom:6px;">Текущая выручка</div>
+    <div style="font-size:30px;font-weight:700;line-height:1;">~110K</div>
+    <div style="font-size:12px;opacity:.75;margin-top:4px;">Цель: 300–500K/мес</div>
+  </div>
+</div>
+</div>
+
+<!-- PART 1: OVERVIEW -->
+<section id="overview" class="section">
+<div class="container">
+<h2 class="section-title fade-up">Часть 1. Главное, что мы теперь понимаем</h2>
+<p class="section-subtitle fade-up">Связная картина из семи исследований — как есть, без приукрашивания</p>
+
+<div class="card fade-up" style="padding:32px;">
+<p style="font-size:16px;line-height:1.7;color:var(--n700);margin-bottom:16px;"><strong>Рыночная среда.</strong> Рынок масел холодного отжима в России — не бакалея, а часть растущей индустрии Health-Tech. К 2030 году сегмент вырастет до $1,14 млрд. Но рост неравномерный: традиционные кулинарные масла стагнируют, а функциональные (чёрный тмин, расторопша, амарант) растут двузначными темпами. Глобально тренд тот же: мировой рынок специализированных масел — $28,8 млрд с прогнозом до $88,9 млрд к 2034 году.</p>
+
+<p style="font-size:16px;line-height:1.7;color:var(--n700);margin-bottom:16px;"><strong>Конкуренты.</strong> В России один системный игрок — TRAWA (94K подписчиков, партнёрства с Мишлен-ресторанами, «Азбука Вкуса», кедровое 250 мл за 3 060 ₽). Все остальные — либо промышленные производители без маркетинга («Масляный Король» — 22 года на рынке, но интернет-магазин мёртв), либо семейные маслодавильни без масштаба. Ни один из 16 исследованных конкурентов не предлагает подписку, квиз, персональный подбор или формат «курс на 30 дней». Это дыра размером с океан.</p>
+
+<p style="font-size:16px;line-height:1.7;color:var(--n700);margin-bottom:16px;"><strong>Аудитория.</strong> Семь сегментов — от биохакеров (самые маржинальные, готовы платить >2 500 ₽ за функциональные масла) до массового ЗОЖ (чувствительны к цене, нуждаются в мини-форматах). Ключевой инсайт: люди покупают не масло, а инструмент управления здоровьем. Главный барьер — страх первой покупки за 2 000 ₽ без возможности попробовать. Главный триггер повтора — видимый результат + напоминание о докупке.</p>
+
+<p style="font-size:16px;line-height:1.7;color:var(--n700);margin-bottom:16px;"><strong>Продуктовые форматы.</strong> Работает всё, что превращает «бутылку масла» в «30-дневный ритуал»: мини-форматы 50–100 мл как вход, наборы под цель, паспорт партии, QR на лабораторные данные. Мировые ориентиры — подписочные модели D2C (Brightland, Erbology), аптекарская эстетика тёмного стекла, образовательный контент без медицинских обещаний.</p>
+
+<p style="font-size:16px;line-height:1.7;color:var(--n700);margin-bottom:16px;"><strong>Главная возможность.</strong> Концепция «масляного консьержа» не имеет аналогов ни у одного конкурента. Инженерный бэкграунд Кирилла — идеальное попадание в запрос аудитории, уставшей от маркетинговых лозунгов. Модель «персональный подбор + курс на 30 дней + ремайндер» закрывает главные боли всех приоритетных сегментов.</p>
+
+<div class="alert alert-risk" style="margin-top:20px;">
+<span style="font-size:18px;">⚡</span>
+<div>
+  <div style="font-weight:600;color:#991b1b;margin-bottom:4px;">Главный риск</div>
+  <div style="font-size:14px;color:#991b1b;">Цена 2 000 ₽ за 250 мл — в 2–5 раз выше среднего рынка. При отсутствии наград, партнёрств и медийности TRAWA, единственное обоснование — сервис, персонализация и доказательность. Без этого цена выглядит как «ИП Бродский хочет как TRAWA, но непонятно за что». Второй риск — отсутствие базы, CRM и онлайн-присутствия. Третий — синдром самозванца, который тормозит запуск.</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+
+<!-- PART 2: KEY FACTS -->
+<section id="facts" class="section" style="background:#fff;padding-top:56px;padding-bottom:56px;">
+<div class="container">
+<h2 class="section-title fade-up">Часть 2. Ключевые выводы из всех материалов</h2>
+<p class="section-subtitle fade-up">18 фактов, подтверждённых минимум 2 исследованиями</p>
+
+<div class="hyp-grid">
+
+<div class="card fade-up" style="display:flex;gap:16px;align-items:flex-start;">
+<div style="min-width:36px;height:36px;border-radius:50%;background:var(--olive-bg);color:var(--olive);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;">1</div>
+<div>
+<div style="font-weight:600;color:var(--n900);margin-bottom:4px;">Категория мигрировала из «бакалеи» в Health-Tech</div>
+<p style="font-size:14px;">Премиальные масла воспринимаются как жидкие нутрицевтики, альтернатива капсулированным БАД. Сегмент биохакинга растёт со скоростью 16,5% в год.</p>
+<div style="margin-top:8px;display:flex;gap:6px;flex-wrap:wrap;"><span class="badge badge-olive">Рынок</span><span class="badge badge-olive">ЦА</span><span class="badge badge-olive">Продукт</span><span class="badge badge-olive">Мир</span></div>
+</div>
+</div>
+
+<div class="card fade-up" style="display:flex;gap:16px;align-items:flex-start;">
+<div style="min-width:36px;height:36px;border-radius:50%;background:var(--olive-bg);color:var(--olive);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;">2</div>
+<div>
+<div style="font-weight:600;color:var(--n900);margin-bottom:4px;">TRAWA — единственный системный игрок</div>
+<p style="font-size:14px;">94K в Instagram, партнёрства с Мишлен-ресторанами, «Азбука Вкуса», ГУМ. Все остальные — фрагментированы. Но и у TRAWA нет подписки, квиза, Telegram и формата «курс».</p>
+<div style="margin-top:8px;display:flex;gap:6px;flex-wrap:wrap;"><span class="badge badge-olive">Конкуренты</span><span class="badge badge-olive">Рынок</span><span class="badge badge-olive">Продукт</span></div>
+</div>
+</div>
+
+<div class="card fade-up" style="display:flex;gap:16px;align-items:flex-start;">
+<div style="min-width:36px;height:36px;border-radius:50%;background:var(--olive-bg);color:var(--olive);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;">3</div>
+<div>
+<div style="font-weight:600;color:var(--n900);margin-bottom:4px;">Ни один конкурент не предлагает подписку или автодоставку</div>
+<p style="font-size:14px;">Бутылка 250 мл расходуется за 25 дней при регулярном приёме. Автоматическое напоминание на 21–25 день может спасти до 40% оттекающих клиентов. Рыночная дыра подтверждена всеми исследованиями.</p>
+<div style="margin-top:8px;display:flex;gap:6px;flex-wrap:wrap;"><span class="badge badge-olive">Конкуренты</span><span class="badge badge-olive">ЦА</span><span class="badge badge-olive">Продукт</span><span class="badge badge-olive">Мир</span></div>
+</div>
+</div>
+
+<div class="card fade-up" style="display:flex;gap:16px;align-items:flex-start;">
+<div style="min-width:36px;height:36px;border-radius:50%;background:var(--olive-bg);color:var(--olive);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;">4</div>
+<div>
+<div style="font-weight:600;color:var(--n900);margin-bottom:4px;">Мини-форматы (50–100 мл) — критический вход в бренд</div>
+<p style="font-size:14px;">Отсутствие пробников — главный барьер конверсии. 100 мл — стандарт отрасли. 50 мл (пробник) не найден ни у кого. Без малых форматов невозможно снять страх первой покупки за 2 000 ₽.</p>
+<div style="margin-top:8px;display:flex;gap:6px;flex-wrap:wrap;"><span class="badge badge-olive">ЦА</span><span class="badge badge-olive">Конкуренты</span><span class="badge badge-olive">Продукт</span><span class="badge badge-olive">Мир</span></div>
+</div>
+</div>
+
+<div class="card fade-up" style="display:flex;gap:16px;align-items:flex-start;">
+<div style="min-width:36px;height:36px;border-radius:50%;background:var(--olive-bg);color:var(--olive);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;">5</div>
+<div>
+<div style="font-weight:600;color:var(--n900);margin-bottom:4px;">Наборы под цель на 30 дней — незанятая ниша</div>
+<p style="font-size:14px;">Ни один конкурент не упаковал масло как «курс» с расчётом объёма, инструкцией и таймером. Модель подтверждена спросом ЦА, мировыми трендами (Brightland, подписки) и продуктовой логикой.</p>
+<div style="margin-top:8px;display:flex;gap:6px;flex-wrap:wrap;"><span class="badge badge-olive">Конкуренты</span><span class="badge badge-olive">ЦА</span><span class="badge badge-olive">Продукт</span><span class="badge badge-olive">Мир</span></div>
+</div>
+</div>
+
+<div class="card fade-up" style="display:flex;gap:16px;align-items:flex-start;">
+<div style="min-width:36px;height:36px;border-radius:50%;background:var(--olive-bg);color:var(--olive);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;">6</div>
+<div>
+<div style="font-weight:600;color:var(--n900);margin-bottom:4px;">Доверие строится на «инженерном крафте», а не на слоганах</div>
+<p style="font-size:14px;">Аудитория требует паспортов партий, QR-кодов, видео процесса, температурного контроля &lt;35°C. Протекающая крышка или дешёвый пластик мгновенно разрушают конструкт доверия.</p>
+<div style="margin-top:8px;display:flex;gap:6px;flex-wrap:wrap;"><span class="badge badge-olive">ЦА</span><span class="badge badge-olive">Продукт</span><span class="badge badge-olive">Мир</span></div>
+</div>
+</div>
+
+<div class="card fade-up" style="display:flex;gap:16px;align-items:flex-start;">
+<div style="min-width:36px;height:36px;border-radius:50%;background:var(--olive-bg);color:var(--olive);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;">7</div>
+<div>
+<div style="font-weight:600;color:var(--n900);margin-bottom:4px;">Цена 2 000 ₽/250 мл — на уровне TRAWA, в 2–5 раз выше среднего</div>
+<p style="font-size:14px;">Средний конкурент: 400–900 ₽/250 мл. TRAWA миндальное: 2 100 ₽. TRAWA кедровое: 3 060 ₽. Для обоснования без наград и партнёрств нужна другая ценностная надстройка — сервис и персонализация.</p>
+<div style="margin-top:8px;display:flex;gap:6px;flex-wrap:wrap;"><span class="badge badge-olive">Конкуренты</span><span class="badge badge-olive">Рынок</span></div>
+</div>
+</div>
+
+<div class="card fade-up" style="display:flex;gap:16px;align-items:flex-start;">
+<div style="min-width:36px;height:36px;border-radius:50%;background:var(--olive-bg);color:var(--olive);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;">8</div>
+<div>
+<div style="font-weight:600;color:var(--n900);margin-bottom:4px;">Тёмное стекло — стандарт де-факто во всём мире</div>
+<p style="font-size:14px;">Янтарное/кобальтовое/чёрное стекло — обязательно для премиума. Прозрачная тара «Масляного Короля» критикуется в отзывах. Мировые бренды дополняют узкими дозаторами и пипетками.</p>
+<div style="margin-top:8px;display:flex;gap:6px;flex-wrap:wrap;"><span class="badge badge-olive">Продукт</span><span class="badge badge-olive">Конкуренты</span><span class="badge badge-olive">Мир</span></div>
+</div>
+</div>
+
+<div class="card fade-up" style="display:flex;gap:16px;align-items:flex-start;">
+<div style="min-width:36px;height:36px;border-radius:50%;background:var(--olive-bg);color:var(--olive);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;">9</div>
+<div>
+<div style="font-weight:600;color:var(--n900);margin-bottom:4px;">Биохакеры и «Красота изнутри» — два самых маржинальных сегмента</div>
+<p style="font-size:14px;">Биохакеры: высокий LTV, готовность к подписке, ценят доказательность. Beauty: высокая эмоциональная лояльность при видимом результате, готовы рекомендовать. Оба сегмента — ядро проекта.</p>
+<div style="margin-top:8px;display:flex;gap:6px;flex-wrap:wrap;"><span class="badge badge-olive">ЦА</span><span class="badge badge-olive">Рынок</span><span class="badge badge-olive">Мир</span></div>
+</div>
+</div>
+
+<div class="card fade-up" style="display:flex;gap:16px;align-items:flex-start;">
+<div style="min-width:36px;height:36px;border-radius:50%;background:var(--olive-bg);color:var(--olive);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;">10</div>
+<div>
+<div style="font-weight:600;color:var(--n900);margin-bottom:4px;">Telegram — оптимальный «дом» бренда на старте</div>
+<p style="font-size:14px;">Канал + бот + ремайндеры + заказ в один клик. Не зависит от алгоритмов. Позволяет строить базу, управлять повторами и держать прямую связь. VK — запасной аэродром, Instagram — витрина.</p>
+<div style="margin-top:8px;display:flex;gap:6px;flex-wrap:wrap;"><span class="badge badge-olive">Стратегия</span><span class="badge badge-olive">Конкуренты</span></div>
+</div>
+</div>
+
+<div class="card fade-up" style="display:flex;gap:16px;align-items:flex-start;">
+<div style="min-width:36px;height:36px;border-radius:50%;background:var(--olive-bg);color:var(--olive);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;">11</div>
+<div>
+<div style="font-weight:600;color:var(--n900);margin-bottom:4px;">Инженерный бэкграунд Кирилла — мощнейший USP</div>
+<p style="font-size:14px;">20 лет в нефтянке → привычка к регламентам, контролю качества и измеримости. Это идеальное попадание в запрос аудитории, уставшей от глянцевого маркетинга без доказательной базы.</p>
+<div style="margin-top:8px;display:flex;gap:6px;flex-wrap:wrap;"><span class="badge badge-olive">Распаковка</span><span class="badge badge-olive">ЦА</span><span class="badge badge-olive">Продукт</span></div>
+</div>
+</div>
+
+<div class="card fade-up" style="display:flex;gap:16px;align-items:flex-start;">
+<div style="min-width:36px;height:36px;border-radius:50%;background:var(--olive-bg);color:var(--olive);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;">12</div>
+<div>
+<div style="font-weight:600;color:var(--n900);margin-bottom:4px;">Люди забывают покупать — это главная причина оттока</div>
+<p style="font-size:14px;">Даже довольные клиенты прерывают курс: бутылка стоит, портится, вкус приедается. Автоматический ремайндер на 21–25 день — самый дешёвый и мощный рычаг роста LTV.</p>
+<div style="margin-top:8px;display:flex;gap:6px;flex-wrap:wrap;"><span class="badge badge-olive">ЦА</span><span class="badge badge-olive">Продукт</span><span class="badge badge-olive">Стратегия</span></div>
+</div>
+</div>
+
+<div class="card fade-up" style="display:flex;gap:16px;align-items:flex-start;">
+<div style="min-width:36px;height:36px;border-radius:50%;background:var(--olive-bg);color:var(--olive);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;">13</div>
+<div>
+<div style="font-weight:600;color:var(--n900);margin-bottom:4px;">Аптечные капсулы за 130–250 ₽ создают ценовой якорь</div>
+<p style="font-size:14px;">Олеос, «Биокор», «Мирролла» продают масло чёрного тмина в капсулах по 132–252 ₽. Это размывает восприятие стоимости в голове покупателя: «зачем 2 000 ₽, если аптека — 200?»</p>
+<div style="margin-top:8px;display:flex;gap:6px;flex-wrap:wrap;"><span class="badge badge-olive">Конкуренты</span><span class="badge badge-olive">ЦА</span></div>
+</div>
+</div>
+
+<div class="card fade-up" style="display:flex;gap:16px;align-items:flex-start;">
+<div style="min-width:36px;height:36px;border-radius:50%;background:var(--olive-bg);color:var(--olive);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;">14</div>
+<div>
+<div style="font-weight:600;color:var(--n900);margin-bottom:4px;">Визуальный код будущего — «Интеллектуальный минимализм»</div>
+<p style="font-size:14px;">Тёмное аптекарское стекло, монохромные этикетки, шрифты с засечками, много «воздуха». Между «эзотерическим крафтом» и «Quiet Luxury» — место для «инженерного крафта» Кирилла.</p>
+<div style="margin-top:8px;display:flex;gap:6px;flex-wrap:wrap;"><span class="badge badge-olive">Продукт</span><span class="badge badge-olive">Мир</span><span class="badge badge-olive">Конкуренты</span></div>
+</div>
+</div>
+
+<div class="card fade-up" style="display:flex;gap:16px;align-items:flex-start;">
+<div style="min-width:36px;height:36px;border-radius:50%;background:var(--olive-bg);color:var(--olive);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;">15</div>
+<div>
+<div style="font-weight:600;color:var(--n900);margin-bottom:4px;">Мировая модель: подписка на «свежий отжим» — стандарт D2C</div>
+<p style="font-size:14px;">В США, Австралии, Германии подписочные модели на скоропортящиеся масла — норма. Wellness-боксы растут двузначными темпами. В России этот формат абсолютно незанят.</p>
+<div style="margin-top:8px;display:flex;gap:6px;flex-wrap:wrap;"><span class="badge badge-olive">Мир</span><span class="badge badge-olive">Конкуренты</span></div>
+</div>
+</div>
+
+<div class="card fade-up" style="display:flex;gap:16px;align-items:flex-start;">
+<div style="min-width:36px;height:36px;border-radius:50%;background:var(--olive-bg);color:var(--olive);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;">16</div>
+<div>
+<div style="font-weight:600;color:var(--n900);margin-bottom:4px;">Медицинские обещания — юридическая и репутационная мина</div>
+<p style="font-size:14px;">Нельзя обещать «лечение печени» или «снижение холестерина». Рабочие обходы: цитирование традиций, UGC-отзывы, партнёрство с нутрициологами, формулировки через состав и свойства.</p>
+<div style="margin-top:8px;display:flex;gap:6px;flex-wrap:wrap;"><span class="badge badge-olive">Распаковка</span><span class="badge badge-olive">Мир</span><span class="badge badge-olive">Рынок</span></div>
+</div>
+</div>
+
+<div class="card fade-up" style="display:flex;gap:16px;align-items:flex-start;">
+<div style="min-width:36px;height:36px;border-radius:50%;background:var(--olive-bg);color:var(--olive);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;">17</div>
+<div>
+<div style="font-weight:600;color:var(--n900);margin-bottom:4px;">Офлайн-дегустация → Telegram — сильнейшая конверсионная связка</div>
+<p style="font-size:14px;">Дорогомиловский рынок = живое доверие. Задача — переводить каждого в онлайн-базу через QR → бот → ремайндер. Это самый дешёвый источник первых клиентов.</p>
+<div style="margin-top:8px;display:flex;gap:6px;flex-wrap:wrap;"><span class="badge badge-olive">Стратегия</span><span class="badge badge-olive">Распаковка</span><span class="badge badge-olive">ЦА</span></div>
+</div>
+</div>
+
+<div class="card fade-up" style="display:flex;gap:16px;align-items:flex-start;">
+<div style="min-width:36px;height:36px;border-radius:50%;background:var(--olive-bg);color:var(--olive);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;">18</div>
+<div>
+<div style="font-weight:600;color:var(--n900);margin-bottom:4px;">Подарочный сегмент — высокий чек, но низкий LTV</div>
+<p style="font-size:14px;">Готовность платить 4 000–8 000 ₽ за бокс. Но повтор — только под календарные события. Работает как источник выручки, не как фундамент бизнеса. Требует люксовой упаковки (тубусы, сургуч).</p>
+<div style="margin-top:8px;display:flex;gap:6px;flex-wrap:wrap;"><span class="badge badge-olive">ЦА</span><span class="badge badge-olive">Конкуренты</span><span class="badge badge-olive">Мир</span></div>
+</div>
+</div>
+
+</div>
+</div>
+</section>
+
+<!-- PART 3: HYPOTHESES (compact) -->
+<section id="hypotheses" class="section">
+<div class="container">
+<h2 class="section-title fade-up">Часть 3. Итоговые гипотезы для обсуждения</h2>
+<p class="section-subtitle fade-up">Каждая гипотеза — с доказательной базой, силой и вопросом клиенту</p>
+
+<!-- 3.1 Positioning -->
+<h3 class="fade-up" style="font-size:20px;font-weight:700;color:var(--n900);margin-bottom:20px;margin-top:8px;">3.1. Позиционирование</h3>
+
+<div class="card fade-up">
+<div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:12px;margin-bottom:12px;">
+<div style="font-weight:600;color:var(--n900);font-size:16px;">«Масляный консьерж» — не имеет аналогов</div>
+<span class="badge badge-strong">Сильная (5 источников)</span>
+</div>
+<p style="font-size:14px;margin-bottom:8px;">Персональный подбор + курс на 30 дней + ремайндер. Ни у кого из 16 конкурентов такого нет. Подтверждено исследованиями конкурентов, ЦА (запрос на делегирование когнитивной нагрузки), продукта, мира (мировые тренды на персонализацию) и стратегией.</p>
+<p style="font-size:13px;color:var(--n500);"><strong>Что неясно:</strong> Готов ли Кирилл лично консультировать на старте или нужен бот/нутрициолог? <strong>Вопрос клиенту:</strong> Сколько консультаций в день реально проводить?</p>
+</div>
+
+<div class="card fade-up">
+<div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:12px;margin-bottom:12px;">
+<div style="font-weight:600;color:var(--n900);font-size:16px;">«Инженерный крафт» — идеальный визуальный код</div>
+<span class="badge badge-strong">Сильная (4 источника)</span>
+</div>
+<p style="font-size:14px;margin-bottom:8px;">Синтез холодной технологической точности и тёплой ремесленной текстуры. Резонирует с биохакерами (доказательность), крафт-эстетами (аутентичность) и Beauty-сегментом (эстетика). Подтверждено ЦА, продуктом, миром и распаковкой.</p>
+<p style="font-size:13px;color:var(--n500);"><strong>Вопрос клиенту:</strong> Что ближе — строгий лабораторный минимализм или тёплый «руки + дерево + семена»?</p>
+</div>
+
+<div class="card fade-up">
+<div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:12px;margin-bottom:12px;">
+<div style="font-weight:600;color:var(--n900);font-size:16px;">Обоснование цены 2 000 ₽ = сервис + доказательность + свежесть</div>
+<span class="badge badge-strong">Сильная (4 источника)</span>
+</div>
+<p style="font-size:14px;margin-bottom:8px;">Конкуренты обосновывают цену технологией и наградами. У проекта нет наград — значит, нужно продавать не «масло», а статус + сервис + доказательность + свежесть. Это подтверждено анализом конкурентов, стратегией, ЦА и рынком.</p>
+<p style="font-size:13px;color:var(--n500);"><strong>Вопрос клиенту:</strong> Какие элементы доказательности реально сделать на старте? Лабораторный анализ? Видео? Паспорт партии?</p>
+</div>
+
+<!-- 3.2 Product -->
+<h3 class="fade-up" style="font-size:20px;font-weight:700;color:var(--n900);margin-bottom:20px;margin-top:32px;">3.2. Продукт и линейка</h3>
+
+<div class="card fade-up">
+<div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:12px;margin-bottom:12px;">
+<div style="font-weight:600;color:var(--n900);font-size:16px;">Якорные масла — чёрный тмин, кедровое, расторопша</div>
+<span class="badge badge-strong">Сильная (4 источника)</span>
+</div>
+<p style="font-size:14px;margin-bottom:8px;">Чёрный тмин — пересечение ЗОЖ и восточной медицины, самый эмоциональный продукт. Кедровое — самое дорогое и «статусное» (3 738 отзывов у Siberian Green). Расторопша — стабильный спрос через ЖКТ-сегмент.</p>
+<p style="font-size:13px;color:var(--n500);"><strong>Вопрос клиенту:</strong> Какие масла дают лучшую маржу? Есть ли ограничения по объёму производства?</p>
+</div>
+
+<div class="card fade-up">
+<div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:12px;margin-bottom:12px;">
+<div style="font-weight:600;color:var(--n900);font-size:16px;">Три стартовых набора: Иммунитет / Кожа / Спорт</div>
+<span class="badge badge-strong">Сильная (4 источника)</span>
+</div>
+<p style="font-size:14px;margin-bottom:8px;">Иммунитет (тмин + расторопша + тыква), Кожа/волосы (миндаль + кедр + лён), Спорт (лён + тыква + грецкий орех). Формат «на 30 дней» поднимает средний чек с 2–3K до 7–9K. Подтверждено ЦА, продуктом, стратегией и мировыми аналогами.</p>
+<p style="font-size:13px;color:var(--n500);"><strong>Вопрос клиенту:</strong> Какие комбинации проверены на реальных покупателях Дорогомиловского?</p>
+</div>
+
+<div class="card fade-up">
+<div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:12px;margin-bottom:12px;">
+<div style="font-weight:600;color:var(--n900);font-size:16px;">Облепиховое масло — приоритет №1 из планируемой линейки</div>
+<span class="badge badge-medium">Средняя (2 источника)</span>
+</div>
+<p style="font-size:14px;margin-bottom:8px;">Глобальный тренд на Омега-7 (пальмитолеиновая кислота) — «святой грааль» кожи. Облепиха пересекает сегменты Beauty и ЖКТ. Кунжутное — для гастро-сегмента. Конопляное — для биохакеров. Кокосовое — слишком массовое.</p>
+<p style="font-size:13px;color:var(--n500);"><strong>Вопрос клиенту:</strong> Есть ли доступ к качественному сырью облепихи? Какая себестоимость?</p>
+</div>
+
+<!-- 3.3-3.8 compact -->
+<h3 class="fade-up" style="font-size:20px;font-weight:700;color:var(--n900);margin-bottom:20px;margin-top:32px;">3.3–3.8. Сводные гипотезы</h3>
+
+<div style="overflow-x:auto;border-radius:var(--r-2xl);border:1px solid var(--n200);margin-bottom:24px;" class="fade-up">
+<table class="bt">
+<thead><tr>
+<th style="min-width:120px;">Тема</th>
+<th style="min-width:240px;">Гипотеза</th>
+<th style="min-width:80px;">Сила</th>
+<th style="min-width:180px;">Вопрос клиенту</th>
+</tr></thead>
+<tbody>
+<tr><td style="font-weight:500;color:var(--n700);">Упаковка</td><td>Тёмное стекло + паспорт партии + QR — обязательный минимум</td><td><span class="badge badge-strong">Сильная</span></td><td>Какая тара сейчас? Есть ли партнёр по стеклу?</td></tr>
+<tr><td style="font-weight:500;color:var(--n700);">Упаковка</td><td>Спрей/дозатор — тестировать на гастро-маслах (кедровое, тыквенное)</td><td><span class="badge badge-medium">Средняя</span></td><td>Готовы ли инвестировать в нестандартную тару?</td></tr>
+<tr><td style="font-weight:500;color:var(--n700);">Каналы</td><td>Telegram — основной канал на старте, маркетплейсы — витрина</td><td><span class="badge badge-strong">Сильная</span></td><td>Есть ли навыки работы с TG-ботами? Нужен ли подрядчик?</td></tr>
+<tr><td style="font-weight:500;color:var(--n700);">Каналы</td><td>Ozon/WB — не раньше недели 9–10 как витрина, не основной</td><td><span class="badge badge-strong">Сильная</span></td><td>Готовы ли к маржинальности маркетплейсов?</td></tr>
+<tr><td style="font-weight:500;color:var(--n700);">Коммуникация</td><td>TOV: спокойный экспертный, без восклицательных знаков и давления</td><td><span class="badge badge-strong">Сильная</span></td><td>Есть ли контент-специалист или всё сам?</td></tr>
+<tr><td style="font-weight:500;color:var(--n700);">Коммуникация</td><td>Обход мед. обещаний: через состав, традиции, UGC-отзывы</td><td><span class="badge badge-strong">Сильная</span></td><td>Кто проверит формулировки юридически?</td></tr>
+<tr><td style="font-weight:500;color:var(--n700);">Доверие</td><td>Внешний нутрициолог как «лицо» — решает конфликт «основатель в тени»</td><td><span class="badge badge-medium">Средняя</span></td><td>Есть ли знакомые нутрициологи? Бюджет на амбассадора?</td></tr>
+<tr><td style="font-weight:500;color:var(--n700);">Доверие</td><td>QR → видео процесса + лабораторные данные — самый дешёвый аргумент</td><td><span class="badge badge-strong">Сильная</span></td><td>Есть ли лабораторные протоколы сейчас?</td></tr>
+<tr><td style="font-weight:500;color:var(--n700);">Повтор</td><td>Ремайндер на 21–25 день через TG — обязателен</td><td><span class="badge badge-strong">Сильная</span></td><td>Техническая реализация: бот или вручную на старте?</td></tr>
+<tr><td style="font-weight:500;color:var(--n700);">Повтор</td><td>Подписка со скидкой 15% — формат будущего, не старта</td><td><span class="badge badge-medium">Средняя</span></td><td>При каком объёме базы запускать?</td></tr>
+<tr><td style="font-weight:500;color:var(--n700);">Путь клиента</td><td>Рынок → QR → TG → ремайндер → повтор — оптимальный путь</td><td><span class="badge badge-strong">Сильная</span></td><td>Как сейчас выглядит путь? Где теряются?</td></tr>
+<tr><td style="font-weight:500;color:var(--n700);">Путь клиента</td><td>Главная точка обрыва — между первой покупкой и второй</td><td><span class="badge badge-strong">Сильная</span></td><td>Какой % клиентов возвращается сейчас?</td></tr>
+</tbody>
+</table>
+</div>
+
+</div>
+</section>
+
+<!-- PART 4: FORKS -->
+<section id="forks" class="section" style="background:#fff;">
+<div class="container">
+<h2 class="section-title fade-up">Часть 4. Развилки проекта</h2>
+<p class="section-subtitle fade-up">5 стратегических точек, где нужен выбор клиента</p>
+
+<!-- Fork 1 -->
+<div class="fork-card fade-up">
+<div class="fork-header">
+<div style="font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;opacity:.7;margin-bottom:4px;">Развилка №1</div>
+<div style="font-size:18px;font-weight:700;">Позиционирование: кто мы для рынка?</div>
+</div>
+<div class="fork-body">
+<div class="fork-option recommended">
+<div style="font-weight:600;color:var(--n900);margin-bottom:6px;">А. «Инженерный крафт + доказательность» <span class="badge badge-strong" style="margin-left:8px;">Рекомендуется</span></div>
+<p style="font-size:14px;">Холодная точность производства + тёплая натуральность продукта. Факты, цифры, паспорта партий. Для биохакеров и осознанного ЗОЖ. Уникально — ни один конкурент так не позиционируется. Бьёт инженерный бэкграунд Кирилла.</p>
+</div>
+<div class="fork-option">
+<div style="font-weight:600;color:var(--n900);margin-bottom:6px;">Б. «Тёплый ремесленник + история семьи»</div>
+<p style="font-size:14px;">Душевный крафт, отжим на рассвете, связь с землёй. Работает для крафт-эстетов, но рынок переполнен этим нарративом (RAW Oil, МаслоДав, Маслослад). Не обосновывает цену 2 000 ₽.</p>
+</div>
+<div class="fork-option">
+<div style="font-weight:600;color:var(--n900);margin-bottom:6px;">В. «Health-Tech бренд без лица»</div>
+<p style="font-size:14px;">Полностью команда + бот + алгоритмы. Как Bioniq, но для масел. Амбициозно и футуристично, но требует бюджета и технической базы, которых нет на старте.</p>
+</div>
+</div>
+</div>
+
+<!-- Fork 2 -->
+<div class="fork-card fade-up">
+<div class="fork-header">
+<div style="font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;opacity:.7;margin-bottom:4px;">Развилка №2</div>
+<div style="font-size:18px;font-weight:700;">Ценовая стратегия: держать 2 000 ₽ или дать вход дешевле?</div>
+</div>
+<div class="fork-body">
+<div class="fork-option recommended">
+<div style="font-weight:600;color:var(--n900);margin-bottom:6px;">А. Держать 2 000 ₽ за 250 мл + ввести 100 мл за 900–1 000 ₽ <span class="badge badge-strong" style="margin-left:8px;">Рекомендуется</span></div>
+<p style="font-size:14px;">Основной формат остаётся премиальным. 100 мл — «безопасная дегустация». Не размывает позиционирование. 100 мл — стандарт отрасли (TRAWA, Siberian Green). Добавить 50 мл «пробники» в наборах-знакомствах.</p>
+</div>
+<div class="fork-option">
+<div style="font-weight:600;color:var(--n900);margin-bottom:6px;">Б. Снизить до 1 500 ₽ за 250 мл для конкурентного входа</div>
+<p style="font-size:14px;">Увеличит конверсию, но съест маржу и подорвёт позиционирование «премиум». TRAWA не снижает — и лидирует. Ценовая конкуренция — это путь «Масляного Короля», не ваш.</p>
+</div>
+</div>
+</div>
+
+<!-- Fork 3 -->
+<div class="fork-card fade-up">
+<div class="fork-header">
+<div style="font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;opacity:.7;margin-bottom:4px;">Развилка №3</div>
+<div style="font-size:18px;font-weight:700;">Каналы старта: TG + офлайн или маркетплейсы?</div>
+</div>
+<div class="fork-body">
+<div class="fork-option recommended">
+<div style="font-weight:600;color:var(--n900);margin-bottom:6px;">А. TG + Дорогомиловский (первые 8 недель), маркетплейсы — потом <span class="badge badge-strong" style="margin-left:8px;">Рекомендуется</span></div>
+<p style="font-size:14px;">Быстро, дёшево, контролируемо. Строит собственную базу. Позволяет тестировать офферы. Маркетплейсы подключить на неделе 9–10 как витрину, а не основной канал. Маржа на маркетплейсах будет давить.</p>
+</div>
+<div class="fork-option">
+<div style="font-weight:600;color:var(--n900);margin-bottom:6px;">Б. Ozon/WB с первого дня</div>
+<p style="font-size:14px;">Масштаб и трафик сразу, но: конкуренция по цене, комиссии 15–25%, нет контроля над клиентской базой, нет возможности строить ремайндеры. Siberian Green собрал 3 738 отзывов — чтобы конкурировать, нужны сотни продаж.</p>
+</div>
+</div>
+</div>
+
+<!-- Fork 4 -->
+<div class="fork-card fade-up">
+<div class="fork-header">
+<div style="font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;opacity:.7;margin-bottom:4px;">Развилка №4</div>
+<div style="font-size:18px;font-weight:700;">Основной формат продукта: моно-масла или наборы?</div>
+</div>
+<div class="fork-body">
+<div class="fork-option recommended">
+<div style="font-weight:600;color:var(--n900);margin-bottom:6px;">А. Моно-масла + наборы под цель (параллельно) <span class="badge badge-strong" style="margin-left:8px;">Рекомендуется</span></div>
+<p style="font-size:14px;">Моно-масла — для тех, кто знает что хочет. Наборы под цель — для новичков и для роста среднего чека. Лестница: пробник 100 мл → набор на 30 дней → подписка. Не нужно выбирать одно — нужна система.</p>
+</div>
+<div class="fork-option">
+<div style="font-weight:600;color:var(--n900);margin-bottom:6px;">Б. Только наборы (без моно-масел в рознице)</div>
+<p style="font-size:14px;">Упрощает каталог и фокусирует коммуникацию, но отсекает опытных покупателей, которые точно знают, какое масло им нужно.</p>
+</div>
+</div>
+</div>
+
+<!-- Fork 5 -->
+<div class="fork-card fade-up">
+<div class="fork-header">
+<div style="font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;opacity:.7;margin-bottom:4px;">Развилка №5</div>
+<div style="font-size:18px;font-weight:700;">Лицо бренда: основатель, эксперт или команда?</div>
+</div>
+<div class="fork-body">
+<div class="fork-option recommended">
+<div style="font-weight:600;color:var(--n900);margin-bottom:6px;">А. Основатель как «руки и голос» (без лица) + внешний эксперт <span class="badge badge-strong" style="margin-left:8px;">Рекомендуется</span></div>
+<p style="font-size:14px;">Кирилл: видео рук, процесса, голос за кадром. Нутрициолог/шеф — как амбассадор для рекомендаций. Решает конфликт «в тени» vs «нужно доверие». Подтверждено распаковкой, ЦА и стратегией.</p>
+</div>
+<div class="fork-option">
+<div style="font-weight:600;color:var(--n900);margin-bottom:6px;">Б. Полностью командный бренд без основателя</div>
+<p style="font-size:14px;">Масштабируемо, но в нише крафта «безличный бренд» проигрывает. Аудитория хочет знать, кто стоит за прессом. Даже «руки + голос» — уже достаточный сигнал доверия.</p>
+</div>
+</div>
+</div>
+
+</div>
+</section>
+
+<!-- PART 5: SESSION QUESTIONS -->
+<section id="session" class="section">
+<div class="container">
+<h2 class="section-title fade-up">Часть 5. Вопросы для стратегической сессии</h2>
+<p class="section-subtitle fade-up">14 конкретных вопросов, привязанных к данным из исследований</p>
+
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;" class="fade-up">
+
+<div class="card" style="border-left:4px solid var(--olive);">
+<div style="font-size:11px;font-weight:600;text-transform:uppercase;color:var(--olive);margin-bottom:8px;">Позиционирование и бренд</div>
+<p style="font-size:14px;color:var(--n700);margin-bottom:8px;"><strong>1.</strong> «Инженерный крафт» или «тёплый ремесленник» — что ближе по ощущениям?</p>
+<p style="font-size:14px;color:var(--n700);margin-bottom:8px;"><strong>2.</strong> Есть ли бренд-нейм или пока «ИП Бродский»? Если нет — готовы ли к неймингу?</p>
+<p style="font-size:14px;color:var(--n700);"><strong>3.</strong> Как формулируете «большую идею» бренда: «культура масел», «премиум-профилактика», что-то ещё?</p>
+</div>
+
+<div class="card" style="border-left:4px solid var(--olive);">
+<div style="font-size:11px;font-weight:600;text-transform:uppercase;color:var(--olive);margin-bottom:8px;">Продукт и линейка</div>
+<p style="font-size:14px;color:var(--n700);margin-bottom:8px;"><strong>4.</strong> Какие 3 масла дают лучшую маржу? Какие чаще всего покупают на рынке?</p>
+<p style="font-size:14px;color:var(--n700);margin-bottom:8px;"><strong>5.</strong> Готовы ли к 100 мл как стандартному входному формату? Есть ли тара?</p>
+<p style="font-size:14px;color:var(--n700);"><strong>6.</strong> Облепиховое — есть ли доступ к сырью? Когда реально запустить?</p>
+</div>
+
+<div class="card" style="border-left:4px solid var(--olive);">
+<div style="font-size:11px;font-weight:600;text-transform:uppercase;color:var(--olive);margin-bottom:8px;">Каналы и продажи</div>
+<p style="font-size:14px;color:var(--n700);margin-bottom:8px;"><strong>7.</strong> Telegram-канал: есть ли? Кто будет вести? Нужен ли бот на старте?</p>
+<p style="font-size:14px;color:var(--n700);margin-bottom:8px;"><strong>8.</strong> Маркетплейсы: Ozon или WB? Какой приоритетнее? Готовы ли к комиссиям?</p>
+<p style="font-size:14px;color:var(--n700);"><strong>9.</strong> Как выглядит доставка из Москвы: курьер, СДЭК, Почта? Кто упаковывает?</p>
+</div>
+
+<div class="card" style="border-left:4px solid var(--olive);">
+<div style="font-size:11px;font-weight:600;text-transform:uppercase;color:var(--olive);margin-bottom:8px;">Сервис и повторные покупки</div>
+<p style="font-size:14px;color:var(--n700);margin-bottom:8px;"><strong>10.</strong> Какой % клиентов возвращается сейчас? Есть ли хоть примерные данные?</p>
+<p style="font-size:14px;color:var(--n700);"><strong>11.</strong> Ремайндеры: готовы делать вручную (первые 50 клиентов) или сразу бот?</p>
+</div>
+
+<div class="card" style="border-left:4px solid var(--olive);grid-column:1/3;">
+<div style="font-size:11px;font-weight:600;text-transform:uppercase;color:var(--olive);margin-bottom:8px;">Бюджет и приоритеты</div>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+<p style="font-size:14px;color:var(--n700);"><strong>12.</strong> Какой бюджет реально есть на следующие 90 дней? Включая тару, контент, рекламу.</p>
+<p style="font-size:14px;color:var(--n700);"><strong>13.</strong> Есть ли лабораторные анализы / сертификаты / декларации сейчас? Если нет — сколько стоит сделать?</p>
+</div>
+<p style="font-size:14px;color:var(--n700);margin-top:8px;"><strong>14.</strong> Кто есть в команде сейчас? Кто нужен первым: контент-мейкер, оператор продаж, нутрициолог?</p>
+</div>
+
+</div>
+</div>
+</section>
+
+<!-- PART 6: TABLES -->
+<section class="section" style="background:#fff;">
+<div class="container">
+<h2 class="section-title fade-up">Часть 6. Таблицы фиксации для сессии</h2>
+<p class="section-subtitle fade-up">Заполняются вместе с клиентом</p>
+
+<h3 class="fade-up" style="font-size:18px;font-weight:600;color:var(--n900);margin-bottom:16px;">Таблица 1 — Реакция на гипотезы</h3>
+<div style="overflow-x:auto;border-radius:var(--r-2xl);border:1px solid var(--n200);margin-bottom:36px;" class="fade-up">
+<table class="bt">
+<thead><tr>
+<th>Тема</th><th>Гипотеза</th><th>Реакция</th><th>Комментарий</th><th>Статус</th><th>След. шаг</th>
+</tr></thead>
+<tbody>
+<tr><td style="font-weight:500;">Позиционирование</td><td>«Масляный консьерж» — ядро бренда</td><td style="color:var(--n400);">—</td><td style="color:var(--n400);">—</td><td style="color:var(--n400);">—</td><td style="color:var(--n400);">—</td></tr>
+<tr><td style="font-weight:500;">Позиционирование</td><td>«Инженерный крафт» как визуальный код</td><td style="color:var(--n400);">—</td><td style="color:var(--n400);">—</td><td style="color:var(--n400);">—</td><td style="color:var(--n400);">—</td></tr>
+<tr><td style="font-weight:500;">Продукт</td><td>100 мл как входной формат</td><td style="color:var(--n400);">—</td><td style="color:var(--n400);">—</td><td style="color:var(--n400);">—</td><td style="color:var(--n400);">—</td></tr>
+<tr><td style="font-weight:500;">Продукт</td><td>3 набора на 30 дней под цель</td><td style="color:var(--n400);">—</td><td style="color:var(--n400);">—</td><td style="color:var(--n400);">—</td><td style="color:var(--n400);">—</td></tr>
+<tr><td style="font-weight:500;">Каналы</td><td>TG — основной, маркетплейсы — позже</td><td style="color:var(--n400);">—</td><td style="color:var(--n400);">—</td><td style="color:var(--n400);">—</td><td style="color:var(--n400);">—</td></tr>
+<tr><td style="font-weight:500;">Доверие</td><td>QR + паспорт партии — обязательно</td><td style="color:var(--n400);">—</td><td style="color:var(--n400);">—</td><td style="color:var(--n400);">—</td><td style="color:var(--n400);">—</td></tr>
+<tr><td style="font-weight:500;">Доверие</td><td>Внешний нутрициолог как амбассадор</td><td style="color:var(--n400);">—</td><td style="color:var(--n400);">—</td><td style="color:var(--n400);">—</td><td style="color:var(--n400);">—</td></tr>
+<tr><td style="font-weight:500;">Повтор</td><td>Ремайндер на 21–25 день через TG</td><td style="color:var(--n400);">—</td><td style="color:var(--n400);">—</td><td style="color:var(--n400);">—</td><td style="color:var(--n400);">—</td></tr>
+</tbody>
+</table>
+</div>
+
+<h3 class="fade-up" style="font-size:18px;font-weight:600;color:var(--n900);margin-bottom:16px;">Таблица 2 — Реакция на развилки</h3>
+<div style="overflow-x:auto;border-radius:var(--r-2xl);border:1px solid var(--n200);" class="fade-up">
+<table class="bt">
+<thead><tr>
+<th>Развилка</th><th>Выбранный вариант</th><th>Комментарий</th><th>Что меняет в плане</th>
+</tr></thead>
+<tbody>
+<tr><td style="font-weight:500;">Позиционирование (крафт vs ремесленник vs tech)</td><td style="color:var(--n400);">—</td><td style="color:var(--n400);">—</td><td style="color:var(--n400);">—</td></tr>
+<tr><td style="font-weight:500;">Цена (держать 2K vs снижать)</td><td style="color:var(--n400);">—</td><td style="color:var(--n400);">—</td><td style="color:var(--n400);">—</td></tr>
+<tr><td style="font-weight:500;">Каналы (TG-first vs маркетплейсы)</td><td style="color:var(--n400);">—</td><td style="color:var(--n400);">—</td><td style="color:var(--n400);">—</td></tr>
+<tr><td style="font-weight:500;">Продукт (моно + наборы vs только наборы)</td><td style="color:var(--n400);">—</td><td style="color:var(--n400);">—</td><td style="color:var(--n400);">—</td></tr>
+<tr><td style="font-weight:500;">Лицо бренда (руки+голос+эксперт vs команда)</td><td style="color:var(--n400);">—</td><td style="color:var(--n400);">—</td><td style="color:var(--n400);">—</td></tr>
+</tbody>
+</table>
+</div>
+
+</div>
+</section>
+
+<!-- PART 7: NEXT STEPS -->
+<section id="next" class="section">
+<div class="container">
+<h2 class="section-title fade-up">Часть 7. Что берётся в следующий этап</h2>
+<p class="section-subtitle fade-up">Блоки для фиксации после сессии</p>
+
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+
+<div class="card fade-up" style="border-top:3px solid var(--olive);">
+<div style="font-size:13px;font-weight:700;text-transform:uppercase;color:var(--olive);margin-bottom:12px;">Позиционирование</div>
+<p style="font-size:14px;margin-bottom:6px;"><strong>Зафиксировано:</strong> «Масляный консьерж» как ядро. «Инженерный крафт» как код.</p>
+<p style="font-size:14px;color:var(--n500);"><strong>Дотестировать:</strong> Формулировку в 1 предложение. Резонанс с реальными клиентами на рынке.</p>
+</div>
+
+<div class="card fade-up" style="border-top:3px solid var(--olive);">
+<div style="font-size:13px;font-weight:700;text-transform:uppercase;color:var(--olive);margin-bottom:12px;">Продукт</div>
+<p style="font-size:14px;margin-bottom:6px;"><strong>Первые:</strong> 3 набора на 30 дней (Иммунитет, Кожа, Спорт) + 100 мл как вход.</p>
+<p style="font-size:14px;color:var(--n500);"><strong>Отложить:</strong> Купажи/миксы, спреи, подарочные тубусы (после первых 50 продаж наборов).</p>
+</div>
+
+<div class="card fade-up" style="border-top:3px solid var(--olive);">
+<div style="font-size:13px;font-weight:700;text-transform:uppercase;color:var(--olive);margin-bottom:12px;">Упаковка и доказательность</div>
+<p style="font-size:14px;margin-bottom:6px;"><strong>На старте:</strong> Тёмное стекло, паспорт партии (хотя бы вкладыш), QR → видео процесса.</p>
+<p style="font-size:14px;color:var(--n500);"><strong>Позже:</strong> Лабораторные анализы на содержание активных веществ, цифровой паспорт с данными.</p>
+</div>
+
+<div class="card fade-up" style="border-top:3px solid var(--olive);">
+<div style="font-size:13px;font-weight:700;text-transform:uppercase;color:var(--olive);margin-bottom:12px;">Каналы (30 / 60 / 90 дней)</div>
+<p style="font-size:14px;margin-bottom:6px;"><strong>30 дней:</strong> TG-канал + сбор базы с рынка + Яндекс/2ГИС карточки.</p>
+<p style="font-size:14px;margin-bottom:6px;"><strong>60 дней:</strong> VK как витрина + первые платные размещения в TG-каналах.</p>
+<p style="font-size:14px;color:var(--n500);"><strong>90 дней:</strong> Ozon как витрина + тест Instagram (без лица).</p>
+</div>
+
+<div class="card fade-up" style="border-top:3px solid var(--olive);">
+<div style="font-size:13px;font-weight:700;text-transform:uppercase;color:var(--olive);margin-bottom:12px;">Коммуникация</div>
+<p style="font-size:14px;margin-bottom:6px;"><strong>TOV:</strong> Спокойный, экспертный, фактологичный. Без давления и восклицательных знаков.</p>
+<p style="font-size:14px;margin-bottom:6px;"><strong>Ключевые сообщения:</strong> Свежесть. Контроль. Подбор под цель. Ритуал на 30 дней.</p>
+<p style="font-size:14px;color:var(--n500);"><strong>Запреты:</strong> «Лечит», «панацея», «чудо-средство», агрессивные медицинские обещания.</p>
+</div>
+
+<div class="card fade-up" style="border-top:3px solid var(--olive);">
+<div style="font-size:13px;font-weight:700;text-transform:uppercase;color:var(--olive);margin-bottom:12px;">Сервис (CX на старте)</div>
+<p style="font-size:14px;margin-bottom:6px;"><strong>Минимум:</strong> QR на точке → TG. Ремайндер (вручную → бот). Ответ на отзывы &lt;24ч.</p>
+<p style="font-size:14px;color:var(--n500);"><strong>Позже:</strong> Квиз-подборщик. Подписка. Автоматические сценарии в боте.</p>
+</div>
+
+</div>
+
+<div class="card fade-up" style="border-top:3px solid var(--gold);margin-top:16px;">
+<div style="font-size:13px;font-weight:700;text-transform:uppercase;color:var(--gold);margin-bottom:12px;">Команда</div>
+<p style="font-size:14px;margin-bottom:6px;"><strong>Кирилл делает сам:</strong> Контроль качества, подбор сырья, личные консультации топ-клиентам, фактура для контента (голос/руки/процесс).</p>
+<p style="font-size:14px;"><strong>Делегировать:</strong> Ведение TG-канала (контент-мейкер), обработка заказов (оператор продаж), упаковка/логистика, отзывы и карточки.</p>
+</div>
+
+</div>
+</section>
+
+<!-- PART 8: GAPS -->
+<section class="section" style="background:#fff;">
+<div class="container">
+<h2 class="section-title fade-up">Часть 8. Что остаётся неясным</h2>
+<p class="section-subtitle fade-up">Пробелы, которые не закрыты исследованиями</p>
+
+<div class="hyp-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+
+<div class="alert alert-warn fade-up">
+<span>1</span>
+<div>
+<div style="font-weight:600;color:#92400e;margin-bottom:2px;">Юнит-экономика по SKU</div>
+<div style="font-size:13px;color:#92400e;">Нет данных о себестоимости, марже по каждому маслу, производственной мощности. Без этого невозможно точно спланировать ценовую архитектуру наборов.</div>
+</div>
+</div>
+
+<div class="alert alert-warn fade-up">
+<span>2</span>
+<div>
+<div style="font-weight:600;color:#92400e;margin-bottom:2px;">Реальный % повторных покупок</div>
+<div style="font-size:13px;color:#92400e;">Сколько клиентов с рынка возвращаются? Через какое время? Это ключевой параметр для прогноза выручки, но данных нет.</div>
+</div>
+</div>
+
+<div class="alert alert-warn fade-up">
+<span>3</span>
+<div>
+<div style="font-weight:600;color:#92400e;margin-bottom:2px;">Юридическое оформление</div>
+<div style="font-size:13px;color:#92400e;">Декларации, маркировка «Честный Знак», штрихкоды, документы на продукт — статус неизвестен. Критично для маркетплейсов и масштабирования.</div>
+</div>
+</div>
+
+<div class="alert alert-warn fade-up">
+<span>4</span>
+<div>
+<div style="font-weight:600;color:#92400e;margin-bottom:2px;">Логистика онлайн-заказов</div>
+<div style="font-size:13px;color:#92400e;">Кто будет доставлять, упаковывать, обрабатывать возвраты? Масло — хрупкий продукт, протечки при доставке = убитое доверие.</div>
+</div>
+</div>
+
+<div class="alert alert-warn fade-up">
+<span>5</span>
+<div>
+<div style="font-weight:600;color:#92400e;margin-bottom:2px;">Тестирование формулировок с ЦА</div>
+<div style="font-size:13px;color:#92400e;">Все гипотезы по офферам и сообщениям — из исследований. Нужно протестировать на 10–20 реальных клиентах на рынке: что цепляет, что нет.</div>
+</div>
+</div>
+
+<div class="alert alert-warn fade-up">
+<span>6</span>
+<div>
+<div style="font-weight:600;color:#92400e;margin-bottom:2px;">Бюджет на запуск</div>
+<div style="font-size:13px;color:#92400e;">Конкретная сумма на тару, контент, TG-бот, первые рекламные размещения. Без цифры — невозможно приоритизировать задачи.</div>
+</div>
+</div>
+
+<div class="alert alert-warn fade-up">
+<span>7</span>
+<div>
+<div style="font-weight:600;color:#92400e;margin-bottom:2px;">Нутрициолог как амбассадор</div>
+<div style="font-size:13px;color:#92400e;">Кто? Какой бюджет? Какой формат сотрудничества? Это решает конфликт «основатель в тени vs доверие через лицо» — но пока абстрактно.</div>
+</div>
+</div>
+
+<div class="alert alert-warn fade-up">
+<span>8</span>
+<div>
+<div style="font-weight:600;color:#92400e;margin-bottom:2px;">Бренд-нейм и визуальная айдентика</div>
+<div style="font-size:13px;color:#92400e;">Сейчас это «ИП Бродский». Нужен нейминг, логотип, этикетка. Без этого невозможно строить премиальный образ в онлайне.</div>
+</div>
+</div>
+
+</div>
+</div>
+</section>
+
+<!-- FOOTER -->
+<footer style="background:var(--n900);padding:48px 0;margin-top:0;">
+<div class="container">
+<div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:24px;">
+  <div>
+    <div style="font-size:18px;font-weight:700;color:#fff;margin-bottom:6px;">Кирилл Масла <span style="color:var(--olive);">·</span> Стратегический синтез</div>
+    <div style="font-size:13px;color:var(--n500);">Подготовлено на основе 7 исследований · Март 2026</div>
+  </div>
+  <div style="font-size:13px;color:var(--n500);">Документ для стратегической сессии. Не является финальной стратегией.</div>
+</div>
+<div style="height:1px;background:rgba(255,255,255,.08);margin:28px 0;"></div>
+<div style="font-size:12px;color:var(--n600);">© 2026 BrandOS · Конфиденциальный документ проекта</div>
+</div>
+</footer>
+
+<script>
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach((e, i) => {
+    if (e.isIntersecting) {
+      setTimeout(() => e.target.classList.add('visible'), i * 60);
+    }
+  });
+}, { threshold: 0.08 });
+document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
+
+const sections = document.querySelectorAll('section[id]');
+const navLinks = document.querySelectorAll('.nav-link');
+window.addEventListener('scroll', () => {
+  let current = '';
+  sections.forEach(s => {
+    if (window.scrollY >= s.offsetTop - 100) current = s.id;
+  });
+  navLinks.forEach(a => {
+    a.style.color = a.getAttribute('href') === '#' + current ? 'var(--olive)' : '';
+    a.style.fontWeight = a.getAttribute('href') === '#' + current ? '600' : '';
+  });
+});
+</script>
+
+</body>
+</html>

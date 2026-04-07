@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Пост-анализ конкурентного исследования — Магия Масел</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --brand: #0ea5e9;
+  --brand-dark: #0284c7;
+  --brand-light: #7dd3fc;
+  --brand-bg: #e0f2fe;
+  --black: #0f172a;
+  --n50: #f8fafc; --n100: #f1f5f9; --n200: #e2e8f0;
+  --n300: #cbd5e1; --n400: #94a3b8; --n500: #64748b;
+  --n600: #475569; --n700: #334155; --n800: #1e293b; --n900: #0f172a;
+  --success: #10b981; --warning: #f59e0b; --error: #ef4444; --info: #3b82f6;
+  --olive: #84cc16; --amber: #d97706; --purple: #8b5cf6;
+  --font: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  --shadow-card: 0 1px 3px 0 rgba(0,0,0,.05), 0 1px 2px -1px rgba(0,0,0,.05);
+  --shadow-hover: 0 10px 25px -5px rgba(0,0,0,.08), 0 8px 10px -6px rgba(0,0,0,.04);
+  --shadow-btn: 0 4px 14px 0 rgba(14,165,233,.35);
+  --shadow-glow: 0 0 40px rgba(14,165,233,.15);
+  --r-sm:4px; --r-md:6px; --r-lg:8px; --r-xl:12px; --r-2xl:16px; --r-3xl:24px; --r-full:9999px;
+}
+
+body {
+  font-family: var(--font);
+  font-size: 16px;
+  line-height: 1.6;
+  color: var(--n600);
+  background: var(--n100);
+}
+
+@keyframes shimmer { 0%{transform:translateX(-100%)} 100%{transform:translateX(200%)} }
+@keyframes fade-up { 0%{opacity:0;transform:translateY(20px)} 100%{opacity:1;transform:translateY(0)} }
+@keyframes pulse-glow {
+  0%,100%{box-shadow:0 0 20px rgba(14,165,233,.3)}
+  50%{box-shadow:0 0 40px rgba(14,165,233,.5)}
+}
+
+.fade-up { opacity:0; transform:translateY(20px); transition:opacity .6s ease-out, transform .6s ease-out; }
+.fade-up.visible { opacity:1; transform:translateY(0); }
+
+.container { max-width: 1100px; margin: 0 auto; padding: 0 24px; }
+.section { padding: 64px 0; }
+
+h2.section-title {
+  font-size: 30px; line-height: 1.25; font-weight: 600; color: var(--n900);
+  margin-bottom: 12px;
+}
+.section-subtitle {
+  font-size: 16px; color: var(--n500); margin-bottom: 40px; max-width: 700px;
+}
+
+.card {
+  background:#fff;border-radius:var(--r-2xl);
+  border:1px solid var(--n200);padding:28px;
+  box-shadow:var(--shadow-card);margin-bottom:16px;
+  transition:all .3s ease;
+}
+.card:hover { transform:translateY(-2px); box-shadow:var(--shadow-hover); }
+
+.hypothesis-card {
+  background:#fff;border-radius:var(--r-2xl);
+  border:1px solid var(--n200);padding:28px;
+  box-shadow:var(--shadow-card);margin-bottom:20px;
+  border-left: 4px solid var(--brand);
+}
+.hypothesis-card.alt { border-left-color: var(--purple); }
+.hypothesis-card.wait { border-left-color: var(--n400); }
+
+.hypothesis-card h4 { font-size:17px; font-weight:600; color:var(--n900); margin-bottom:12px; }
+.hypothesis-card .meta { font-size:14px; color:var(--n600); line-height:1.7; }
+.hypothesis-card .meta strong { color:var(--n700); font-weight:600; }
+
+.badge {
+  display:inline-flex;align-items:center;
+  padding:4px 12px;border-radius:var(--r-full);
+  font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.04em;
+}
+.badge-blue { background:var(--brand-bg);color:#0369a1; }
+.badge-green { background:#d1fae5;color:#065f46; }
+.badge-amber { background:#fef3c7;color:#92400e; }
+.badge-purple { background:#ede9fe;color:#5b21b6; }
+.badge-gray { background:var(--n100);color:var(--n600); }
+
+.q-card {
+  background:#fff;border-radius:var(--r-2xl);
+  border:1px solid var(--n200);padding:24px;
+  box-shadow:var(--shadow-card);margin-bottom:14px;
+  display:flex;align-items:flex-start;gap:16px;
+}
+.q-num {
+  width:36px;height:36px;border-radius:50%;
+  background:var(--brand);color:#fff;
+  display:flex;align-items:center;justify-content:center;
+  font-size:15px;font-weight:700;flex-shrink:0;
+}
+
+table.brandos { width:100%;border-collapse:collapse;background:#fff; }
+table.brandos thead tr { background:var(--n50);border-bottom:2px solid var(--n200); }
+table.brandos th { padding:14px 16px;text-align:left;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--n500); }
+table.brandos td { padding:14px 16px;font-size:14px;color:var(--n600);border-bottom:1px solid var(--n200); }
+table.brandos tbody tr:hover { background:var(--n50); }
+
+.alert-box {
+  display:flex;gap:14px;
+  border-radius:var(--r-xl);padding:20px;margin:20px 0;
+}
+.alert-info { background:#eff6ff;border:1px solid #bfdbfe;border-left:4px solid var(--info); }
+.alert-warn { background:#fffbeb;border:1px solid #fde68a;border-left:4px solid var(--warning); }
+
+.obs-list { list-style:none;counter-reset:obs; }
+.obs-list li {
+  counter-increment:obs;
+  padding:14px 0 14px 44px;
+  border-bottom:1px solid var(--n200);
+  position:relative;
+  font-size:15px;color:var(--n700);line-height:1.65;
+}
+.obs-list li::before {
+  content:counter(obs);
+  position:absolute;left:0;top:14px;
+  width:28px;height:28px;border-radius:50%;
+  background:var(--brand-bg);color:var(--brand);
+  display:flex;align-items:center;justify-content:center;
+  font-size:13px;font-weight:700;
+}
+.obs-list li:last-child { border-bottom:none; }
+
+@media(max-width:768px) {
+  h2.section-title { font-size:24px; }
+  .section { padding:40px 0; }
+  .container { padding:0 16px; }
+  table.brandos { font-size:13px; }
+  table.brandos th, table.brandos td { padding:10px 12px; }
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav style="position:fixed;top:0;left:0;right:0;z-index:300;background:rgba(255,255,255,.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--n200);height:60px;">
+  <div class="container" style="height:100%;display:flex;align-items:center;justify-content:space-between;">
+    <div style="font-size:17px;font-weight:700;color:var(--n900);">
+      BrandOS <span style="color:var(--brand);">·</span> Магия Масел
+    </div>
+    <nav style="display:flex;gap:20px;overflow-x:auto;">
+      <a href="#synthesis" style="font-size:13px;font-weight:500;color:var(--n600);text-decoration:none;white-space:nowrap;">Синтез</a>
+      <a href="#hypotheses" style="font-size:13px;font-weight:500;color:var(--n600);text-decoration:none;white-space:nowrap;">Гипотезы</a>
+      <a href="#questions" style="font-size:13px;font-weight:500;color:var(--n600);text-decoration:none;white-space:nowrap;">Вопросы</a>
+      <a href="#table" style="font-size:13px;font-weight:500;color:var(--n600);text-decoration:none;white-space:nowrap;">Фиксация</a>
+      <a href="#next" style="font-size:13px;font-weight:500;color:var(--n600);text-decoration:none;white-space:nowrap;">Далее</a>
+    </nav>
+    <div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--brand);background:var(--brand-bg);padding:5px 12px;border-radius:var(--r-full);white-space:nowrap;">
+      Пост-анализ · Март 2026
+    </div>
+  </div>
+</nav>
+<div style="height:60px;"></div>
+
+<!-- HERO -->
+<header style="background:linear-gradient(135deg,var(--n900) 0%,#1e3a5f 100%);padding:72px 0;position:relative;overflow:hidden;">
+  <div style="position:absolute;top:-100px;right:-100px;width:400px;height:400px;border-radius:50%;background:radial-gradient(circle,rgba(14,165,233,.2) 0%,transparent 70%);pointer-events:none;"></div>
+  <div class="container" style="position:relative;z-index:1;">
+    <div style="display:inline-flex;align-items:center;gap:8px;background:rgba(14,165,233,.15);border:1px solid rgba(14,165,233,.3);color:var(--brand-light);padding:7px 16px;border-radius:var(--r-full);font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;margin-bottom:24px;">
+      <span style="width:6px;height:6px;border-radius:50%;background:var(--brand);animation:pulse-glow 2s infinite;"></span>
+      Конкурентный пост-анализ
+    </div>
+    <h1 style="font-size:40px;line-height:1.15;letter-spacing:-.02em;font-weight:600;color:#fff;max-width:750px;margin-bottom:18px;">
+      Синтез и гипотезы по исследованию конкурентов
+    </h1>
+    <p style="font-size:17px;line-height:1.6;color:var(--n400);max-width:640px;margin-bottom:36px;">
+      Премиальные пищевые масла первого холодного отжима. Обработка результатов глубокого ресёрча — ключевые выводы, позиционные разрывы, продуктовые и сервисные возможности для обсуждения с клиентом.
+    </p>
+    <div style="display:flex;gap:32px;flex-wrap:wrap;">
+      <div style="color:var(--n400);font-size:14px;">
+        <span style="color:var(--brand);font-weight:600;">Проект:</span> Магия Масел / ИП Бродников К.Л.
+      </div>
+      <div style="color:var(--n400);font-size:14px;">
+        <span style="color:var(--brand);font-weight:600;">Стадия:</span> Ранний старт (100–110 тыс ₽/мес)
+      </div>
+      <div style="color:var(--n400);font-size:14px;">
+        <span style="color:var(--brand);font-weight:600;">Дата:</span> Март 2026
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- ============ ЧАСТЬ 1. СИНТЕЗ ============ -->
+<section id="synthesis" class="section">
+<div class="container">
+
+<h2 class="section-title fade-up">Часть 1. Синтез исследования</h2>
+<p class="section-subtitle fade-up">Что мы теперь понимаем о конкурентном поле — и какие выводы самые надёжные.</p>
+
+<!-- 1.1 Главное -->
+<div class="card fade-up" style="border-left:4px solid var(--brand);margin-bottom:32px;">
+  <h3 style="font-size:20px;font-weight:600;color:var(--n900);margin-bottom:16px;">1.1 Главное, что мы теперь понимаем</h3>
+  <div style="font-size:15px;line-height:1.75;color:var(--n700);">
+    <p style="margin-bottom:14px;"><strong>1. Конкуренция идёт не за масло, а за «обоснование выбора».</strong> Рынок перенасыщен предложением, но абсолютное большинство конкурентов продают продукт-в-бутылке, а не решение конкретной задачи клиента. Побеждает тот, кто объясняет «зачем» и «как», а не просто «что».</p>
+    <p style="margin-bottom:14px;"><strong>2. Позиция «масляный консьерж» — практически свободна.</strong> Среди 20+ конкурентов ни один не строит бизнес на персональном подборе масла под цель + ритуале + ремайндерах. Trawa делает квиз, Радость Здоровья — консультации в WhatsApp, но это фрагменты, а не система.</p>
+    <p style="margin-bottom:14px;"><strong>3. Ценовой уровень проекта (2000 ₽/250 мл) — в верхнем, но не запредельном диапазоне.</strong> Кедровое масло конкурентов достигает 872 ₽/100 мл (= 2180 ₽/250 мл). Однако при такой цене рынок требует железобетонного обоснования: прозрачность производства, лабораторные анализы, история сырья.</p>
+    <p style="margin-bottom:14px;"><strong>4. Маркетплейсы — не опция, а обязательный канал масштабирования.</strong> Altaria набрала 10 000+ отзывов на Ozon, Масляный Король доминирует в поиске WB. Без присутствия на маркетплейсах выход за 300 тыс ₽/мес крайне маловероятен.</p>
+    <p style="margin-bottom:14px;"><strong>5. Формат спрея (Altaria) — пока единственная реальная инновация в упаковке.</strong> Все остальные конкуренты работают с тёмным стеклом. Инновация в упаковке = инновация в привлечении внимания.</p>
+    <p style="margin-bottom:14px;"><strong>6. Медицинские обещания — мощнейший, но рискованный драйвер.</strong> Конкуренты активно используют формулировки «здоровая печень», «чистые сосуды», «мужская сила». ФАС может штрафовать до 500–700 тыс ₽, но это не останавливает рынок. Нужен юридически корректный подход.</p>
+    <p><strong>7. Оффлайн-точка на Дорогомиловском рынке — конкурентное преимущество, которое никто не может скопировать.</strong> Ни один D2C-бренд не имеет живой дегустации в Москве. Это актив, который нужно конвертировать в онлайн-контент (видео, стримы, UGC).</p>
+  </div>
+</div>
+
+<!-- 1.2 Ключевые наблюдения -->
+<div class="card fade-up" style="margin-bottom:32px;">
+  <h3 style="font-size:20px;font-weight:600;color:var(--n900);margin-bottom:16px;">1.2 Ключевые наблюдения (топ-15)</h3>
+  <ol class="obs-list">
+    <li>Рынок масел холодного отжима в РФ — $862 млн (2024), прогноз $1 136 млн к 2030, CAGR 4,7%.</li>
+    <li>Сегмент биохакинга растёт быстрее всего — CAGR 16,5%. Это масло чёрного тмина, расторопши, амаранта.</li>
+    <li>Trawa — эталон крафтового позиционирования: «дубовый пресс, без контакта с металлом». Льняное 250 мл = 664 ₽.</li>
+    <li>Altaria — единственный инноватор упаковки (спрей-баллон). 15 видов масел, 10 000+ отзывов на Ozon.</li>
+    <li>Масляный Король использует стратегию микро-фасовки: 100 мл кедрового = 872 ₽ (эквивалент 8 720 ₽/л).</li>
+    <li>Радость Здоровья — ближайший конкурент по модели: «давим в день заказа» + консультация + подписка 10%.</li>
+    <li>Пазл Здоровья создаёт функциональные миксы («Для Мозга») — продаёт решение, а не продукт.</li>
+    <li>Ни один конкурент не имеет системного «ритуала на 30 дней» с ремайндерами и сопровождением.</li>
+    <li>Подарочные наборы (сеты 3–6 масел) — растущая категория у Trawa, Altaria, Synergy (Казахстан).</li>
+    <li>Кулинарный кросс-маркетинг (Dial-Export: рецепты + шеф-повара) — неожиданно сильная воронка.</li>
+    <li>Рынок СНГ (Казахстан, Беларусь) закрыт слабо — в основном через «серый» импорт и локальных фермеров.</li>
+    <li>Hemani продаёт масло чёрного тмина через религиозную мотивацию (Сунна) — отдельная, закрытая аудитория.</li>
+    <li>Защита от подделок — актуальная проблема: на форумах обсуждают фейковые масла на Ozon и WB.</li>
+    <li>Тренд 2025–2026: минимализм на этикетке, акцент на цвет масла и форму бутылки.</li>
+    <li>Критический пробел в данных: нет информации о мощностях производства проекта (объём отжима в день).</li>
+  </ol>
+</div>
+
+<!-- 1.3 Подтверждённые выводы -->
+<div class="card fade-up" style="margin-bottom:32px;">
+  <h3 style="font-size:20px;font-weight:600;color:var(--n900);margin-bottom:16px;">1.3 Что подтверждается из разных частей исследования</h3>
+  <div style="font-size:15px;line-height:1.75;color:var(--n700);">
+    <p style="margin-bottom:12px;"><span class="badge badge-green" style="margin-right:8px;">Надёжно</span> <strong>Экспертный контент — обязательное условие продаж.</strong> Подтверждается каталогом (Trawa, Altaria), воронками (квизы, лонгриды, видео процесса), офферами (схемы приёма), CX-анализом (нутрициологические карты) и исследованием рынка (обучение = часть продукта).</p>
+    <p style="margin-bottom:12px;"><span class="badge badge-green" style="margin-right:8px;">Надёжно</span> <strong>Свежесть и прозрачность — главные доказательства качества.</strong> Каталог: «давим в день заказа» (Радость Здоровья), «без контакта с металлом» (Trawa). Офферы: дата на упаковке, малые партии. CX: видео-экскурсии на производство. Рынок: тренд clean label.</p>
+    <p style="margin-bottom:12px;"><span class="badge badge-green" style="margin-right:8px;">Надёжно</span> <strong>Подписочная модель органично подходит для масел.</strong> Рынок: короткий срок годности льняного масла. CX: Радость Здоровья тестирует подписку со скидкой 10%. Каналы: Пазл Здоровья — ремайндеры в Telegram о приёме масла.</p>
+    <p style="margin-bottom:12px;"><span class="badge badge-green" style="margin-right:8px;">Надёжно</span> <strong>Маркетплейсы — основной канал масштабирования для D2C-брендов.</strong> Каталог: все конкуренты представлены на Ozon/WB. Каналы: SEO на WB (Масляный Король), Flash-sale (Nadawilli). Цены: 60% данных собрано с маркетплейсов.</p>
+    <p><span class="badge badge-green" style="margin-right:8px;">Надёжно</span> <strong>Микро-фасовка и наборы снижают барьер первой покупки.</strong> Матрица цен: 100 мл Масляный Король. CX: «пробники». Рынок: подарочные сеты как entry point.</p>
+  </div>
+</div>
+
+<!-- 1.4 Противоречия -->
+<div class="card fade-up" style="border-left:4px solid var(--warning);margin-bottom:32px;">
+  <h3 style="font-size:20px;font-weight:600;color:var(--n900);margin-bottom:16px;">1.4 Противоречия и неожиданные находки</h3>
+  <div style="font-size:15px;line-height:1.75;color:var(--n700);">
+    <p style="margin-bottom:12px;"><span class="badge badge-amber" style="margin-right:8px;">Противоречие</span> <strong>«Основатель не хочет быть лицом бренда» vs. рыночный тренд.</strong> Радость Здоровья, Trawa, Живые Таинства — все строят продажи через личность основателя. Исследование рынка прямо указывает: доверие к автору — ключевой фактор в Health-Tech. Но Кирилл не хочет быть медийным. Это фундаментальное ограничение, которое нужно обсудить.</p>
+    <p style="margin-bottom:12px;"><span class="badge badge-amber" style="margin-right:8px;">Неожиданно</span> <strong>Масло-спрей (Altaria) — не конкурент, а потенциальный партнёр по формату.</strong> Ожидалось прямое столкновение, но фактически Altaria работает в другом сегменте: «удобство + эстетика», не «крафт + качество». Это разные аудитории.</p>
+    <p style="margin-bottom:12px;"><span class="badge badge-amber" style="margin-right:8px;">Неожиданно</span> <strong>Функциональные миксы (Пазл Здоровья) — более опасная конкуренция, чем ожидалось.</strong> Они продают не масло, а «решение для мозга/печени/сосудов». Это прямо конкурирует с идеей «подбора под цель».</p>
+    <p><span class="badge badge-amber" style="margin-right:8px;">Пробел</span> <strong>Нет данных об отзывах и жалобах клиентов конкурентов.</strong> Исследование фиксирует офферы и фичи, но не анализирует негативные отзывы на маркетплейсах. Это важный пробел для следующего этапа (ЦА).</p>
+  </div>
+</div>
+
+<!-- 1.5 Не потерять -->
+<div class="alert-box alert-info fade-up">
+  <span style="font-size:20px;">📌</span>
+  <div>
+    <div style="font-weight:600;color:#1e40af;margin-bottom:6px;font-size:15px;">1.5 Что важно не потерять на следующих этапах</div>
+    <div style="font-size:14px;color:#1e40af;line-height:1.7;">
+      <strong>→ Для ЦА:</strong> офферы конкурентов — готовый каталог болей и мотиваций (страх болезни, стремление к молодости, статусность, экономия). Негативные отзывы на Ozon/WB — нужно собрать.<br>
+      <strong>→ Для продукта:</strong> формат «курсовых решений» (набор на 30 дней), микро-фасовка 100 мл, функциональные миксы, масляные шоты (15–30 мл).<br>
+      <strong>→ Для мирового рынка:</strong> сравнить модель Synergy (Казахстан) с зарубежными D2C-брендами; проверить тренд масляных шотов в HoReCa.<br>
+      <strong>→ Мощности:</strong> без данных об объёме отжима невозможно калибровать маркетинговое давление. Это блокирующий вопрос.
+    </div>
+  </div>
+</div>
+
+</div>
+</section>
+
+<!-- ============ ЧАСТЬ 2. ГИПОТЕЗЫ ============ -->
+<section id="hypotheses" class="section" style="background:var(--n50);">
+<div class="container">
+
+<h2 class="section-title fade-up">Часть 2. Гипотезы для обсуждения</h2>
+<p class="section-subtitle fade-up">Основные, альтернативные и «на потом». Каждая привязана к данным из исследования.</p>
+
+<!-- ОСНОВНЫЕ -->
+<div style="margin-bottom:12px;" class="fade-up"><span class="badge badge-blue" style="font-size:13px;padding:6px 16px;">Основные гипотезы · 6 штук</span></div>
+
+<div class="hypothesis-card fade-up">
+  <h4>Г1. «Масляный консьерж» — свободная позиция, которую можно занять первым</h4>
+  <div class="meta">
+    <p><strong>Суть:</strong> Данные указывают на то, что ни один конкурент не строит бизнес на системном персональном подборе масла + ритуале + сопровождении.</p>
+    <p><strong>На чём основана:</strong> Каталог 20+ конкурентов. Trawa делает квиз (подбор), Радость Здоровья — консультации в WhatsApp, Пазл Здоровья — ремайндеры. Но никто не объединяет все элементы в единую систему.</p>
+    <p><strong>Почему может сработать:</strong> Потребитель в премиум-сегменте готов платить за «сопровождение выбора», а не за литр жира. Тренд на персонализацию в Health-Tech растёт (CAGR биохакинга 16,5%).</p>
+    <p><strong>Что подтверждает:</strong> CX-анализ — потребитель неохотно покупает масло без понимания схемы применения. Подписочные модели уже тестируются конкурентами.</p>
+    <p><strong>Что неясно:</strong> Готов ли Кирилл лично консультировать? Есть ли ресурс на бот/CRM? Сколько консультаций в день выдержит один человек?</p>
+    <p><strong>Как проверить:</strong> Тестовый запуск: 20 клиентов с Дорогомиловского рынка → предложить ритуал на 30 дней + ремайндер в Telegram → замерить повторные покупки.</p>
+  </div>
+</div>
+
+<div class="hypothesis-card fade-up">
+  <h4>Г2. Маркетплейсы (Ozon/WB) — обязательный канал для выхода за 300 тыс ₽/мес</h4>
+  <div class="meta">
+    <p><strong>Суть:</strong> Данные указывают на то, что без присутствия на маркетплейсах масштабирование до целевой выручки практически невозможно.</p>
+    <p><strong>На чём основана:</strong> Altaria — 10 000+ отзывов на Ozon. Масляный Король — топ выдачи WB по запросу «масло чёрного тмина». Nadawilli — marketplace-native бренд с 30 000+ покупателей.</p>
+    <p><strong>Почему может сработать:</strong> Маркетплейсы дают трафик, который невозможно получить через собственный сайт на старте. Инфраструктура доставки уже построена.</p>
+    <p><strong>Что подтверждает:</strong> 60% ценовых данных исследования собрано с маркетплейсов. Это основной канал открытия бренда для нового покупателя.</p>
+    <p><strong>Что неясно:</strong> Какую маржу оставляет маркетплейс при цене 2000 ₽/250 мл? Как решать проблему подделок (обсуждается на форумах)?</p>
+    <p><strong>Как проверить:</strong> Расчёт юнит-экономики для Ozon/WB. Запуск 3–5 SKU → замер конверсии и стоимости привлечения.</p>
+  </div>
+</div>
+
+<div class="hypothesis-card fade-up">
+  <h4>Г3. Микро-фасовка (100 мл) и наборы-знакомства — ключ к снижению барьера первой покупки</h4>
+  <div class="meta">
+    <p><strong>Суть:</strong> Возможно, что формат 100 мл и сеты из 3 масел позволят привлечь клиентов, для которых 2000 ₽ за 250 мл — психологический барьер.</p>
+    <p><strong>На чём основана:</strong> Масляный Король: 100 мл кедрового = 872 ₽ (удельная цена выше, но абсолютная — ниже). Trawa: подарочные тубусы. Altaria: наборы «Масло-сет» со скидкой 25%.</p>
+    <p><strong>Почему может сработать:</strong> Стратегия микро-фасовки позволяет держать высокую маржу, снижая порог входа. Набор из 3 масел по 100 мл за 2500–3000 ₽ — более привлекательный оффер, чем 1 бутылка за 2000 ₽.</p>
+    <p><strong>Что подтверждает:</strong> CX-анализ: «пробники» — стандартная фича у Масляного Короля. Подарочные сеты — растущая категория.</p>
+    <p><strong>Что неясно:</strong> Себестоимость стеклянной тары 100 мл vs. 250 мл. Логистика мелкой фасовки.</p>
+    <p><strong>Как проверить:</strong> Тестовый набор «Знакомство» из 3 масел → продажа на Дорогомиловском рынке → замер конверсии в повторную покупку 250 мл.</p>
+  </div>
+</div>
+
+<div class="hypothesis-card fade-up">
+  <h4>Г4. «Курсовое решение» (набор на 30 дней) — продуктовый формат, который обосновывает цену</h4>
+  <div class="meta">
+    <p><strong>Суть:</strong> Данные указывают на то, что потребитель готов платить больше, когда покупает «результат на 30 дней», а не «бутылку масла».</p>
+    <p><strong>На чём основана:</strong> Пазл Здоровья: курс «Для мозга» = 654 ₽/250 мл + чек-лист. Trawa: рецепты-карточки в коробке. Рынок: тренд на курсовые решения в нутрицевтике. Компас Здоровья: «Курс на 1 месяц» как CTA.</p>
+    <p><strong>Почему может сработать:</strong> Ритуал на 30 дней с чётким планом (дозировка, время приёма, сочетание с едой) = обоснование цены + привязка к повторной покупке.</p>
+    <p><strong>Что подтверждает:</strong> Исследование рынка: CAGR биохакинг-сегмента 16,5%. CX: нутрициологические карты к каждой бутылке у лидеров.</p>
+    <p><strong>Что неясно:</strong> Готов ли Кирилл разрабатывать протоколы приёма? Нужна ли валидация нутрициологом?</p>
+    <p><strong>Как проверить:</strong> Собрать 3 «ритуала»: «Чистые сосуды» (льняное + чёрный тмин), «Энергия» (кедровое + тыквенное), «Красота» (миндальное + конопляное). Тестировать на текущих клиентах.</p>
+  </div>
+</div>
+
+<div class="hypothesis-card fade-up">
+  <h4>Г5. Оффлайн-точка — «конверсионный хаб» для онлайн-контента</h4>
+  <div class="meta">
+    <p><strong>Суть:</strong> Данные указывают на то, что дегустация и живой контакт на Дорогомиловском рынке — уникальный актив, которого нет ни у одного D2C-конкурента.</p>
+    <p><strong>На чём основана:</strong> Bio-Hutor: эко-туризм → визит → контент. Компас Здоровья: дегустации в оффлайн-магазинах → программа лояльности. Радость Здоровья: стримы из цеха.</p>
+    <p><strong>Почему может сработать:</strong> Видео дегустации, отзывы покупателей на рынке, «закулисье» — готовый контент для Reels/Shorts → трафик в Telegram → онлайн-продажи.</p>
+    <p><strong>Что подтверждает:</strong> Воронки конкурентов: Altaria — видео у фуд-блогеров → Ozon. Radость Здоровья — Reels → WhatsApp.</p>
+    <p><strong>Что неясно:</strong> Кто будет снимать контент? Бюджет на видеопроизводство? Готов ли Кирилл (или его представитель) появляться в кадре?</p>
+    <p><strong>Как проверить:</strong> Серия из 10 коротких видео с Дорогомиловского рынка → публикация в Reels/TG → замер подписок и запросов.</p>
+  </div>
+</div>
+
+<div class="hypothesis-card fade-up">
+  <h4>Г6. Обоснование цены через «инженерный крафт» — альтернатива личному бренду</h4>
+  <div class="meta">
+    <p><strong>Суть:</strong> Возможно, что подход «инженерного контроля качества» (анализы партий, температурный режим, проверка сырья на прорастание) может заменить личный бренд основателя.</p>
+    <p><strong>На чём основана:</strong> Trawa: «дубовый пресс, без контакта с металлом». Масляный Король: «высокая концентрация тимохинона». Живые Таинства: «сырьё отбирается по критерию прорастания». Исследование рынка: рекомендация «инженерного крафта» для Кирилла.</p>
+    <p><strong>Почему может сработать:</strong> Ценовой уровень 2000 ₽/250 мл требует доказательной базы. Лабораторные анализы, видео процесса, контроль T&lt;35°C — это proof, который работает без медийности основателя.</p>
+    <p><strong>Что подтверждает:</strong> Рынок: «доказательная база — критически важна в сегменте биохакинга». Визуал-анализ: тренд на минимализм + цвет масла + форма бутылки.</p>
+    <p><strong>Что неясно:</strong> Есть ли у проекта лабораторные анализы партий? Какой температурный режим используется фактически?</p>
+    <p><strong>Как проверить:</strong> Сфотографировать/заснять процесс, сделать анализ 2–3 партий в независимой лаборатории, оформить результаты визуально.</p>
+  </div>
+</div>
+
+<!-- АЛЬТЕРНАТИВНЫЕ -->
+<div style="margin-top:40px;margin-bottom:12px;" class="fade-up"><span class="badge badge-purple" style="font-size:13px;padding:6px 16px;">Альтернативные гипотезы · 4 штуки</span></div>
+
+<div class="hypothesis-card alt fade-up">
+  <h4>А1. Кулинарный кросс-маркетинг — недооценённый канал</h4>
+  <div class="meta">
+    <p><strong>Суть:</strong> Возможно, что партнёрство с кулинарными блогерами и шеф-поварами даст более дешёвый трафик, чем прямая реклама.</p>
+    <p><strong>На чём основана:</strong> Dial-Export: рецепты на упаковке + кулинарная книга. Altaria: интеграции у фуд-блогеров → Ozon. Gastro-Botanicals — отдельный сегмент с CAGR 6–8%.</p>
+    <p><strong>Что неясно:</strong> Какая доля аудитории проекта — гурманы vs. ЗОЖ-потребители? Пересекаются ли эти сегменты?</p>
+    <p><strong>Как проверить:</strong> 2–3 интеграции у фуд-блогеров (до 50К подписчиков) → замер заказов по промокоду.</p>
+  </div>
+</div>
+
+<div class="hypothesis-card alt fade-up">
+  <h4>А2. Функциональные миксы — способ конкурировать с «Пазл Здоровья»</h4>
+  <div class="meta">
+    <p><strong>Суть:</strong> Данные указывают на то, что готовые миксы под конкретную задачу («Для мозга», «Для печени») — растущий формат, который проект может адаптировать.</p>
+    <p><strong>На чём основана:</strong> Пазл Здоровья: микс «Для мозга» = 654 ₽/250 мл. Исследование рынка: тренд на персонализированные купажи (Bioniq-модель).</p>
+    <p><strong>Что неясно:</strong> Технически возможно ли смешивать масла перед отжимом или это делается после? Влияет ли на вкус?</p>
+    <p><strong>Как проверить:</strong> Технологический эксперимент: 2–3 купажа → дегустация → обратная связь.</p>
+  </div>
+</div>
+
+<div class="hypothesis-card alt fade-up">
+  <h4>А3. Telegram-бот-квалификатор вместо квиза на сайте</h4>
+  <div class="meta">
+    <p><strong>Суть:</strong> Возможно, что Telegram-бот, который задаёт вопросы о целях и подбирает масло, будет эффективнее, чем квиз на сайте (как у Trawa).</p>
+    <p><strong>На чём основана:</strong> У проекта нет сайта (строится). Telegram — основной канал коммуникации в текущей аудитории. Пазл Здоровья: ремайндеры в Telegram уже работают.</p>
+    <p><strong>Что неясно:</strong> Готов ли бот-сценарий? Кто будет поддерживать и обновлять бота?</p>
+    <p><strong>Как проверить:</strong> MVP-бот с 5 вопросами → 50 тестовых пользователей → замер конверсии в покупку.</p>
+  </div>
+</div>
+
+<div class="hypothesis-card alt fade-up">
+  <h4>А4. Корпоративные подарочные наборы — «тихий» канал высокого чека</h4>
+  <div class="meta">
+    <p><strong>Суть:</strong> Данные указывают на то, что подарочные сеты масел — востребованный формат в B2B-сегменте.</p>
+    <p><strong>На чём основана:</strong> Trawa: дизайнерские тубусы. Synergy: экосистема продуктов. Исследование рынка: «сеты из 3–6 масел как корпоративные подарки».</p>
+    <p><strong>Что неясно:</strong> Есть ли у Кирилла контакты в B2B? Какой минимальный тираж подарочной упаковки?</p>
+    <p><strong>Как проверить:</strong> Дизайн-макет подарочного набора → предложение 5–10 компаниям → обратная связь.</p>
+  </div>
+</div>
+
+<!-- РАНО -->
+<div style="margin-top:40px;margin-bottom:12px;" class="fade-up"><span class="badge badge-gray" style="font-size:13px;padding:6px 16px;">Что пока рано обсуждать · 3 штуки</span></div>
+
+<div class="hypothesis-card wait fade-up">
+  <h4>Р1. Выход в СНГ (Казахстан, Беларусь)</h4>
+  <div class="meta">
+    <p>Рынок слабо оцифрован, данных мало. Нужно сначала закрыть РФ и провести исследование мирового рынка. Логистика через маркетплейсы (Kaspi, Uzum) требует отдельного анализа.</p>
+  </div>
+</div>
+
+<div class="hypothesis-card wait fade-up">
+  <h4>Р2. Масляные шоты (15–30 мл) для кофеен и HoReCa</h4>
+  <div class="meta">
+    <p>Тренд зафиксирован в исследовании рынка, но нет данных о спросе в Москве. Требует исследования мирового рынка и продуктового анализа. Высокие затраты на упаковку.</p>
+  </div>
+</div>
+
+<div class="hypothesis-card wait fade-up">
+  <h4>Р3. Персонализированные миксы по анализу крови (Bioniq-модель)</h4>
+  <div class="meta">
+    <p>Сильный «слабый сигнал» из исследования рынка. Но это уровень Health-Tech стартапа, не раннего ИП. Вернуться к этому при достижении 500+ тыс ₽/мес.</p>
+  </div>
+</div>
+
+</div>
+</section>
+
+<!-- ============ ЧАСТЬ 3. ВОПРОСЫ ============ -->
+<section id="questions" class="section">
+<div class="container">
+
+<h2 class="section-title fade-up">Часть 3. Вопросы клиенту</h2>
+<p class="section-subtitle fade-up">Конкретные вопросы, привязанные к фактам из исследования. Для обсуждения на встрече.</p>
+
+<div class="q-card fade-up">
+  <div class="q-num">1</div>
+  <div style="font-size:15px;color:var(--n700);line-height:1.65;">
+    <strong>Altaria набрала 10 000+ отзывов на Ozon, Масляный Король — топ выдачи WB.</strong> Рассматриваете ли вы маркетплейсы как приоритетный канал? Если да — какие 3–5 SKU выводить первыми?
+  </div>
+</div>
+
+<div class="q-card fade-up">
+  <div class="q-num">2</div>
+  <div style="font-size:15px;color:var(--n700);line-height:1.65;">
+    <strong>Радость Здоровья тестирует подписку: доставка каждые 2 недели со скидкой 10%.</strong> Готовы ли вы запустить подписочную модель? Какой минимальный объём отжима в день вы можете обеспечить стабильно?
+  </div>
+</div>
+
+<div class="q-card fade-up">
+  <div class="q-num">3</div>
+  <div style="font-size:15px;color:var(--n700);line-height:1.65;">
+    <strong>Trawa использует видео процесса отжима как главный proof.</strong> Есть ли возможность снять видео-контент на вашем производстве? Готовы ли вы (или ваш представитель) появляться в кадре?
+  </div>
+</div>
+
+<div class="q-card fade-up">
+  <div class="q-num">4</div>
+  <div style="font-size:15px;color:var(--n700);line-height:1.65;">
+    <strong>Масляный Король продаёт кедровое по 872 ₽/100 мл (= 8 720 ₽/л через микро-фасовку).</strong> Рассматриваете ли вы формат 100 мл и стартовые наборы? Какова себестоимость стеклянной тары малого объёма?
+  </div>
+</div>
+
+<div class="q-card fade-up">
+  <div class="q-num">5</div>
+  <div style="font-size:15px;color:var(--n700);line-height:1.65;">
+    <strong>Пазл Здоровья продаёт миксы под задачу («Для мозга»).</strong> Технически возможно ли вам создавать купажи масел? Интересен ли этот формат?
+  </div>
+</div>
+
+<div class="q-card fade-up">
+  <div class="q-num">6</div>
+  <div style="font-size:15px;color:var(--n700);line-height:1.65;">
+    <strong>Исследование показывает: обоснование цены 2000 ₽ требует лабораторных анализов партий.</strong> Проводите ли вы анализы на содержание активных веществ (тимохинон, сквален, фитостеролы)?
+  </div>
+</div>
+
+<div class="q-card fade-up">
+  <div class="q-num">7</div>
+  <div style="font-size:15px;color:var(--n700);line-height:1.65;">
+    <strong>Исследование фиксирует: «основатель не хочет быть лицом бренда» — но все успешные конкуренты строят продажи через личность.</strong> Готовы ли вы к компромиссу — например, контент от «инженера качества» без личного медийного бренда?
+  </div>
+</div>
+
+<div class="q-card fade-up">
+  <div class="q-num">8</div>
+  <div style="font-size:15px;color:var(--n700);line-height:1.65;">
+    <strong>Критический пробел в данных:</strong> каков ваш текущий объём отжима в день? Сколько заказов в день вы можете обработать без потери качества? Это блокирует планирование маркетинга.
+  </div>
+</div>
+
+</div>
+</section>
+
+<!-- ============ ЧАСТЬ 4. ТАБЛИЦА ФИКСАЦИИ ============ -->
+<section id="table" class="section" style="background:var(--n50);">
+<div class="container">
+
+<h2 class="section-title fade-up">Часть 4. Таблица фиксации реакции клиента</h2>
+<p class="section-subtitle fade-up">Заполните во время или после встречи с клиентом.</p>
+
+<div style="overflow-x:auto;border-radius:var(--r-2xl);border:1px solid var(--n200);margin:24px 0;" class="fade-up">
+  <table class="brandos">
+    <thead>
+      <tr>
+        <th style="min-width:240px;">Гипотеза</th>
+        <th style="min-width:120px;">Реакция клиента</th>
+        <th style="min-width:200px;">Комментарий клиента</th>
+        <th style="min-width:150px;">Статус</th>
+        <th style="min-width:200px;">Что делаем дальше</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td style="font-weight:500;color:var(--n700);">Г1. «Масляный консьерж» — свободная позиция</td><td></td><td></td><td></td><td></td></tr>
+      <tr><td style="font-weight:500;color:var(--n700);">Г2. Маркетплейсы — обязательный канал</td><td></td><td></td><td></td><td></td></tr>
+      <tr><td style="font-weight:500;color:var(--n700);">Г3. Микро-фасовка и наборы-знакомства</td><td></td><td></td><td></td><td></td></tr>
+      <tr><td style="font-weight:500;color:var(--n700);">Г4. Курсовое решение (набор на 30 дней)</td><td></td><td></td><td></td><td></td></tr>
+      <tr><td style="font-weight:500;color:var(--n700);">Г5. Оффлайн-точка → онлайн-контент</td><td></td><td></td><td></td><td></td></tr>
+      <tr><td style="font-weight:500;color:var(--n700);">Г6. «Инженерный крафт» вместо личного бренда</td><td></td><td></td><td></td><td></td></tr>
+      <tr style="background:rgba(139,92,246,.04);"><td style="font-weight:500;color:var(--purple);">А1. Кулинарный кросс-маркетинг</td><td></td><td></td><td></td><td></td></tr>
+      <tr style="background:rgba(139,92,246,.04);"><td style="font-weight:500;color:var(--purple);">А2. Функциональные миксы</td><td></td><td></td><td></td><td></td></tr>
+      <tr style="background:rgba(139,92,246,.04);"><td style="font-weight:500;color:var(--purple);">А3. Telegram-бот-квалификатор</td><td></td><td></td><td></td><td></td></tr>
+      <tr style="background:rgba(139,92,246,.04);"><td style="font-weight:500;color:var(--purple);">А4. Корпоративные подарочные наборы</td><td></td><td></td><td></td><td></td></tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="alert-box alert-info fade-up" style="margin-top:24px;">
+  <span style="font-size:18px;">💡</span>
+  <div style="font-size:14px;color:#1e40af;line-height:1.6;">
+    <strong>Статусы:</strong> Подтверждена / Отклонена / Требует проверки. Заполняйте колонку «Что делаем дальше» конкретным следующим шагом.
+  </div>
+</div>
+
+</div>
+</section>
+
+<!-- ============ ЧАСТЬ 5. ЧТО БРАТЬ ДАЛЬШЕ ============ -->
+<section id="next" class="section">
+<div class="container">
+
+<h2 class="section-title fade-up">Часть 5. Что брать в следующие этапы</h2>
+<p class="section-subtitle fade-up">Конкретные данные из конкурентного исследования, которые усиливают следующие ресёрчи.</p>
+
+<div class="card fade-up" style="margin-bottom:20px;">
+  <div style="display:flex;align-items:flex-start;gap:16px;">
+    <div style="width:44px;height:44px;border-radius:var(--r-xl);background:#d1fae5;color:#065f46;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;font-weight:700;">ЦА</div>
+    <div>
+      <h3 style="font-size:18px;font-weight:600;color:var(--n900);margin-bottom:10px;">Для исследования целевой аудитории</h3>
+      <div style="font-size:15px;line-height:1.7;color:var(--n600);">
+        <p style="margin-bottom:8px;">→ Каталог болей из офферов конкурентов: страх болезни (печень, сосуды), стремление к молодости (кожа, волосы), статусность (гурманство), экономия (микро-фасовка).</p>
+        <p style="margin-bottom:8px;">→ Собрать негативные отзывы Altaria, Trawa, Масляного Короля на Ozon/WB — это незакрытые потребности.</p>
+        <p style="margin-bottom:8px;">→ Hemani и религиозная аудитория — отдельный сегмент, рассмотреть/отсечь.</p>
+        <p>→ Профили по модели потребления из исследования рынка: Gastro-Botanicals, Biohacking, Artisan, Beauty-Inside-Out — проверить, какие совпадают с реальными клиентами Кирилла.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="card fade-up" style="margin-bottom:20px;">
+  <div style="display:flex;align-items:flex-start;gap:16px;">
+    <div style="width:44px;height:44px;border-radius:var(--r-xl);background:var(--brand-bg);color:#0369a1;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;font-weight:700;">📦</div>
+    <div>
+      <h3 style="font-size:18px;font-weight:600;color:var(--n900);margin-bottom:10px;">Для продуктового анализа</h3>
+      <div style="font-size:15px;line-height:1.7;color:var(--n600);">
+        <p style="margin-bottom:8px;">→ Изучить глубже SKU-стратегию Масляного Короля (микро-фасовка) и Altaria (спрей-формат).</p>
+        <p style="margin-bottom:8px;">→ Сравнить линейку проекта с конкурентами: облепиховое, конопляное, кунжутное, кокосовое — какие из планируемых SKU наименее конкурентны?</p>
+        <p style="margin-bottom:8px;">→ Функциональные миксы Пазл Здоровья — разобрать состав и ценообразование.</p>
+        <p>→ Упаковка: исследовать стоимость тёмного стекла, дозаторов, подарочных тубусов.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="card fade-up">
+  <div style="display:flex;align-items:flex-start;gap:16px;">
+    <div style="width:44px;height:44px;border-radius:var(--r-xl);background:#ede9fe;color:#5b21b6;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;font-weight:700;">🌍</div>
+    <div>
+      <h3 style="font-size:18px;font-weight:600;color:var(--n900);margin-bottom:10px;">Для исследования мирового рынка</h3>
+      <div style="font-size:15px;line-height:1.7;color:var(--n600);">
+        <p style="margin-bottom:8px;">→ Сравнить модели: Synergy (Казахстан, крафт в деревянных бочках) vs. европейские D2C-бренды масел.</p>
+        <p style="margin-bottom:8px;">→ Тренд масляных шотов в HoReCa — есть ли примеры за рубежом?</p>
+        <p style="margin-bottom:8px;">→ Подписочные модели масел в США/Европе — какие работают?</p>
+        <p>→ Персонализированные купажи (Bioniq-модель) — есть ли аналоги в нише масел на мировом рынке?</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div>
+</section>
+
+<!-- FOOTER -->
+<footer style="background:var(--n900);padding:48px 0;margin-top:0;">
+  <div class="container">
+    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:24px;">
+      <div>
+        <div style="font-size:18px;font-weight:700;color:#fff;margin-bottom:8px;">
+          BrandOS <span style="color:var(--brand);">·</span> Пост-анализ конкурентного исследования
+        </div>
+        <div style="font-size:14px;color:var(--n500);">Проект «Магия Масел» · Март 2026</div>
+      </div>
+    </div>
+    <div style="height:1px;background:rgba(255,255,255,.08);margin:32px 0;"></div>
+    <div style="font-size:13px;color:var(--n600);">
+      © 2026 BrandOS · Конфиденциальный документ · Подготовлено для обсуждения с клиентом
+    </div>
+  </div>
+</footer>
+
+<script>
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach((e, i) => {
+    if (e.isIntersecting) {
+      setTimeout(() => e.target.classList.add('visible'), i * 80);
+    }
+  });
+}, { threshold: 0.1 });
+document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
+
+const sections = document.querySelectorAll('section[id]');
+const navLinks = document.querySelectorAll('nav a[href^="#"]');
+window.addEventListener('scroll', () => {
+  let current = '';
+  sections.forEach(s => {
+    if (window.scrollY >= s.offsetTop - 100) current = s.id;
+  });
+  navLinks.forEach(a => {
+    a.style.color = a.getAttribute('href') === '#' + current ? '#0ea5e9' : '';
+  });
+});
+</script>
+
+</body>
+</html>

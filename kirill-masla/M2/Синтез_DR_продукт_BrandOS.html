@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Стратегический синтез · Продуктовый анализ масел · Кирилл Бродников</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --brand: #0ea5e9; --brand-dark: #0284c7; --brand-light: #7dd3fc; --brand-bg: #e0f2fe;
+  --black: #0f172a;
+  --n50: #f8fafc; --n100: #f1f5f9; --n200: #e2e8f0; --n300: #cbd5e1;
+  --n400: #94a3b8; --n500: #64748b; --n600: #475569; --n700: #334155; --n800: #1e293b; --n900: #0f172a;
+  --success: #10b981; --warning: #f59e0b; --error: #ef4444; --info: #3b82f6;
+  --font: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  --shadow-card: 0 1px 3px 0 rgba(0,0,0,.05), 0 1px 2px -1px rgba(0,0,0,.05);
+  --shadow-hover: 0 10px 25px -5px rgba(0,0,0,.08), 0 8px 10px -6px rgba(0,0,0,.04);
+  --shadow-btn: 0 4px 14px 0 rgba(14,165,233,.35);
+  --shadow-glow: 0 0 40px rgba(14,165,233,.15);
+  --r-sm:4px; --r-md:6px; --r-lg:8px; --r-xl:12px; --r-2xl:16px; --r-3xl:24px; --r-full:9999px;
+}
+body { font-family: var(--font); font-size: 16px; line-height: 1.6; color: var(--n600); background: var(--n100); }
+
+@keyframes shimmer { 0%{transform:translateX(-100%)} 100%{transform:translateX(200%)} }
+@keyframes pulse-glow { 0%,100%{box-shadow:0 0 20px rgba(14,165,233,.3)} 50%{box-shadow:0 0 40px rgba(14,165,233,.5)} }
+.fade-up { opacity:0; transform:translateY(20px); transition:opacity .6s ease-out, transform .6s ease-out; }
+.fade-up.visible { opacity:1; transform:translateY(0); }
+
+.container { max-width: 1400px; margin: 0 auto; padding: 0 32px; }
+.section { padding: 72px 0; }
+h2.st { font-size: 30px; line-height: 1.25; font-weight: 600; color: var(--n900); margin-bottom: 12px; letter-spacing: -.01em; }
+h3.sst { font-size: 22px; line-height: 1.3; font-weight: 600; color: var(--n800); margin-bottom: 10px; margin-top: 28px; }
+p.tx { font-size: 16px; line-height: 1.7; color: var(--n600); margin-bottom: 16px; max-width: 960px; }
+.sn { display:inline-flex;align-items:center;gap:8px;background:var(--brand-bg);color:#0369a1;padding:4px 14px;border-radius:var(--r-full);font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;margin-bottom:16px; }
+
+.card { background:#fff;border-radius:var(--r-2xl);border:1px solid var(--n200);padding:28px;box-shadow:var(--shadow-card);margin-bottom:16px;transition:all .3s ease; }
+.card:hover { transform:translateY(-3px);box-shadow:var(--shadow-hover); }
+.card-accent { border-left:4px solid var(--brand); }
+
+.takeaway { display:flex;gap:16px;background:linear-gradient(135deg,#0f172a 0%,#1e3a5f 100%);border-radius:var(--r-2xl);padding:28px;margin:28px 0;color:#fff; }
+.takeaway .icon { font-size:24px;flex-shrink:0; }
+.takeaway .content { font-size:15px;line-height:1.7;color:var(--n300); }
+.takeaway .content strong { color:#fff; }
+.takeaway .label { font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--brand-light);margin-bottom:8px; }
+
+.stat-grid { display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin:24px 0; }
+.stat-card { background:#fff;border-radius:var(--r-2xl);border:1px solid var(--n200);padding:24px;box-shadow:var(--shadow-card);transition:all .3s ease; }
+.stat-card:hover { transform:translateY(-4px);box-shadow:var(--shadow-hover); }
+.stat-label { font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--n500);margin-bottom:8px; }
+.stat-value { font-size:32px;font-weight:700;color:var(--n900);line-height:1;margin-bottom:6px; }
+.stat-desc { font-size:13px;color:var(--n500); }
+.stat-accent { background:linear-gradient(135deg,var(--brand) 0%,var(--brand-dark) 100%);border:none;color:#fff; }
+.stat-accent .stat-label { color:rgba(255,255,255,.7); }
+.stat-accent .stat-value { color:#fff; }
+.stat-accent .stat-desc { color:rgba(255,255,255,.7); }
+
+.bullet-list { margin:12px 0;padding-left:0;list-style:none; }
+.bullet-list li { position:relative;padding:10px 0 10px 28px;font-size:15px;color:var(--n600);line-height:1.6;border-bottom:1px solid var(--n200); }
+.bullet-list li:last-child { border-bottom:none; }
+.bullet-list li::before { content:'';position:absolute;left:0;top:18px;width:8px;height:8px;border-radius:50%;background:var(--brand-light); }
+
+.hyp-card { background:#fff;border-radius:var(--r-2xl);border:1px solid var(--n200);padding:24px;box-shadow:var(--shadow-card);transition:all .3s ease;margin-bottom:16px; }
+.hyp-card:hover { transform:translateY(-2px);box-shadow:var(--shadow-hover); }
+.hyp-tag { display:inline-block;background:var(--brand-bg);color:#0369a1;padding:3px 10px;border-radius:var(--r-full);font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;margin-bottom:10px; }
+.hyp-title { font-size:16px;font-weight:600;color:var(--n900);margin-bottom:6px; }
+.hyp-text { font-size:14px;color:var(--n600);line-height:1.6;margin-bottom:6px; }
+.hyp-basis { font-size:13px;color:var(--n500);line-height:1.5;padding-left:14px;border-left:2px solid var(--n200); }
+
+.dir-card { background:#fff;border-radius:var(--r-2xl);border:1px solid var(--n200);padding:28px;box-shadow:var(--shadow-card);transition:all .3s ease;border-top:4px solid var(--brand); }
+.dir-card:hover { transform:translateY(-3px);box-shadow:var(--shadow-hover); }
+
+.unclear-card { background:#fffbeb;border:1px solid #fde68a;border-left:4px solid var(--warning);border-radius:var(--r-xl);padding:20px;margin-bottom:12px; }
+.unclear-card h4 { font-size:15px;font-weight:600;color:#92400e;margin-bottom:4px; }
+.unclear-card p { font-size:14px;color:#92400e;line-height:1.6; }
+
+.topnav { position:fixed;top:0;left:0;right:0;z-index:300;background:rgba(255,255,255,.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--n200);height:56px; }
+.topnav-inner { max-width:1400px;margin:0 auto;padding:0 32px;height:100%;display:flex;align-items:center;justify-content:space-between; }
+.topnav-logo { font-size:16px;font-weight:700;color:var(--n900);white-space:nowrap; }
+.topnav-logo span { color:var(--brand); }
+.topnav-links { display:flex;gap:18px;overflow-x:auto; }
+.topnav-links a { font-size:13px;font-weight:500;color:var(--n500);text-decoration:none;white-space:nowrap;transition:color .2s; }
+.topnav-links a:hover { color:var(--brand); }
+.topnav-badge { font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--brand);background:var(--brand-bg);padding:5px 12px;border-radius:var(--r-full);white-space:nowrap; }
+
+@media (max-width:1024px) { .topnav-links { display:none; } .container { padding:0 20px; } }
+@media (max-width:768px) { h2.st { font-size:24px; } .stat-grid { grid-template-columns:1fr 1fr; } .section { padding:48px 0; } }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="topnav">
+  <div class="topnav-inner">
+    <div class="topnav-logo">BrandOS <span>·</span> Синтез</div>
+    <div class="topnav-links">
+      <a href="#s1">Резюме</a>
+      <a href="#s2">Категория</a>
+      <a href="#s3">Сегменты</a>
+      <a href="#s4">Приоритеты</a>
+      <a href="#s5">Выводы</a>
+      <a href="#s6">Гипотезы</a>
+      <a href="#s7">Следующие шаги</a>
+      <a href="#s8">Неясности</a>
+    </div>
+    <div class="topnav-badge">Стратегия · 2026</div>
+  </div>
+</nav>
+<div style="height:56px;"></div>
+
+<!-- HERO -->
+<header style="background:linear-gradient(135deg,var(--n900) 0%,#1e3a5f 100%);padding:72px 0;position:relative;overflow:hidden;">
+  <div style="position:absolute;top:-120px;right:-120px;width:450px;height:450px;border-radius:50%;background:radial-gradient(circle,rgba(14,165,233,.2) 0%,transparent 70%);pointer-events:none;"></div>
+  <div style="position:absolute;bottom:-80px;left:-80px;width:300px;height:300px;border-radius:50%;background:radial-gradient(circle,rgba(14,165,233,.12) 0%,transparent 70%);pointer-events:none;"></div>
+  <div class="container" style="position:relative;z-index:1;">
+    <div style="display:inline-flex;align-items:center;gap:8px;background:rgba(14,165,233,.15);border:1px solid rgba(14,165,233,.3);color:var(--brand-light);padding:8px 16px;border-radius:var(--r-full);font-size:13px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;margin-bottom:24px;">
+      <span style="width:6px;height:6px;border-radius:50%;background:var(--brand);animation:pulse-glow 2s infinite;"></span>
+      Стратегический синтез
+    </div>
+    <h1 style="font-size:40px;line-height:1.15;letter-spacing:-.02em;font-weight:600;color:#fff;max-width:900px;margin-bottom:20px;">
+      Синтез после глубокого продуктового исследования категории премиальных масел
+    </h1>
+    <p style="font-size:17px;line-height:1.6;color:var(--n400);max-width:800px;margin-bottom:36px;">
+      Сжатая картина рынка и конкретные гипотезы для развития проекта — без необходимости погружаться в массив данных исследования
+    </p>
+    <div style="display:flex;gap:32px;flex-wrap:wrap;">
+      <div style="color:var(--n400);font-size:14px;"><span style="color:var(--brand);font-weight:600;">Клиент:</span> Кирилл Бродников / «Магия Масел»</div>
+      <div style="color:var(--n400);font-size:14px;"><span style="color:var(--brand);font-weight:600;">Тип:</span> Стратегический синтез после DR</div>
+      <div style="color:var(--n400);font-size:14px;"><span style="color:var(--brand);font-weight:600;">Дата:</span> Март 2026</div>
+    </div>
+  </div>
+</header>
+
+<main>
+
+<!-- ====== 1. РЕЗЮМЕ ====== -->
+<section id="s1" class="section" style="background:var(--n50);border-bottom:1px solid var(--n200);">
+  <div class="container">
+    <div class="sn fade-up">Раздел 1</div>
+    <h2 class="st fade-up">Краткое резюме для клиента</h2>
+
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(380px,1fr));gap:16px;margin:24px 0;">
+      <div class="card card-accent fade-up">
+        <div style="display:flex;align-items:flex-start;gap:14px;">
+          <div style="width:40px;height:40px;border-radius:var(--r-xl);background:var(--brand-bg);color:var(--brand);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;">🔬</div>
+          <div>
+            <h4 style="font-size:16px;font-weight:600;color:var(--n900);margin-bottom:4px;">Категория сменила прописку</h4>
+            <p style="font-size:14px;color:var(--n600);line-height:1.6;">Масло больше не бакалея — это нутрицевтик. Покупатель ищет не «вкус для салата», а «инструмент для здоровья».</p>
+          </div>
+        </div>
+      </div>
+      <div class="card card-accent fade-up">
+        <div style="display:flex;align-items:flex-start;gap:14px;">
+          <div style="width:40px;height:40px;border-radius:var(--r-xl);background:var(--brand-bg);color:var(--brand);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;">📋</div>
+          <div>
+            <h4 style="font-size:16px;font-weight:600;color:var(--n900);margin-bottom:4px;">Доказательность — новый стандарт</h4>
+            <p style="font-size:14px;color:var(--n600);line-height:1.6;">Просто «холодный отжим» — недостаточно. Премиум требует паспорта партии, лаборатории и контроля температуры ниже 35°C.</p>
+          </div>
+        </div>
+      </div>
+      <div class="card card-accent fade-up">
+        <div style="display:flex;align-items:flex-start;gap:14px;">
+          <div style="width:40px;height:40px;border-radius:var(--r-xl);background:var(--brand-bg);color:var(--brand);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;">🧪</div>
+          <div>
+            <h4 style="font-size:16px;font-weight:600;color:var(--n900);margin-bottom:4px;">Мини-форматы — ключ к росту</h4>
+            <p style="font-size:14px;color:var(--n600);line-height:1.6;">Объёмы 30–100 мл критически важны как «входной билет», снимающий страх порчи дорогого продукта.</p>
+          </div>
+        </div>
+      </div>
+      <div class="card card-accent fade-up">
+        <div style="display:flex;align-items:flex-start;gap:14px;">
+          <div style="width:40px;height:40px;border-radius:var(--r-xl);background:var(--brand-bg);color:var(--brand);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;">🎯</div>
+          <div>
+            <h4 style="font-size:16px;font-weight:600;color:var(--n900);margin-bottom:4px;">Продажа ритуала, а не бутылки</h4>
+            <p style="font-size:14px;color:var(--n600);line-height:1.6;">Самая эффективная модель — набор на 30 дней под цель: иммунитет, кожа, печень.</p>
+          </div>
+        </div>
+      </div>
+      <div class="card card-accent fade-up">
+        <div style="display:flex;align-items:flex-start;gap:14px;">
+          <div style="width:40px;height:40px;border-radius:var(--r-xl);background:var(--brand-bg);color:var(--brand);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;">📦</div>
+          <div>
+            <h4 style="font-size:16px;font-weight:600;color:var(--n900);margin-bottom:4px;">Технологическая упаковка</h4>
+            <p style="font-size:14px;color:var(--n600);line-height:1.6;">Вакуумные спреи, азотное наполнение — главное отличие от масс-маркета.</p>
+          </div>
+        </div>
+      </div>
+      <div class="card card-accent fade-up">
+        <div style="display:flex;align-items:flex-start;gap:14px;">
+          <div style="width:40px;height:40px;border-radius:var(--r-xl);background:var(--brand-bg);color:var(--brand);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;">🤖</div>
+          <div>
+            <h4 style="font-size:16px;font-weight:600;color:var(--n900);margin-bottom:4px;">Сервис удерживает</h4>
+            <p style="font-size:14px;color:var(--n600);line-height:1.6;">Telegram-боты с напоминаниями на 21-й день и консультации нутрициологов генерируют до 40% повторных продаж.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ====== 2. ЧТО ПОНИМАЕМ ====== -->
+<section id="s2" class="section">
+  <div class="container">
+    <div class="sn fade-up">Раздел 2</div>
+    <h2 class="st fade-up">Что мы теперь понимаем про продуктовую категорию</h2>
+
+    <p class="tx fade-up">Рынок находится в стадии <strong style="color:var(--n900);">«взрывной трансформации»</strong>.</p>
+
+    <div class="stat-grid fade-up">
+      <div class="stat-card stat-accent">
+        <div class="stat-label">CAGR биохакинг-сегмента</div>
+        <div class="stat-value">16,5%</div>
+        <div class="stat-desc">Обгоняет традиционную кулинарию в 3 раза</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Премия к масс-маркету</div>
+        <div class="stat-value">5–10×</div>
+        <div class="stat-desc">Готовность переплатить при доказательной базе</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Ключевой актив</div>
+        <div class="stat-value">QR</div>
+        <div class="stat-desc">Видео процесса + данные о веществах</div>
+      </div>
+    </div>
+
+    <p class="tx fade-up">Чёткое разделение: крупные холдинги забирают объёмы, а микро-производители — маржу. Доверие клиента строится не на «красивой легенде», а на <strong style="color:var(--n900);">технологической прозрачности</strong>. Покупатель готов переплачивать в 5–10 раз, если видит доказательства: QR-коды с видео, данные о содержании активных веществ (тимохинон) и отсутствие контакта с металлом.</p>
+  </div>
+</section>
+
+<!-- ====== 3. СЕГМЕНТЫ ====== -->
+<section id="s3" class="section" style="background:var(--n50);border-top:1px solid var(--n200);border-bottom:1px solid var(--n200);">
+  <div class="container">
+    <div class="sn fade-up">Раздел 3</div>
+    <h2 class="st fade-up">Продуктовые сегменты и логики рынка</h2>
+    <p class="tx fade-up">На основе анализа 20+ игроков выделены 6 ключевых логик, которые приносят деньги:</p>
+
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(380px,1fr));gap:16px;margin:24px 0;">
+      <div class="card fade-up" style="border-top:3px solid var(--brand);">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
+          <span style="background:var(--brand-bg);color:#0369a1;padding:3px 10px;border-radius:var(--r-full);font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;">Локомотив</span>
+        </div>
+        <h4 style="font-size:17px;font-weight:600;color:var(--n900);margin-bottom:6px;">Специализированные нутрицевтики</h4>
+        <p style="font-size:14px;color:var(--n600);line-height:1.6;">Масла чёрного тмина, расторопши и амаранта. Решают задачи коррекции здоровья. Покупаются как альтернатива аптечным БАДам.</p>
+      </div>
+      <div class="card fade-up" style="border-top:3px solid var(--success);">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
+          <span style="background:#d1fae5;color:#065f46;padding:3px 10px;border-radius:var(--r-full);font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;">Ваша ниша</span>
+        </div>
+        <h4 style="font-size:17px;font-weight:600;color:var(--n900);margin-bottom:6px;">«Инженерный» крафт</h4>
+        <p style="font-size:14px;color:var(--n600);line-height:1.6;">Качество гарантируется точностью процессов: контроль температуры, свежесть «из-под пресса». Идеальная ниша для проекта.</p>
+      </div>
+      <div class="card fade-up" style="border-top:3px solid #ec4899;">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
+          <span style="background:#fce7f3;color:#9d174d;padding:3px 10px;border-radius:var(--r-full);font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;">Бьюти</span>
+        </div>
+        <h4 style="font-size:17px;font-weight:600;color:var(--n900);margin-bottom:6px;">Beauty-Inside-Out (Красота изнутри)</h4>
+        <p style="font-size:14px;color:var(--n600);line-height:1.6;">Масла (миндаль, кедр, конопля) как часть бьюти-рутины для кожи и волос.</p>
+      </div>
+      <div class="card fade-up" style="border-top:3px solid var(--warning);">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
+          <span style="background:#fef3c7;color:#92400e;padding:3px 10px;border-radius:var(--r-full);font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;">Вход</span>
+        </div>
+        <h4 style="font-size:17px;font-weight:600;color:var(--n900);margin-bottom:6px;">Наборы-знакомства (Tripwire)</h4>
+        <p style="font-size:14px;color:var(--n600);line-height:1.6;">Сеты по 3–5 флаконов (30–100 мл). Первое касание и снижение риска «выброшенных денег».</p>
+      </div>
+      <div class="card fade-up" style="border-top:3px solid #8b5cf6;">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
+          <span style="background:#ede9fe;color:#5b21b6;padding:3px 10px;border-radius:var(--r-full);font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;">Системные</span>
+        </div>
+        <h4 style="font-size:17px;font-weight:600;color:var(--n900);margin-bottom:6px;">Продуктовые решения под цель</h4>
+        <p style="font-size:14px;color:var(--n600);line-height:1.6;">Наборы на 30 дней («Чистые сосуды», «Здоровая печень»). Превращают разовую покупку в системную привычку.</p>
+      </div>
+      <div class="card fade-up" style="border-top:3px solid #f97316;">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
+          <span style="background:#fff7ed;color:#9a3412;padding:3px 10px;border-radius:var(--r-full);font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;">Гурманика</span>
+        </div>
+        <h4 style="font-size:17px;font-weight:600;color:var(--n900);margin-bottom:6px;">Gastro-Botanicals</h4>
+        <p style="font-size:14px;color:var(--n600);line-height:1.6;">Редкие вкусы (трюфель, авокадо, фундук) для ресторанного опыта дома.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ====== 4. ПРИОРИТЕТЫ ====== -->
+<section id="s4" class="section">
+  <div class="container">
+    <div class="sn fade-up">Раздел 4</div>
+    <h2 class="st fade-up">Три основных продуктовых направления (Приоритеты)</h2>
+
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(380px,1fr));gap:20px;margin:24px 0;">
+      <div class="dir-card fade-up">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;">
+          <div style="width:36px;height:36px;border-radius:50%;background:var(--brand);color:#fff;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700;">1</div>
+          <span style="font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--brand);">Локомотив</span>
+        </div>
+        <h3 style="font-size:20px;font-weight:600;color:var(--n900);margin-bottom:10px;">Биохакинг и функциональное питание</h3>
+        <div style="margin-bottom:12px;">
+          <div style="font-size:13px;font-weight:600;color:var(--n500);text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px;">Почему</div>
+          <p style="font-size:15px;color:var(--n600);line-height:1.6;">Самый быстрорастущий сегмент — 16,5% CAGR.</p>
+        </div>
+        <div style="margin-bottom:12px;">
+          <div style="font-size:13px;font-weight:600;color:var(--n500);text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px;">Обоснование</div>
+          <p style="font-size:15px;color:var(--n600);line-height:1.6;">Потребитель максимально лоялен и нечувствителен к цене при наличии доказательной базы.</p>
+        </div>
+        <div>
+          <div style="font-size:13px;font-weight:600;color:var(--n500);text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px;">Для проекта</div>
+          <p style="font-size:15px;color:var(--n600);line-height:1.6;">Масла чёрного тмина и расторопши — главные SKU для входа.</p>
+        </div>
+      </div>
+
+      <div class="dir-card fade-up">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;">
+          <div style="width:36px;height:36px;border-radius:50%;background:var(--brand);color:#fff;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700;">2</div>
+          <span style="font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--brand);">USP</span>
+        </div>
+        <h3 style="font-size:20px;font-weight:600;color:var(--n900);margin-bottom:10px;">«Инженерный контроль качества»</h3>
+        <div style="margin-bottom:12px;">
+          <div style="font-size:13px;font-weight:600;color:var(--n500);text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px;">Почему</div>
+          <p style="font-size:15px;color:var(--n600);line-height:1.6;">Закрывает главную боль премиума — страх подделки или окисленного продукта.</p>
+        </div>
+        <div>
+          <div style="font-size:13px;font-weight:600;color:var(--n500);text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px;">Обоснование</div>
+          <p style="font-size:15px;color:var(--n600);line-height:1.6;">Бэкграунд в нефтяной отрасли и привычка к регламентам — мощнейший триггер доверия, которого нет у «домашних» маслобоен.</p>
+        </div>
+      </div>
+
+      <div class="dir-card fade-up">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;">
+          <div style="width:36px;height:36px;border-radius:50%;background:var(--brand);color:#fff;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700;">3</div>
+          <span style="font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--brand);">LTV</span>
+        </div>
+        <h3 style="font-size:20px;font-weight:600;color:var(--n900);margin-bottom:10px;">Сервисная модель «Масляный консьерж»</h3>
+        <div style="margin-bottom:12px;">
+          <div style="font-size:13px;font-weight:600;color:var(--n500);text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px;">Почему</div>
+          <p style="font-size:15px;color:var(--n600);line-height:1.6;">Позволяет кратно поднять LTV (пожизненную ценность клиента).</p>
+        </div>
+        <div>
+          <div style="font-size:13px;font-weight:600;color:var(--n500);text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px;">Обоснование</div>
+          <p style="font-size:15px;color:var(--n600);line-height:1.6;">Без напоминаний и инструкций клиент «забывает» пить масло — повторная покупка не случается.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ====== 5. ВЫВОДЫ ====== -->
+<section id="s5" class="section" style="background:var(--n50);border-top:1px solid var(--n200);border-bottom:1px solid var(--n200);">
+  <div class="container">
+    <div class="sn fade-up">Раздел 5</div>
+    <h2 class="st fade-up">Что мы должны понимать точно после этого исследования</h2>
+
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:16px;margin:24px 0;">
+      <div class="card card-accent fade-up">
+        <div style="font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--brand);margin-bottom:8px;">Рабочие форматы</div>
+        <p style="font-size:15px;color:var(--n700);line-height:1.6;"><strong>100 мл</strong> — для тестов и подарков. <strong>250 мл</strong> — основной стандарт потребления на месяц.</p>
+      </div>
+      <div class="card card-accent fade-up">
+        <div style="font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--brand);margin-bottom:8px;">Входной продукт</div>
+        <p style="font-size:15px;color:var(--n700);line-height:1.6;">Лучше всего работает <strong>набор из 3-х масел по 100 мл</strong> — «Знакомство».</p>
+      </div>
+      <div class="card card-accent fade-up">
+        <div style="font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--brand);margin-bottom:8px;">Элементы доверия</div>
+        <p style="font-size:15px;color:var(--n700);line-height:1.6;">Тёмное стекло — база. <strong>QR-код с результатами анализов партии</strong> — премиум-стандарт.</p>
+      </div>
+      <div class="card card-accent fade-up">
+        <div style="font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--brand);margin-bottom:8px;">Упаковка</div>
+        <p style="font-size:15px;color:var(--n700);line-height:1.6;">Визуал: либо <strong>«Интеллектуальный минимализм»</strong> (для биохакеров), либо <strong>«Инженерный крафт»</strong>.</p>
+      </div>
+      <div class="card card-accent fade-up">
+        <div style="font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--brand);margin-bottom:8px;">Повторные покупки</div>
+        <p style="font-size:15px;color:var(--n700);line-height:1.6;">Наступают <strong>только при системе ремайндеров</strong> на 21–25 день после вскрытия бутылки.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ====== 6. ГИПОТЕЗЫ ====== -->
+<section id="s6" class="section">
+  <div class="container">
+    <div class="sn fade-up">Раздел 6</div>
+    <h2 class="st fade-up">Гипотезы после продуктового анализа</h2>
+
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(380px,1fr));gap:16px;margin:24px 0;">
+      <div class="hyp-card fade-up">
+        <div class="hyp-tag">Линейка и SKU</div>
+        <div class="hyp-title">Набор «5 масел по 30 мл» снижает барьер входа для дорогих позиций</div>
+        <div class="hyp-text">Внедрение мини-набора позволит клиенту попробовать амарант и облепиху без страха потерять крупную сумму.</div>
+        <div class="hyp-basis"><strong>Основание:</strong> Успешный кейс бренда «Левия».</div>
+      </div>
+      <div class="hyp-card fade-up">
+        <div class="hyp-tag">Упаковка</div>
+        <div class="hyp-title">Алюминиевые рефилл-банки выделят проект и решат проблему экологии</div>
+        <div class="hyp-text">Формат как у Graza для повторных заказов — клиент покупает тару один раз, далее только рефиллы.</div>
+        <div class="hyp-basis"><strong>Основание:</strong> Мировой тренд на устойчивое развитие и 100% защита от света.</div>
+      </div>
+      <div class="hyp-card fade-up">
+        <div class="hyp-tag">Доверие</div>
+        <div class="hyp-title">Видео-фиксация отжима партии = +30–50% к цене</div>
+        <div class="hyp-text">QR на этикетке → видео конкретной партии. Снимает все подозрения в подмешивании.</div>
+        <div class="hyp-basis"><strong>Основание:</strong> Запрос аудитории на «прозрачное производство» без контакта с металлом.</div>
+      </div>
+      <div class="hyp-card fade-up">
+        <div class="hyp-tag">Повторные покупки</div>
+        <div class="hyp-title">Мягкая подписка на льняное масло (–10%, каждые 2 недели)</div>
+        <div class="hyp-text">Стабильный денежный поток через самый скоропортящийся продукт, требующий регулярного обновления.</div>
+        <div class="hyp-basis"><strong>Основание:</strong> Льняное масло — лидер по частоте повторных покупок из-за короткого срока хранения.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ====== 7. СЛЕДУЮЩИЕ ШАГИ ====== -->
+<section id="s7" class="section" style="background:var(--n50);border-top:1px solid var(--n200);border-bottom:1px solid var(--n200);">
+  <div class="container">
+    <div class="sn fade-up">Раздел 7</div>
+    <h2 class="st fade-up">Что брать в следующие этапы проекта</h2>
+
+    <div style="counter-reset:steps;margin:24px 0;">
+      <div class="card fade-up" style="display:flex;gap:16px;align-items:flex-start;margin-bottom:12px;">
+        <div style="counter-increment:steps;min-width:40px;height:40px;border-radius:50%;background:var(--brand);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:16px;flex-shrink:0;">1</div>
+        <div>
+          <h4 style="font-size:16px;font-weight:600;color:var(--n900);margin-bottom:4px;">Продуктовая матрица</h4>
+          <p style="font-size:15px;color:var(--n600);line-height:1.6;">Сформировать 3 типа наборов: «Знакомство» (мини), «Ритуал 30 дней» (целевые), «Подарок» (премиум-тубусы).</p>
+        </div>
+      </div>
+      <div class="card fade-up" style="display:flex;gap:16px;align-items:flex-start;margin-bottom:12px;">
+        <div style="min-width:40px;height:40px;border-radius:50%;background:var(--brand);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:16px;flex-shrink:0;">2</div>
+        <div>
+          <h4 style="font-size:16px;font-weight:600;color:var(--n900);margin-bottom:4px;">Упаковка</h4>
+          <p style="font-size:15px;color:var(--n600);line-height:1.6;">Найти поставщика тёмного аптекарского стекла и проработать дизайн этикетки в стиле «Инженерный крафт».</p>
+        </div>
+      </div>
+      <div class="card fade-up" style="display:flex;gap:16px;align-items:flex-start;margin-bottom:12px;">
+        <div style="min-width:40px;height:40px;border-radius:50%;background:var(--brand);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:16px;flex-shrink:0;">3</div>
+        <div>
+          <h4 style="font-size:16px;font-weight:600;color:var(--n900);margin-bottom:4px;">Офферы</h4>
+          <p style="font-size:15px;color:var(--n600);line-height:1.6;">Тестировать заголовок «Давим сегодня — у вас завтра» как основной драйвер свежести.</p>
+        </div>
+      </div>
+      <div class="card fade-up" style="display:flex;gap:16px;align-items:flex-start;margin-bottom:12px;">
+        <div style="min-width:40px;height:40px;border-radius:50%;background:var(--brand);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:16px;flex-shrink:0;">4</div>
+        <div>
+          <h4 style="font-size:16px;font-weight:600;color:var(--n900);margin-bottom:4px;">Путь клиента</h4>
+          <p style="font-size:15px;color:var(--n600);line-height:1.6;">Спроектировать Telegram-бота, который не только продаёт, но и ведёт клиента по 30-дневному курсу приёма.</p>
+        </div>
+      </div>
+      <div class="card fade-up" style="display:flex;gap:16px;align-items:flex-start;">
+        <div style="min-width:40px;height:40px;border-radius:50%;background:var(--brand);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:16px;flex-shrink:0;">5</div>
+        <div>
+          <h4 style="font-size:16px;font-weight:600;color:var(--n900);margin-bottom:4px;">Тестирование</h4>
+          <p style="font-size:15px;color:var(--n600);line-height:1.6;">Запустить MVP-продажи наборов через гео-сервисы (Яндекс.Карты) вокруг текущей точки на Дорогомиловском рынке.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ====== 8. НЕЯСНОСТИ ====== -->
+<section id="s8" class="section">
+  <div class="container">
+    <div class="sn fade-up">Раздел 8</div>
+    <h2 class="st fade-up">Что пока остаётся неясным</h2>
+    <p class="tx fade-up">Зоны, требующие дополнительной проработки перед масштабированием:</p>
+
+    <div class="fade-up">
+      <div class="unclear-card">
+        <h4>⚠ Экономика логистики</h4>
+        <p>Как стоимость термо-упаковки (для льняного масла) повлияет на маржинальность при отправке в регионы.</p>
+      </div>
+      <div class="unclear-card">
+        <h4>⚠ Масштабируемость «ручного» контроля</h4>
+        <p>На каком объёме производства личный контроль основателя (проверка семян на прорастание) станет «бутылочным горлышком».</p>
+      </div>
+      <div class="unclear-card">
+        <h4>⚠ Юридические границы</h4>
+        <p>Необходима детальная проверка формулировок описаний, чтобы избежать штрафов ФАС за «медицинские обещания» при продаже функциональных масел.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<!-- FOOTER -->
+<footer style="background:var(--n900);padding:48px 0;">
+  <div class="container">
+    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:24px;">
+      <div>
+        <div style="font-size:20px;font-weight:700;color:#fff;margin-bottom:8px;">
+          BrandOS <span style="color:var(--brand);">·</span> Стратегический синтез
+        </div>
+        <div style="font-size:14px;color:var(--n500);">На основе исследования категории масел первого холодного отжима · Март 2026</div>
+      </div>
+    </div>
+    <div style="height:1px;background:rgba(255,255,255,.08);margin:32px 0;"></div>
+    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px;">
+      <div style="font-size:13px;color:var(--n600);">© 2026 BrandOS · Конфиденциальный документ</div>
+      <div style="font-size:13px;color:var(--n600);">Подготовлено для Кирилла Бродникова / «Магия Масел»</div>
+    </div>
+  </div>
+</footer>
+
+<script>
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach((e, i) => {
+    if (e.isIntersecting) setTimeout(() => e.target.classList.add('visible'), i * 80);
+  });
+}, { threshold: 0.1 });
+document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
+
+const sections = document.querySelectorAll('section[id]');
+const navLinks = document.querySelectorAll('.topnav-links a[href^="#"]');
+window.addEventListener('scroll', () => {
+  let current = '';
+  sections.forEach(s => { if (window.scrollY >= s.offsetTop - 100) current = s.id; });
+  navLinks.forEach(a => {
+    a.style.color = a.getAttribute('href') === '#' + current ? '#0ea5e9' : '';
+    a.style.fontWeight = a.getAttribute('href') === '#' + current ? '600' : '';
+  });
+});
+</script>
+</body>
+</html>

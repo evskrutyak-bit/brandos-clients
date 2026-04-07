@@ -1,0 +1,843 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Синтез после Deep Research — Магия Масел</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --brand: #0ea5e9;
+  --brand-dark: #0284c7;
+  --brand-light: #7dd3fc;
+  --brand-bg: #e0f2fe;
+  --black: #0f172a;
+  --n50: #f8fafc; --n100: #f1f5f9; --n200: #e2e8f0;
+  --n300: #cbd5e1; --n400: #94a3b8; --n500: #64748b;
+  --n600: #475569; --n700: #334155; --n800: #1e293b; --n900: #0f172a;
+  --success: #10b981; --warning: #f59e0b; --error: #ef4444; --info: #3b82f6;
+  --font: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  --shadow-card: 0 1px 3px 0 rgba(0,0,0,.05), 0 1px 2px -1px rgba(0,0,0,.05);
+  --shadow-hover: 0 10px 25px -5px rgba(0,0,0,.08), 0 8px 10px -6px rgba(0,0,0,.04);
+  --shadow-btn: 0 4px 14px 0 rgba(14,165,233,.35);
+  --shadow-glow: 0 0 40px rgba(14,165,233,.15);
+  --r-sm:4px; --r-md:6px; --r-lg:8px; --r-xl:12px; --r-2xl:16px; --r-3xl:24px; --r-full:9999px;
+}
+
+@page { size: landscape; }
+
+body {
+  font-family: var(--font);
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--n600);
+  background: var(--n100);
+}
+
+@keyframes shimmer { 0%{transform:translateX(-100%)} 100%{transform:translateX(200%)} }
+@keyframes fade-up { 0%{opacity:0;transform:translateY(20px)} 100%{opacity:1;transform:translateY(0)} }
+@keyframes pulse-glow {
+  0%,100%{box-shadow:0 0 20px rgba(14,165,233,.3)}
+  50%{box-shadow:0 0 40px rgba(14,165,233,.5)}
+}
+
+.fade-up { opacity:0; transform:translateY(20px); transition:opacity .6s ease-out, transform .6s ease-out; }
+.fade-up.visible { opacity:1; transform:translateY(0); }
+
+.container { max-width: 1400px; margin: 0 auto; padding: 0 32px; }
+.section { padding: 64px 0; }
+
+h2.section-title {
+  font-size: 28px; font-weight: 700; color: var(--n900);
+  margin-bottom: 8px; line-height: 1.25;
+}
+h3.sub-title {
+  font-size: 20px; font-weight: 600; color: var(--n800);
+  margin-bottom: 12px; margin-top: 28px; line-height: 1.3;
+}
+.section-subtitle {
+  font-size: 15px; color: var(--n500); margin-bottom: 32px; max-width: 800px;
+}
+p.text-block {
+  font-size: 15px; line-height: 1.7; color: var(--n600); margin-bottom: 16px; max-width: 960px;
+}
+
+.card {
+  background: #fff; border-radius: var(--r-2xl);
+  border: 1px solid var(--n200); padding: 28px;
+  box-shadow: var(--shadow-card); margin-bottom: 20px;
+  transition: all .3s ease;
+}
+.card:hover { transform: translateY(-3px); box-shadow: var(--shadow-hover); }
+
+.badge {
+  display: inline-flex; align-items: center;
+  padding: 4px 12px; border-radius: var(--r-full);
+  font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .05em;
+}
+.badge-blue { background: var(--brand-bg); color: #0369a1; }
+.badge-green { background: #d1fae5; color: #065f46; }
+.badge-yellow { background: #fef3c7; color: #92400e; }
+.badge-red { background: #fee2e2; color: #991b1b; }
+.badge-purple { background: #ede9fe; color: #5b21b6; }
+
+.highlight-box {
+  display: flex; gap: 16px;
+  background: #eff6ff; border: 1px solid #bfdbfe; border-left: 4px solid var(--info);
+  border-radius: var(--r-xl); padding: 20px; margin: 20px 0;
+}
+.highlight-box .icon { font-size: 20px; flex-shrink: 0; }
+.highlight-box .content { font-size: 14px; color: #1e40af; line-height: 1.6; }
+.highlight-box .content strong { display: block; margin-bottom: 4px; }
+
+.warning-box {
+  display: flex; gap: 16px;
+  background: #fffbeb; border: 1px solid #fde68a; border-left: 4px solid var(--warning);
+  border-radius: var(--r-xl); padding: 20px; margin: 20px 0;
+}
+.warning-box .icon { font-size: 20px; flex-shrink: 0; }
+.warning-box .content { font-size: 14px; color: #92400e; line-height: 1.6; }
+.warning-box .content strong { display: block; margin-bottom: 4px; }
+
+.error-box {
+  display: flex; gap: 16px;
+  background: #fef2f2; border: 1px solid #fecaca; border-left: 4px solid var(--error);
+  border-radius: var(--r-xl); padding: 20px; margin: 20px 0;
+}
+.error-box .icon { font-size: 20px; flex-shrink: 0; }
+.error-box .content { font-size: 14px; color: #991b1b; line-height: 1.6; }
+
+.success-box {
+  display: flex; gap: 16px;
+  background: #f0fdf4; border: 1px solid #bbf7d0; border-left: 4px solid var(--success);
+  border-radius: var(--r-xl); padding: 20px; margin: 20px 0;
+}
+.success-box .icon { font-size: 20px; flex-shrink: 0; }
+.success-box .content { font-size: 14px; color: #166534; line-height: 1.6; }
+.success-box .content strong { display: block; margin-bottom: 4px; }
+
+ul.styled-ul { list-style: none; padding-left: 0; margin: 12px 0; }
+ul.styled-ul li {
+  padding: 8px 0 8px 24px; position: relative;
+  font-size: 14px; color: var(--n600); line-height: 1.6;
+}
+ul.styled-ul li::before {
+  content: ''; position: absolute; left: 4px; top: 15px;
+  width: 8px; height: 8px; border-radius: 50%; background: var(--brand);
+}
+
+.two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin: 20px 0; }
+.three-col { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; margin: 20px 0; }
+@media (max-width: 1000px) { .three-col { grid-template-columns: 1fr 1fr; } }
+@media (max-width: 768px) { .two-col, .three-col { grid-template-columns: 1fr; } }
+
+/* Hypothesis card */
+.hypo-card {
+  background: #fff; border-radius: var(--r-2xl);
+  border: 1px solid var(--n200); padding: 24px;
+  box-shadow: var(--shadow-card); transition: all .3s ease;
+}
+.hypo-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-hover); }
+.hypo-num {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 32px; height: 32px; border-radius: 50%;
+  background: var(--brand); color: #fff;
+  font-size: 14px; font-weight: 700; flex-shrink: 0;
+}
+.hypo-title { font-size: 15px; font-weight: 600; color: var(--n900); margin-bottom: 8px; }
+.hypo-section { margin-bottom: 10px; }
+.hypo-label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .04em; color: var(--n400); margin-bottom: 3px; }
+.hypo-text { font-size: 13px; color: var(--n600); line-height: 1.55; }
+
+/* Nav */
+.nav-fixed {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 300;
+  background: rgba(255,255,255,.92); backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--n200); height: 56px;
+}
+.nav-inner {
+  max-width: 1400px; margin: 0 auto; padding: 0 32px;
+  height: 100%; display: flex; align-items: center; justify-content: space-between;
+}
+.nav-logo { font-size: 16px; font-weight: 700; color: var(--n900); white-space: nowrap; }
+.nav-logo span { color: var(--brand); }
+.nav-links { display: flex; gap: 18px; flex-wrap: wrap; justify-content: center; }
+.nav-links a {
+  font-size: 12px; font-weight: 500; color: var(--n500); text-decoration: none;
+  transition: color .2s; white-space: nowrap;
+}
+.nav-links a:hover { color: var(--brand); }
+.nav-badge {
+  font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .04em;
+  color: var(--brand); background: var(--brand-bg);
+  padding: 5px 12px; border-radius: var(--r-full); white-space: nowrap;
+}
+
+.section-divider {
+  height: 1px; background: linear-gradient(90deg, transparent, var(--n300), transparent);
+  margin: 48px 0;
+}
+
+/* Direction rank */
+.direction-card {
+  background: #fff; border-radius: var(--r-2xl);
+  border: 1px solid var(--n200); padding: 24px;
+  box-shadow: var(--shadow-card); transition: all .3s ease;
+  position: relative; overflow: hidden;
+}
+.direction-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-hover); }
+.direction-rank {
+  position: absolute; top: 0; right: 0;
+  background: var(--brand); color: #fff;
+  font-size: 14px; font-weight: 700;
+  padding: 6px 14px; border-radius: 0 0 0 var(--r-xl);
+}
+
+@media (max-width: 768px) {
+  .container { padding: 0 16px; }
+  .section { padding: 40px 0; }
+  h2.section-title { font-size: 22px; }
+  .nav-links { display: none; }
+}
+
+@media print {
+  @page { size: A4 landscape; margin: 15mm; }
+  .nav-fixed, .nav-spacer { display: none; }
+  .section { padding: 24px 0; break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav-fixed">
+  <div class="nav-inner">
+    <div class="nav-logo">Магия Масел <span>·</span> Синтез</div>
+    <div class="nav-links">
+      <a href="#s1">Главное</a>
+      <a href="#s2">Выводы</a>
+      <a href="#s3">Гипотезы</a>
+      <a href="#s4">Обсуждение</a>
+      <a href="#s5">Направления</a>
+      <a href="#s6">Следующие этапы</a>
+      <a href="#s7">Неясности</a>
+    </div>
+    <div class="nav-badge">Синтез · после DR</div>
+  </div>
+</nav>
+<div style="height:56px;"></div>
+
+<!-- HERO -->
+<header style="background:linear-gradient(135deg, var(--n900) 0%, #1e3a5f 100%); padding:72px 0; position:relative; overflow:hidden;">
+  <div style="position:absolute;top:-100px;right:-100px;width:400px;height:400px;border-radius:50%;background:radial-gradient(circle, rgba(14,165,233,.2) 0%, transparent 70%);pointer-events:none;"></div>
+  <div style="position:absolute;bottom:-80px;left:-80px;width:300px;height:300px;border-radius:50%;background:radial-gradient(circle, rgba(14,165,233,.12) 0%, transparent 70%);pointer-events:none;"></div>
+  <div class="container" style="position:relative;z-index:1;">
+    <div style="display:inline-flex;align-items:center;gap:8px;background:rgba(14,165,233,.15);border:1px solid rgba(14,165,233,.3);color:var(--brand-light);padding:8px 16px;border-radius:var(--r-full);font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;margin-bottom:24px;">
+      <span style="width:6px;height:6px;border-radius:50%;background:var(--brand);animation:pulse-glow 2s infinite;"></span>
+      Стратегический синтез
+    </div>
+    <h1 style="font-size:38px;line-height:1.15;letter-spacing:-.02em;font-weight:700;color:#fff;max-width:900px;margin-bottom:20px;">
+      Синтез после Deep Research: гипотезы, направления и план действий
+    </h1>
+    <p style="font-size:17px;line-height:1.6;color:var(--n400);max-width:750px;margin-bottom:40px;">
+      Объединение всех материалов: стратегия, распаковка, рыночный анализ РФ, международный DR. 17 гипотез, 5 направлений, конкретные вопросы и следующие шаги.
+    </p>
+    <div style="display:flex;gap:32px;flex-wrap:wrap;">
+      <div style="color:var(--n400);font-size:14px;">
+        <span style="color:var(--brand);font-weight:600;">Клиент:</span> Кирилл Бродников / «Магия Масел»
+      </div>
+      <div style="color:var(--n400);font-size:14px;">
+        <span style="color:var(--brand);font-weight:600;">Формат:</span> Синтез-документ
+      </div>
+      <div style="color:var(--n400);font-size:14px;">
+        <span style="color:var(--brand);font-weight:600;">Подготовлено:</span> AI-стратег
+      </div>
+    </div>
+  </div>
+</header>
+
+<main>
+
+<!-- 1. ГЛАВНОЕ -->
+<section class="section" id="s1">
+  <div class="container">
+    <h2 class="section-title fade-up">1. Главное, что мы теперь понимаем</h2>
+
+    <div class="highlight-box fade-up" style="margin-top:24px;">
+      <span class="icon">🎯</span>
+      <div class="content" style="font-size:15px;">
+        Проекту Кирилла не нужен ещё один «продавец масел». Ему нужен понятный, доказательный и удобный для покупки <strong style="display:inline;">премиальный бренд</strong> в узком сегменте, где решают не просто вкус или «натуральность», а сочетание трёх вещей: <strong style="display:inline;">доверие к качеству</strong>, <strong style="display:inline;">понятный сценарий применения</strong> и <strong style="display:inline;">повторные покупки</strong>.
+      </div>
+    </div>
+
+    <p class="text-block fade-up">
+      Вся база материалов сходится именно в этом: рынок растёт, особенно там, где масло воспринимается как часть ритуала, заботы о себе или функционального питания; конкуренты выигрывают либо за счёт сильной ремесленной правды, либо за счёт удобства, либо за счёт доказательной базы; у Кирилла уже есть редкий актив — реальное доверие к продукту и экспертизе, но пока это почти не упаковано в систему.
+    </p>
+  </div>
+</section>
+
+<div class="container"><div class="section-divider"></div></div>
+
+<!-- 2. КЛЮЧЕВЫЕ ВЫВОДЫ -->
+<section class="section" id="s2">
+  <div class="container">
+    <h2 class="section-title fade-up">2. Ключевые выводы из всех материалов</h2>
+    <p class="section-subtitle fade-up">Что повторяется во всех документах: стратегия, распаковка, рынок РФ, международный DR</p>
+
+    <div style="display:grid;gap:16px;margin-top:20px;">
+
+      <div class="card fade-up" style="padding:20px 24px;">
+        <div style="display:flex;align-items:flex-start;gap:14px;">
+          <div style="width:36px;height:36px;border-radius:var(--r-xl);background:var(--brand-bg);color:var(--brand);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;font-weight:700;">1</div>
+          <p style="font-size:14px;color:var(--n600);line-height:1.6;">Рынок премиальных масел движется не к «маслам вообще», а к <strong>моделям потребления</strong>: биохакинг/функциональность, ремесленность/свежесть, beauty, гастрономия. Самый быстрый рост в РФ показывают функциональный и ремесленный контуры, а не просто «вкусные масла».</p>
+        </div>
+      </div>
+
+      <div class="card fade-up" style="padding:20px 24px;">
+        <div style="display:flex;align-items:flex-start;gap:14px;">
+          <div style="width:36px;height:36px;border-radius:var(--r-xl);background:var(--brand-bg);color:var(--brand);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;font-weight:700;">2</div>
+          <p style="font-size:14px;color:var(--n600);line-height:1.6;">Для премиального сегмента цена оправдывается не сырьём самой по себе, а <strong>смыслом</strong>: происхождение, технология, свежесть, защита от окисления, сопровождение, формат набора, удобство повторной покупки.</p>
+        </div>
+      </div>
+
+      <div class="card fade-up" style="padding:20px 24px;">
+        <div style="display:flex;align-items:flex-start;gap:14px;">
+          <div style="width:36px;height:36px;border-radius:var(--r-xl);background:var(--brand-bg);color:var(--brand);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;font-weight:700;">3</div>
+          <p style="font-size:14px;color:var(--n600);line-height:1.6;">В России конкуренция идёт в плоскости <strong>«доказательность + удобство покупки»</strong>, а не «у кого масло чуть вкуснее». Это повторяется и в стратегии, и в рыночном анализе, и в разборе Кирилла.</p>
+        </div>
+      </div>
+
+      <div class="card fade-up" style="padding:20px 24px;">
+        <div style="display:flex;align-items:flex-start;gap:14px;">
+          <div style="width:36px;height:36px;border-radius:var(--r-xl);background:var(--brand-bg);color:var(--brand);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;font-weight:700;">4</div>
+          <p style="font-size:14px;color:var(--n600);line-height:1.6;">Сильные конкуренты занимают разные поля: Trawa — ремесленный премиум и «дубовый пресс», Altaria — инновационный формат и удобство, крупные бренды — доступность и масштаб, заменители/БАДы — обещание конкретного эффекта. <strong>Кириллу нельзя играть «понемногу во всё».</strong></p>
+        </div>
+      </div>
+
+      <div class="card fade-up" style="padding:20px 24px;">
+        <div style="display:flex;align-items:flex-start;gap:14px;">
+          <div style="width:36px;height:36px;border-radius:var(--r-xl);background:var(--brand-bg);color:var(--brand);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;font-weight:700;">5</div>
+          <p style="font-size:14px;color:var(--n600);line-height:1.6;">Для входа в премиум отлично работают <strong>микроформаты, подарочные наборы, наборы под цель, инструкции, подписка и ремайндеры</strong>. Это подтверждается и конкурентами, и стратегией, и распаковкой.</p>
+        </div>
+      </div>
+
+      <div class="card fade-up" style="padding:20px 24px;">
+        <div style="display:flex;align-items:flex-start;gap:14px;">
+          <div style="width:36px;height:36px;border-radius:var(--r-xl);background:var(--brand-bg);color:var(--brand);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;font-weight:700;">6</div>
+          <p style="font-size:14px;color:var(--n600);line-height:1.6;">У Кирилла уже есть редкая стартовая база: офлайн-доверие, глубокое объяснение продукта, этика, спокойная продажа без давления. <strong>Но нет системы удержания, визуального кода, базы клиентов и управляемого онлайна.</strong> Это и есть главный разрыв.</p>
+        </div>
+      </div>
+
+      <div class="card fade-up" style="padding:20px 24px;">
+        <div style="display:flex;align-items:flex-start;gap:14px;">
+          <div style="width:36px;height:36px;border-radius:var(--r-xl);background:var(--brand-bg);color:var(--brand);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;font-weight:700;">7</div>
+          <p style="font-size:14px;color:var(--n600);line-height:1.6;">Зарубежный анализ важен не ради экспорта завтра, а как <strong>ориентир по модели</strong>: лучшие рынки подтверждают, что премиум монетизируется через наборы, мини-форматы, подарочность, DTC, подписку и законную доказательность без медицинского балагана.</p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<div class="container"><div class="section-divider"></div></div>
+
+<!-- 3. ГИПОТЕЗЫ -->
+<section class="section" id="s3">
+  <div class="container">
+    <h2 class="section-title fade-up">3. Гипотезы для проекта</h2>
+    <p class="section-subtitle fade-up">17 проверяемых гипотез по 10 направлениям: от позиционирования до клиентского пути</p>
+
+    <!-- Позиционирование -->
+    <h3 class="sub-title fade-up" style="margin-top:8px;">
+      <span class="badge badge-blue" style="margin-right:8px;">Позиционирование</span>
+    </h3>
+    <div class="two-col">
+      <div class="hypo-card fade-up">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px;">
+          <div class="hypo-num">1</div>
+          <div class="hypo-title">«Инженерный крафт + масляный консьерж» — не «натуральные масла»</div>
+        </div>
+        <div class="hypo-section"><div class="hypo-label">Основание</div><div class="hypo-text">Производственный бэкграунд, личный контроль качества, спокойная экспертная подача; стратегия уже предлагает «масляного консьержа» и доказательность как основу.</div></div>
+        <div class="hypo-section"><div class="hypo-label">Почему может сработать</div><div class="hypo-text">Отличает от эзотерического крафта, масс-маркета и безликих ЗОЖ-брендов. В рынке сильны два полюса — ремесленная правда и доказательная экспертность.</div></div>
+        <div class="hypo-section"><div class="hypo-label">Что неясно</div><div class="hypo-text">Готов ли сам Кирилл публично быть гарантом качества хотя бы голосом/руками/процессом.</div></div>
+        <div class="hypo-section"><div class="hypo-label">Как проверить</div><div class="hypo-text">2–3 версии позиционирования → тест на текущих клиентах рынка и в первых рекламных креативах.</div></div>
+      </div>
+
+      <div class="hypo-card fade-up">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px;">
+          <div class="hypo-num">2</div>
+          <div class="hypo-title">«Свежесть как свежий хлеб» — самый быстрый вход в коммуникацию</div>
+        </div>
+        <div class="hypo-section"><div class="hypo-label">Основание</div><div class="hypo-text">И российский, и международный материалы подчёркивают роль свежести, защиты от окисления, правильной тары и доставки.</div></div>
+        <div class="hypo-section"><div class="hypo-label">Почему может сработать</div><div class="hypo-text">Понятно, законно, заметно и не требует медицинских обещаний.</div></div>
+        <div class="hypo-section"><div class="hypo-label">Что неясно</div><div class="hypo-text">Сможет ли операционно выдерживаться обещание свежести при росте.</div></div>
+        <div class="hypo-section"><div class="hypo-label">Как проверить</div><div class="hypo-text">Оффер «свежая партия / дата отжима / рекомендации по хранению» → измерение конверсии.</div></div>
+      </div>
+    </div>
+
+    <!-- Продукт -->
+    <h3 class="sub-title fade-up">
+      <span class="badge badge-green" style="margin-right:8px;">Продукт</span>
+    </h3>
+    <div class="two-col">
+      <div class="hypo-card fade-up">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px;">
+          <div class="hypo-num">3</div>
+          <div class="hypo-title">Продавать не бутылки, а сценарии применения</div>
+        </div>
+        <div class="hypo-section"><div class="hypo-label">Основание</div><div class="hypo-text">Рынок уходит от деления «по семенам» к делению «по целям и моделям потребления».</div></div>
+        <div class="hypo-section"><div class="hypo-label">Почему может сработать</div><div class="hypo-text">Снижает сложность выбора и повышает ценность консультации.</div></div>
+        <div class="hypo-section"><div class="hypo-label">Как проверить</div><div class="hypo-text">Опрос текущих клиентов + квиз в Telegram.</div></div>
+      </div>
+      <div class="hypo-card fade-up">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px;">
+          <div class="hypo-num">4</div>
+          <div class="hypo-title">Продукт-локомотив — «набор на 30 дней под цель»</div>
+        </div>
+        <div class="hypo-section"><div class="hypo-label">Основание</div><div class="hypo-text">Уже заложено в стратегии и бьётся с логикой рынка. Собирает средний чек, делает продажу осмысленной, запускает повтор.</div></div>
+        <div class="hypo-section"><div class="hypo-label">Что неясно</div><div class="hypo-text">Какая комплектация даст лучшую маржу.</div></div>
+        <div class="hypo-section"><div class="hypo-label">Как проверить</div><div class="hypo-text">3 тестовых набора на ограниченной аудитории.</div></div>
+      </div>
+    </div>
+
+    <!-- Линейка -->
+    <h3 class="sub-title fade-up">
+      <span class="badge badge-purple" style="margin-right:8px;">Линейка</span>
+    </h3>
+    <div class="two-col">
+      <div class="hypo-card fade-up">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px;">
+          <div class="hypo-num">5</div>
+          <div class="hypo-title">Три слоя: вход → основной ритуал → премиум</div>
+        </div>
+        <div class="hypo-section"><div class="hypo-label">Основание</div><div class="hypo-text">Рынок подтверждает силу микро-фасовки, наборов, подарочных форматов. 100 мл — сильная экономика у конкурентов; сеты 3–6 масел востребованы.</div></div>
+        <div class="hypo-section"><div class="hypo-label">Что неясно</div><div class="hypo-text">Текущая себестоимость малых фасовок и наличие подходящей упаковки.</div></div>
+        <div class="hypo-section"><div class="hypo-label">Как проверить</div><div class="hypo-text">Пилот 100 мл + набор-знакомство.</div></div>
+      </div>
+      <div class="hypo-card fade-up">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px;">
+          <div class="hypo-num">6</div>
+          <div class="hypo-title">Отдельно: «функциональные», «вкус/кухня», «beauty/ритуал»</div>
+        </div>
+        <div class="hypo-section"><div class="hypo-label">Основание</div><div class="hypo-text">Соответствует сегментации рынка и логике ЦА. Позволяет не мешать биохакинг с гурмэ в одной полке.</div></div>
+        <div class="hypo-section"><div class="hypo-label">Что неясно</div><div class="hypo-text">Насколько широкой делать линейку на старте.</div></div>
+        <div class="hypo-section"><div class="hypo-label">Как проверить</div><div class="hypo-text">Тест 3 категорий в контенте и продажах.</div></div>
+      </div>
+    </div>
+
+    <!-- Форматы -->
+    <h3 class="sub-title fade-up">
+      <span class="badge badge-yellow" style="margin-right:8px;">Форматы</span>
+    </h3>
+    <div class="two-col">
+      <div class="hypo-card fade-up">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px;">
+          <div class="hypo-num">7</div>
+          <div class="hypo-title">Малые объёмы — обязательный формат входа</div>
+        </div>
+        <div class="hypo-section"><div class="hypo-label">Основание</div><div class="hypo-text">Микро-фасовка у конкурентов повышает удельную цену и снижает порог покупки. Премиум покупать легче «на пробу».</div></div>
+        <div class="hypo-section"><div class="hypo-label">Как проверить</div><div class="hypo-text">SKU 50/100 мл для 2–3 топовых масел.</div></div>
+      </div>
+      <div class="hypo-card fade-up">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px;">
+          <div class="hypo-num">8</div>
+          <div class="hypo-title">Подарочные и корпоративные боксы — отдельный денежный поток</div>
+        </div>
+        <div class="hypo-section"><div class="hypo-label">Основание</div><div class="hypo-text">И стратегия, и рынок показывают спрос на gift-ready формат. Поднимает чек и уводит от лобовой конкуренции по бутылкам.</div></div>
+        <div class="hypo-section"><div class="hypo-label">Как проверить</div><div class="hypo-text">1–2 прототипа → тест на партнёрах/студиях/салонах.</div></div>
+      </div>
+    </div>
+
+    <!-- Упаковка предложения -->
+    <h3 class="sub-title fade-up">
+      <span class="badge badge-blue" style="margin-right:8px;">Упаковка предложения</span>
+    </h3>
+    <div class="hypo-card fade-up" style="max-width:660px;">
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px;">
+        <div class="hypo-num">9</div>
+        <div class="hypo-title">Лучший оффер — «подберём масло под цель», а не «купите масло»</div>
+      </div>
+      <div class="hypo-section"><div class="hypo-label">Основание</div><div class="hypo-text">Стратегия канала, квиз, бот, логика консьерж-сервиса. Снижает сопротивление и сразу включает экспертность. Консультационный стиль Кирилла уже работает офлайн.</div></div>
+      <div class="hypo-section"><div class="hypo-label">Как проверить</div><div class="hypo-text">Квиз/бот + ручная обработка первых заявок.</div></div>
+    </div>
+
+    <!-- Каналы продаж -->
+    <h3 class="sub-title fade-up">
+      <span class="badge badge-green" style="margin-right:8px;">Каналы продаж</span>
+    </h3>
+    <div class="two-col">
+      <div class="hypo-card fade-up">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px;">
+          <div class="hypo-num">10</div>
+          <div class="hypo-title">Стартовая связка: рынок/оффлайн → Telegram → повтор → VK/Яндекс на масштаб</div>
+        </div>
+        <div class="hypo-section"><div class="hypo-label">Основание</div><div class="hypo-text">Повторяется в стратегии и распаковке. Использует уже существующее доверие вместо попытки сразу штурмовать весь интернет.</div></div>
+        <div class="hypo-section"><div class="hypo-label">Как проверить</div><div class="hypo-text">2 недели сбора базы с офлайн QR.</div></div>
+      </div>
+      <div class="hypo-card fade-up">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px;">
+          <div class="hypo-num">11</div>
+          <div class="hypo-title">Маркетплейс = витрина доверия, но не основная модель</div>
+        </div>
+        <div class="hypo-section"><div class="hypo-label">Основание</div><div class="hypo-text">Прямо зафиксировано в стратегии. Даёт наличие «в большом интернете», но не убивает премиальную логику и данные по клиентам.</div></div>
+        <div class="hypo-section"><div class="hypo-label">Как проверить</div><div class="hypo-text">1–2 SKU на Ozon/WB как тест.</div></div>
+      </div>
+    </div>
+
+    <!-- Контент -->
+    <h3 class="sub-title fade-up">
+      <span class="badge badge-purple" style="margin-right:8px;">Контент</span>
+    </h3>
+    <div class="hypo-card fade-up" style="max-width:660px;">
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px;">
+        <div class="hypo-num">12</div>
+        <div class="hypo-title">Самый сильный контент — объясняющий экспертный + процесс + хранение + подбор</div>
+      </div>
+      <div class="hypo-section"><div class="hypo-label">Основание</div><div class="hypo-text">Люди покупают у Кирилла через объяснение, рынок сильнее всего отвечает на доказательства и инструктаж. Соответствует его сильной стороне и не требует быть шоуменом.</div></div>
+      <div class="hypo-section"><div class="hypo-label">Как проверить</div><div class="hypo-text">10 единиц базового контента → анализ отклика.</div></div>
+    </div>
+
+    <!-- Офферы -->
+    <h3 class="sub-title fade-up">
+      <span class="badge badge-yellow" style="margin-right:8px;">Офферы</span>
+    </h3>
+    <div class="hypo-card fade-up" style="max-width:660px;">
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px;">
+        <div class="hypo-num">13</div>
+        <div class="hypo-title">«Инструкция + подбор + напоминание» может быть сильнее скидки</div>
+      </div>
+      <div class="hypo-section"><div class="hypo-label">Основание</div><div class="hypo-text">Премиум-сегмент платит за сопровождение, не только за литр. Делает разницу с обычной полкой и держит цену.</div></div>
+      <div class="hypo-section"><div class="hypo-label">Как проверить</div><div class="hypo-text">Сравнить отклик на «скидку» и «сервисный бонус».</div></div>
+    </div>
+
+    <!-- Повторные покупки -->
+    <h3 class="sub-title fade-up">
+      <span class="badge badge-green" style="margin-right:8px;">Повторные покупки</span>
+    </h3>
+    <div class="hypo-card fade-up" style="max-width:660px;">
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px;">
+        <div class="hypo-num">14</div>
+        <div class="hypo-title">Повторные продажи — главный рычаг роста, а не новый трафик</div>
+      </div>
+      <div class="hypo-section"><div class="hypo-label">Основание</div><div class="hypo-text">Все документы бьют в одну точку: продукта хватает на ограниченный срок, базы нет, ремайндеры нужны. База уже тёплая, у продукта есть естественный цикл 21–30 дней.</div></div>
+      <div class="hypo-section"><div class="hypo-label">Как проверить</div><div class="hypo-text">Вести первые 50 клиентов в mini-CRM.</div></div>
+    </div>
+
+    <!-- Доверие -->
+    <h3 class="sub-title fade-up">
+      <span class="badge badge-blue" style="margin-right:8px;">Доверие и доказательность</span>
+    </h3>
+    <div class="hypo-card fade-up" style="max-width:660px;">
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px;">
+        <div class="hypo-num">15</div>
+        <div class="hypo-title">«Папка доверия» — отдельный продуктовый актив</div>
+      </div>
+      <div class="hypo-section"><div class="hypo-label">Основание</div><div class="hypo-text">Рынок требует доказательность, а цена выше массового диапазона. Объясняет премиум без крика и без псевдомедицины: лабораторные показатели, паспорт партии, происхождение, дата отжима.</div></div>
+      <div class="hypo-section"><div class="hypo-label">Как проверить</div><div class="hypo-text">Собрать MVP-пакет на 2–3 масла.</div></div>
+    </div>
+
+    <!-- Премиальность -->
+    <h3 class="sub-title fade-up">
+      <span class="badge badge-purple" style="margin-right:8px;">Премиальность</span>
+    </h3>
+    <div class="hypo-card fade-up" style="max-width:660px;">
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px;">
+        <div class="hypo-num">16</div>
+        <div class="hypo-title">Quiet premium / инженерный крафт — не эзотерика и не агрессивный wellness</div>
+      </div>
+      <div class="hypo-section"><div class="hypo-label">Основание</div><div class="hypo-text">Психотип основателя, стиль продаж, рынок визуально делится на два лагеря, ему ближе первый. Не ломает его природную подачу. Подтверждается: Trawa, quiet luxury, фактологичный ToV.</div></div>
+      <div class="hypo-section"><div class="hypo-label">Как проверить</div><div class="hypo-text">2 тестовых визуальных направления на упаковке и в соцсетях.</div></div>
+    </div>
+
+    <!-- Клиентский путь -->
+    <h3 class="sub-title fade-up">
+      <span class="badge badge-yellow" style="margin-right:8px;">Клиентский путь</span>
+    </h3>
+    <div class="hypo-card fade-up" style="max-width:740px;">
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px;">
+        <div class="hypo-num">17</div>
+        <div class="hypo-title">Увидел → понял зачем → набор → инструкция → напоминание → подписка/повтор</div>
+      </div>
+      <div class="hypo-section"><div class="hypo-label">Основание</div><div class="hypo-text">Прямо собирается из стратегии, распаковки и лучших практик. Превращает ручную консультацию в систему.</div></div>
+      <div class="hypo-section"><div class="hypo-label">Что неясно</div><div class="hypo-text">Кто будет вести операционку.</div></div>
+      <div class="hypo-section"><div class="hypo-label">Как проверить</div><div class="hypo-text">Собрать MVP-воронку в Telegram.</div></div>
+    </div>
+  </div>
+</section>
+
+<div class="container"><div class="section-divider"></div></div>
+
+<!-- 4. ЧТО ОБСУЖДАТЬ -->
+<section class="section" id="s4">
+  <div class="container">
+    <h2 class="section-title fade-up">4. Что обсуждать с клиентом</h2>
+
+    <div class="three-col" style="margin-top:24px;">
+
+      <div class="card fade-up" style="border-left:4px solid var(--success);">
+        <h4 style="font-size:15px;font-weight:600;color:var(--n900);margin-bottom:12px;">✅ Что озвучить как основное</h4>
+        <ul class="styled-ul">
+          <li>Идти не в «широкий рынок масел», а в <strong>узкий премиальный контур</strong>: Москва/МО, осознанный ЗОЖ, функциональные и ритуальные сценарии.</li>
+          <li>Основная модель: <strong>«масляный консьерж» + инженерный крафт.</strong></li>
+          <li>Основной продукт: <strong>наборы на 30 дней под цель.</strong></li>
+          <li>Главный рычаг роста: <strong>повторные продажи</strong> через базу, ремайндеры и подписку.</li>
+          <li>Главный формат доверия: дата партии, хранение, происхождение, инструкция, спокойная экспертность.</li>
+        </ul>
+      </div>
+
+      <div class="card fade-up" style="border-left:4px solid var(--info);">
+        <h4 style="font-size:15px;font-weight:600;color:var(--n900);margin-bottom:12px;">🔀 Что дать как альтернативы</h4>
+        <ul class="styled-ul">
+          <li>Акцент на функциональность/биохакинг.</li>
+          <li>Акцент на ремесленность и свежесть.</li>
+          <li>Акцент на beauty-ритуалы.</li>
+          <li>Акцент на гурмэ/подарочность.</li>
+        </ul>
+        <div class="warning-box" style="margin-top:12px;margin-bottom:0;">
+          <span class="icon">⚠️</span>
+          <div class="content">Эти направления лучше обсуждать как <strong>ветки одной модели</strong>, а не как четыре разных бизнеса.</div>
+        </div>
+      </div>
+
+      <div class="card fade-up" style="border-left:4px solid var(--error);">
+        <h4 style="font-size:15px;font-weight:600;color:var(--n900);margin-bottom:12px;">🚫 Что пока рано обещать</h4>
+        <ul class="styled-ul">
+          <li>Полноценный экспорт как следующий этап.</li>
+          <li>Персонализированные миксы по анализам.</li>
+          <li>Сильные health-claims и «лечебную» подачу.</li>
+          <li>Агрессивный масштаб через маркетплейсы.</li>
+        </ul>
+      </div>
+
+    </div>
+
+    <h3 class="sub-title fade-up">Какие вопросы надо задать клиенту</h3>
+    <div class="two-col">
+      <div class="card fade-up" style="padding:20px 24px;">
+        <ul class="styled-ul" style="margin:0;">
+          <li>Какие масла реально дают лучшую маржу и повтор?</li>
+          <li>Какие документы/анализы уже есть?</li>
+          <li>На какие SKU он готов делать малую фасовку?</li>
+          <li>Готов ли он быть хотя бы «голосом и руками» бренда?</li>
+        </ul>
+      </div>
+      <div class="card fade-up" style="padding:20px 24px;">
+        <ul class="styled-ul" style="margin:0;">
+          <li>Какая мощность производства и логистики?</li>
+          <li>Москва/МО или сразу вся РФ?</li>
+          <li>Кто будет вести базу, доставку и клиентский сервис?</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="container"><div class="section-divider"></div></div>
+
+<!-- 5. НАПРАВЛЕНИЯ -->
+<section class="section" id="s5">
+  <div class="container">
+    <h2 class="section-title fade-up">5. Какие направления выглядят самыми перспективными</h2>
+    <p class="section-subtitle fade-up">Ранжирование от самого сильного к дополнительному</p>
+
+    <div style="display:grid;gap:20px;margin-top:20px;">
+
+      <div class="direction-card fade-up">
+        <div class="direction-rank">#1</div>
+        <h4 style="font-size:17px;font-weight:700;color:var(--n900);margin-bottom:8px;padding-right:60px;">Инженерный крафт + функциональные наборы под цель</h4>
+        <p style="font-size:14px;color:var(--n600);line-height:1.6;margin-bottom:8px;">Самый сильный вариант. Ближе всего к активам Кирилла, хорошо держит цену, легко связывается с Telegram-воронкой и повтором.</p>
+        <div style="font-size:13px;color:var(--error);font-weight:500;">⚠ Нужна доказательность и аккуратность формулировок.</div>
+      </div>
+
+      <div class="direction-card fade-up">
+        <div class="direction-rank">#2</div>
+        <h4 style="font-size:17px;font-weight:700;color:var(--n900);margin-bottom:8px;padding-right:60px;">Свежесть и ремесленность как главный оффер</h4>
+        <p style="font-size:14px;color:var(--n600);line-height:1.6;margin-bottom:8px;">Самый быстрый старт. Хорошо заходит в Москве, на текущей точке, в коротком контенте и без лишней регуляторной боли.</p>
+        <div style="font-size:13px;color:var(--error);font-weight:500;">⚠ Конкуренты уже играют в эту тему — нужна своя версия, не «мы тоже крафтовые».</div>
+      </div>
+
+      <div class="direction-card fade-up">
+        <div class="direction-rank">#3</div>
+        <h4 style="font-size:17px;font-weight:700;color:var(--n900);margin-bottom:8px;padding-right:60px;">Beauty / ритуалы ухода изнутри</h4>
+        <p style="font-size:14px;color:var(--n600);line-height:1.6;margin-bottom:8px;">Хорошее расширение, особенно для миндального, кедрового, льняного.</p>
+        <div style="font-size:13px;color:var(--warning);font-weight:500;">Как основной вектор пока слабее, чем функциональность + доверие.</div>
+      </div>
+
+      <div class="direction-card fade-up">
+        <div class="direction-rank">#4</div>
+        <h4 style="font-size:17px;font-weight:700;color:var(--n900);margin-bottom:8px;padding-right:60px;">Гурмэ / подарки / корпоративные боксы</h4>
+        <p style="font-size:14px;color:var(--n600);line-height:1.6;margin-bottom:8px;">Сильный дополнительный денежный поток. Отлично подходит для премиальности и визуала.</p>
+        <div style="font-size:13px;color:var(--warning);font-weight:500;">Вряд ли должен быть ядром проекта на старте.</div>
+      </div>
+
+      <div class="direction-card fade-up">
+        <div class="direction-rank">#5</div>
+        <h4 style="font-size:17px;font-weight:700;color:var(--n900);margin-bottom:8px;padding-right:60px;">Чистый «биохакинг / health-tech»</h4>
+        <p style="font-size:14px;color:var(--n600);line-height:1.6;margin-bottom:8px;">Самый денежный по потенциалу, но и самый опасный. Выше риск юридических обещаний, нужна системная доказательность и, возможно, внешний эксперт.</p>
+        <div style="font-size:13px;color:var(--error);font-weight:500;">⚠ Лучше брать как контролируемый подслой, а не как лицо бренда.</div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<div class="container"><div class="section-divider"></div></div>
+
+<!-- 6. СЛЕДУЮЩИЕ ЭТАПЫ -->
+<section class="section" id="s6">
+  <div class="container">
+    <h2 class="section-title fade-up">6. Что брать в следующие этапы проекта</h2>
+
+    <div class="two-col" style="margin-top:24px;">
+
+      <div class="card fade-up">
+        <h4 style="font-size:16px;font-weight:700;color:var(--n900);margin-bottom:12px;">🎯 Целевая аудитория</h4>
+        <ul class="styled-ul">
+          <li>Выяснить не «кто покупает масла», а кто хочет: ритуал здоровья, замену хаотичным БАДам, вкусный гастро-опыт, beauty-эффект, подарок.</li>
+          <li>Разделить минимум на 4 сегмента: функциональность, спорт/восстановление, beauty, гурмэ.</li>
+          <li>Понять триггер первой покупки: страх, интерес, вкус, подарок, рекомендация.</li>
+        </ul>
+      </div>
+
+      <div class="card fade-up">
+        <h4 style="font-size:16px;font-weight:700;color:var(--n900);margin-bottom:12px;">📦 Продукт</h4>
+        <ul class="styled-ul">
+          <li>Посчитать маржу по SKU, особенно по 100/250 мл.</li>
+          <li>Определить 3 набора-локомотива.</li>
+          <li>Зафиксировать сроки повторной покупки по каждому маслу.</li>
+          <li>Составить паспорт продукта: сырьё, партия, хранение, срок после вскрытия.</li>
+        </ul>
+      </div>
+
+      <div class="card fade-up">
+        <h4 style="font-size:16px;font-weight:700;color:var(--n900);margin-bottom:12px;">📊 Продуктовая матрица</h4>
+        <ul class="styled-ul">
+          <li>Сравнивать конкурентов не только по маслам, а по моделям: крафт, инновационный формат, научно-доказательный, масс-маркет, заменители.</li>
+          <li>Отдельно сравнить: фасовка, цена за 100 мл, инструкции, подписка, сервис, упаковка, визуал, экспертность.</li>
+          <li>Выделить «пустое поле», где у Кирилла может быть своё сочетание.</li>
+        </ul>
+      </div>
+
+      <div class="card fade-up">
+        <h4 style="font-size:16px;font-weight:700;color:var(--n900);margin-bottom:12px;">💎 Позиционирование</h4>
+        <ul class="styled-ul">
+          <li>Сузить до 2–3 формулировок и протестировать.</li>
+          <li>Не смешивать сразу «биохакинг», «крафт», «семейность», «эзотерику», «гурмэ» в один суп. <strong>Суп из всего — это уже не суп, это катастрофа.</strong></li>
+          <li>Найти точный баланс: фактология + забота + спокойствие.</li>
+        </ul>
+      </div>
+
+      <div class="card fade-up">
+        <h4 style="font-size:16px;font-weight:700;color:var(--n900);margin-bottom:12px;">🎨 Упаковка</h4>
+        <ul class="styled-ul">
+          <li>Перейти от «ИП Бродский» к полноценному премиальному бренду.</li>
+          <li>Сделать визуал, который поддерживает цену.</li>
+          <li>Сразу продумать: бутылка, этикетка, набор, вкладыш, QR, карточка хранения.</li>
+        </ul>
+      </div>
+
+      <div class="card fade-up">
+        <h4 style="font-size:16px;font-weight:700;color:var(--n900);margin-bottom:12px;">📣 Коммуникация</h4>
+        <ul class="styled-ul">
+          <li>Основа: как выбрать, как хранить, как применять, почему эта цена, чем отличается партия, кому нельзя.</li>
+          <li>Убрать прямые лечебные обещания.</li>
+          <li>Сохранить личную честность Кирилла как конкурентное преимущество, а не приглушать её.</li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<div class="container"><div class="section-divider"></div></div>
+
+<!-- 7. НЕЯСНОСТИ -->
+<section class="section" id="s7">
+  <div class="container">
+    <h2 class="section-title fade-up">7. Что пока остаётся неясным</h2>
+    <p class="section-subtitle fade-up">Вопросы, требующие уточнения перед следующим этапом</p>
+
+    <div style="display:grid;gap:12px;margin-top:20px;">
+      <div class="error-box fade-up">
+        <span class="icon">❓</span>
+        <div class="content">Нет точной экономики по SKU: себестоимость, маржа, логистика, окупаемость малых фасовок.</div>
+      </div>
+      <div class="error-box fade-up">
+        <span class="icon">❓</span>
+        <div class="content">Неясно, какие документы и лабораторные подтверждения уже есть.</div>
+      </div>
+      <div class="error-box fade-up">
+        <span class="icon">❓</span>
+        <div class="content">Нет ясности по производственным ограничениям: мощность, сырьё, сезонность, розлив, доставка.</div>
+      </div>
+      <div class="error-box fade-up">
+        <span class="icon">❓</span>
+        <div class="content">Не до конца понятна текущая бренд-архитектура: будет новый бренд или останется персональный формат.</div>
+      </div>
+      <div class="error-box fade-up">
+        <span class="icon">❓</span>
+        <div class="content">Не решён вопрос «основатель в тени»: где его комфортная граница публичности.</div>
+      </div>
+      <div class="error-box fade-up">
+        <span class="icon">❓</span>
+        <div class="content">Не подтверждено, какие сегменты реально сильнее всего откликаются у текущих клиентов офлайн.</div>
+      </div>
+      <div class="warning-box fade-up">
+        <span class="icon">⚠️</span>
+        <div class="content">
+          <strong>Ключевое противоречие</strong>
+          Есть противоречие между желанием зайти в сильный wellness/биохакинг-контур и юридическими ограничениями на медицинские обещания. Это не тупик, но требует жёсткой дисциплины в формулировках.
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<!-- FOOTER -->
+<footer style="background:var(--n900);padding:48px 0;margin-top:48px;">
+  <div class="container">
+    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:24px;">
+      <div>
+        <div style="font-size:20px;font-weight:700;color:#fff;margin-bottom:8px;">
+          Магия Масел <span style="color:var(--brand);">·</span> Синтез после Deep Research
+        </div>
+        <div style="font-size:14px;color:var(--n500);">Подготовлено AI-стратегом · 17 гипотез · 5 направлений · 7 блоков неясностей</div>
+      </div>
+    </div>
+    <div style="height:1px;background:rgba(255,255,255,.08);margin:32px 0;"></div>
+    <div style="font-size:13px;color:var(--n600);">
+      © 2025 BrandOS · Конфиденциальный документ · Магия Масел / Кирилл Бродников
+    </div>
+  </div>
+</footer>
+
+<script>
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach((e, i) => {
+    if (e.isIntersecting) {
+      setTimeout(() => e.target.classList.add('visible'), i * 80);
+    }
+  });
+}, { threshold: 0.1 });
+document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
+
+const sections = document.querySelectorAll('section[id]');
+const navLinks = document.querySelectorAll('.nav-links a[href^="#"]');
+window.addEventListener('scroll', () => {
+  let current = '';
+  sections.forEach(s => {
+    if (window.scrollY >= s.offsetTop - 100) current = s.id;
+  });
+  navLinks.forEach(a => {
+    a.style.color = a.getAttribute('href') === '#' + current ? '#0ea5e9' : '';
+    a.style.fontWeight = a.getAttribute('href') === '#' + current ? '600' : '';
+  });
+});
+</script>
+</body>
+</html>

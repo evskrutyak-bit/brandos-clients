@@ -1,0 +1,1243 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Исследование конкурентов — Магия Масел</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+@page { size: landscape; margin: 20mm; }
+@media print { body { background: #fff; } .no-print { display:none; } }
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --brand: #0ea5e9;
+  --brand-dark: #0284c7;
+  --brand-light: #7dd3fc;
+  --brand-bg: #e0f2fe;
+  --black: #0f172a;
+  --n50: #f8fafc; --n100: #f1f5f9; --n200: #e2e8f0;
+  --n300: #cbd5e1; --n400: #94a3b8; --n500: #64748b;
+  --n600: #475569; --n700: #334155; --n800: #1e293b; --n900: #0f172a;
+  --success: #10b981; --warning: #f59e0b; --error: #ef4444; --info: #3b82f6;
+  --font: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  --shadow-card: 0 1px 3px 0 rgba(0,0,0,.05), 0 1px 2px -1px rgba(0,0,0,.05);
+  --shadow-hover: 0 10px 25px -5px rgba(0,0,0,.08), 0 8px 10px -6px rgba(0,0,0,.04);
+  --shadow-btn: 0 4px 14px 0 rgba(14,165,233,.35);
+  --shadow-glow: 0 0 40px rgba(14,165,233,.15);
+  --r-sm:4px; --r-md:6px; --r-lg:8px; --r-xl:12px; --r-2xl:16px; --r-3xl:24px; --r-full:9999px;
+}
+
+body {
+  font-family: var(--font);
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--n600);
+  background: var(--n100);
+}
+
+@keyframes fade-up { 0%{opacity:0;transform:translateY(20px)} 100%{opacity:1;transform:translateY(0)} }
+@keyframes pulse-glow {
+  0%,100%{box-shadow:0 0 20px rgba(14,165,233,.3)}
+  50%{box-shadow:0 0 40px rgba(14,165,233,.5)}
+}
+
+.fade-up { opacity:0; transform:translateY(20px); transition:opacity .6s ease-out, transform .6s ease-out; }
+.fade-up.visible { opacity:1; transform:translateY(0); }
+
+/* WIDE container for landscape tables */
+.container { max-width: 1600px; margin: 0 auto; padding: 0 32px; }
+.container-narrow { max-width: 1000px; margin: 0 auto; padding: 0 32px; }
+.section { padding: 60px 0; }
+
+h2.stitle {
+  font-size: 28px; line-height: 1.25; font-weight: 600; color: var(--n900);
+  margin-bottom: 8px;
+}
+.ssub {
+  font-size: 15px; color: var(--n500); margin-bottom: 32px; max-width: 800px;
+}
+
+/* === TABLE STYLES === */
+.tbl-wrap {
+  width: 100%;
+  overflow-x: auto;
+  border-radius: var(--r-2xl);
+  border: 1px solid var(--n200);
+  box-shadow: var(--shadow-card);
+  margin-bottom: 32px;
+  background: #fff;
+}
+table.bt {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+  background: #fff;
+}
+table.bt thead tr {
+  background: var(--n900);
+}
+table.bt th {
+  padding: 14px 16px;
+  text-align: left;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+  color: #fff;
+  border-bottom: 2px solid var(--n200);
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  hyphens: auto;
+  vertical-align: top;
+}
+table.bt td {
+  padding: 12px 16px;
+  font-size: 13px;
+  color: var(--n700);
+  border-bottom: 1px solid var(--n200);
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  hyphens: auto;
+  vertical-align: top;
+  line-height: 1.55;
+}
+table.bt tbody tr:hover { background: rgba(14,165,233,.03); }
+table.bt tbody tr:nth-child(even) { background: var(--n50); }
+table.bt tbody tr:nth-child(even):hover { background: rgba(14,165,233,.05); }
+
+/* Segment badge colours */
+.seg-direct { background:#fee2e2;color:#991b1b;padding:3px 8px;border-radius:var(--r-full);font-size:11px;font-weight:600;white-space:nowrap; }
+.seg-adjacent { background:#fef3c7;color:#92400e;padding:3px 8px;border-radius:var(--r-full);font-size:11px;font-weight:600;white-space:nowrap; }
+.seg-innovate { background:var(--brand-bg);color:#0369a1;padding:3px 8px;border-radius:var(--r-full);font-size:11px;font-weight:600;white-space:nowrap; }
+.seg-subst { background:#ede9fe;color:#5b21b6;padding:3px 8px;border-radius:var(--r-full);font-size:11px;font-weight:600;white-space:nowrap; }
+.seg-offline { background:#d1fae5;color:#065f46;padding:3px 8px;border-radius:var(--r-full);font-size:11px;font-weight:600;white-space:nowrap; }
+
+.badge-sm {
+  display:inline-block;padding:3px 10px;border-radius:var(--r-full);
+  font-size:11px;font-weight:600;
+}
+.b-blue { background:var(--brand-bg);color:#0369a1; }
+.b-green { background:#d1fae5;color:#065f46; }
+.b-amber { background:#fef3c7;color:#92400e; }
+.b-red { background:#fee2e2;color:#991b1b; }
+
+.card {
+  background:#fff;border-radius:var(--r-2xl);
+  border:1px solid var(--n200);padding:28px;
+  box-shadow:var(--shadow-card);margin-bottom:20px;
+}
+
+.prose { font-size:15px; line-height:1.75; color:var(--n700); }
+.prose p { margin-bottom: 14px; }
+
+@media(max-width:1024px) {
+  .container { padding: 0 16px; }
+  table.bt { table-layout: auto; }
+  table.bt th, table.bt td { padding: 10px 10px; font-size: 12px; }
+}
+</style>
+</head>
+<body>
+
+<!-- ===== NAV ===== -->
+<nav class="no-print" style="position:fixed;top:0;left:0;right:0;z-index:300;background:rgba(255,255,255,.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--n200);height:56px;">
+  <div class="container" style="height:100%;display:flex;align-items:center;justify-content:space-between;">
+    <div style="font-size:16px;font-weight:700;color:var(--n900);">
+      BrandOS <span style="color:var(--brand);">·</span> Магия Масел
+    </div>
+    <nav style="display:flex;gap:16px;overflow-x:auto;">
+      <a href="#r1" style="font-size:12px;font-weight:500;color:var(--n600);text-decoration:none;white-space:nowrap;">R1 Сегменты</a>
+      <a href="#r2" style="font-size:12px;font-weight:500;color:var(--n600);text-decoration:none;white-space:nowrap;">R2 Каталог</a>
+      <a href="#r3" style="font-size:12px;font-weight:500;color:var(--n600);text-decoration:none;white-space:nowrap;">R3 Цены</a>
+      <a href="#r4" style="font-size:12px;font-weight:500;color:var(--n600);text-decoration:none;white-space:nowrap;">R4 Воронки</a>
+      <a href="#r5" style="font-size:12px;font-weight:500;color:var(--n600);text-decoration:none;white-space:nowrap;">R5 Офферы</a>
+      <a href="#r6" style="font-size:12px;font-weight:500;color:var(--n600);text-decoration:none;white-space:nowrap;">R6 CX</a>
+      <a href="#r7" style="font-size:12px;font-weight:500;color:var(--n600);text-decoration:none;white-space:nowrap;">R7 Визуал</a>
+      <a href="#r9" style="font-size:12px;font-weight:500;color:var(--n600);text-decoration:none;white-space:nowrap;">R9 Пробелы</a>
+    </nav>
+    <div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--brand);background:var(--brand-bg);padding:5px 12px;border-radius:var(--r-full);white-space:nowrap;">
+      Deep Research · Фев 2026
+    </div>
+  </div>
+</nav>
+<div style="height:56px;" class="no-print"></div>
+
+<!-- ===== HERO ===== -->
+<header style="background:linear-gradient(135deg,var(--n900) 0%,#1e3a5f 100%);padding:64px 0;position:relative;overflow:hidden;">
+  <div style="position:absolute;top:-100px;right:-100px;width:400px;height:400px;border-radius:50%;background:radial-gradient(circle,rgba(14,165,233,.2) 0%,transparent 70%);pointer-events:none;"></div>
+  <div class="container" style="position:relative;z-index:1;">
+    <div style="display:inline-flex;align-items:center;gap:8px;background:rgba(14,165,233,.15);border:1px solid rgba(14,165,233,.3);color:var(--brand-light);padding:6px 14px;border-radius:var(--r-full);font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;margin-bottom:20px;">
+      <span style="width:6px;height:6px;border-radius:50%;background:var(--brand);animation:pulse-glow 2s infinite;"></span>
+      Конкурентное исследование
+    </div>
+    <h1 style="font-size:36px;line-height:1.15;letter-spacing:-.02em;font-weight:600;color:#fff;max-width:900px;margin-bottom:16px;">
+      Комплексное исследование конкурентной среды ниши масел первого холодного отжима
+    </h1>
+    <p style="font-size:16px;line-height:1.6;color:var(--n400);max-width:700px;margin-bottom:32px;">
+      РФ и СНГ, 2024–2025 гг. Анализ 20+ игроков: продукты, цены, воронки, офферы, CX, визуал. Данные актуальны на февраль 2026.
+    </p>
+    <div style="display:flex;gap:28px;flex-wrap:wrap;">
+      <div style="color:var(--n400);font-size:13px;"><span style="color:var(--brand);font-weight:600;">Проект:</span> Магия Масел / ИП Бродников К.Л.</div>
+      <div style="color:var(--n400);font-size:13px;"><span style="color:var(--brand);font-weight:600;">Рынок РФ:</span> $862 млн (2024) → $1 136 млн (2030)</div>
+      <div style="color:var(--n400);font-size:13px;"><span style="color:var(--brand);font-weight:600;">CAGR:</span> 4,7%</div>
+      <div style="color:var(--n400);font-size:13px;"><span style="color:var(--brand);font-weight:600;">Источников:</span> 25+</div>
+    </div>
+  </div>
+</header>
+
+<!-- ===== INTRO ===== -->
+<section class="section" style="padding-bottom:32px;">
+<div class="container-narrow">
+  <div class="card fade-up">
+    <div class="prose">
+      <p>Рынок масел холодного отжима в РФ переходит от нишевого потребления к структурному расширению. Трансформация происходит на фоне глобального тренда «чистой этикетки» и отказа от ультра-обработанных продуктов. Сегмент специализированных масел (кедровое, тыквенное, чёрного тмина) показывает наиболее высокую динамику в стоимостном выражении.</p>
+      <p>Для проекта «Магия Масел», оперирующего с физической точкой на Дорогомиловском рынке, выход в онлайн означает конкуренцию с тремя типами игроков: крупными агрохолдингами, нишевыми D2C-брендами и маркетплейс-витринами. Текущий доход 100–110 тыс. ₽/мес при отсутствии цифрового присутствия указывает на высокую лояльность локальных покупателей, однако масштабирование до 300–500 тыс. ₽/мес требует интеграции в экосистему e-commerce.</p>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- ===== R1. СЕГМЕНТЫ ===== -->
+<section id="r1" class="section" style="background:var(--n50);padding-top:48px;">
+<div class="container">
+  <h2 class="stitle fade-up">R1. Сегменты конкурентного поля</h2>
+  <p class="ssub fade-up">Пять устойчивых сегментов, конкурирующих за бюджет ЗОЖ-потребителя.</p>
+
+  <div class="tbl-wrap fade-up">
+    <table class="bt" style="min-width:1200px;">
+      <colgroup>
+        <col style="width:16%">
+        <col style="width:14%">
+        <col style="width:16%">
+        <col style="width:16%">
+        <col style="width:22%">
+        <col style="width:16%">
+      </colgroup>
+      <thead>
+        <tr>
+          <th>Сегмент</th>
+          <th>Кто входит</th>
+          <th>Типичные продукты</th>
+          <th>Каналы</th>
+          <th>Основной рычаг конкуренции</th>
+          <th>Примеры игроков</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><span class="seg-direct">Прямые D2C</span><br>Премиальный крафт</td>
+          <td>Крафтовые производители, бренды сыродавленных масел</td>
+          <td>Масло кедра, миндаля, чёрного тмина в стекле</td>
+          <td>Собственные сайты, Instagram, Telegram, эко-лавки</td>
+          <td>Аутентичность технологии («дубовый пресс»), свежесть (отжим под заказ), авторский контроль</td>
+          <td>Trawa, Радость Здоровья, Сила Кедра</td>
+        </tr>
+        <tr>
+          <td><span class="seg-adjacent">Смежные</span><br>Крупные производители</td>
+          <td>Крупные производители диетической бакалеи и суперфудов</td>
+          <td>Льняное, расторопши, кунжутное, конопляное</td>
+          <td>Федеральный ритейл (Азбука Вкуса, Глобус), аптечные сети, маркетплейсы</td>
+          <td>Масштабируемость, узнаваемость бренда, сертификаты ISO, доступная цена за счёт объёмов</td>
+          <td>Масляный Король, Компас Здоровья, Dial-Export</td>
+        </tr>
+        <tr>
+          <td><span class="seg-innovate">Инновационные</span><br>Consumer Experience</td>
+          <td>Бренды с уникальным USP в упаковке</td>
+          <td>Масла-спреи (авокадо, тыква, кокос, облепиха)</td>
+          <td>Маркетплейсы (Ozon, WB), премиальные супермаркеты</td>
+          <td>Удобство использования, отсутствие контакта с кислородом, экономичный расход, современная эстетика</td>
+          <td>Altaria</td>
+        </tr>
+        <tr>
+          <td><span class="seg-subst">Заменители</span><br>Функц. питание / БАД</td>
+          <td>Производители нутрицевтиков и капсулированных форм</td>
+          <td>Капсулы Омега-3 (льняное), порошки суперфудов</td>
+          <td>Аптеки, специализированные ЗОЖ-платформы, маркетплейсы</td>
+          <td>Решение конкретных медицинских/косметических задач, точность дозировки, удобство «на ходу»</td>
+          <td>Ufeelgood, капсульные линейки Компаса Здоровья</td>
+        </tr>
+        <tr>
+          <td><span class="seg-offline">Оффлайн-локальные</span><br>Фермерские игроки</td>
+          <td>Фермерские хозяйства, ИП на рынках</td>
+          <td>Подсолнечное нерафинированное, тыквенное на розлив</td>
+          <td>Фермерские рынки (Дорогомиловский, Даниловский), ярмарки выходного дня</td>
+          <td>Личное доверие продавцу, возможность дегустации, локальное происхождение</td>
+          <td>Региональные фермеры, точки на рынках Москвы</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="card fade-up" style="border-left:4px solid var(--error);max-width:900px;">
+    <div style="font-size:14px;color:var(--n700);line-height:1.65;">
+      <strong style="color:var(--n900);">Вывод:</strong> Наиболее опасный сегмент — «Премиальные D2C»: работают в том же ценностном поле (натуральность, ручной труд), но обладают развитым цифровым маркетингом. Сегмент «Инновационных форматов» (Altaria) конкурирует на уровне привычек потребления, предлагая альтернативу традиционному «стеклу».
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- ===== R2. КАТАЛОГ КОНКУРЕНТОВ ===== -->
+<section id="r2" class="section">
+<div class="container">
+  <h2 class="stitle fade-up">R2. Каталог конкурентов (ID-карточки)</h2>
+  <p class="ssub fade-up">20 релевантных игроков, представляющих различные бизнес-модели.</p>
+
+  <div class="tbl-wrap fade-up">
+    <table class="bt" style="min-width:1400px;">
+      <colgroup>
+        <col style="width:11%">
+        <col style="width:11%">
+        <col style="width:9%">
+        <col style="width:14%">
+        <col style="width:22%">
+        <col style="width:10%">
+      </colgroup>
+      <thead>
+        <tr>
+          <th>Конкурент</th>
+          <th>Тип</th>
+          <th>Гео</th>
+          <th>Каналы</th>
+          <th>Позиционирование</th>
+          <th>Сегмент</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td style="font-weight:600;color:var(--n900);">Altaria</td>
+          <td>Производитель / D2C инноватор</td>
+          <td>Барнаул, РФ (доставка СНГ)</td>
+          <td>Сайт, Ozon, WB, Золотое Яблоко</td>
+          <td>Эко-масло в спрее: эстетика и польза в каждом нажатии. 15 видов масел, вакуумный баллон.</td>
+          <td><span class="seg-innovate">Инновационный</span></td>
+        </tr>
+        <tr>
+          <td style="font-weight:600;color:var(--n900);">Trawa</td>
+          <td>Крафтовый бренд (D2C)</td>
+          <td>Москва, РФ</td>
+          <td>Сайт, Ozon, WB, соцсети</td>
+          <td>Сыродавленное масло из-под дубового пресса без контакта с металлом.</td>
+          <td><span class="seg-direct">Прямой</span></td>
+        </tr>
+        <tr>
+          <td style="font-weight:600;color:var(--n900);">Масляный Король</td>
+          <td>Крупный завод-производитель</td>
+          <td>В. Новгород, РФ</td>
+          <td>Маркетплейсы, ритейл, дистрибьюторы</td>
+          <td>Традиции качества с 2002 года, более 20 видов масел. Стратегия микро-фасовки 100 мл.</td>
+          <td><span class="seg-adjacent">Смежный</span></td>
+        </tr>
+        <tr>
+          <td style="font-weight:600;color:var(--n900);">Dial-Export</td>
+          <td>Промышленный производитель</td>
+          <td>Москва, РФ</td>
+          <td>Федеральные сети (Globus, Перекрёсток), маркетплейсы</td>
+          <td>Эксперт в области редких растительных масел. Кулинарный фокус.</td>
+          <td><span class="seg-adjacent">Смежный</span></td>
+        </tr>
+        <tr>
+          <td style="font-weight:600;color:var(--n900);">Компас Здоровья</td>
+          <td>Вертикально интегрированный холдинг</td>
+          <td>Новосибирск, СНГ</td>
+          <td>Сеть фирменных магазинов, Ozon, WB</td>
+          <td>Сила сибирского льна для вашего долголетия. Собственные поля, 20 лет истории.</td>
+          <td><span class="seg-adjacent">Смежный</span></td>
+        </tr>
+        <tr>
+          <td style="font-weight:600;color:var(--n900);">Радость Здоровья</td>
+          <td>Розничный бренд / Производитель</td>
+          <td>Москва, РФ</td>
+          <td>Сайт, точка на рынке, соцсети</td>
+          <td>Живые продукты, отжатые в день заказа. Консультации в WhatsApp.</td>
+          <td><span class="seg-direct">Прямой</span></td>
+        </tr>
+        <tr>
+          <td style="font-weight:600;color:var(--n900);">Ufeelgood</td>
+          <td>Импортёр / Суперфуд-бренд</td>
+          <td>Москва, РФ</td>
+          <td>Маркетплейсы, Азбука Вкуса, Глобус</td>
+          <td>Органические суперфуды со всего мира. EU/USDA Organic.</td>
+          <td><span class="seg-subst">Заменитель</span></td>
+        </tr>
+        <tr>
+          <td style="font-weight:600;color:var(--n900);">Коноплянка</td>
+          <td>Нишевый бренд</td>
+          <td>РФ</td>
+          <td>Маркетплейсы, специализированный ритейл</td>
+          <td>Возрождение традиций коноплеводства в России.</td>
+          <td><span class="seg-direct">Прямой</span></td>
+        </tr>
+        <tr>
+          <td style="font-weight:600;color:var(--n900);">Bio-Hutor Petrovsky</td>
+          <td>Экологическое хозяйство</td>
+          <td>Ростовская обл., РФ</td>
+          <td>Эко-магазины, собственные онлайн-продажи</td>
+          <td>Первое сертифицированное органическое хозяйство на юге России.</td>
+          <td><span class="seg-direct">Прямой</span></td>
+        </tr>
+        <tr>
+          <td style="font-weight:600;color:var(--n900);">Nadawilli</td>
+          <td>Marketplace-native бренд</td>
+          <td>РФ</td>
+          <td>Эксклюзивно Ozon, WB</td>
+          <td>Натуральное качество по доступной цене. 30 000+ покупателей.</td>
+          <td><span class="seg-adjacent">Косвенный</span></td>
+        </tr>
+        <tr>
+          <td style="font-weight:600;color:var(--n900);">Сила Кедра</td>
+          <td>Нишевый региональный бренд</td>
+          <td>Сибирь, РФ</td>
+          <td>Сайт, маркетплейсы</td>
+          <td>Энергия дикоросов и чистое масло сибирского кедра. Ручной сбор.</td>
+          <td><span class="seg-direct">Прямой</span></td>
+        </tr>
+        <tr>
+          <td style="font-weight:600;color:var(--n900);">Пазл Здоровья</td>
+          <td>Функциональный бренд</td>
+          <td>РФ</td>
+          <td>Ozon, WB</td>
+          <td>Масла-миксы для решения конкретных задач организма. Ремайндеры в Telegram.</td>
+          <td><span class="seg-subst">Заменитель</span></td>
+        </tr>
+        <tr>
+          <td style="font-weight:600;color:var(--n900);">Hemani</td>
+          <td>Международный бренд</td>
+          <td>Пакистан → СНГ</td>
+          <td>Маркетплейсы, лавки восточных товаров</td>
+          <td>Древние традиции Востока для красоты и здоровья. Религиозная аудитория (Сунна).</td>
+          <td><span class="seg-direct">Прямой</span></td>
+        </tr>
+        <tr>
+          <td style="font-weight:600;color:var(--n900);">King Rice</td>
+          <td>Специализированный импортный бренд</td>
+          <td>Таиланд → РФ</td>
+          <td>Ozon, Азбука Вкуса</td>
+          <td>Мировой лидер в производстве масла из рисовых отрубей. Точка дымления 250°C.</td>
+          <td><span class="seg-adjacent">Косвенный</span></td>
+        </tr>
+        <tr>
+          <td style="font-weight:600;color:var(--n900);">Olimp (Black Label)</td>
+          <td>Премиальный импорт</td>
+          <td>Греция → РФ</td>
+          <td>Винотеки, премиум-ритейл, маркетплейсы</td>
+          <td>Эталонное оливковое масло для гурманов. Лимитированные серии, номерные бутылки.</td>
+          <td><span class="seg-adjacent">Косвенный</span></td>
+        </tr>
+        <tr>
+          <td style="font-weight:600;color:var(--n900);">Borges</td>
+          <td>Транснациональная корпорация</td>
+          <td>Испания → весь СНГ</td>
+          <td>Все каналы ритейла</td>
+          <td>Вкус Средиземноморья в каждом доме. Рекомендации ВОЗ.</td>
+          <td><span class="seg-adjacent">Косвенный</span></td>
+        </tr>
+        <tr>
+          <td style="font-weight:600;color:var(--n900);">Sloboda (ЭФКО)</td>
+          <td>Массовый бренд</td>
+          <td>РФ</td>
+          <td>Весь ритейл</td>
+          <td>Живая еда: только натуральные ингредиенты. Система «Органик-контроль».</td>
+          <td><span class="seg-adjacent">Косвенный</span></td>
+        </tr>
+        <tr>
+          <td style="font-weight:600;color:var(--n900);">Altero (ЭФКО)</td>
+          <td>Дизайнерский массовый бренд</td>
+          <td>РФ</td>
+          <td>Весь ритейл</td>
+          <td>Эстетика вкуса и инновационные купажи масел. Уникальная форма бутылки.</td>
+          <td><span class="seg-adjacent">Косвенный</span></td>
+        </tr>
+        <tr>
+          <td style="font-weight:600;color:var(--n900);">Азбука Вкуса (СТМ)</td>
+          <td>Ритейлер (Private Label)</td>
+          <td>Москва, СПб</td>
+          <td>Собственная сеть</td>
+          <td>Лучшее от фермеров, отобранное экспертами сети. Дегустационные сеты.</td>
+          <td><span class="seg-direct">Прямой</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+</section>
+
+<!-- ===== R3. ПРОДУКТЫ, ФОРМАТЫ, ЦЕНЫ ===== -->
+<section id="r3" class="section" style="background:var(--n50);padding-top:48px;">
+<div class="container">
+  <h2 class="stitle fade-up">R3. Продукты, форматы и цены (матрица 1:1)</h2>
+  <p class="ssub fade-up">SKU, максимально соответствующие линейке проекта. Цены на февраль 2026.</p>
+
+  <div class="tbl-wrap fade-up">
+    <table class="bt" style="min-width:1300px;">
+      <colgroup>
+        <col style="width:12%">
+        <col style="width:13%">
+        <col style="width:8%">
+        <col style="width:7%">
+        <col style="width:7%">
+        <col style="width:8%">
+        <col style="width:25%">
+      </colgroup>
+      <thead>
+        <tr>
+          <th>Конкурент</th>
+          <th>Масло / продукт</th>
+          <th>Формат</th>
+          <th>Объём</th>
+          <th>Цена ₽</th>
+          <th>₽/100 мл</th>
+          <th>Ключевые заявления</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td style="font-weight:600;">Радость Здоровья</td>
+          <td>Чёрный тмин (сыродавл.)</td>
+          <td>Стекло</td>
+          <td>250 мл</td>
+          <td>900</td>
+          <td>360</td>
+          <td>Первый холодный отжим, сырое сырьё</td>
+        </tr>
+        <tr>
+          <td style="font-weight:600;">Dial-Export</td>
+          <td>Чёрный тмин</td>
+          <td>Стекло</td>
+          <td>250 мл</td>
+          <td>1 050</td>
+          <td>420</td>
+          <td>Нерафинированное, премиум-линейка</td>
+        </tr>
+        <tr>
+          <td style="font-weight:600;">Масляный Король</td>
+          <td>Чёрный тмин</td>
+          <td>Стекло</td>
+          <td>100 мл</td>
+          <td>594</td>
+          <td style="font-weight:600;color:var(--error);">594</td>
+          <td>Высокая концентрация тимохинона</td>
+        </tr>
+        <tr>
+          <td style="font-weight:600;">Altaria</td>
+          <td>Кедровое</td>
+          <td>Спрей</td>
+          <td>250 мл</td>
+          <td>949</td>
+          <td>380</td>
+          <td>Вакуумная упаковка, без контакта с воздухом</td>
+        </tr>
+        <tr>
+          <td style="font-weight:600;">Масляный Король</td>
+          <td>Кедровое</td>
+          <td>Стекло</td>
+          <td>100 мл</td>
+          <td>872</td>
+          <td style="font-weight:600;color:var(--error);">872</td>
+          <td>100% натуральное, диетическое</td>
+        </tr>
+        <tr>
+          <td style="font-weight:600;">Trawa</td>
+          <td>Льняное (сыродавл.)</td>
+          <td>Стекло</td>
+          <td>250 мл</td>
+          <td>664</td>
+          <td>266</td>
+          <td>Без окисления, свежий отжим</td>
+        </tr>
+        <tr>
+          <td style="font-weight:600;">Компас Здоровья</td>
+          <td>Льняное</td>
+          <td>ПЭТ / Стекло</td>
+          <td>500 мл</td>
+          <td>394</td>
+          <td style="color:var(--success);font-weight:600;">79</td>
+          <td>Экономичная упаковка, источник Омега-3</td>
+        </tr>
+        <tr>
+          <td style="font-weight:600;">Altaria</td>
+          <td>Тыквенное</td>
+          <td>Спрей</td>
+          <td>250 мл</td>
+          <td>1 127</td>
+          <td>451</td>
+          <td>3 режима распыления, для гурманов</td>
+        </tr>
+        <tr>
+          <td style="font-weight:600;">Dial-Export</td>
+          <td>Тыквенное</td>
+          <td>Стекло</td>
+          <td>250 мл</td>
+          <td>761</td>
+          <td>304</td>
+          <td>Холодное прессование, тёмное стекло</td>
+        </tr>
+        <tr>
+          <td style="font-weight:600;">Радость Здоровья</td>
+          <td>Конопляное</td>
+          <td>Стекло</td>
+          <td>250 мл</td>
+          <td>750</td>
+          <td>300</td>
+          <td>Идеальный баланс Омега-3 и Омега-6</td>
+        </tr>
+        <tr>
+          <td style="font-weight:600;">Altaria</td>
+          <td>Кунжутное</td>
+          <td>Спрей</td>
+          <td>250 мл</td>
+          <td>638</td>
+          <td>255</td>
+          <td>Для азиатской кухни, лёгкая дозировка</td>
+        </tr>
+        <tr>
+          <td style="font-weight:600;">Nadawilli</td>
+          <td>Расторопша</td>
+          <td>Стекло</td>
+          <td>250 мл</td>
+          <td>305</td>
+          <td style="color:var(--success);font-weight:600;">122</td>
+          <td>Масс-маркет цена, холодный отжим</td>
+        </tr>
+        <tr>
+          <td style="font-weight:600;">Altaria</td>
+          <td>Кокосовое</td>
+          <td>Спрей</td>
+          <td>250 мл</td>
+          <td>642</td>
+          <td>257</td>
+          <td>Удобно для жарки и выпечки</td>
+        </tr>
+        <tr>
+          <td style="font-weight:600;">Dial-Export</td>
+          <td>Грецкий орех</td>
+          <td>Стекло</td>
+          <td>250 мл</td>
+          <td>680</td>
+          <td>272</td>
+          <td>Изысканный аромат, для салатов</td>
+        </tr>
+        <tr>
+          <td style="font-weight:600;">Радость Здоровья</td>
+          <td>Миндальное</td>
+          <td>Стекло</td>
+          <td>250 мл</td>
+          <td>1 100</td>
+          <td>440</td>
+          <td>Сыродавленное, для еды и красоты</td>
+        </tr>
+        <tr>
+          <td style="font-weight:600;">Компас Здоровья</td>
+          <td>Облепиховое (смесь)</td>
+          <td>ПЭТ</td>
+          <td>200 мл</td>
+          <td>192</td>
+          <td style="color:var(--success);font-weight:600;">96</td>
+          <td>С каротиноидами, бюджетный сегмент</td>
+        </tr>
+        <tr>
+          <td style="font-weight:600;">Пазл Здоровья</td>
+          <td>«Для Мозга» (микс)</td>
+          <td>Стекло</td>
+          <td>250 мл</td>
+          <td>654</td>
+          <td>262</td>
+          <td>Функциональная смесь масел</td>
+        </tr>
+        <tr>
+          <td style="font-weight:600;">Altaria</td>
+          <td>Подсолнечное</td>
+          <td>Спрей</td>
+          <td>250 мл</td>
+          <td>347</td>
+          <td>139</td>
+          <td>Дезодорированное / нерафинированное</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="card fade-up" style="border-left:4px solid var(--brand);max-width:900px;">
+    <div style="font-size:14px;color:var(--n700);line-height:1.65;">
+      <strong style="color:var(--n900);">Ключевое:</strong> Премиальные бренды (Trawa, Радость Здоровья) — 250–450 ₽/100 мл. Масляный Король через микро-фасовку (100 мл) достигает 594–872 ₽/100 мл — самая высокая удельная стоимость. Проект (2000 ₽/250 мл = 800 ₽/100 мл) попадает в верхнюю часть диапазона, на уровне Масляного Короля.
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- ===== R4. МАРКЕТИНГ-МЕХАНИКИ И ВОРОНКИ ===== -->
+<section id="r4" class="section">
+<div class="container">
+  <h2 class="stitle fade-up">R4. Маркетинг-механики и воронки</h2>
+  <p class="ssub fade-up">Конкурентная борьба переместилась из «наличия товара» в «сопровождение выбора».</p>
+
+  <div class="tbl-wrap fade-up">
+    <table class="bt" style="min-width:1400px;">
+      <colgroup>
+        <col style="width:10%">
+        <col style="width:13%">
+        <col style="width:22%">
+        <col style="width:17%">
+        <col style="width:17%">
+      </colgroup>
+      <thead>
+        <tr>
+          <th>Конкурент</th>
+          <th>Канал / механика</th>
+          <th>Воронка</th>
+          <th>Контент-форматы</th>
+          <th>Доказательства доверия</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td style="font-weight:600;">Altaria</td>
+          <td>Инфлюенс-маркетинг + маркетплейсы</td>
+          <td>Охват у фуд-блогера (Reels) → ссылка на Ozon → покупка набора → отзыв в соцсетях за бонус</td>
+          <td>Видео-рецепты, «распаковки», эстетика кухни</td>
+          <td>10 000+ отзывов, плашка «Выбор покупателей»</td>
+        </tr>
+        <tr>
+          <td style="font-weight:600;">Trawa</td>
+          <td>Экспертный контент-маркетинг</td>
+          <td>Статья о вреде рафинации в ЗОЖ-медиа → переход на сайт → квиз «Подбери своё масло» → регулярная рассылка</td>
+          <td>Лонгриды, интервью с нутрициологами</td>
+          <td>Видео процесса отжима под прессом</td>
+        </tr>
+        <tr>
+          <td style="font-weight:600;">Компас Здоровья</td>
+          <td>Омниканальная сеть</td>
+          <td>Гео-реклама в картах → визит в оффлайн-магазин → дегустация → программа лояльности</td>
+          <td>Информационные газеты, плакаты о пользе Омега-3</td>
+          <td>20 лет истории, собственные поля льна</td>
+        </tr>
+        <tr>
+          <td style="font-weight:600;">Масляный Король</td>
+          <td>SEO-оптимизация на WB</td>
+          <td>Поиск «масло чёрного тмина» → топ выдачи → Flash-sale → выкуп</td>
+          <td>Карточки с инфографикой (польза по пунктам)</td>
+          <td>Массовость продаж, сертификаты соответствия</td>
+        </tr>
+        <tr>
+          <td style="font-weight:600;">Радость Здоровья</td>
+          <td>Личный бренд в мессенджерах</td>
+          <td>Reels владельца → WhatsApp-чат → консультация → продажа «свежего отжима»</td>
+          <td>Стримы из цеха, ответы на вопросы «какое масло от чего»</td>
+          <td>Прямой диалог с производителем</td>
+        </tr>
+        <tr>
+          <td style="font-weight:600;">Пазл Здоровья</td>
+          <td>Проблемный маркетинг</td>
+          <td>Реклама по запросу «болит печень» → лендинг с маслом расторопши → спецпредложение на курс 3 мес</td>
+          <td>Схемы приёма, сравнение анализов «до/после»</td>
+          <td>Ссылки на медицинские статьи</td>
+        </tr>
+        <tr>
+          <td style="font-weight:600;">Ufeelgood</td>
+          <td>Лайфстайл-позиционирование</td>
+          <td>Пост об «утре суперфудов» → коллаборация с йога-студиями → покупка в Азбуке Вкуса</td>
+          <td>Фотосессии в стиле минимализм, рецепты смузи</td>
+          <td>Органические сертификаты (EU Organic)</td>
+        </tr>
+        <tr>
+          <td style="font-weight:600;">Dial-Export</td>
+          <td>Кулинарный кросс-маркетинг</td>
+          <td>Рецепты на упаковках других продуктов → переход на сайт → рецептурная книга в подарок</td>
+          <td>Профессиональные фото блюд, советы шеф-поваров</td>
+          <td>Использование в HoReCa (рестораны)</td>
+        </tr>
+        <tr>
+          <td style="font-weight:600;">Konoplyanka</td>
+          <td>Пропаганда культуры</td>
+          <td>Тематические фестивали → просветительские посты → продажа через нишевые магазины</td>
+          <td>История культуры, мифы и факты</td>
+          <td>Участие в агро-выставках</td>
+        </tr>
+        <tr>
+          <td style="font-weight:600;">Bio-Hutor</td>
+          <td>Эко-туризм</td>
+          <td>Приглашение на ферму → показ экологичности → покупка в лавке</td>
+          <td>Пейзажные фото, «честный» контент о фермерстве</td>
+          <td>Знак «Органик» на упаковке</td>
+        </tr>
+        <tr>
+          <td style="font-weight:600;">Nadawilli</td>
+          <td>Ценовой демпинг</td>
+          <td>Участие во всех распродажах маркетплейсов (11.11) → сбор отзывов</td>
+          <td>Простые фото продукта в быту</td>
+          <td>Количество проданных единиц (счётчик на WB)</td>
+        </tr>
+        <tr>
+          <td style="font-weight:600;">Hemani</td>
+          <td>Традиционализм</td>
+          <td>Реклама в мусульманских сообществах → акцент на «Сунне» → продажа в лавках</td>
+          <td>Хадисы о пользе чёрного тмина</td>
+          <td>Вековые традиции производства</td>
+        </tr>
+        <tr>
+          <td style="font-weight:600;">Азбука Вкуса</td>
+          <td>Репутационный маркетинг</td>
+          <td>Полка «Выбор шефа» → психологический триггер доверия к сети</td>
+          <td>Красивая выкладка, дегустационные сеты</td>
+          <td>Бренд ритейлера с высокой лояльностью</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+</section>
+
+<!-- ===== R5. ОФФЕРЫ И МЕССЕДЖИ ===== -->
+<section id="r5" class="section" style="background:var(--n50);padding-top:48px;">
+<div class="container">
+  <h2 class="stitle fade-up">R5. Офферы и месседжи конкурентов</h2>
+  <p class="ssub fade-up">Анализ 25+ офферов. Доминирующие триггеры: страх болезни, стремление к молодости, потребность в исключительности.</p>
+
+  <div class="tbl-wrap fade-up">
+    <table class="bt" style="min-width:1400px;">
+      <colgroup>
+        <col style="width:10%">
+        <col style="width:20%">
+        <col style="width:16%">
+        <col style="width:18%">
+        <col style="width:14%">
+      </colgroup>
+      <thead>
+        <tr>
+          <th>Конкурент</th>
+          <th>Оффер</th>
+          <th>Боль / мотивация</th>
+          <th>Proof (что заявлено)</th>
+          <th>CTA / механика</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td style="font-weight:600;">Trawa</td>
+          <td>Масло из-под дубового пресса: никакой горечи, только вкус семечки</td>
+          <td>Страх прогорклого масла, поиск вкуса</td>
+          <td>Видео производства, отсутствие контакта с металлом</td>
+          <td>Заказать свежий отжим</td>
+        </tr>
+        <tr>
+          <td style="font-weight:600;">Altaria</td>
+          <td>Одного баллона хватает на 3 бутылки обычного масла</td>
+          <td>Рациональность, экономия бюджета</td>
+          <td>Сравнение расхода (1 нажатие = 1 мл)</td>
+          <td>Купить набор со скидкой 30%</td>
+        </tr>
+        <tr>
+          <td style="font-weight:600;">Компас Здоровья</td>
+          <td>Живое масло с сохранением всех витаминов Сибири</td>
+          <td>Дефицит нутриентов, доверие к локальному продукту</td>
+          <td>Ссылка на регион Алтай, 20-летний опыт</td>
+          <td>Найти ближайший магазин</td>
+        </tr>
+        <tr>
+          <td style="font-weight:600;">Масляный Король</td>
+          <td>100% натуральное масло холодного отжима без добавок</td>
+          <td>Страх «химии» и примесей</td>
+          <td>Указание метода производства на этикетке</td>
+          <td>Купить на Ozon</td>
+        </tr>
+        <tr>
+          <td style="font-weight:600;">Пазл Здоровья</td>
+          <td>Масло для Мозга: улучшает память и концентрацию</td>
+          <td>Снижение когнитивных функций, стресс</td>
+          <td>Специально подобранный микс (синергия масел)</td>
+          <td>Пройти тест на дефицит Омега</td>
+        </tr>
+        <tr>
+          <td style="font-weight:600;">Радость Здоровья</td>
+          <td>Давим в день заказа. Свежее не бывает</td>
+          <td>Потребность в максимальной биологической ценности</td>
+          <td>Дата на упаковке, малые партии</td>
+          <td>Написать в WhatsApp</td>
+        </tr>
+        <tr>
+          <td style="font-weight:600;">Dial-Export</td>
+          <td>Изысканный вкус для ваших кулинарных шедевров</td>
+          <td>Желание готовить как шеф-повар</td>
+          <td>Рецепты от профи на сайте</td>
+          <td>Скачать книгу рецептов</td>
+        </tr>
+        <tr>
+          <td style="font-weight:600;">Bio-Hutor</td>
+          <td>Честный органик: от зерна до бутылки под нашим контролем</td>
+          <td>Недоверие к крупным брендам</td>
+          <td>Статус «Органик» по закону РФ</td>
+          <td>Записаться на экскурсию</td>
+        </tr>
+        <tr>
+          <td style="font-weight:600;">Nadawilli</td>
+          <td>Качество премиум-класса по честной цене</td>
+          <td>Ощущение переплаты за бренд</td>
+          <td>30 000+ довольных покупателей</td>
+          <td>Успеть до конца распродажи</td>
+        </tr>
+        <tr>
+          <td style="font-weight:600;">Hemani</td>
+          <td>В чёрном тмине исцеление от всех болезней, кроме смерти</td>
+          <td>Глубокие религиозные убеждения</td>
+          <td>Ссылка на пророческую медицину</td>
+          <td>Купить оригинальное масло</td>
+        </tr>
+        <tr>
+          <td style="font-weight:600;">Olimp</td>
+          <td>Греческое золото в каждой капле. Эксклюзивно для вас</td>
+          <td>Статусность, приобщение к элите</td>
+          <td>Лимитированные серии, номерные бутылки</td>
+          <td>Оформить предзаказ</td>
+        </tr>
+        <tr>
+          <td style="font-weight:600;">Ufeelgood</td>
+          <td>Спирулина и масла — детокс-программа за 7 дней</td>
+          <td>Потребность в очищении организма</td>
+          <td>План питания от нутрициолога</td>
+          <td>Купить готовый бокс</td>
+        </tr>
+        <tr style="background:#fff3f3;">
+          <td style="font-weight:600;color:var(--error);">⚠ Компас Здоровья</td>
+          <td>Масло льняное: чистые сосуды и крепкие нервы</td>
+          <td>Гипертония, стресс</td>
+          <td>Указание на содержание лигнанов</td>
+          <td>Курс на 1 месяц</td>
+        </tr>
+        <tr style="background:#fff3f3;">
+          <td style="font-weight:600;color:var(--error);">⚠ Масляный Король</td>
+          <td>Масло расторопши: защита вашей печени</td>
+          <td>Проблемы с ЖКТ, лекарства</td>
+          <td>Содержание силимарина</td>
+          <td>Заказать со скидкой 15%</td>
+        </tr>
+        <tr style="background:#fff3f3;">
+          <td style="font-weight:600;color:var(--error);">⚠ Радость Здоровья</td>
+          <td>Сыродавленное масло тыквы — мужская сила и здоровье</td>
+          <td>Специфические мужские проблемы</td>
+          <td>Традиционные методы лечения</td>
+          <td>Заказать анонимно</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="card fade-up" style="border-left:4px solid var(--error);max-width:900px;">
+    <div style="font-size:14px;color:var(--n700);line-height:1.65;">
+      <strong style="color:var(--error);">⚠ Строки с красным фоном</strong> — медицинские обещания. Несмотря на риск штрафов ФАС (до 500–700 тыс ₽), они являются мощным драйвером продаж. Проекту необходим юридически корректный подход к формулировкам.
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- ===== R6. CX И СЕРВИС-ФИЧИ ===== -->
+<section id="r6" class="section">
+<div class="container">
+  <h2 class="stitle fade-up">R6. CX и сервис-фичи конкурентов</h2>
+  <p class="ssub fade-up">Сервис — «невидимый» фактор удержания клиента. Стандарты индустрии по 15 кейсам.</p>
+
+  <div class="tbl-wrap fade-up">
+    <table class="bt" style="min-width:1400px;">
+      <colgroup>
+        <col style="width:11%">
+        <col style="width:10%">
+        <col style="width:22%">
+        <col style="width:22%">
+        <col style="width:20%">
+      </colgroup>
+      <thead>
+        <tr>
+          <th>Конкурент</th>
+          <th>Touchpoint</th>
+          <th>Wow-моменты</th>
+          <th>Подписки / лояльность</th>
+          <th>Сервисные фичи</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td style="font-weight:600;">Altaria</td>
+          <td>Упаковка</td>
+          <td>Полная защита от света и воздуха, руки всегда чистые</td>
+          <td>Наборы «Масло-сет» со скидкой 25%</td>
+          <td>Спрей-механизм (капля, струя, спрей)</td>
+        </tr>
+        <tr>
+          <td style="font-weight:600;">Trawa</td>
+          <td>Распаковка</td>
+          <td>Дизайнерский тубус, именная открытка от мастера</td>
+          <td>Закрытый клуб «Друзья Trawa»</td>
+          <td>Рецепты-карточки внутри каждой коробки</td>
+        </tr>
+        <tr>
+          <td style="font-weight:600;">Радость Здоровья</td>
+          <td>Заказ</td>
+          <td>Возможность заказать отжим «под себя» онлайн</td>
+          <td>Скидка 10% на подписку (доставка каждые 2 недели)</td>
+          <td>Консультация нутрициолога в чате</td>
+        </tr>
+        <tr>
+          <td style="font-weight:600;">Масляный Король</td>
+          <td>Доставка</td>
+          <td>Сверхбыстрая доставка за 1 день через склады Ozon/WB</td>
+          <td>Бонусные баллы за каждый отзыв с фото</td>
+          <td>Формат «пробников» по 100 мл</td>
+        </tr>
+        <tr>
+          <td style="font-weight:600;">Компас Здоровья</td>
+          <td>Оффлайн-точка</td>
+          <td>Постоянные бесплатные дегустации новых сортов</td>
+          <td>Накопительная карта (до 15% кешбэк)</td>
+          <td>Фито-бары при магазинах</td>
+        </tr>
+        <tr>
+          <td style="font-weight:600;">Ufeelgood</td>
+          <td>Ассортимент</td>
+          <td>Персонализированный «Детокс-бокс»</td>
+          <td>Реферальная программа «Приведи друга»</td>
+          <td>Квиз на сайте для подбора суперфудов</td>
+        </tr>
+        <tr>
+          <td style="font-weight:600;">Dial-Export</td>
+          <td>Поддержка</td>
+          <td>Горячая линия с экспертом по маслам</td>
+          <td>Промокоды в кулинарных журналах</td>
+          <td>QR-коды с видео-рецептами на этикетке</td>
+        </tr>
+        <tr>
+          <td style="font-weight:600;">Bio-Hutor</td>
+          <td>Эко-туризм</td>
+          <td>Приехать и самому нажать на кнопку пресса</td>
+          <td>Клуб «Органик-пионеров»</td>
+          <td>Собственная курьерская доставка по региону</td>
+        </tr>
+        <tr>
+          <td style="font-weight:600;">Сила Кедра</td>
+          <td>Хранение</td>
+          <td>Специальная упаковка в фольгированный мешок перед коробкой</td>
+          <td>Подарки (кедровые орешки) к заказу</td>
+          <td>Инструкция по хранению масла в холодильнике</td>
+        </tr>
+        <tr>
+          <td style="font-weight:600;">Пазл Здоровья</td>
+          <td>Курсовое лечение</td>
+          <td>Напоминания в Telegram о приёме масла</td>
+          <td>Скидка на «Второй этап оздоровления»</td>
+          <td>Чек-лист здоровья в подарок</td>
+        </tr>
+        <tr>
+          <td style="font-weight:600;">Hemani</td>
+          <td>Аутентичность</td>
+          <td>Голограмма проверки подлинности на каждой упаковке</td>
+          <td>Оптовые скидки для совместных покупок</td>
+          <td>Многоязычная поддержка (вкл. арабский)</td>
+        </tr>
+        <tr>
+          <td style="font-weight:600;">Азбука Вкуса</td>
+          <td>Экспресс-сервис</td>
+          <td>Доставка за 30–60 мин через приложение</td>
+          <td>Интеграция с картой «Вкусомания»</td>
+          <td>Личный сомелье по маслам в магазине</td>
+        </tr>
+        <tr>
+          <td style="font-weight:600;">Konoplyanka</td>
+          <td>Сообщество</td>
+          <td>Ежемесячные вебинары по применению конопли</td>
+          <td>Амбассадорская программа для блогеров</td>
+          <td>Эко-сумка при заказе от 3000 руб</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+</section>
+
+<!-- ===== R7. ВИЗУАЛ И TOV ===== -->
+<section id="r7" class="section" style="background:var(--n50);padding-top:48px;">
+<div class="container">
+  <h2 class="stitle fade-up">R7. Визуал и Tone of Voice</h2>
+  <p class="ssub fade-up">Визуальная идентификация чётко сегментирована по архетипам. Тренд 2025 — минимализм.</p>
+
+  <div class="tbl-wrap fade-up">
+    <table class="bt" style="min-width:1200px;">
+      <colgroup>
+        <col style="width:12%">
+        <col style="width:28%">
+        <col style="width:22%">
+        <col style="width:22%">
+      </colgroup>
+      <thead>
+        <tr>
+          <th>Конкурент</th>
+          <th>Визуал-паттерн</th>
+          <th>Тон голоса (ToV)</th>
+          <th>Пример месседжа</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td style="font-weight:600;">Altaria</td>
+          <td>Современный лайфстайл, яркие градиенты, алюминий, фуд-порн съёмка</td>
+          <td>Драйвовый, инновационный, дружелюбный</td>
+          <td>«Масло, которое изменит твою кухню»</td>
+        </tr>
+        <tr>
+          <td style="font-weight:600;">Trawa</td>
+          <td>Крафт, тёмное стекло, матовая бумага, натюрморты с семенами</td>
+          <td>Экспертный, спокойный, премиальный</td>
+          <td>«Тишина. Природа. Пресс.»</td>
+        </tr>
+        <tr>
+          <td style="font-weight:600;">Масляный Король</td>
+          <td>Традиционализм, орнаменты, классическая типографика, яркие этикетки</td>
+          <td>Уверенный, надёжный, консервативный</td>
+          <td>«Качество, проверенное поколениями»</td>
+        </tr>
+        <tr>
+          <td style="font-weight:600;">Компас Здоровья</td>
+          <td>Эко-минимализм, белый + зелёный, медицинская эстетика</td>
+          <td>Заботливый, наставнический, «народный»</td>
+          <td>«Сибирское здоровье в каждый дом»</td>
+        </tr>
+        <tr>
+          <td style="font-weight:600;">Ufeelgood</td>
+          <td>Глобальный ЗОЖ, минимализм, стильные шрифты, акцент на происхождении</td>
+          <td>Лаконичный, современный, космополитичный</td>
+          <td>«Clean labels. Pure power.»</td>
+        </tr>
+        <tr>
+          <td style="font-weight:600;">Радость Здоровья</td>
+          <td>Семейная ферма, живые фото из цеха, яркие крупные заголовки</td>
+          <td>Энергичный, открытый, душевный</td>
+          <td>«Мы давим — вы наслаждаетесь!»</td>
+        </tr>
+        <tr>
+          <td style="font-weight:600;">Dial-Export</td>
+          <td>Классическая бакалея, строгий дизайн, золотое тиснение</td>
+          <td>Профессиональный, сдержанный</td>
+          <td>«Выбор истинных ценителей»</td>
+        </tr>
+        <tr>
+          <td style="font-weight:600;">Пазл Здоровья</td>
+          <td>Фарма-стиль, инфографика тела, синие/голубые тона</td>
+          <td>Научный, доказательный</td>
+          <td>«Решение для вашей печени на клеточном уровне»</td>
+        </tr>
+        <tr>
+          <td style="font-weight:600;">Konoplyanka</td>
+          <td>Хипстер-эстетика, крафтовый картон, стилизованные листья конопли</td>
+          <td>Прогрессивный, просветительский</td>
+          <td>«Новый взгляд на древнее растение»</td>
+        </tr>
+        <tr>
+          <td style="font-weight:600;">Bio-Hutor</td>
+          <td>Сельская пастораль, небо, колосья, рукописные шрифты</td>
+          <td>Искренний, простой, прозрачный</td>
+          <td>«Наше поле — ваша польза»</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+</section>
+
+<!-- ===== R9. ПРОБЕЛЫ ДАННЫХ ===== -->
+<section id="r9" class="section">
+<div class="container-narrow">
+  <h2 class="stitle fade-up">R9. Пробелы данных и как их закрыть</h2>
+  <p class="ssub fade-up">Зоны неопределённости, которые сохраняются несмотря на глубину ресёрча.</p>
+
+  <div class="card fade-up" style="border-left:4px solid var(--warning);margin-bottom:16px;">
+    <div style="display:flex;gap:14px;align-items:flex-start;">
+      <div style="width:36px;height:36px;border-radius:50%;background:#fef3c7;color:#92400e;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;font-weight:700;">1</div>
+      <div>
+        <h4 style="font-size:16px;font-weight:600;color:var(--n900);margin-bottom:6px;">Маржинальность SKU</h4>
+        <p style="font-size:14px;color:var(--n600);line-height:1.65;">Нет данных о себестоимости закупки сырья у проекта против крупных конкурентов. Закрыть: запрос прайсов у оптовиков.</p>
+      </div>
+    </div>
+  </div>
+  <div class="card fade-up" style="border-left:4px solid var(--warning);margin-bottom:16px;">
+    <div style="display:flex;gap:14px;align-items:flex-start;">
+      <div style="width:36px;height:36px;border-radius:50%;background:#fef3c7;color:#92400e;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;font-weight:700;">2</div>
+      <div>
+        <h4 style="font-size:16px;font-weight:600;color:var(--n900);margin-bottom:6px;">Реальные продажи в оффлайне</h4>
+        <p style="font-size:14px;color:var(--n600);line-height:1.65;">Выручка конкурентов на рынках Москвы скрыта. Закрыть: полевое наблюдение (подсчёт чеков за час) или опрос администраторов рынков.</p>
+      </div>
+    </div>
+  </div>
+  <div class="card fade-up" style="border-left:4px solid var(--warning);margin-bottom:16px;">
+    <div style="display:flex;gap:14px;align-items:flex-start;">
+      <div style="width:36px;height:36px;border-radius:50%;background:#fef3c7;color:#92400e;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;font-weight:700;">3</div>
+      <div>
+        <h4 style="font-size:16px;font-weight:600;color:var(--n900);margin-bottom:6px;">Эффективность рекламных креативов</h4>
+        <p style="font-size:14px;color:var(--n600);line-height:1.65;">Библиотеки рекламы Facebook/Instagram для РФ закрыты. Закрыть: мониторинг через Livedune, Brand Analytics.</p>
+      </div>
+    </div>
+  </div>
+  <div class="card fade-up" style="border-left:4px solid var(--warning);margin-bottom:16px;">
+    <div style="display:flex;gap:14px;align-items:flex-start;">
+      <div style="width:36px;height:36px;border-radius:50%;background:#fef3c7;color:#92400e;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;font-weight:700;">4</div>
+      <div>
+        <h4 style="font-size:16px;font-weight:600;color:var(--n900);margin-bottom:6px;">География СНГ</h4>
+        <p style="font-size:14px;color:var(--n600);line-height:1.65;">Казахстан и Узбекистан — в основном «серый» импорт или локальные фермеры без сайтов. Закрыть: анализ Kaspi, Uzum.</p>
+      </div>
+    </div>
+  </div>
+  <div class="card fade-up" style="border-left:4px solid var(--error);margin-bottom:16px;">
+    <div style="display:flex;gap:14px;align-items:flex-start;">
+      <div style="width:36px;height:36px;border-radius:50%;background:#fee2e2;color:#991b1b;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;font-weight:700;">5</div>
+      <div>
+        <h4 style="font-size:16px;font-weight:600;color:var(--error);margin-bottom:6px;">Мощности производства (БЛОКИРУЮЩИЙ)</h4>
+        <p style="font-size:14px;color:var(--n600);line-height:1.65;">Не указан текущий объём отжима в день. Без этого невозможно калибровать маркетинговое давление — нет смысла генерировать 100 заказов/день, если производство рассчитано на 10. Закрыть: внутренний аудит техпроцесса.</p>
+      </div>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- ===== FOOTER ===== -->
+<footer style="background:var(--n900);padding:40px 0;">
+  <div class="container">
+    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:20px;">
+      <div>
+        <div style="font-size:17px;font-weight:700;color:#fff;margin-bottom:6px;">
+          BrandOS <span style="color:var(--brand);">·</span> Исследование конкурентов
+        </div>
+        <div style="font-size:13px;color:var(--n500);">Проект «Магия Масел» · ИП Бродников К.Л. · Февраль 2026</div>
+      </div>
+      <div style="font-size:12px;color:var(--n500);">Источников: 25+ · Конкурентов: 20+ · Офферов: 25+</div>
+    </div>
+    <div style="height:1px;background:rgba(255,255,255,.08);margin:24px 0;"></div>
+    <div style="font-size:12px;color:var(--n600);">
+      © 2026 BrandOS · Конфиденциальный документ
+    </div>
+  </div>
+</footer>
+
+<script>
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach((e, i) => {
+    if (e.isIntersecting) {
+      setTimeout(() => e.target.classList.add('visible'), i * 60);
+    }
+  });
+}, { threshold: 0.08 });
+document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
+
+const sections = document.querySelectorAll('section[id]');
+const navLinks = document.querySelectorAll('nav a[href^="#"]');
+window.addEventListener('scroll', () => {
+  let current = '';
+  sections.forEach(s => {
+    if (window.scrollY >= s.offsetTop - 80) current = s.id;
+  });
+  navLinks.forEach(a => {
+    a.style.color = a.getAttribute('href') === '#' + current ? '#0ea5e9' : '';
+    a.style.fontWeight = a.getAttribute('href') === '#' + current ? '700' : '500';
+  });
+});
+</script>
+
+</body>
+</html>
