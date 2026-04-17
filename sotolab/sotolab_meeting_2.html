@@ -1,0 +1,1381 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Soto Lab · Вторая встреча · Протокол</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --brand: #0ea5e9;
+  --brand-dark: #0284c7;
+  --brand-light: #7dd3fc;
+  --brand-bg: #e0f2fe;
+  --black: #0f172a;
+  --n50: #f8fafc; --n100: #f1f5f9; --n200: #e2e8f0;
+  --n300: #cbd5e1; --n400: #94a3b8; --n500: #64748b;
+  --n600: #475569; --n700: #334155; --n800: #1e293b; --n900: #0f172a;
+  --success: #10b981; --warning: #f59e0b; --error: #ef4444; --info: #3b82f6;
+  --font: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  --shadow-card: 0 1px 3px 0 rgba(0,0,0,.05), 0 1px 2px -1px rgba(0,0,0,.05);
+  --shadow-hover: 0 10px 25px -5px rgba(0,0,0,.08), 0 8px 10px -6px rgba(0,0,0,.04);
+  --shadow-btn: 0 4px 14px 0 rgba(14,165,233,.35);
+  --shadow-glow: 0 0 40px rgba(14,165,233,.15);
+  --r-sm:4px; --r-md:6px; --r-lg:8px; --r-xl:12px; --r-2xl:16px; --r-3xl:24px; --r-full:9999px;
+}
+
+body {
+  font-family: var(--font);
+  font-size: 16px;
+  line-height: 1.6;
+  color: var(--n600);
+  background: var(--n100);
+}
+
+@keyframes shimmer { 0%{transform:translateX(-100%)} 100%{transform:translateX(200%)} }
+@keyframes fade-up { 0%{opacity:0;transform:translateY(20px)} 100%{opacity:1;transform:translateY(0)} }
+@keyframes pulse-glow {
+  0%,100%{box-shadow:0 0 20px rgba(14,165,233,.3)}
+  50%{box-shadow:0 0 40px rgba(14,165,233,.5)}
+}
+
+.fade-up { opacity:0; transform:translateY(20px); transition:opacity .6s ease-out, transform .6s ease-out; }
+.fade-up.visible { opacity:1; transform:translateY(0); }
+
+.container { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
+
+.doc-section { padding: 56px 0; }
+.doc-section:nth-child(even) { background: #fff; }
+
+.section-title {
+  font-size: 28px; font-weight: 700; color: var(--n900);
+  margin-bottom: 8px; line-height: 1.25;
+}
+.section-subtitle {
+  font-size: 15px; color: var(--n500); margin-bottom: 32px;
+}
+.section-number {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 36px; height: 36px; border-radius: 50%;
+  background: var(--brand); color: #fff;
+  font-size: 15px; font-weight: 700; margin-right: 12px;
+  flex-shrink: 0;
+}
+
+.content-block {
+  background: #fff; border-radius: var(--r-2xl);
+  border: 1px solid var(--n200); padding: 28px 32px;
+  box-shadow: var(--shadow-card); margin-bottom: 16px;
+  transition: all .3s ease;
+}
+.content-block:hover {
+  box-shadow: var(--shadow-hover);
+  transform: translateY(-2px);
+}
+
+.block-heading {
+  font-size: 17px; font-weight: 600; color: var(--n900); margin-bottom: 12px;
+  display: flex; align-items: center; gap: 10px;
+}
+.block-icon {
+  width: 32px; height: 32px; border-radius: var(--r-lg);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px; flex-shrink: 0;
+}
+
+.block-text { font-size: 15px; line-height: 1.7; color: var(--n600); }
+.block-text p { margin-bottom: 10px; }
+.block-text p:last-child { margin-bottom: 0; }
+
+.block-list { list-style: none; padding: 0; margin: 10px 0 0 0; }
+.block-list li {
+  position: relative; padding-left: 20px; margin-bottom: 8px;
+  font-size: 15px; color: var(--n600); line-height: 1.6;
+}
+.block-list li::before {
+  content: ''; position: absolute; left: 0; top: 9px;
+  width: 6px; height: 6px; border-radius: 50%;
+  background: var(--brand);
+}
+
+.sub-list { list-style: none; padding: 0; margin: 6px 0 6px 20px; }
+.sub-list li { padding-left: 16px; margin-bottom: 5px; font-size: 14px; }
+.sub-list li::before {
+  width: 4px; height: 4px; top: 9px;
+  background: var(--n400);
+}
+
+.quote-block {
+  border-left: 3px solid var(--brand);
+  padding: 16px 24px; margin: 16px 0;
+  background: var(--brand-bg); border-radius: 0 var(--r-xl) var(--r-xl) 0;
+}
+.quote-block .quote-text {
+  font-size: 15px; font-style: italic; color: var(--n700); line-height: 1.6;
+}
+.quote-block .quote-author {
+  font-size: 13px; font-weight: 600; color: var(--brand-dark); margin-top: 8px;
+}
+
+.doc-table-wrap {
+  overflow-x: auto; border-radius: var(--r-2xl);
+  border: 1px solid var(--n200); margin: 20px 0;
+}
+.doc-table {
+  width: 100%; border-collapse: collapse; background: #fff;
+}
+.doc-table th {
+  padding: 14px 18px; text-align: left;
+  font-size: 12px; font-weight: 600; text-transform: uppercase;
+  letter-spacing: .05em; color: var(--n500);
+  background: var(--n50); border-bottom: 2px solid var(--n200);
+}
+.doc-table td {
+  padding: 14px 18px; font-size: 14px; color: var(--n600);
+  border-bottom: 1px solid var(--n200); vertical-align: top;
+}
+.doc-table tr:last-child td { border-bottom: none; }
+.doc-table tr:hover td { background: var(--n50); }
+.doc-table td:first-child { font-weight: 500; color: var(--n700); }
+
+.participant-grid {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 16px; margin: 24px 0;
+}
+.participant-card {
+  background: #fff; border-radius: var(--r-2xl);
+  border: 1px solid var(--n200); padding: 24px;
+  box-shadow: var(--shadow-card); transition: all .3s ease;
+}
+.participant-card:hover {
+  box-shadow: var(--shadow-hover); transform: translateY(-3px);
+}
+.participant-name {
+  font-size: 18px; font-weight: 700; color: var(--n900); margin-bottom: 4px;
+}
+.participant-role {
+  font-size: 13px; font-weight: 600; color: var(--brand);
+  text-transform: uppercase; letter-spacing: .03em; margin-bottom: 12px;
+}
+.participant-desc { font-size: 14px; color: var(--n600); line-height: 1.6; }
+
+.direction-badge {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 6px 14px; border-radius: var(--r-full);
+  font-size: 13px; font-weight: 600; margin-right: 8px; margin-bottom: 8px;
+}
+
+.insight-box {
+  background: linear-gradient(135deg, var(--n900) 0%, #1e3a5f 100%);
+  border-radius: var(--r-2xl); padding: 28px 32px; margin: 20px 0;
+  color: #fff;
+}
+.insight-box .insight-label {
+  font-size: 12px; font-weight: 600; text-transform: uppercase;
+  letter-spacing: .05em; color: var(--brand-light); margin-bottom: 12px;
+}
+.insight-box .insight-text {
+  font-size: 16px; line-height: 1.6; color: rgba(255,255,255,.9);
+}
+
+/* Маркировка */
+.tag {
+  display: inline-block;
+  padding: 2px 10px;
+  border-radius: var(--r-full);
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .04em;
+  margin-right: 6px;
+  vertical-align: middle;
+}
+.tag-fact { background: #d1fae5; color: #065f46; }
+.tag-hyp { background: #fef3c7; color: #92400e; }
+.tag-unk { background: #e0e7ff; color: #3730a3; }
+.tag-conflict { background: #fee2e2; color: #991b1b; }
+.tag-decision { background: #fce7f3; color: #9d174d; }
+
+/* Блок противоречий — красная полоса */
+.contradiction-block {
+  background: #fff5f5;
+  border-left: 4px solid var(--error);
+  border-radius: 0 var(--r-xl) var(--r-xl) 0;
+  padding: 20px 24px;
+  margin: 12px 0;
+}
+.contradiction-block .contr-title {
+  font-size: 15px; font-weight: 700; color: #991b1b; margin-bottom: 8px;
+}
+.contradiction-block .contr-meta {
+  font-size: 13px; color: #7c2d12; margin-bottom: 10px; font-weight: 500;
+}
+.contradiction-block .contr-text {
+  font-size: 14px; color: var(--n700); line-height: 1.6;
+}
+
+/* Warning-блок для "что надо увидеть Диму" */
+.warn-block {
+  background: #fffbeb;
+  border-left: 4px solid var(--warning);
+  border-radius: 0 var(--r-xl) var(--r-xl) 0;
+  padding: 20px 24px;
+  margin: 12px 0;
+}
+.warn-block .warn-title {
+  font-size: 15px; font-weight: 700; color: #92400e; margin-bottom: 8px;
+}
+.warn-block .warn-text {
+  font-size: 14px; color: var(--n700); line-height: 1.65;
+}
+
+/* Action / next steps */
+.action-block {
+  background: #ecfdf5;
+  border-left: 4px solid var(--success);
+  border-radius: 0 var(--r-xl) var(--r-xl) 0;
+  padding: 18px 24px;
+  margin: 10px 0;
+}
+.action-block .action-owner {
+  font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .05em;
+  color: #065f46; margin-bottom: 6px;
+}
+.action-block .action-text {
+  font-size: 14px; color: var(--n700); line-height: 1.55;
+}
+.action-block .action-deadline {
+  font-size: 12px; color: var(--n500); margin-top: 6px;
+}
+
+/* Nav */
+.nav-fixed {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 300;
+  background: rgba(255,255,255,.92); backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--n200); height: 64px;
+}
+.nav-inner {
+  max-width: 1200px; margin: 0 auto; padding: 0 24px;
+  height: 100%; display: flex; align-items: center; justify-content: space-between;
+}
+.nav-logo { font-size: 17px; font-weight: 700; color: var(--n900); }
+.nav-logo span { color: var(--brand); }
+.nav-links { display: flex; gap: 18px; overflow-x: auto; }
+.nav-links a {
+  font-size: 13px; font-weight: 500; color: var(--n500);
+  text-decoration: none; white-space: nowrap; transition: color .2s;
+}
+.nav-links a:hover { color: var(--brand); }
+.nav-badge {
+  font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .05em;
+  color: var(--brand); background: var(--brand-bg);
+  padding: 5px 12px; border-radius: var(--r-full); white-space: nowrap;
+}
+
+@media (max-width: 768px) {
+  .nav-links { display: none; }
+  .section-title { font-size: 22px; }
+  .participant-grid { grid-template-columns: 1fr; }
+  .container { padding: 0 16px; }
+  .doc-section { padding: 40px 0; }
+  .content-block { padding: 20px; }
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav-fixed">
+  <div class="nav-inner">
+    <div class="nav-logo">Soto Lab <span>·</span> Встреча №2</div>
+    <div class="nav-links">
+      <a href="#s1">Контекст</a>
+      <a href="#s2">Команда</a>
+      <a href="#s3">Продукты</a>
+      <a href="#s4">Клиенты</a>
+      <a href="#s5">Поставщики</a>
+      <a href="#s6">Регуляторика</a>
+      <a href="#s7">Финансы</a>
+      <a href="#s8">Каналы</a>
+      <a href="#s9">Сдвиги</a>
+      <a href="#s10">Вопросы</a>
+      <a href="#s11">Next steps</a>
+      <a href="#s12">Цитаты</a>
+      <a href="#s13">Итог</a>
+    </div>
+    <div class="nav-badge">16.04.2026</div>
+  </div>
+</nav>
+<div style="height:64px;"></div>
+
+<!-- HERO -->
+<header style="
+  background: linear-gradient(135deg, var(--n900) 0%, #1e3a5f 100%);
+  padding: 72px 0 64px; position: relative; overflow: hidden;
+">
+  <div style="position:absolute;top:-120px;right:-80px;width:450px;height:450px;border-radius:50%;background:radial-gradient(circle, rgba(14,165,233,.2) 0%, transparent 70%);pointer-events:none;"></div>
+  <div style="position:absolute;bottom:-100px;left:-60px;width:300px;height:300px;border-radius:50%;background:radial-gradient(circle, rgba(14,165,233,.1) 0%, transparent 70%);pointer-events:none;"></div>
+  <div class="container" style="position:relative;z-index:1;">
+    <div style="display:inline-flex;align-items:center;gap:8px;background:rgba(14,165,233,.15);border:1px solid rgba(14,165,233,.3);color:var(--brand-light);padding:8px 16px;border-radius:var(--r-full);font-size:13px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;margin-bottom:24px;">
+      <span style="width:6px;height:6px;border-radius:50%;background:var(--brand);animation:pulse-glow 2s infinite;"></span>
+      Рабочая встреча · Протокол №2
+    </div>
+    <h1 style="font-size:40px;line-height:1.15;letter-spacing:-.02em;font-weight:700;color:#fff;max-width:780px;margin-bottom:16px;">
+      Soto Lab · Вторая встреча
+    </h1>
+    <p style="font-size:17px;line-height:1.6;color:var(--n400);max-width:680px;margin-bottom:12px;">
+      Разбор белых пятен Project Map — продукт, клиенты, производство, регуляторика, каналы.
+    </p>
+    <p style="font-size:14px;color:var(--n500);margin-bottom:36px;">Обновлён 16.04.2026 с учётом сообщений в рабочей группе</p>
+    <div style="display:flex;gap:32px;flex-wrap:wrap;">
+      <div style="color:var(--n400);font-size:14px;">
+        <span style="color:var(--brand);font-weight:600;">Участники:</span> Дмитрий Дор · Станислав Капинос · Ксения Пуляткина · Анна Коваленко
+      </div>
+      <div style="color:var(--n400);font-size:14px;">
+        <span style="color:var(--brand);font-weight:600;">Длительность:</span> ~2 часа
+      </div>
+    </div>
+  </div>
+</header>
+<section id="s1" class="doc-section" style="">
+<div class="container fade-up">
+<div style="display:flex;align-items:center;margin-bottom:24px;"><div><div class="section-title">1. Контекст и формат встречи</div></div></div>
+<div class="block-heading" style="font-size:20px;margin-top:28px;margin-bottom:12px;">1.1. Исходная рамка</div>
+<p class="block-text" style="font-size:15px;line-height:1.7;color:var(--n600);margin-bottom:10px;">Дмитрий подготовил ~15 базовых вопросов в документе «Карта проекта» — это белые пятна, выявленные после встречи №1. Встреча построена как последовательный разбор этих вопросов с ответами команды.</p>
+<ul class="block-list">
+<li><span class="tag tag-fact">ФАКТ</span> Вся нынешняя работа SotoLab построена на гипотезах, а не на фактах. Стас подтвердил прямо: весь бизнес пока держится на предположениях.</li>
+<li><span class="tag tag-fact">ФАКТ</span> На встрече впервые участвовала Анна Коваленко. Часть ответов на вопросы Дмитрия она уже проговорила со Стасом/Ксенией до подключения Дмитрия.</li>
+</ul>
+<div class="quote-block"><div class="quote-text">
+<p class="block-text" style="font-size:15px;line-height:1.7;color:var(--n600);margin-bottom:10px;">«У нас сейчас весь бизнес построен на гипотезе, у нас очень мало явных фактов». — Стас</p>
+</div></div>
+<div class="quote-block"><div class="quote-text">
+<p class="block-text" style="font-size:15px;line-height:1.7;color:var(--n600);margin-bottom:10px;">«Так как ты сейчас впускаешь в бизнес деньги и людей — гипотезы могут быть в таком количестве только если это разовые акции. Если строим бизнес, то нужны ответы». — Дмитрий</p>
+</div></div>
+<div class="quote-block"><div class="quote-text">
+<p class="block-text" style="font-size:15px;line-height:1.7;color:var(--n600);margin-bottom:10px;">«Мы сейчас проходим это первый раз». — Анна (про процесс разработки продукта под клиента)</p>
+</div></div>
+<div class="block-heading" style="font-size:20px;margin-top:28px;margin-bottom:12px;">1.2. Смена режима работы</div>
+<p class="block-text" style="font-size:15px;line-height:1.7;color:var(--n600);margin-bottom:10px;">Первая встреча — синергия, ценности, совместное видение. Вторая встреча — разбор операционных вопросов: что готово, за какие сроки, по каким ценам, с какими производителями, на каких условиях. Дмитрий проходит по списку вопросов из Карты проекта, команда отвечает. По ряду блоков цифры и структурированные данные отсутствуют.</p>
+<p class="block-text" style="font-size:15px;line-height:1.7;color:var(--n600);margin-bottom:10px;"><strong>Договорённость по формату:</strong> в следующий раз команда присылает Дмитрию ответы на вопросы заранее, до встречи — чтобы разговор шёл глубже, а не тратился на первичную фактографию.</p>
+<hr />
+
+</div>
+</section>
+
+<section id="s2" class="doc-section" style="background:#fff;">
+<div class="container fade-up">
+<div style="display:flex;align-items:center;margin-bottom:24px;"><div><div class="section-title">2. Команда — актуальный состав</div></div></div>
+<p class="block-text" style="font-size:15px;line-height:1.7;color:var(--n600);margin-bottom:10px;">По сравнению со встречей №1 состав расширился. Анна активно присутствует на встрече и отвечает за продуктовую матрицу. Оля Трифонова упомянута как экспертная поддержка — на встрече не присутствовала.</p>
+<div class="block-heading" style="font-size:20px;margin-top:28px;margin-bottom:12px;">2.1. Стас Капинос — Co-founder · Операции</div>
+<p class="block-text" style="font-size:15px;line-height:1.7;color:var(--n600);margin-bottom:10px;">Отношения с производителями, стратегия, контракты, сроки. На встрече фиксирует текущие ограничения по объёмам и срокам, возвращает обсуждение к фактической стадии проекта.</p>
+<div class="block-heading" style="font-size:20px;margin-top:28px;margin-bottom:12px;">2.2. Ксения Пуляткина — Co-founder · Продукт, нутрициология</div>
+<p class="block-text" style="font-size:15px;line-height:1.7;color:var(--n600);margin-bottom:10px;">Продуктовая экспертиза, связи с клиентами (две Алёны, Shopping Life, Sante-Expert), нетворкинг в биохакинге и спорте. На встрече — основной носитель контекста по клиентам и рынку.</p>
+<div class="block-heading" style="font-size:20px;margin-top:28px;margin-bottom:12px;">2.3. Анна Коваленко — Product manager · Новый участник</div>
+<p class="block-text" style="font-size:15px;line-height:1.7;color:var(--n600);margin-bottom:10px;">Отвечает за продуктовую матрицу, регуляторику, связь с производителями на операционном уровне. Ведёт структурированный разбор по чек-листу. Формирует «работу над ошибками» по проекту «две Алёны» — чтобы не повторить эти ошибки с крупными сетями.</p>
+<div class="block-heading" style="font-size:20px;margin-top:28px;margin-bottom:12px;">2.4. Дмитрий Дор — Партнёр по маркетингу</div>
+<p class="block-text" style="font-size:15px;line-height:1.7;color:var(--n600);margin-bottom:10px;">Ведёт встречу через список вопросов, фиксирует факты и пробелы. Задаёт рамку: без цифр, клиентских брифов и юнит-экономики — нет бизнеса, есть набор разговоров.</p>
+<div class="block-heading" style="font-size:20px;margin-top:28px;margin-bottom:12px;">2.5. Оля Трифонова — Менеджер поддержки · Не присутствовала</div>
+<p class="block-text" style="font-size:15px;line-height:1.7;color:var(--n600);margin-bottom:10px;">Фоновый ресурс. Экспортный менеджер с сильным английским, опыт сопровождения клиентов (Emirates, «Магазин на диване», фармаптеки) по линии «Первый живой коллаген». Работает точечно — по запросу команды, а не в постоянном режиме.</p>
+<ul class="block-list">
+<li><span class="tag tag-hyp">ГИПОТЕЗА</span> Может стать полноценным оператором в связке с Анной. Сейчас ограничена по времени.</li>
+</ul>
+<div class="block-heading" style="font-size:20px;margin-top:28px;margin-bottom:12px;"><span style="color:var(--warning);">⚠</span> Что надо увидеть</div>
+<p class="block-text" style="font-size:15px;line-height:1.7;color:var(--n600);margin-bottom:10px;">Команда разрослась до пяти человек, но чёткого разделения операционного контура нет. Анна и Оля частично пересекаются в функции «руки по продукту», Стас и Ксения оба общаются с клиентами. Без матрицы ответственности (RACI или аналог) будет каша в коммуникации с клиентом и в приоритизации задач.</p>
+<hr />
+
+</div>
+</section>
+
+<section id="s3" class="doc-section" style="">
+<div class="container fade-up">
+<div style="display:flex;align-items:center;margin-bottom:24px;"><div><div class="section-title">3. Продуктовая линейка</div></div></div>
+<div class="block-heading" style="font-size:20px;margin-top:28px;margin-bottom:12px;">3.1. Полный список 13 SKU (обновление от 16.04.2026, сообщение в рабочей группе)</div>
+<div class="doc-table-wrap"><table class="doc-table">
+<colgroup>
+<col style="width: 8%" />
+<col style="width: 25%" />
+<col style="width: 30%" />
+<col style="width: 36%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>№</th>
+<th>Продукт</th>
+<th>Категория</th>
+<th>Комментарий</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>1</td>
+<td>Алкилглицериновые эфиры</td>
+<td>Морской компонент</td>
+<td>Редкий класс липидов, иммуномодулятор</td>
+</tr>
+<tr class="even">
+<td>2</td>
+<td>Гидролизат ската</td>
+<td>Морской компонент</td>
+<td>—</td>
+</tr>
+<tr class="odd">
+<td>3</td>
+<td>Плазмалогены</td>
+<td>Морской компонент</td>
+<td>Связь с Альцгеймером/Паркинсоном (рацион японцев)</td>
+</tr>
+<tr class="even">
+<td>4</td>
+<td>Комплекс короткоцепочечных пептидов из структурных белков (коллаген, эластин)</td>
+<td>Пептидный</td>
+<td>—</td>
+</tr>
+<tr class="odd">
+<td>5</td>
+<td>Сублимированная икра морского ежа</td>
+<td>Морской компонент</td>
+<td>—</td>
+</tr>
+<tr class="even">
+<td>6</td>
+<td>Каротиноиды из морской звезды и асцидии</td>
+<td>Морской компонент</td>
+<td>Антиоксиданты</td>
+</tr>
+<tr class="odd">
+<td>7</td>
+<td>Эхинохром</td>
+<td>Морской компонент</td>
+<td>Пигмент из морских ежей, антиоксидант</td>
+</tr>
+<tr class="even">
+<td>8</td>
+<td>Фукоксантин</td>
+<td>Морской компонент</td>
+<td>Из бурых водорослей, жиросжигатель</td>
+</tr>
+<tr class="odd">
+<td>9</td>
+<td>Коллаген рыбный гидролизат</td>
+<td>Коллагеновый</td>
+<td>Речной рыбный (Екатеринбург)</td>
+</tr>
+<tr class="even">
+<td>10</td>
+<td>Дианет</td>
+<td>—</td>
+<td><span class="tag tag-unk">НЕИЗВЕСТНО</span> позиционирование и состав</td>
+</tr>
+<tr class="odd">
+<td>11</td>
+<td>Аминосорб</td>
+<td>—</td>
+<td><span class="tag tag-unk">НЕИЗВЕСТНО</span> позиционирование и состав</td>
+</tr>
+<tr class="even">
+<td>12</td>
+<td>Фульвовые кислоты</td>
+<td>Растительный</td>
+<td>Детокс, минеральный комплекс</td>
+</tr>
+<tr class="odd">
+<td>13</td>
+<td>Магний водородный комплекс</td>
+<td>Минеральный</td>
+<td>—</td>
+</tr>
+</tbody>
+</table></div>
+<div class="block-heading" style="font-size:20px;margin-top:28px;margin-bottom:12px;"><span style="color:var(--warning);">⚠</span> Что надо увидеть: продукт или ингредиент?</div>
+<p class="block-text" style="font-size:15px;line-height:1.7;color:var(--n600);margin-bottom:10px;">Это не «БАД-линейка», это <strong>научная коллекция монопродуктов / ингредиентов</strong>. Половина названий — вещества, которые 99% российских потребителей в глаза не видели (эхинохром, фукоксантин, алкилглицериновые эфиры, каротиноиды из асцидии). Потребитель не покупает «каротиноид» — он покупает «защита глаз» или «омоложение кожи».</p>
+<p class="block-text" style="font-size:15px;line-height:1.7;color:var(--n600);margin-bottom:10px;">Сейчас это ростер сырья и составов. Чтобы это стало продуктовой линейкой SotoLab, нужна отдельная работа: - Перевод в потребительские названия и упаковочные форматы - Привязка к JTBD (под какую задачу, какой ЦА, в каком канале) - Формулировка ценностных предложений</p>
+<p class="block-text" style="font-size:15px;line-height:1.7;color:var(--n600);margin-bottom:10px;">11 из 13 SKU выбраны <strong>самими</strong> (что есть у производителей и что красиво по науке), а не под конкретного клиента. Только коллаген + гели для Алён имеют заказчика.</p>
+<div class="block-heading" style="font-size:20px;margin-top:28px;margin-bottom:12px;">3.2. Логика отбора SKU</div>
+<ul class="block-list">
+<li><span class="tag tag-fact">ФАКТ</span> Все 13 — уже существующие на рынке продукты, которые физически производятся. Большинство — камчатского и дальневосточного происхождения.</li>
+<li><strong>Логика:</strong> взять то, что уже готово к полке («запаковать в новую баночку с новой этикеткой и продавать»), а не изобретать с нуля. Это даёт скорость выхода.</li>
+<li><span class="tag tag-fact">ФАКТ</span> Параллельно команда разрабатывает <strong>спортивные гели с нуля</strong> + <strong>метаболическую таблетку</strong> под проект «Две Алёны». Это отдельная ветка — с технологом, спортивным врачом, итерациями рецептуры.</li>
+</ul>
+<div class="block-heading" style="font-size:20px;margin-top:28px;margin-bottom:12px;">3.3. Два основных фокуса продукта</div>
+<p class="block-text" style="font-size:15px;line-height:1.7;color:var(--n600);margin-bottom:10px;"><strong>1. Коллаген</strong> — первый продукт линейки. Производитель: завод Речного Рыбного коллагена в Екатеринбурге (переехали из Югры). Директора — <strong>Эдуард и Елена</strong>. Компания «Волков», производит коллаген для косметики Восторг Примортры. Гели варит <strong>Женя</strong>.</p>
+<p class="block-text" style="font-size:15px;line-height:1.7;color:var(--n600);margin-bottom:10px;"><strong>2. Спортивные гели + метаболическая таблетка</strong> — в активной разработке. Производятся на базе дальневосточных (камчатских) производителей. Технолог + спортивный врач формируют рецептуру.</p>
+<div class="block-heading" style="font-size:20px;margin-top:28px;margin-bottom:12px;">3.4. Гипотеза «коллагеновое ассорти»</div>
+<ul class="block-list">
+<li><span class="tag tag-hyp">ГИПОТЕЗА</span> Российский коллагеновый рынок заполнен, но качественных игроков не так много. Окно возможностей — сделать <strong>ассорти из трёх видов коллагена</strong>:
+<ul class="block-list">
+<li>речной рыбный (текущий производитель, Екатеринбург)</li>
+<li>оленевый коллаген (переговоры с Anti-Age экспертом, документы у Максима)</li>
+<li>коллаген из кукумарии, трепанга, иглокожих (дальневосточный производитель)</li>
+</ul></li>
+</ul>
+<p class="block-text" style="font-size:15px;line-height:1.7;color:var(--n600);margin-bottom:10px;">Позиционирование и канал — пока не определены. Рассматриваются: спортсмены, телемагазин, собственный бренд.</p>
+<div class="block-heading" style="font-size:20px;margin-top:28px;margin-bottom:12px;">3.5. Монопродукты с Дальнего Востока</div>
+<p class="block-text" style="font-size:15px;line-height:1.7;color:var(--n600);margin-bottom:10px;">На базе дальневосточных производителей — линейка уникальных монопродуктов: - плазмалогены - молоки - сублимированная икра морского ежа - командорский кальмар - омега-комплексы</p>
+<ul class="block-list">
+<li><span class="tag tag-fact">ФАКТ</span> По этим SKU Shopping Life (телемагазин) заинтересовался. Для аудитории «женщины 50+» формат подходит.</li>
+<li><span class="tag tag-unk">НЕИЗВЕСТНО</span> По минимальным партиям и срокам производства у дальневосточных — у Ксении «некоторые путаницы». Стас ищет в записях встречи с <strong>Алексеем</strong> (контакт от дальневосточного пула).</li>
+</ul>
+<div class="block-heading" style="font-size:20px;margin-top:28px;margin-bottom:12px;">3.6. Растительная линейка (Vitauct, Кавказ)</div>
+<p class="block-text" style="font-size:15px;line-height:1.7;color:var(--n600);margin-bottom:10px;"><strong>Производитель:</strong> Vitauct / Светоукт (Адыгея) — директор <strong>Руслан</strong>. Специализация: растительные ингредиенты, травяные составы.</p>
+<ul class="block-list">
+<li><span class="tag tag-fact">ФАКТ</span> На эту линейку меньший фокус — продукты уже представлены под собственным брендом Vitauct на рынке.</li>
+<li><span class="tag tag-fact">ФАКТ</span> По Shopping Life переговоры с Vitauct не состоялись: «по цене не пролезли». Магазин на диване закладывает наценку 3.5–4×, Vitauct не может дать закупочную цену в 4 раза ниже своей розничной.</li>
+<li><span class="tag tag-hyp">ГИПОТЕЗА</span> Руслан готов обсуждать эксклюзивный состав для Shopping Life (уменьшенный объём или концентрация активных). Диалог на холде — команда фокусируется на «двух Алёнах».</li>
+</ul>
+<div class="block-heading" style="font-size:20px;margin-top:28px;margin-bottom:12px;">3.7. Кастомизация vs готовый продукт</div>
+<p class="block-text" style="font-size:15px;line-height:1.7;color:var(--n600);margin-bottom:10px;">Анна чётко разложила две модели работы с клиентом:</p>
+<ol type="1">
+<li><strong>Готовый продукт → новая баночка:</strong> минимальная корректировка (вкус, упаковка). Пример — рыбный коллаген: «меняем вкус на землянику/клюкву, и всё». Быстрый вывод на рынок.</li>
+<li><strong>Разработка с нуля:</strong> +2–3 месяца минимум. Пример — спортивные гели для «Алён». Нужно согласовать состав, сделать пробную партию, проверить эффективность, итерации, потом регистрация.</li>
+</ol>
+<ul class="block-list">
+<li><span class="tag tag-fact">ФАКТ</span> Для коллагена существует опция частичной кастомизации состава (Стас: «компоненцию частично можем менять, состав — нет»).</li>
+</ul>
+<div class="block-heading" style="font-size:20px;margin-top:28px;margin-bottom:12px;">3.8. Стратегическое решение команды (из рабочей группы, 16.04.2026)</div>
+<div class="quote-block"><div class="quote-text">
+<p class="block-text" style="font-size:15px;line-height:1.7;color:var(--n600);margin-bottom:10px;">«Моё мнение такое, что изобретательскую схему надо пока оставлять ТОЛЬКО со спортсменами. Остальным заказчикам предлагать те продукты крутые, что уже есть». — Анна/Ксения, сообщение в рабочей группе</p>
+</div></div>
+<ul class="block-list">
+<li><span class="tag tag-fact">РЕШЕНИЕ ЗАФИКСИРОВАНО</span> R&amp;D-разработка с нуля — только с «Алёнами». Всем остальным клиентам (Shopping Life, Sante-Expert, сетевые, телемагазины, СТМ-бренды БАД, спортпит-магазины) — <strong>только из готового ростера 13 SKU</strong>.</li>
+</ul>
+<p class="block-text" style="font-size:15px;line-height:1.7;color:var(--n600);margin-bottom:10px;"><strong>Обоснование:</strong> - R&amp;D с нуля дорого, долго, рискованно - Есть 13 готовых SKU с низким порогом вывода - Если гели по Алёнам сорвутся — SotoLab уйдёт в минус по времени и ресурсам</p>
+<div class="block-heading" style="font-size:20px;margin-top:28px;margin-bottom:12px;">3.9. Логика выбора состава — важный пробел</div>
+<p class="block-text" style="font-size:15px;line-height:1.7;color:var(--n600);margin-bottom:10px;">Дмитрий задал вопрос: <em>«Как выбирали продукт и его состав, исходя из чего? Учитывался ли зарубежный опыт — какие вкусы, какой состав в приоритете у покупателей?»</em></p>
+<ul class="block-list">
+<li><span class="tag tag-fact">ФАКТ</span> По спортивным гелям первоисточник состава — сам клиент. Две Алёны: одна спортивный врач, другая тренер. Они формируют ТЗ по составу, функционалу, вкусу.</li>
+<li><span class="tag tag-fact">ФАКТ</span> По вкусам есть страновая специфика:
+<ul class="block-list">
+<li>Россия: яблоко, апельсин, малина</li>
+<li>Корея: персик, манго</li>
+<li>Персидский залив: гранат, финик</li>
+<li>По коллагену — вишня, клюква, малина заходят; ваниль и барбарис провалились, мандарин сработал под Новый год</li>
+</ul></li>
+<li><span class="tag tag-unk">НЕИЗВЕСТНО</span> Систематического анализа вкусовых предпочтений / конкурентных составов по каждому SKU нет. Ксения: «у меня просто сейчас нет этой аналитики».</li>
+</ul>
+<div class="block-heading" style="font-size:20px;margin-top:28px;margin-bottom:12px;">3.10. Next steps по продукту</div>
+<ul class="block-list">
+<li><strong>Анна:</strong> напомнить Оле собрать в одном документе полный перечень 13 SKU с характеристиками: состав, формы выпуска, объёмы, вес, срок годности, сертификация, страна, производитель</li>
+<li><strong>Анна:</strong> подготовить разбивку SKU × производитель с минимальными партиями и сроками</li>
+</ul>
+<hr />
+
+</div>
+</section>
+
+<section id="s4" class="doc-section" style="background:#fff;">
+<div class="container fade-up">
+<div style="display:flex;align-items:center;margin-bottom:24px;"><div><div class="section-title">4. Клиенты — текущий портфель</div></div></div>
+<div class="block-heading" style="font-size:20px;margin-top:28px;margin-bottom:12px;">4.1. «Две Алёны» — основной живой проект</div>
+<div class="block-heading" style="margin-top:20px;margin-bottom:10px;">Кто они</div>
+<ul class="block-list">
+<li><span class="tag tag-fact">ФАКТ</span> Бренд <strong>«Две Алёны»</strong> — придуман и быстро зарегистрирован командой SotoLab. Клиент — реально две Алёны:
+<ul class="block-list">
+<li>одна: спортсмен + врач (триатлон, спортивная медицина)</li>
+<li>вторая: спортсмен + тренер</li>
+</ul></li>
+<li>Работают с FMBA, с ассоциациями триатлона</li>
+</ul>
+<div class="block-heading" style="margin-top:20px;margin-bottom:10px;">Что для них делаем (апдейт от 16.04.2026)</div>
+<p class="block-text" style="font-size:15px;line-height:1.7;color:var(--n600);margin-bottom:10px;"><strong>Продукт 1 — рыбный коллаген.</strong> Производитель в Екатеринбурге (Эдуард/Елена/Волков). Продукт готов, статус: - выбираем вкусы (новые образцы в пути). Первый обсуждаемый вкус — <strong>ягода морошка</strong> (речной рыбный коллаген «Спорт») - согласование дизайна плёнки - согласование вторичной упаковки - получение СГР - → запуск</p>
+<p class="block-text" style="font-size:15px;line-height:1.7;color:var(--n600);margin-bottom:10px;">Это <strong>первый SKU SotoLab, реально близкий к выпуску на рынок</strong>.</p>
+<p class="block-text" style="font-size:15px;line-height:1.7;color:var(--n600);margin-bottom:10px;"><strong>Продукт 2 — линейка специально для спортсменов.</strong> Более сложная R&amp;D-ветка. Разработка: - <strong>3 геля</strong> (до / во время / после тренировки) - <strong>1 таблетка для разгона метаболизма</strong> — делает энергию стабильной, без скачков</p>
+<p class="block-text" style="font-size:15px;line-height:1.7;color:var(--n600);margin-bottom:10px;">Итого <strong>4 SKU</strong> под «Алён», не 2 как было зафиксировано ранее.</p>
+<div class="block-heading" style="margin-top:20px;margin-bottom:10px;"><span style="color:var(--error);">🔄</span> Производственные риски по гелям (новая информация из группы)</div>
+<ul class="block-list">
+<li><span class="tag tag-hyp">ГИПОТЕЗА</span> Производитель <strong>не полностью готов к производству гелей</strong> — не всё оборудование есть.</li>
+<li><strong>Изобретательская схема сильно более сложная</strong>, чем предполагалось. Нужно проверять на берегу:
+<ul class="block-list">
+<li>как и откуда поедут компоненты</li>
+<li>есть ли всё оборудование</li>
+<li>точно ли получится продукт, который мы хотим</li>
+</ul></li>
+</ul>
+<p class="block-text" style="font-size:15px;line-height:1.7;color:var(--n600);margin-bottom:10px;">На встрече Стас озвучивал «первые образцы через пару-тройку недель». Сообщение из группы указывает на неготовность части оборудования. Это расхождение по срокам нужно уточнить.</p>
+<div class="block-heading" style="margin-top:20px;margin-bottom:10px;"><span style="color:var(--error);">🔄</span> Противоречие внутри встречи — позиция по клиенту</div>
+<p class="block-text" style="font-size:15px;line-height:1.7;color:var(--n600);margin-bottom:10px;">В начале разговора Стас защищает клиента: <em>«У нас есть заказчик для которого мы это делаем, мы же это не делаем как фантазёр втроём собрались… Это они формируют техническое задание и по составу, и по функционалу, и по вкусу»</em>.</p>
+<p class="block-text" style="font-size:15px;line-height:1.7;color:var(--n600);margin-bottom:10px;">В конце того же разговора, при обсуждении цифр: <em>«У меня почему-то в голове было по умолчанию, что у них всё это есть. И они сейчас вот просто разы хотят заказать сто тысяч штук. А может быть это моя фантазия. Скорее всего это пока моя фантазия»</em>.</p>
+<p class="block-text" style="font-size:15px;line-height:1.7;color:var(--n600);margin-bottom:10px;"><strong>Вывод:</strong> клиент не сформирован как бизнес-субъект на момент встречи.</p>
+<div class="block-heading" style="margin-top:20px;margin-bottom:10px;"><span style="color:var(--error);">🔄</span> Новая информация из рабочей группы</div>
+<div class="quote-block"><div class="quote-text">
+<p class="block-text" style="font-size:15px;line-height:1.7;color:var(--n600);margin-bottom:10px;">«В беседах часто звучит “руководство нас поддерживает”. И в целом они ведут разведку как попасть в ФМБА и что для этого надо. Это в перспективе доступ к 500 000 спортсменов».</p>
+</div></div>
+<ul class="block-list">
+<li><span class="tag tag-hyp">ГИПОТЕЗА</span> За Алёнами стоит некое «руководство» (кто именно — <span class="tag tag-unk">НЕИЗВЕСТНО</span>), поддерживающее проект</li>
+<li><span class="tag tag-hyp">ГИПОТЕЗА</span> Алёны ведут системную работу по доступу к FMBA — потенциально 500K спортсменов</li>
+<li>При подтверждении канала ФМБА проект «Алён» выходит за рамки учебного кейса и становится каналом с доступом к ~500K спортсменов. Требует проверки на встрече</li>
+</ul>
+<div class="block-heading" style="margin-top:20px;margin-bottom:10px;">Чего у «Алён» нет</div>
+<ul class="block-list">
+<li>финмодели и бюджета маркетинга («у них в голове нет» — Стас)</li>
+<li>карточки компании, с которой заключать контракт</li>
+<li>понимания объёмов и системной работы («всё в ручном режиме» — Стас)</li>
+<li>инфраструктуры для дистрибуции под те объёмы, о которых они говорят</li>
+<li><span class="tag tag-fact">ФАКТ</span> У продукта <strong>нет упаковки вообще</strong>. Стас: «у нас нет обёртки у него вообще. По содержимому плюс-минус понятно, а вот по упаковке — совсем всё плохо»</li>
+<li><span class="tag tag-fact">ФАКТ</span> Логотип «Две Алёны», созданный клиентом, по оценке Ксении — «кровь из глаз, немое молчание»</li>
+<li><span class="tag tag-fact">ФАКТ</span> Планируемый стартовый объём первых партий — <strong>по 1000 штук каждого SKU</strong> (Ксения: «первые партии, каждого всего по тысячу штук — всё начали пробовать, всё пошло-поехало, как раз сейчас сезон начался»)</li>
+</ul>
+<div class="block-heading" style="margin-top:20px;margin-bottom:10px;">Процесс тестирования гелей</div>
+<ul class="block-list">
+<li><span class="tag tag-fact">ФАКТ</span> Алёна-врач будет мониторить анализы спортсменов-тестеров: глюкометры, анализы крови и другие показатели (Стас: «одна из Алён как врач будет мониторить их анализы, глюкометры»)</li>
+</ul>
+<div class="quote-block"><div class="quote-text">
+<p class="block-text" style="font-size:15px;line-height:1.7;color:var(--n600);margin-bottom:10px;">«У неё всё в ручном режиме будет… там не будет системной работы. Я пока даже не могу добиться от них: выдайте карточку компании, с которой контракт заключать». — Стас про Алён</p>
+</div></div>
+<div class="quote-block"><div class="quote-text">
+<p class="block-text" style="font-size:15px;line-height:1.7;color:var(--n600);margin-bottom:10px;">«Идти к большим сетевым компаниям, не будучи изначально подготовленными — условно, у нас второго шанса может не быть». — Анна</p>
+</div></div>
+<div class="block-heading" style="margin-top:20px;margin-bottom:10px;"><span style="color:var(--warning);">⚠</span> Что надо увидеть: пересмотр роли «Алён»</div>
+<p class="block-text" style="font-size:15px;line-height:1.7;color:var(--n600);margin-bottom:10px;">Проект «Две Алёны» позиционировался на встрече №1 как главный живой клиент. После встречи №2 + апдейта из группы картина такая: - <strong>Стратегический потенциал высокий</strong> — ФМБА = до 500K спортсменов - <strong>Операционная готовность клиента нулевая</strong> — нет бюджета, компании, финплана, процессов - <strong>Производственный риск по гелям реален</strong> — производитель не готов к части операций - SotoLab уже потратили месяцы на разработку геля под них</p>
+<p class="block-text" style="font-size:15px;line-height:1.7;color:var(--n600);margin-bottom:10px;">🎯 <strong>РЕШЕНИЕ ТРЕБУЕТСЯ:</strong> SotoLab либо инвестирует свои человеческие ресурсы (а по факту и деньги на R&amp;D) в проект «Алёны», рассчитывая на ФМБА, либо ждёт от Алён подтверждения канала до серьёзной работы.</p>
+<div class="block-heading" style="margin-top:20px;margin-bottom:10px;">Next steps по Алёнам</div>
+<ul class="block-list">
+<li><strong>Ксения + Стас:</strong> встреча с «Алёнами» в живом офлайн-формате 16–17 апреля</li>
+<li><strong>Дмитрий:</strong> готовит список вопросов для встречи</li>
+<li><strong>Ксения:</strong> наговаривает аудио с текущим контекстом (что есть, что обсуждалось, какие цифры звучали)</li>
+</ul>
+<hr />
+<div class="block-heading" style="font-size:20px;margin-top:28px;margin-bottom:12px;">4.2. Shopping Life (телемагазин)</div>
+<ul class="block-list">
+<li><span class="tag tag-fact">ФАКТ</span> Аудитория телемагазина Shopping Life — <strong>более 50 миллионов</strong></li>
+<li><span class="tag tag-fact">ФАКТ</span> Контакт со стороны Shopping Life — <strong>Светлана</strong>, департамент продуктов</li>
+<li><span class="tag tag-fact">ФАКТ</span> У Ксении есть предыдущая история с Shopping Life по проекту «Первый живой коллаген»: начинали с <strong>~2 000 банок в месяц</strong>, выросли до <strong>30–40 тыс. банок в месяц</strong>. Проект сейчас «грохнулся», потому что клиент попал в регуляторную переходку с пищевого продукта на БАД — заказ встал на 5 тыс. штук.</li>
+<li><span class="tag tag-fact">ФАКТ</span> Shopping Life закладывает в розницу наценку 3.5–4× от закупки (у конкурентов-сеток — 5–7×). Оплачивают чётко, отсрочка до 40 календарных дней.</li>
+</ul>
+<div class="block-heading" style="margin-top:20px;margin-bottom:10px;">Текущий статус — на холде</div>
+<p class="block-text" style="font-size:15px;line-height:1.7;color:var(--n600);margin-bottom:10px;"><strong>Блокер:</strong> Shopping Life регистрирует собственный товарный знак для СТМ. Срок регистрации — <strong>от 8 до 18 месяцев</strong>. До этого момента подавать СГР на продукт под их СТМ невозможно — в свидетельстве должен быть зарегистрированный бренд.</p>
+<p class="block-text" style="font-size:15px;line-height:1.7;color:var(--n600);margin-bottom:10px;"><strong>Что предлагали:</strong> - линейка дальневосточных (молоки, ежи, плазмалогены, кальмары, омеги) — интерес есть - коллагены — Shopping Life отказались (уже много коллагенов в линейке) - Vitauct как промежуточная версия до своего СТМ — не договорились по цене</p>
+<div class="block-heading" style="margin-top:20px;margin-bottom:10px;">🎯 РЕШЕНИЕ ТРЕБУЕТСЯ по Shopping Life</div>
+<p class="block-text" style="font-size:15px;line-height:1.7;color:var(--n600);margin-bottom:10px;">Что команда предлагает: 1. Vitauct как промежуточную версию (если пересмотрят цену)? 2. Под СТМ — какие SKU включаем из ростера 13? 3. Какие SKU сознательно <strong>НЕ</strong> предлагаем, чтобы оставить под собственный бренд SotoLab?</p>
+<hr />
+<div class="block-heading" style="font-size:20px;margin-top:28px;margin-bottom:12px;">4.3. «Эмираты» — learning case (Whitehouse Spinneys)</div>
+<p class="block-text" style="font-size:15px;line-height:1.7;color:var(--n600);margin-bottom:10px;"><strong>Новый раздел — вытащен из транскрипта, раньше был одной строкой в сводной таблице.</strong></p>
+<ul class="block-list">
+<li><span class="tag tag-fact">ФАКТ</span> Клиент: «две девочки» Ксении в ОАЭ, через сеть Whitehouse Spinneys (один из премиальных ритейлеров региона)</li>
+<li><span class="tag tag-fact">ФАКТ</span> Продукт: «Первый живой коллаген» (предыдущий проект Ксении, не SotoLab)</li>
+<li><span class="tag tag-fact">ФАКТ</span> Серия производственных провалов:
+<ul class="block-list">
+<li>партии с железными включениями</li>
+<li>плесень в продукте</li>
+<li>порошки, точки, проблемы с запайкой</li>
+<li>из-за замены запайки на металл — вся партия протухла и была отозвана из всех ретейл-точек в Эмиратах</li>
+</ul></li>
+</ul>
+<p class="block-text" style="font-size:15px;line-height:1.7;color:var(--n600);margin-bottom:10px;"><strong>Парадокс:</strong> даже после этих провалов клиент продолжал заказывать. По словам Ксении — из-за безупречной репутации клиентов в регионе они выдержали эти «катастрофы».</p>
+<div class="block-heading" style="margin-top:20px;margin-bottom:10px;">Почему этот кейс важен</div>
+<p class="block-text" style="font-size:15px;line-height:1.7;color:var(--n600);margin-bottom:10px;">Это единственный живой опыт команды с крупным международным ритейлом. Контекст для позиции Анны по работе с крупными сетями:</p>
+<div class="quote-block"><div class="quote-text">
+<p class="block-text" style="font-size:15px;line-height:1.7;color:var(--n600);margin-bottom:10px;">«Идти к большим сетевым компаниям, не будучи изначально подготовленными — условно, у нас второго шанса может не быть».</p>
+</div></div>
+<p class="block-text" style="font-size:15px;line-height:1.7;color:var(--n600);margin-bottom:10px;">Эмиратская история — живое доказательство того, что даже при провалах ты можешь удержать клиента, <strong>если у клиента есть лояльность</strong>. Но в российских сетях (Shopping Life, VkusVill, dōTERRA и др.) такой лояльности не будет. Поэтому команда ограничивает R&amp;D-изобретательство Алёнами.</p>
+<hr />
+<div class="block-heading" style="font-size:20px;margin-top:28px;margin-bottom:12px;">4.4. Sante-Expert / Anti-Age эксперт (перспективная коллаборация)</div>
+<ul class="block-list">
+<li><span class="tag tag-fact">ФАКТ</span> Sante-Expert (Анти-Эйдж эксперт) — мировая экспертиза в anti-age, клиника клеточной терапии, конференции, наставничество врачей, собственная линейка препаратов. Ксения с ними уже делала проекты (наставничество врачей).</li>
+<li><span class="tag tag-hyp">ГИПОТЕЗА</span> Формат сотрудничества — коллаборация:
+<ul class="block-list">
+<li>продвижение оленевого коллагена (документы у <strong>Максима</strong>)</li>
+<li>или добавление владивостокских продуктов в их линейку</li>
+<li>создание совместной линейки БАДов</li>
+</ul></li>
+</ul>
+<p class="block-text" style="font-size:15px;line-height:1.7;color:var(--n600);margin-bottom:10px;"><strong>Источник интереса с их стороны:</strong> по словам Ксении — её друг, который делает им бэк/маркетинг/IT, сказал «вы всё это не потянете, давайте ребятам отдадим». Бюджет, по-видимому, есть, но конкретики нет.</p>
+<div class="block-heading" style="margin-top:20px;margin-bottom:10px;">Контекст: почему в РФ Sante-Expert менее известен</div>
+<ul class="block-list">
+<li><span class="tag tag-fact">ФАКТ</span> В России на основателя делали «заказуху» через некоего <strong>Шанакома</strong> («лицо испортили»). Это влияние снизило узнаваемость в РФ относительно международной известности.</li>
+<li><span class="tag tag-fact">ФАКТ</span> Европейские инвестиции Sante-Expert застряли в Сбере — дальнейшее развитие идёт на собственные деньги основателя.</li>
+</ul>
+<hr />
+<div class="block-heading" style="font-size:20px;margin-top:28px;margin-bottom:12px;">4.5. Сводная матрица клиентов</div>
+<div class="doc-table-wrap"><table class="doc-table">
+<colgroup>
+<col style="width: 12%" />
+<col style="width: 12%" />
+<col style="width: 30%" />
+<col style="width: 22%" />
+<col style="width: 22%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Клиент</th>
+<th>Статус</th>
+<th>Продукт(ы) под них</th>
+<th>Ключевой срок</th>
+<th>Блокер / риск</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Две Алёны</td>
+<td>🟡 Активная разработка</td>
+<td>Коллаген (близко к запуску) + 3 геля + 1 таблетка метаболизма</td>
+<td>Коллаген — недели; гели — неизвестно (производитель не готов)</td>
+<td>Нет финмодели, нет карточки компании. ФМБА — потенциал, не факт</td>
+</tr>
+<tr class="even">
+<td>Shopping Life</td>
+<td>⏸ На холде</td>
+<td>Дальневосточная линейка (молоки, ежи, плазмалогены, кальмары, омеги)</td>
+<td>8–18 месяцев (ждём регистрацию их СТМ)</td>
+<td>Не могут получить СГР до регистрации товарного знака</td>
+</tr>
+<tr class="odd">
+<td>Sante-Expert</td>
+<td>🔍 Перспектива</td>
+<td>Оленевой коллаген + владивостокские SKU + совместная линейка</td>
+<td>Не определён</td>
+<td>Нет конкретики по бюджету и формату. Нужны офлайн-встречи</td>
+</tr>
+<tr class="even">
+<td>Эмираты (learning case)</td>
+<td>✅ Завершён (не SotoLab, предыдущий проект Ксении)</td>
+<td>«Первый живой коллаген»</td>
+<td>—</td>
+<td>Производственные провалы. Источник осторожности команды</td>
+</tr>
+<tr class="odd">
+<td>Faberlic</td>
+<td>⏸ Приостановлено</td>
+<td>Коллаген не зашёл, с другими продуктами притормозили</td>
+<td>—</td>
+<td>Пассивный канал</td>
+</tr>
+<tr class="even">
+<td>VkusVill</td>
+<td>⏸ Приостановлено</td>
+<td>Часть продуктов из ростера</td>
+<td>—</td>
+<td>Команда сначала отрабатывает ошибки на Алёнах</td>
+</tr>
+<tr class="odd">
+<td>Metohondrial здоровье (Welleo/Vilavi)</td>
+<td>🔍 Контакт</td>
+<td>Владивостокские SKU</td>
+<td>—</td>
+<td>Нужны офлайн-встречи. Владелец Немалаевский — биохакер</td>
+</tr>
+<tr class="even">
+<td>dōTERRA</td>
+<td>🔍 Свежий контакт</td>
+<td>Возможные SKU из ростера</td>
+<td>—</td>
+<td>Контакт через «бриллиантового продавца» в Индии. В РФ открыли научный центр, уже локально производят пробиотики и клетчатку. Канал БАДов открыт</td>
+</tr>
+</tbody>
+</table></div>
+<hr />
+
+</div>
+</section>
+
+<section id="s5" class="doc-section" style="">
+<div class="container fade-up">
+<div style="display:flex;align-items:center;margin-bottom:24px;"><div><div class="section-title">5. Поставщики — обновлённая карта</div></div></div>
+<div class="block-heading" style="font-size:20px;margin-top:28px;margin-bottom:12px;">5.1. Сводная таблица производителей</div>
+<div class="doc-table-wrap"><table class="doc-table">
+<colgroup>
+<col style="width: 19%" />
+<col style="width: 11%" />
+<col style="width: 12%" />
+<col style="width: 27%" />
+<col style="width: 18%" />
+<col style="width: 10%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Производитель</th>
+<th>Локация</th>
+<th>Контакты</th>
+<th>Категория продуктов</th>
+<th>Эксклюзив РФ</th>
+<th>Статус</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Компания Волков</strong> (завод речного рыбного коллагена)</td>
+<td>Екатеринбург (переехали из Югры)</td>
+<td>Эдуард, Елена (руководство); Женя (варит образцы гелей)</td>
+<td>Речной рыбный коллаген, производство косметики для Восторг Примортры</td>
+<td>✅ Да</td>
+<td>Активное производство. Первые образцы коллагена для Алён на текущей неделе</td>
+</tr>
+<tr class="even">
+<td><strong>Дальневосточные / Камчатка</strong> (пул)</td>
+<td>Камчатка, Владивосток</td>
+<td><strong>Алексей</strong> (упоминался, контакт у Стаса)</td>
+<td>Монопродукты: плазмалогены, молоки, сублимированная икра морского ежа, кальмары, омеги, алкилглицериновые эфиры, эхинохром, фукоксантин</td>
+<td>✅ Да</td>
+<td>Есть запрос от Shopping Life и двух Алён. Минимальные партии уточняются</td>
+</tr>
+<tr class="odd">
+<td><strong>Vitauct / Светоукт</strong></td>
+<td>Адыгея (Кавказ)</td>
+<td>Руслан (директор)</td>
+<td>Растительные ингредиенты, травяные составы, фульвовые кислоты</td>
+<td>⚠️ Частично</td>
+<td>Меньший фокус. С Shopping Life не договорились по цене. Возможна эксклюзивная версия</td>
+</tr>
+<tr class="even">
+<td><strong>Античэксперт / Sante-Expert</strong> (оленевой коллаген)</td>
+<td>❓ Не зафиксировано</td>
+<td>Максим (передал документы на оленевой коллаген)</td>
+<td>Оленевой коллаген</td>
+<td>❓ Обсуждается</td>
+<td>На этапе первичных переговоров. Серьёзная клиника/лаборатория. Готовится коллаборация</td>
+</tr>
+</tbody>
+</table></div>
+<div class="block-heading" style="font-size:20px;margin-top:28px;margin-bottom:12px;">5.2. Мощности и условия</div>
+<ul class="block-list">
+<li><span class="tag tag-fact">ФАКТ</span> Мощность завода в Екатеринбурге — <strong>40 тонн коллагена в месяц</strong>. В упаковке — ~90–100 тыс. упаковок (по 30 стиков, 15 г каждый)</li>
+<li><span class="tag tag-fact">ФАКТ</span> При потребности 80–100 тонн в месяц — цена продукта вырастет, так как сырьё придётся докупать у сторонних рыбаков</li>
+<li><span class="tag tag-fact">ФАКТ</span> Все объёмы ограничены <strong>квотами на вылов</strong> (десятки тонн максимум). До этого потолка команде «ещё далеко»</li>
+<li><span class="tag tag-fact">ФАКТ</span> По ключевым продуктам у SotoLab <strong>эксклюзив на РФ</strong>: «с тем вкусом и всем составом, который будет продаваться у нас — будет продаваться только у нас»</li>
+<li><span class="tag tag-fact">ФАКТ</span> После первой промышленной партии со всеми документами, каждая следующая партия занимает <strong>~1.5 месяца</strong>. Из чего складывается:
+<ul class="block-list">
+<li>загрузка производственного котла, выпуск партии — дни</li>
+<li><strong>печать плёнки — ~1 месяц</strong> (главный затык по срокам; если плёнку не заказать заранее за свой счёт — задержка неизбежна)</li>
+<li>анализы после производства партии — нужно дождаться результатов</li>
+</ul></li>
+<li><span class="tag tag-fact">ФАКТ</span> Эдуард умеет «крутить» СГР быстро — за пару недель — по коллагену</li>
+</ul>
+<div class="block-heading" style="font-size:20px;margin-top:28px;margin-bottom:12px;">5.3. Условия с производителями</div>
+<ul class="block-list">
+<li><span class="tag tag-fact">ФАКТ</span> Схема работы — <strong>предоплата от клиента → аванс производителю</strong>. SotoLab не финансирует производство из своих. Отсрочек консигнации у производителя сейчас нет</li>
+<li><span class="tag tag-fact">ФАКТ</span> Shopping Life, как покупатель, работает с отсрочкой платежа — до 40 календарных дней</li>
+</ul>
+<div class="block-heading" style="font-size:20px;margin-top:28px;margin-bottom:12px;"><span style="color:var(--warning);">⚠</span> Что надо увидеть: зависимость от клиентского cash flow</div>
+<p class="block-text" style="font-size:15px;line-height:1.7;color:var(--n600);margin-bottom:10px;">Схема «предоплата от клиента → производство» работает только если клиенты готовы платить вперёд. «Две Алёны» пока не готовы. Это делает весь производственный контур SotoLab <strong>абсолютно зависимым от клиентской стороны</strong>: без предоплаты не запускается ни одна партия.</p>
+<hr />
+
+</div>
+</section>
+
+<section id="s6" class="doc-section" style="background:#fff;">
+<div class="container fade-up">
+<div style="display:flex;align-items:center;margin-bottom:24px;"><div><div class="section-title">6. Регуляторика — 4 категории регистрации</div></div></div>
+<p class="block-text" style="font-size:15px;line-height:1.7;color:var(--n600);margin-bottom:10px;">Ксения разложила базовую карту — без этого не понять срок и стоимость вывода продукта.</p>
+<div class="doc-table-wrap"><table class="doc-table">
+<colgroup>
+<col style="width: 19%" />
+<col style="width: 16%" />
+<col style="width: 23%" />
+<col style="width: 10%" />
+<col style="width: 30%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Категория</th>
+<th>Что это</th>
+<th>Регистрация</th>
+<th>Срок</th>
+<th>Спец.требования</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Пищевой продукт</strong></td>
+<td>«Как колбаса» — нет обязательного назначения врачом, нет противопоказаний (кроме аллергий), нет жёсткой дозировки</td>
+<td>Декларация, упрощённая</td>
+<td>~2 недели</td>
+<td>—</td>
+</tr>
+<tr class="even">
+<td><strong>БАД</strong></td>
+<td>Может назначаться врачом при ингредиентах выше допустимой нормы</td>
+<td>СГР — свидетельство госрегистрации</td>
+<td>3–6 месяцев (российский). В Армении — 2–3 месяца</td>
+<td>Обязателен «Честный знак» (~3 руб/SKU), маркировка</td>
+</tr>
+<tr class="odd">
+<td><strong>Спортивное / диетическое питание</strong></td>
+<td>Отдельная категория</td>
+<td>По специальным правилам</td>
+<td>Отличается от БАД</td>
+<td>Функциональные требования по ингредиентам</td>
+</tr>
+<tr class="even">
+<td><strong>Лекарственный препарат</strong></td>
+<td>Имеет дозировку, побочные эффекты, назначается врачом</td>
+<td>Фармакологическая регистрация</td>
+<td>—</td>
+<td>В эту категорию SotoLab не идёт</td>
+</tr>
+</tbody>
+</table></div>
+<div class="block-heading" style="font-size:20px;margin-top:28px;margin-bottom:12px;">6.1. Тренд рынка — сдвиг в сторону БАД</div>
+<ul class="block-list">
+<li><span class="tag tag-fact">ФАКТ</span> Раньше многие производители БАДов шли через лазейку — оформляли продукт как пищевой (быстрая декларация). С введением «Честного знака» рынок разворачивают в сторону обязательной СГР для всего, что по сути является БАД.</li>
+<li><span class="tag tag-hyp">ГИПОТЕЗА</span> По спортивным гелям — скорее всего будет «пищевая добавка», не БАД. Это ускорит вывод. Точного решения нет.</li>
+</ul>
+<div class="block-heading" style="font-size:20px;margin-top:28px;margin-bottom:12px;">6.2. Кто платит за регистрацию</div>
+<ul class="block-list">
+<li><span class="tag tag-fact">ФАКТ</span> Стас: стоимость регистрации — <strong>не про нас</strong>. Все регистрационные затраты покрывает заказчик (клиент СТМ).</li>
+</ul>
+<div class="block-heading" style="font-size:20px;margin-top:28px;margin-bottom:12px;">6.3. Сроки СГР — критический фактор для Shopping Life</div>
+<ul class="block-list">
+<li><span class="tag tag-fact">ФАКТ</span> СГР как БАД регистрируется на <strong>конкретный товарный знак</strong>. Пока Shopping Life не зарегистрировал свой СТМ (8–18 месяцев), ни один продукт под их брендом не может пойти в регистрацию.</li>
+</ul>
+<div class="block-heading" style="font-size:20px;margin-top:28px;margin-bottom:12px;">Next step</div>
+<ul class="block-list">
+<li><strong>Стас + Анна:</strong> по спортивным гелям для «Алён» определить — регистрируем как пищевую добавку или как БАД. От этого зависит ~2.5 месяца срока и маркетинг-посыл</li>
+</ul>
+<hr />
+
+</div>
+</section>
+
+<section id="s7" class="doc-section" style="">
+<div class="container fade-up">
+<div style="display:flex;align-items:center;margin-bottom:24px;"><div><div class="section-title">7. Финансы — стартовый бюджет отсутствует</div></div></div>
+<div class="block-heading" style="font-size:20px;margin-top:28px;margin-bottom:12px;">7.1. Текущая финансовая конструкция</div>
+<ul class="block-list">
+<li><span class="tag tag-fact">ФАКТ</span> Вопрос «себестоимость / розница / маржинальность» Ксения подняла на встрече. Стас его отсёк: «пока экономика будет в сторону, потому что у нас экономики как таковой нет — собственного производства нет». Вопрос осознанно отложен до появления первых реальных партий.</li>
+<li><span class="tag tag-fact">ФАКТ</span> Стас: <em>«Поэтому стартового бюджета у нас никакого нет. Не откуда Вкоснутиться, потому что мы в одном месте берём деньги, свою часть отщипываем и передаём в другое место эти деньги»</em></li>
+<li>Единственная текущая расходная статья — регистрация компаний. Бесконечно тратится человеческое время, но не финансы</li>
+<li><span class="tag tag-fact">ФАКТ</span> Бизнес-модель сейчас — <strong>посол бренда и дистрибьютор, не производитель</strong>. Стас: <em>«Мы посол бренда, пока ничего не производим»</em></li>
+</ul>
+<div class="block-heading" style="font-size:20px;margin-top:28px;margin-bottom:12px;">7.2. Юнит-экономика — откладывается</div>
+<div class="quote-block"><div class="quote-text">
+<p class="block-text" style="font-size:15px;line-height:1.7;color:var(--n600);margin-bottom:10px;">«Мы цифры даже примерно сейчас рисовать не будем. Как только отработаем первую поставку по гелям, как только в этом году киллер у нас появятся цифры. Сейчас футбол, можем только фантазировать — появятся и цифры, и сроки, и того как работать, и с кем работать». — Стас</p>
+</div></div>
+<ul class="block-list">
+<li><span class="tag tag-fact">ФАКТ</span> Расчёт юнит-экономики для собственной торговой марки будет уместен только когда SotoLab начнёт выпускать под своим брендом. Это <strong>2027 год, скорее всего Q2</strong> — первый квартал Стас назвал маловероятным</li>
+</ul>
+<div class="block-heading" style="font-size:20px;margin-top:28px;margin-bottom:12px;"><span style="color:var(--error);">🔄</span> Сдвиг относительно Project Map и встречи №1</div>
+<p class="block-text" style="font-size:15px;line-height:1.7;color:var(--n600);margin-bottom:10px;">Project Map утверждал: «Этап 2 — собственный бренд, горизонт 2026–2027». На встрече №1: «вывести первые продукты на рынок под брендом Soto Lab» (краткосрочная цель).</p>
+<p class="block-text" style="font-size:15px;line-height:1.7;color:var(--n600);margin-bottom:10px;">На встрече №2 собственная торговая марка сдвинута на <strong>Q2 2027</strong>. До этого момента SotoLab работает только в режиме СТМ для чужих брендов. Финмодель появится как минимум на 12–15 месяцев позже, чем предполагалось во встрече №1.</p>
+<div class="block-heading" style="font-size:20px;margin-top:28px;margin-bottom:12px;">7.3. Рамка для будущих клиентов — Дмитрий</div>
+<p class="block-text" style="font-size:15px;line-height:1.7;color:var(--n600);margin-bottom:10px;">Дмитрий зафиксировал жёсткую позицию: <strong>SotoLab не будет рисовать финмодель за клиента</strong>. Без цифр со стороны клиента (бюджет, ожидаемые объёмы, горизонт) — нет брифа, нет маркетинг-плана, нет предложения.</p>
+<ul class="block-list">
+<li><span class="tag tag-hyp">ГИПОТЕЗА</span> Возможен переход в агентскую модель: SotoLab не только производит под СТМ, но и берёт на себя продажу. Условие — у клиента есть деньги и готовность их вложить.</li>
+<li><span class="tag tag-decision">РЕШЕНИЕ</span> Двигается ли SotoLab в сторону агентской модели по «Алёнам» и/или другим клиентам?</li>
+</ul>
+<div class="block-heading" style="font-size:20px;margin-top:28px;margin-bottom:12px;"><span style="color:var(--warning);">⚠</span> Что надо увидеть: ограничение модели</div>
+<p class="block-text" style="font-size:15px;line-height:1.7;color:var(--n600);margin-bottom:10px;">Без собственного капитала SotoLab не может: - начать СТМ-партию до 100% предоплаты клиента - профинансировать разработку продукта с нуля без согласованного договора с клиентом - зайти в маркетплейсы - заплатить за собственный маркетинг</p>
+<p class="block-text" style="font-size:15px;line-height:1.7;color:var(--n600);margin-bottom:10px;"><strong>Следовательно:</strong> в 2025–2026 году SotoLab — это контент-маркетинг Ксении + живые продажи через личные контакты + редкие СТМ-контракты. Любое «масштабирование» требует либо крупного клиента-якоря с хорошим авансом, либо привлечения инвестиций.</p>
+<hr />
+
+</div>
+</section>
+
+<section id="s8" class="doc-section" style="background:#fff;">
+<div class="container fade-up">
+<div style="display:flex;align-items:center;margin-bottom:24px;"><div><div class="section-title">8. Каналы — маркетплейсы, ритейл, сети, нетворк</div></div></div>
+<div class="block-heading" style="font-size:20px;margin-top:28px;margin-bottom:12px;">8.1. Маркетплейсы — осознанный отказ на ближайшие месяцы</div>
+<p class="block-text" style="font-size:15px;line-height:1.7;color:var(--n600);margin-bottom:10px;">Дмитрий дал развёрнутую рамку: маркетплейсы — это не канал «зашёл и продал», это отдельная индустрия с профессиональными командами, строящими миллиардные обороты.</p>
+<p class="block-text" style="font-size:15px;line-height:1.7;color:var(--n600);margin-bottom:10px;"><strong>Условия захода на маркетплейсы, по Дмитрию:</strong> - <span class="tag tag-fact">ФАКТ</span> тестовая гипотеза стоит ≥ 1 млн руб. - если гипотеза подтверждается во 2–3 месяц — нужно сразу иметь ≥ 10 млн или поднять инвестора - необходимы: выбранная ценовая категория, готовое производство, команда - если в какой-то момент не удастся забить склад нужным товаром — все месяцы тестирования сгорают - связка: производство — люди — деньги. Сбой в любом звене обнуляет всё</p>
+<p class="block-text" style="font-size:15px;line-height:1.7;color:var(--n600);margin-bottom:10px;">🎯 <strong>РЕШЕНИЕ</strong> Стас: <em>«Мы не пойдём туда, пока мы не готовы»</em>. Зафиксировано как позиция SotoLab.</p>
+<div class="quote-block"><div class="quote-text">
+<p class="block-text" style="font-size:15px;line-height:1.7;color:var(--n600);margin-bottom:10px;">«Маркет-плейс — это последнее место, куда входить надо, когда у тебя уже всё есть». — Дмитрий</p>
+</div></div>
+<div class="block-heading" style="font-size:20px;margin-top:28px;margin-bottom:12px;">8.2. Рентабельность маркетплейсов — подтверждено Дмитрием</div>
+<ul class="block-list">
+<li><span class="tag tag-fact">ФАКТ</span> Комиссии 30–40% остаются рабочими при правильной маржинальности</li>
+<li><span class="tag tag-fact">ФАКТ</span> Дмитрий следит за топ-операторами маркетплейсов — никто не уходит. Львиная доля выручки у лидеров становится инфобизнесом (обучение) — до 30–50 млн руб/месяц</li>
+</ul>
+<div class="block-heading" style="font-size:20px;margin-top:28px;margin-bottom:12px;">8.3. Сегментация каналов-заказчиков (обновление от 16.04.2026)</div>
+<p class="block-text" style="font-size:15px;line-height:1.7;color:var(--n600);margin-bottom:10px;">Из сообщения в рабочей группе — рабочая таксономия клиентов-каналов SotoLab:</p>
+<ol type="1">
+<li><strong>Спортсмены-основатели</strong> (Алёны) — держатели ЦА через спорт/биохакинг/нутрициологов</li>
+<li><strong>Телемагазин</strong> (Shopping Life)</li>
+<li><strong>Сетевой маркетинг</strong> (Metohondrial/Welleo/Vilavi, dōTERRA, Faberlic, Энхель, Доктор Рехир, DTR)</li>
+<li><strong>СТМ-бренды БАД</strong> (которым нужен новый ассортимент — пока конкретных контактов нет)</li>
+<li><strong>Магазины спортпита</strong> (Good Par, Bombbar, Айронстар/Ironstar, Майронстар, Five LB, фитнес-формулы)</li>
+</ol>
+<div class="block-heading" style="font-size:20px;margin-top:28px;margin-bottom:12px;">8.4. Конкурентный ландшафт (детализация из транскрипта)</div>
+<div class="block-heading" style="margin-top:20px;margin-bottom:10px;">Коллагеновый рынок РФ</div>
+<ul class="block-list">
+<li><strong>Энхель</strong> — мировая сетевая компания</li>
+<li><strong>Доктор Рехир</strong> — представлена в РФ</li>
+<li><strong>DTR</strong> — представлена в РФ</li>
+<li><strong>ПЖК</strong> — активный маркетинг куриного коллагена. Ксения участвовала в маркетинге ПЖК: «самый крутой это куриный коллаген — благодаря маркетингу зашёл». Позиция: у курицы третий тип коллагена, у рыбы — второй (более ценный)</li>
+</ul>
+<p class="block-text" style="font-size:15px;line-height:1.7;color:var(--n600);margin-bottom:10px;">Вывод Ксении: рынок коллагена заполнен, но <strong>качественных игроков всё равно не так много</strong>. Окно возможностей — в ассорти трёх видов.</p>
+<div class="block-heading" style="margin-top:20px;margin-bottom:10px;">Спортивное питание РФ</div>
+<ul class="block-list">
+<li><strong>Bombbar</strong> — российский бренд</li>
+<li><strong>Good Par</strong> — российский бренд</li>
+<li><strong>Айронстар / Ironstar</strong> — триатлон, своего бренда не выпускает, внутри продаются сторонние</li>
+<li><strong>Майронстар</strong> — упомянут</li>
+<li><strong>Five LB (пять лб)</strong> — упомянут</li>
+<li><strong>Фитнес-формулы</strong> — упомянут</li>
+</ul>
+<p class="block-text" style="font-size:15px;line-height:1.7;color:var(--n600);margin-bottom:10px;">Комментарий Ксении: «в сетевых есть спортивные штуки, но именно как выделенная спортивная линейка в ритейле такого пока нет — окно возможностей».</p>
+<p class="block-text" style="font-size:15px;line-height:1.7;color:var(--n600);margin-bottom:10px;">Дополнительный контекст: Shopping Life зарабатывает больше всего <strong>на одежде</strong>, а в БАДы и собственные торговые марки пошли как расширение ассортимента.</p>
+<div class="block-heading" style="font-size:20px;margin-top:28px;margin-bottom:12px;">8.5. Международные контакты / экспортная сеть</div>
+<ul class="block-list">
+<li><span class="tag tag-fact">ФАКТ</span> <strong>Кирилл Ловичев</strong> — возглавлял Московский экспортный центр. Товарищ Стаса, в прошлом приглашал на международные мероприятия</li>
+<li><span class="tag tag-fact">ФАКТ</span> <strong>Российский экспортный центр</strong> — через него Ксения попадала на закрытые мероприятия в Бангкоке, Индии, Таиланде. Среди контактов — мэр Бангкока, собственники Sam и Lewan Sety</li>
+<li><span class="tag tag-hyp">ГИПОТЕЗА</span> Производители SotoLab уже работают на экспорт в Корею и Японию. Потенциально возможна подключка к этим цепочкам, но на встрече международный вектор не обсуждался как приоритет</li>
+</ul>
+<div class="block-heading" style="font-size:20px;margin-top:28px;margin-bottom:12px;">8.6. Нетворк Ксении — контакты vs каналы</div>
+<div class="doc-table-wrap"><table class="doc-table">
+<colgroup>
+<col style="width: 30%" />
+<col style="width: 33%" />
+<col style="width: 36%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Контакт</th>
+<th>Источник</th>
+<th>Потенциал</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Велопрактика</strong> (эксклюзивный клуб, организатор Песков)</td>
+<td>Ксения — член клуба. Абонемент <strong>60 тыс. руб/мес</strong></td>
+<td>Источник знакомств с топовыми чиновниками, бизнесом. Здесь познакомилась с «Алёнами»</td>
+</tr>
+<tr class="even">
+<td><strong>Федерация каратэ</strong> (Александр Пятков, ученик Тюкашенко)</td>
+<td>Через велопрактику</td>
+<td>Аудитория: <strong>минимум 100 тыс. учеников + 5 тыс. тренеров</strong> (данные Ксении). 33 дана чёрный пояс. Госпрограммы активного долголетия</td>
+</tr>
+<tr class="odd">
+<td><strong>Триатлон</strong> (Олег Самохвалов, Владимир Волошин, Макс Журило)</td>
+<td>Личные контакты Ксении</td>
+<td>Комьюнити — <strong>300–500 тыс. человек</strong> (оценка Ксении). Ironstar своего бренда не выпускает, внутри продаются сторонние</td>
+</tr>
+<tr class="even">
+<td><strong>Metohondrial здоровье</strong> (владелец Немалаевский)</td>
+<td>Работали ранее по «Первому живому коллагену»</td>
+<td>Биохакерская история. Владивостокские продукты «хорошо залетают». Нужны офлайн-встречи</td>
+</tr>
+<tr class="odd">
+<td><strong>dōTERRA</strong> (арома-масла + БАДы в РФ)</td>
+<td>Через «бриллиантового продавца» в Индии</td>
+<td>Молодая сетевая, открыла в РФ научный центр. Канал БАДов открыт</td>
+</tr>
+<tr class="even">
+<td><strong>Раритетные автомобили</strong> (страхование)</td>
+<td>Прошлый проект Ксении</td>
+<td>Нетворк премиум-сегмента</td>
+</tr>
+</tbody>
+</table></div>
+<div class="block-heading" style="font-size:20px;margin-top:28px;margin-bottom:12px;"><span style="color:var(--warning);">⚠</span> Что надо увидеть: между нетворком и каналом</div>
+<p class="block-text" style="font-size:15px;line-height:1.7;color:var(--n600);margin-bottom:10px;">У Ксении много знакомств. Это контакты, но пока не каналы продаж. Чтобы контакт стал каналом, нужен формат сделки, ответственный и продукт под канал. Статус по каждому контакту — в таблице ниже.</p>
+<div class="block-heading" style="font-size:20px;margin-top:28px;margin-bottom:12px;">8.7. Дополнительное направление — бытовая химия</div>
+<p class="block-text" style="font-size:15px;line-height:1.7;color:var(--n600);margin-bottom:10px;">Дмитрий поднял тему: есть «ярдные» (миллиардные по обороту) бренды бытовой химии на маркетплейсах, которые выросли в последние годы. Если у команды есть выход на качественное производство бытовой химии — это перспективный сайд-проект.</p>
+<ul class="block-list">
+<li><span class="tag tag-unk">НЕИЗВЕСТНО</span> У Ксении есть выход на мыльное производство. Стас предположил, что речь скорее о «чистящих средствах», а не мыле. Требует проверки.</li>
+<li>Зафиксировано как потенциальный сайд-поток, не приоритет.</li>
+</ul>
+<div class="block-heading" style="font-size:20px;margin-top:28px;margin-bottom:12px;">8.8. Ценностное предложение SotoLab — усиление клиента</div>
+<p class="block-text" style="font-size:15px;line-height:1.7;color:var(--n600);margin-bottom:10px;">Ксения сформулировала ключевой принцип: SotoLab не просто производит СТМ, а помогает СТМ-клиенту выводить продукт в рынок, развивать и масштабировать.</p>
+<p class="block-text" style="font-size:15px;line-height:1.7;color:var(--n600);margin-bottom:10px;"><strong>В чём отличие от конкурентов:</strong> - Большинство производителей: «отгрузили партию — и ждём, когда закажут ещё» - SotoLab: разделение ответственности с клиентом за итоговый результат, участие в продвижении</p>
+<ul class="block-list">
+<li><span class="tag tag-hyp">ГИПОТЕЗА</span> Это конкурентное преимущество для охоты за клиентами, которые сами не умеют в маркетинг (телемагазины, сетевые компании, клиники). Но она же требует от SotoLab инвестиций в маркетинговый ресурс — а его пока нет.</li>
+</ul>
+<hr />
+
+</div>
+</section>
+
+<section id="s9" class="doc-section" style="">
+<div class="container fade-up">
+<div style="display:flex;align-items:center;margin-bottom:24px;"><div><div class="section-title">9. Сдвиги позиции vs встречи №1</div></div></div>
+<div class="block-heading" style="font-size:20px;margin-top:28px;margin-bottom:12px;"><span style="color:var(--error);">🔄</span> Сдвиг 1: Сроки собственного бренда</div>
+<p class="block-text" style="font-size:15px;line-height:1.7;color:var(--n600);margin-bottom:10px;">Встреча №1 — «краткосрочная цель: вывести первые продукты на рынок под брендом Soto Lab». Встреча №2 — <strong>Q2 2027</strong> как самый ранний реалистичный срок.</p>
+<p class="block-text" style="font-size:15px;line-height:1.7;color:var(--n600);margin-bottom:10px;"><strong>Импликация:</strong> весь 2025–2026 год — это СТМ-контракты для чужих брендов + контент Ксении + подготовка. На этапе СТМ команда не может строить узнаваемость бренда SotoLab в потребительской аудитории.</p>
+<div class="block-heading" style="font-size:20px;margin-top:28px;margin-bottom:12px;"><span style="color:var(--error);">🔄</span> Сдвиг 2: Цель «1 миллиард рублей в год»</div>
+<p class="block-text" style="font-size:15px;line-height:1.7;color:var(--n600);margin-bottom:10px;">Встреча №1 — долгосрочная цель 1 млрд руб/год + международный масштаб. Встреча №2 — <strong>ни разу не прозвучало</strong>.</p>
+<p class="block-text" style="font-size:15px;line-height:1.7;color:var(--n600);margin-bottom:10px;"><strong>Импликация:</strong> цель не снята, но пока не опирается ни на одну цифру. Это нормально для ранней стадии, но нужно зафиксировать: 1 млрд — устремление, а не план.</p>
+<div class="block-heading" style="font-size:20px;margin-top:28px;margin-bottom:12px;"><span style="color:var(--error);">🔄</span> Сдвиг 3: Позиция по клиенту «Две Алёны»</div>
+<p class="block-text" style="font-size:15px;line-height:1.7;color:var(--n600);margin-bottom:10px;">Встреча №1 — «главный живой клиент». Встреча №2 — «это проект, на котором мы огребаем ошибки, чтобы не повторить с крупными сетями». Апдейт из группы — «но за ними стоит руководство и выход на ФМБА = 500K спортсменов».</p>
+<p class="block-text" style="font-size:15px;line-height:1.7;color:var(--n600);margin-bottom:10px;"><strong>Открытый вопрос:</strong> команде нужно определить роль проекта «Алёны» — R&amp;D-полигон, канал продаж, или гибрид.</p>
+<div class="block-heading" style="font-size:20px;margin-top:28px;margin-bottom:12px;"><span style="color:var(--error);">🔄</span> Сдвиг 4: Экспорт в Корею/Японию/Южную Америку</div>
+<p class="block-text" style="font-size:15px;line-height:1.7;color:var(--n600);margin-bottom:10px;">Встреча №1 — долгосрочная цель выхода на международные рынки. Встреча №2 — <strong>не упомянуто</strong>.</p>
+<p class="block-text" style="font-size:15px;line-height:1.7;color:var(--n600);margin-bottom:10px;"><strong>Открытый вопрос:</strong> международная стратегия не развёрнута. Производители уже работают на экспорт в Корею и Японию. Возможность подключиться к экспортным цепочкам не обсуждалась.</p>
+<div class="block-heading" style="font-size:20px;margin-top:28px;margin-bottom:12px;"><span style="color:var(--error);">🔄</span> Сдвиг 5: Роль AI-инструментов Дмитрия</div>
+<p class="block-text" style="font-size:15px;line-height:1.7;color:var(--n600);margin-bottom:10px;">Встреча №1 — «Дмитрий предлагает ИИ-аналитику, контент-фермы, прогнозирование спроса». Встреча №2 — <strong>практически не упомянуто</strong>.</p>
+<p class="block-text" style="font-size:15px;line-height:1.7;color:var(--n600);margin-bottom:10px;"><strong>Импликация:</strong> либо AI-инструменты — это декларация без продолжения, либо команде нужен отдельный рабочий контур. Нужна отдельная сессия.</p>
+<div class="block-heading" style="font-size:20px;margin-top:28px;margin-bottom:12px;"><span style="color:var(--error);">🔄</span> Сдвиг 6 (новый, из группы): Расширение R&amp;D-линейки Алён</div>
+<p class="block-text" style="font-size:15px;line-height:1.7;color:var(--n600);margin-bottom:10px;">Было: 2 продукта (коллаген + гели). Стало: 4 продукта (коллаген + 3 геля + таблетка метаболизма). При этом производитель не полностью готов к гелевому производству.</p>
+<p class="block-text" style="font-size:15px;line-height:1.7;color:var(--n600);margin-bottom:10px;"><strong>Импликация:</strong> R&amp;D-нагрузка выросла вдвое, риски реализации выросли. Нужен пересмотр сроков по Алёнам.</p>
+<div class="block-heading" style="font-size:20px;margin-top:28px;margin-bottom:12px;"><span style="color:var(--error);">🔄</span> Сдвиг 7 (новый, из группы): Стратегическое решение по R&amp;D</div>
+<p class="block-text" style="font-size:15px;line-height:1.7;color:var(--n600);margin-bottom:10px;">Было: обсуждалась возможность кастомной разработки для разных клиентов. Стало: <strong>R&amp;D только с Алёнами, остальным — только готовое из ростера</strong>.</p>
+<p class="block-text" style="font-size:15px;line-height:1.7;color:var(--n600);margin-bottom:10px;"><strong>Следствие:</strong> R&amp;D-ресурс сфокусирован на одном клиенте. Остальным клиентам доступны только готовые SKU из ростера.</p>
+<hr />
+
+</div>
+</section>
+
+<section id="s10" class="doc-section" style="background:#fff;">
+<div class="container fade-up">
+<div style="display:flex;align-items:center;margin-bottom:24px;"><div><div class="section-title">10. Открытые вопросы и решения, которые нужны</div></div></div>
+<div class="doc-table-wrap"><table class="doc-table">
+<colgroup>
+<col style="width: 27%" />
+<col style="width: 36%" />
+<col style="width: 36%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Тема</th>
+<th>Вопрос</th>
+<th>Маркер</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Клиент «Алёны»</td>
+<td>R&amp;D-полигон, якорный канал или гибрид? Бюджет? Объём? Срок? Кто «руководство»? Реальны ли 500K через ФМБА?</td>
+<td>🎯</td>
+</tr>
+<tr class="even">
+<td>Алёны — производство гелей</td>
+<td>Производитель не готов. Что делаем: меняем производителя, ждём дооснащения, меняем продукт?</td>
+<td>🎯</td>
+</tr>
+<tr class="odd">
+<td>Агентская модель</td>
+<td>Расширяется ли SotoLab до роли продажника для СТМ-клиентов? На каких условиях, с какой маржей?</td>
+<td>🎯</td>
+</tr>
+<tr class="even">
+<td>Shopping Life</td>
+<td>Что конкретно предлагаем в их СТМ? Что в Vitauct как промежуточной версии? Что резервируем под собственный бренд?</td>
+<td>🎯</td>
+</tr>
+<tr class="odd">
+<td>Спортивные гели — регистрация</td>
+<td>Регистрируем как пищевую добавку или как БАД?</td>
+<td>🎯</td>
+</tr>
+<tr class="even">
+<td>Собственный капитал</td>
+<td>Как финансируется разработка без клиента-плательщика? Нужен инвестор? Какой объём?</td>
+<td>❓</td>
+</tr>
+<tr class="odd">
+<td>Команда — зоны</td>
+<td>Кто из Стас/Ксения/Анна/Оля отвечает за какой контур? Матрица ответственности не зафиксирована</td>
+<td>🎯</td>
+</tr>
+<tr class="even">
+<td>AI-инструменты Дмитрия</td>
+<td>В каких задачах и с какого момента подключаются? Контент? Аналитика? Брифование клиента?</td>
+<td>🎯</td>
+</tr>
+<tr class="odd">
+<td>13 SKU — приоритизация</td>
+<td>Какой SKU запускаем вторым после коллагена Алён? Какой под Shopping Life? Какой flagship собственного бренда?</td>
+<td>🎯</td>
+</tr>
+<tr class="even">
+<td>13 SKU — разбивка по производителям</td>
+<td>Нужна сводная: SKU / производитель / мин.партия / срок / цена</td>
+<td>❓</td>
+</tr>
+<tr class="odd">
+<td>Sante-Expert</td>
+<td>Формат сотрудничества, экономика, сроки. Есть ли бюджет у клиента?</td>
+<td>❓</td>
+</tr>
+<tr class="even">
+<td>Экспорт</td>
+<td>Производители работают с Кореей и Японией. Можем ли подключиться? На каких условиях?</td>
+<td>❓</td>
+</tr>
+<tr class="odd">
+<td>Бытовая химия</td>
+<td>Реальный выход или гипотеза? Приоритет?</td>
+<td>❓</td>
+</tr>
+<tr class="even">
+<td>Федерация каратэ</td>
+<td>От контакта к каналу — что делаем в ближайший месяц?</td>
+<td>🎯</td>
+</tr>
+<tr class="odd">
+<td>Дианет и Аминосорб (из ростера 13)</td>
+<td>Что это, под какую ЦА, позиционирование?</td>
+<td>❓</td>
+</tr>
+</tbody>
+</table></div>
+<hr />
+
+</div>
+</section>
+
+<section id="s11" class="doc-section" style="">
+<div class="container fade-up">
+<div style="display:flex;align-items:center;margin-bottom:24px;"><div><div class="section-title">11. Next steps — договорённости по зонам</div></div></div>
+<div class="doc-table-wrap"><table class="doc-table">
+<colgroup>
+<col style="width: 51%" />
+<col style="width: 27%" />
+<col style="width: 20%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Ответственный</th>
+<th>Задача</th>
+<th>Срок</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Дмитрий</strong></td>
+<td>Подготовить список вопросов для встречи Ксении и Стаса с «Алёнами»</td>
+<td>До 14–15 апреля</td>
+</tr>
+<tr class="even">
+<td><strong>Дмитрий</strong></td>
+<td>Подготовить выжимку разговора встречи №2 и отправить команде для сверки</td>
+<td>После встречи</td>
+</tr>
+<tr class="odd">
+<td><strong>Ксения</strong></td>
+<td>Наговорить аудио с контекстом по «Алёнам» и перспективным каналам</td>
+<td>1 день</td>
+</tr>
+<tr class="even">
+<td><strong>Ксения + Стас</strong></td>
+<td>Офлайн-встреча с «Алёнами» — бриф, бюджет, объёмы, структура</td>
+<td>16–17 апреля</td>
+</tr>
+<tr class="odd">
+<td><strong>Анна</strong></td>
+<td>Напомнить Оле собрать перечень 13 SKU с характеристиками</td>
+<td>Ближайшие дни</td>
+</tr>
+<tr class="even">
+<td><strong>Анна</strong></td>
+<td>Разбивка SKU × производитель + минимальные партии</td>
+<td>Ближайшие дни</td>
+</tr>
+<tr class="odd">
+<td><strong>Команда</strong></td>
+<td>Новый стандарт коммуникации: ответы на вопросы Дмитрию до встречи</td>
+<td>Постоянно</td>
+</tr>
+</tbody>
+</table></div>
+<hr />
+
+</div>
+</section>
+
+<section id="s12" class="doc-section" style="background:#fff;">
+<div class="container fade-up">
+<div style="display:flex;align-items:center;margin-bottom:24px;"><div><div class="section-title">12. Цитаты-якоря</div></div></div>
+<div class="quote-block"><div class="quote-text">
+<p class="block-text" style="font-size:15px;line-height:1.7;color:var(--n600);margin-bottom:10px;">«У нас сейчас весь бизнес построен на гипотезе, у нас очень мало явных фактов». — Стас (установочная рамка встречи)</p>
+</div></div>
+<div class="quote-block"><div class="quote-text">
+<p class="block-text" style="font-size:15px;line-height:1.7;color:var(--n600);margin-bottom:10px;">«Так как ты сейчас впускаешь в бизнес деньги и людей — гипотезы могут быть в таком количестве только если это разовые акции. Если строим бизнес — нужны ответы». — Дмитрий</p>
+</div></div>
+<div class="quote-block"><div class="quote-text">
+<p class="block-text" style="font-size:15px;line-height:1.7;color:var(--n600);margin-bottom:10px;">«Идти к большим сетевым компаниям, не будучи изначально подготовленными — условно, у нас второго шанса может не быть». — Анна</p>
+</div></div>
+<div class="quote-block"><div class="quote-text">
+<p class="block-text" style="font-size:15px;line-height:1.7;color:var(--n600);margin-bottom:10px;">«У меня почему-то в голове было по умолчанию, что у них всё это есть. И они сейчас вот просто разы хотят заказать сто тысяч штук. А может быть это моя фантазия». — Стас (переоценка Алён)</p>
+</div></div>
+<div class="quote-block"><div class="quote-text">
+<p class="block-text" style="font-size:15px;line-height:1.7;color:var(--n600);margin-bottom:10px;">«Мы цифры даже примерно сейчас рисовать не будем. Как только отработаем первую поставку по гелям — появятся и цифры, и сроки». — Стас</p>
+</div></div>
+<div class="quote-block"><div class="quote-text">
+<p class="block-text" style="font-size:15px;line-height:1.7;color:var(--n600);margin-bottom:10px;">«Мы дистрибьюторы. Мы посол бренда, пока ничего не производим». — Стас</p>
+</div></div>
+<div class="quote-block"><div class="quote-text">
+<p class="block-text" style="font-size:15px;line-height:1.7;color:var(--n600);margin-bottom:10px;">«Маркет-плейс — это последнее место, куда входить надо, когда у тебя уже всё есть». — Дмитрий</p>
+</div></div>
+<div class="quote-block"><div class="quote-text">
+<p class="block-text" style="font-size:15px;line-height:1.7;color:var(--n600);margin-bottom:10px;">«Восемьдесят процентов ингредиентов на рынке — полное говно». — Ксения</p>
+</div></div>
+<div class="quote-block"><div class="quote-text">
+<p class="block-text" style="font-size:15px;line-height:1.7;color:var(--n600);margin-bottom:10px;">«Это не просто ты производишь для других людей — а ты ещё помогаешь им расти. Вместе с этим растёшь сам, а потом они становятся твоими суперкодателями кейсами». — Ксения</p>
+</div></div>
+<div class="quote-block"><div class="quote-text">
+<p class="block-text" style="font-size:15px;line-height:1.7;color:var(--n600);margin-bottom:10px;">«Двадцать седьмой год, реально двадцать седьмой год. Второй квартал можно будет речь о выпуске по собственной торговой марке». — Стас</p>
+</div></div>
+<div class="quote-block"><div class="quote-text">
+<p class="block-text" style="font-size:15px;line-height:1.7;color:var(--n600);margin-bottom:10px;">«Моё мнение такое, что изобретательскую схему надо пока оставлять ТОЛЬКО со спортсменами. Остальным заказчикам предлагать те продукты крутые, что уже есть». — Анна/Ксения (рабочая группа, 16.04.2026)</p>
+</div></div>
+<hr />
+
+</div>
+</section>
+
+<section id="s13" class="doc-section" style="">
+<div class="container fade-up">
+<div style="display:flex;align-items:center;margin-bottom:24px;"><div><div class="section-title">13. Итог встречи и обновления Project Map</div></div></div>
+<div class="block-heading" style="font-size:20px;margin-top:28px;margin-bottom:12px;">13.1. Резюме</div>
+<p class="block-text" style="font-size:15px;line-height:1.7;color:var(--n600);margin-bottom:10px;">Вторая встреча перевела SotoLab из режима «концептуальной синергии» в режим операционного разбора. Вскрыты системные проблемы: отсутствие клиентского брифа у «Алён», отсутствие финмодели, размытость матрицы команды, откладывание собственного бренда на Q2 2027, зависимость производственного цикла от клиентской предоплаты.</p>
+<p class="block-text" style="font-size:15px;line-height:1.7;color:var(--n600);margin-bottom:10px;">Апдейт от 16.04.2026 добавил важные факты: полный список 13 SKU, расширение R&amp;D-линейки Алён до 4 продуктов, производственные риски по гелям, потенциальный выход на ФМБА (500K спортсменов), стратегическое решение «R&amp;D только с Алёнами».</p>
+<p class="block-text" style="font-size:15px;line-height:1.7;color:var(--n600);margin-bottom:10px;">Позитивные находки: подтверждённая мощность завода (40 т/мес), эксклюзив по РФ на ключевых SKU, чёткая регуляторная карта, 13 готовых SKU в ростере, близость коллагена Алён к выпуску.</p>
+<p class="block-text" style="font-size:15px;line-height:1.7;color:var(--n600);margin-bottom:10px;"><strong>Главная стратегическая задача на ближайший месяц</strong> — превратить «Алён» в понятного клиента: либо бизнес-клиент с брифом/бюджетом/договором, либо осознанный R&amp;D-кейс с понятными границами и подтверждённой перспективой ФМБА.</p>
+<div class="block-heading" style="font-size:20px;margin-top:28px;margin-bottom:12px;">13.2. Changelog Project Map (к фиксации)</div>
+<ul class="block-list">
+<li><strong>Команда:</strong> добавлены Анна Коваленко (продакт-менеджер) и Оля Трифонова (саппорт-менеджер, точечно)</li>
+<li><strong>Продукт:</strong> полный список 13 SKU зафиксирован. Фокусы: коллаген (Эдуард/Елена/Волков, Екатеринбург) + спортгели и метаболическая таблетка (разработка с нуля для «Алён»)</li>
+<li><strong>Производство:</strong> мощность 40 т/мес по коллагену, ограничена квотами на вылов. Срок партии после СГР — 1.5 мес. <strong>Производитель не полностью готов к производству гелей — риск сдвига сроков по Алёнам</strong></li>
+<li><strong>Регуляторика:</strong> 4 категории — пищевой продукт, БАД (3–6 мес + «Честный знак»), спортпит, лекарство. Регистрация на конкретный товарный знак</li>
+<li><strong>Клиенты:</strong> основной активный — «Две Алёны» (коллаген близко к запуску, гели под риском). Shopping Life — на холде до регистрации их СТМ (8–18 мес). Sante-Expert — перспектива. Vitauct — на холде по цене. Эмираты — learning case</li>
+<li><strong>Каналы:</strong> маркетплейсы — осознанный отказ. Федерация каратэ / триатлон / велопрактика — нетворк Ксении, не канал. Сетевые (Metohondrial, dōTERRA, VkusVill, Faberlic) — в разведке</li>
+<li><strong>Финансы:</strong> стартовый бюджет — 0. Юнит-экономика — не ранее первой промышленной партии. Собственный бренд сдвинут на Q2 2027</li>
+<li><strong>Эксклюзив:</strong> у SotoLab эксклюзив на РФ по ключевым SKU с текущим составом/вкусом</li>
+<li><strong>Стратегическое решение (из группы):</strong> R&amp;D-разработка только с Алёнами. Всем остальным — готовое из ростера 13 SKU</li>
+<li><strong>Потенциальный якорный канал:</strong> через «Алён» и ФМБА — доступ к ~500K спортсменов (требует проверки)</li>
+</ul>
+<div class="block-heading" style="font-size:20px;margin-top:28px;margin-bottom:12px;">Главная рамка для следующей встречи</div>
+<p class="block-text" style="font-size:15px;line-height:1.7;color:var(--n600);margin-bottom:10px;">Перестать обсуждать «что было бы хорошо» и начать обсуждать «что конкретно мы продаём, кому конкретно, по какой цене, за какой срок, с какой маржой». До Q2 2027 без этих ответов ничего не строится.</p>
+
+</div>
+</section>
+
+
+<!-- FOOTER -->
+<footer style="background:var(--n900);padding:48px 0;margin-top:0;">
+  <div class="container">
+    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:24px;">
+      <div>
+        <div style="font-size:20px;font-weight:700;color:#fff;margin-bottom:8px;">
+          Soto Lab <span style="color:var(--brand);">·</span> Протокол второй встречи
+        </div>
+        <div style="font-size:14px;color:var(--n500);">Участники: Дмитрий Дор, Станислав Капинос, Ксения Пуляткина, Анна Коваленко</div>
+      </div>
+    </div>
+    <div style="height:1px;background:rgba(255,255,255,.08);margin:32px 0;"></div>
+    <div style="font-size:13px;color:var(--n600);">
+      © 2026 Soto Lab · Конфиденциальный документ · Подготовлено с использованием BrandOS
+    </div>
+  </div>
+</footer>
+
+<script>
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach((e, i) => {
+    if (e.isIntersecting) {
+      setTimeout(() => e.target.classList.add('visible'), i * 60);
+    }
+  });
+}, { threshold: 0.08 });
+document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
+
+const sections = document.querySelectorAll('section[id]');
+const navLinks = document.querySelectorAll('.nav-links a[href^="#"]');
+window.addEventListener('scroll', () => {
+  let current = '';
+  sections.forEach(s => {
+    if (window.scrollY >= s.offsetTop - 100) current = s.id;
+  });
+  navLinks.forEach(a => {
+    a.style.color = a.getAttribute('href') === '#' + current ? '#0ea5e9' : '';
+    a.style.fontWeight = a.getAttribute('href') === '#' + current ? '700' : '500';
+  });
+});
+</script>
+
+</body>
+</html>
