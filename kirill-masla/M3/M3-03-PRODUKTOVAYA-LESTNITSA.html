@@ -1,682 +1,280 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>M3-03 — Продуктовая лестница · Магия Масел · Кирилл Бродский</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-    :root {
-      --brand: #2C5F2D;
-      --brand-dark: #1a4a1b;
-      --brand-light: #4a8f4b;
-      --brand-bg: #e8f5e9;
-      --accent: #D4AF37;
-      --accent-bg: #fdf8e8;
-      --n50: #f8fafc; --n100: #f1f5f9; --n200: #e2e8f0;
-      --n300: #cbd5e1; --n400: #94a3b8; --n500: #64748b;
-      --n600: #475569; --n700: #334155; --n800: #1e293b; --n900: #0f172a;
-      --success: #10b981; --warning: #f59e0b; --error: #ef4444; --info: #3b82f6;
-      --font: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-      --shadow-card: 0 1px 3px 0 rgba(0,0,0,.05), 0 1px 2px -1px rgba(0,0,0,.05);
-      --shadow-hover: 0 10px 25px -5px rgba(0,0,0,.08), 0 8px 10px -6px rgba(0,0,0,.04);
-      --shadow-btn: 0 4px 14px 0 rgba(44,95,45,.35);
-      --r-sm:4px; --r-md:6px; --r-lg:8px; --r-xl:12px; --r-2xl:16px; --r-3xl:24px; --r-full:9999px;
-    }
-
-    body { font-family: var(--font); font-size: 16px; line-height: 1.6; color: var(--n600); background: var(--n100); }
-
-    @keyframes fade-up { 0%{opacity:0;transform:translateY(20px)} 100%{opacity:1;transform:translateY(0)} }
-
-    .fade-up { opacity:0; transform:translateY(20px); transition:opacity .6s ease-out, transform .6s ease-out; }
-    .fade-up.visible { opacity:1; transform:translateY(0); }
-
-    .container { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
-    .section { padding: 80px 0; }
-
-    /* Nav */
-    .nav-wrap {
-      position: fixed; top: 0; left: 0; right: 0; z-index: 300;
-      background: rgba(255,255,255,.93); backdrop-filter: blur(12px);
-      border-bottom: 1px solid var(--n200); height: 64px;
-    }
-    .nav-inner { height:100%; display:flex; align-items:center; justify-content:space-between; }
-    .nav-logo img { height:40px; width:auto; display:block; }
-    .nav-links { display:flex; gap:20px; flex-wrap:wrap; }
-    .nav-links a { font-size:13px; font-weight:500; color:var(--n600); text-decoration:none; transition:color .2s; }
-    .nav-links a:hover { color:var(--brand); }
-    .nav-badge {
-      font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:.05em;
-      color:var(--brand); background:var(--brand-bg);
-      padding:5px 12px; border-radius:var(--r-full); white-space:nowrap;
-    }
-
-    /* Section header */
-    .section-header { margin-bottom:40px; }
-    .section-label {
-      display:inline-block; font-size:11px; font-weight:700; text-transform:uppercase;
-      letter-spacing:.08em; color:var(--brand); background:var(--brand-bg);
-      padding:4px 12px; border-radius:var(--r-full); margin-bottom:12px;
-    }
-    .section-title { font-size:30px; font-weight:600; color:var(--n900); line-height:1.25; margin-bottom:8px; }
-    .section-sub { font-size:16px; color:var(--n500); }
-
-    /* Grid */
-    .grid-2 { display:grid; grid-template-columns:repeat(auto-fit,minmax(340px,1fr)); gap:20px; }
-    .grid-3 { display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:20px; }
-
-    /* Badge */
-    .badge { display:inline-flex; align-items:center; padding:3px 10px; border-radius:var(--r-full); font-size:12px; font-weight:600; }
-    .badge-green { background:#d1fae5; color:#065f46; }
-    .badge-yellow { background:#fef3c7; color:#92400e; }
-    .badge-blue { background:#dbeafe; color:#1e40af; }
-    .badge-brand { background:var(--brand-bg); color:var(--brand-dark); }
-    .badge-accent { background:var(--accent-bg); color:#7a6000; }
-    .badge-red { background:#fee2e2; color:#991b1b; }
-
-    /* Table */
-    .table-wrap { overflow-x:auto; border-radius:var(--r-2xl); border:1px solid var(--n200); margin:20px 0; }
-    table { width:100%; border-collapse:collapse; background:#fff; }
-    thead tr { background:var(--n50); border-bottom:2px solid var(--n200); }
-    th { padding:14px 18px; text-align:left; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.05em; color:var(--n500); }
-    td { padding:14px 18px; font-size:14px; color:var(--n600); border-bottom:1px solid var(--n200); }
-    tr:last-child td { border-bottom:none; }
-    tbody tr { transition:background .2s; }
-    tbody tr:hover { background:var(--n50); }
-
-    /* Alert */
-    .alert { display:flex; gap:14px; border-radius:var(--r-xl); padding:18px; margin:16px 0; }
-    .alert-warning { background:#fffbeb; border:1px solid #fde68a; border-left:4px solid var(--warning); }
-    .alert-error { background:#fff1f2; border:1px solid #fecdd3; border-left:4px solid var(--error); }
-    .alert-info { background:#eff6ff; border:1px solid #bfdbfe; border-left:4px solid var(--info); }
-    .alert-success { background:#f0fdf4; border:1px solid #bbf7d0; border-left:4px solid var(--success); }
-    .alert-brand { background:var(--brand-bg); border:1px solid #a5d6a7; border-left:4px solid var(--brand); }
-    .alert-icon { font-size:18px; flex-shrink:0; margin-top:1px; }
-
-    /* Card variants */
-    .card {
-      background:#fff; border-radius:var(--r-2xl); border:1px solid var(--n200);
-      padding:28px; box-shadow:var(--shadow-card);
-      transition:transform .3s ease, box-shadow .3s ease;
-    }
-    .card:hover { transform:translateY(-3px); box-shadow:var(--shadow-hover); }
-    .card-brand {
-      background: linear-gradient(135deg, var(--brand-bg) 0%, #fff 100%);
-      border-radius:var(--r-2xl); border:1px solid #a5d6a7;
-      padding:28px; box-shadow:var(--shadow-card);
-    }
-    .card-accent {
-      background: var(--accent-bg);
-      border-radius:var(--r-2xl); border:1px solid #e8d87a;
-      padding:28px; box-shadow:var(--shadow-card);
-    }
-    .card-title { font-size:16px; font-weight:700; color:var(--n900); margin-bottom:12px; }
-    .card-icon { font-size:24px; margin-bottom:12px; }
-
-    /* Divider */
-    .divider { height:1px; background:var(--n200); margin:20px 0; }
-
-    /* List item */
-    .list-item {
-      display:flex; gap:10px; align-items:flex-start;
-      padding:9px 0; border-bottom:1px solid var(--n100);
-      font-size:14px; color:var(--n600);
-    }
-    .list-item:last-child { border-bottom:none; }
-    .list-dot { width:8px; height:8px; border-radius:50%; background:var(--brand); flex-shrink:0; margin-top:6px; }
-    .list-dot-red { width:8px; height:8px; border-radius:50%; background:var(--error); flex-shrink:0; margin-top:6px; }
-
-    /* ===== LADDER ===== */
-    .ladder { display:flex; flex-direction:column; gap:0; position:relative; }
-
-    .ladder-step {
-      display:flex; gap:24px; align-items:stretch; position:relative;
-    }
-
-    /* left column: number + arrow */
-    .ladder-left {
-      display:flex; flex-direction:column; align-items:center; width:64px; flex-shrink:0;
-    }
-    .ladder-num {
-      width:48px; height:48px; border-radius:50%;
-      display:flex; align-items:center; justify-content:center;
-      font-size:18px; font-weight:700; color:#fff;
-      flex-shrink:0; position:relative; z-index:1;
-    }
-    .step-5 .ladder-num { background:var(--accent); color:var(--brand-dark); }
-    .step-4 .ladder-num { background:var(--brand); }
-    .step-3 .ladder-num { background:var(--brand); }
-    .step-2 .ladder-num { background:var(--brand-light); }
-    .step-1 .ladder-num { background:var(--n400); }
-
-    .ladder-connector {
-      width:2px; flex:1; background:var(--n200); margin:4px auto;
-      min-height:28px;
-    }
-    .ladder-arrow {
-      font-size:16px; color:var(--brand-light); margin-bottom:4px; line-height:1;
-    }
-
-    /* right column: card */
-    .ladder-card {
-      flex:1; background:#fff; border-radius:var(--r-2xl);
-      border:1px solid var(--n200); padding:24px 28px;
-      box-shadow:var(--shadow-card); margin-bottom:16px;
-      transition:transform .3s ease, box-shadow .3s ease;
-    }
-    .ladder-card:hover { transform:translateY(-2px); box-shadow:var(--shadow-hover); }
-
-    .step-5 .ladder-card { border-color:#e8d87a; border-left:4px solid var(--accent); }
-    .step-4 .ladder-card { border-left:4px solid var(--brand); }
-    .step-3 .ladder-card { border-left:4px solid var(--brand); }
-    .step-2 .ladder-card { border-left:4px solid var(--brand-light); }
-    .step-1 .ladder-card { border-left:4px solid var(--n300); }
-
-    .ladder-step-label {
-      font-size:11px; font-weight:700; text-transform:uppercase;
-      letter-spacing:.07em; margin-bottom:4px;
-    }
-    .step-5 .ladder-step-label { color:var(--accent); }
-    .step-4 .ladder-step-label { color:var(--brand); }
-    .step-3 .ladder-step-label { color:var(--brand); }
-    .step-2 .ladder-step-label { color:var(--brand-light); }
-    .step-1 .ladder-step-label { color:var(--n400); }
-
-    .ladder-title { font-size:18px; font-weight:700; color:var(--n900); margin-bottom:6px; }
-    .ladder-price { font-size:20px; font-weight:700; margin-bottom:8px; }
-    .step-5 .ladder-price { color:var(--accent); }
-    .step-4 .ladder-price, .step-3 .ladder-price { color:var(--brand); }
-    .step-2 .ladder-price { color:var(--brand-light); }
-    .step-1 .ladder-price { color:var(--n400); }
-
-    .ladder-trigger { font-size:13px; color:var(--n500); }
-
-    .ladder-details { margin-top:14px; padding-top:14px; border-top:1px solid var(--n100); }
-    .ladder-detail-row { font-size:13px; color:var(--n600); margin-bottom:6px; }
-
-    @media (max-width:768px) {
-      .nav-links { display:none; }
-      .section-title { font-size:24px; }
-      .grid-2, .grid-3 { grid-template-columns:1fr; }
-      .ladder-left { width:40px; }
-      .ladder-num { width:36px; height:36px; font-size:15px; }
-      .ladder-card { padding:18px; }
-      .ladder-title { font-size:16px; }
-    }
-
-    /* Hero */
-    .hero {
-      background: linear-gradient(135deg, var(--brand-dark) 0%, var(--brand) 50%, var(--brand-light) 100%);
-      padding: 120px 0 80px; color:#fff; position:relative; overflow:hidden;
-    }
-    .hero::before {
-      content:''; position:absolute; inset:0;
-      background: radial-gradient(ellipse at 70% 50%, rgba(212,175,55,.15) 0%, transparent 60%);
-    }
-    .hero-inner { display:flex; align-items:center; gap:48px; flex-wrap:wrap; }
-    .hero-logo-wrap { flex-shrink:0; }
-    .hero-logo-wrap img { height:140px; width:auto; display:block; border-radius:var(--r-xl); }
-    .hero-content { flex:1; min-width:280px; }
-    .hero-badge {
-      display:inline-block; font-size:11px; font-weight:700; text-transform:uppercase;
-      letter-spacing:.1em; background:rgba(255,255,255,.15); color:#fff;
-      border:1px solid rgba(255,255,255,.3); padding:6px 16px;
-      border-radius:var(--r-full); margin-bottom:20px; backdrop-filter:blur(8px);
-    }
-    .hero-title { font-size:52px; font-weight:700; line-height:1.1; margin-bottom:16px; }
-    .hero-title span { color:var(--accent); }
-    .hero-sub { font-size:18px; opacity:.85; max-width:600px; margin-bottom:32px; line-height:1.6; }
-    .hero-meta { display:flex; gap:24px; flex-wrap:wrap; }
-    .hero-meta-item { display:flex; flex-direction:column; gap:3px; }
-    .hero-meta-label { font-size:10px; text-transform:uppercase; letter-spacing:.08em; opacity:.6; }
-    .hero-meta-value { font-size:14px; font-weight:600; }
-
-    @media (max-width:768px) {
-      .hero { padding: 100px 0 60px; }
-      .hero-title { font-size:34px; }
-      .hero-logo-wrap img { height:80px; }
-    }
-
-    /* Footer */
-    .footer { background:var(--n900); color:var(--n400); padding:40px 0; font-size:13px; }
-    .footer-inner { display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:16px; }
-    .footer-meta { display:flex; gap:20px; flex-wrap:wrap; }
-    .footer-meta-item { display:flex; flex-direction:column; gap:2px; }
-    .footer-meta-label { font-size:10px; text-transform:uppercase; letter-spacing:.05em; color:var(--n600); }
-    .footer-meta-value { font-size:12px; color:var(--n400); }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>M3-03 · Продуктовая лестница — BRODSKY OIL · BrandOS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--primary:#0ea5e9;--primary-dark:#0284c7;--primary-light:#7dd3fc;--primary-bg:#e0f2fe;--background:#fff;--foreground:#0f172a;--card-bg:hsl(0,0%,97%);--border:#1C1C1E;--muted:#64748b;--radius:4px}*{margin:0;padding:0;box-sizing:border-box}body{font-family:'Inter',sans-serif;background:var(--background);color:var(--foreground);line-height:1.75;font-size:16px}.container{max-width:1200px;margin:0 auto;padding:0 1.5rem}.nav{position:sticky;top:0;background:#fff;border-bottom:1px solid var(--border);z-index:100;padding:1rem 0}.nav-container{display:flex;justify-content:space-between;align-items:center;gap:2rem}.nav-brand{font-size:1rem;font-weight:700;color:var(--foreground);white-space:nowrap}.nav-brand span{color:var(--primary)}.nav-links{display:flex;gap:1.5rem;list-style:none;overflow-x:auto;flex-wrap:wrap}.nav-links a{color:var(--foreground);text-decoration:none;font-size:.875rem;font-weight:500;white-space:nowrap;transition:color .2s}.nav-links a:hover{color:var(--primary)}.hero{padding:3.75rem 0;background:linear-gradient(135deg,rgba(255,255,255,.98) 0%,rgba(240,249,255,.95) 100%)}.hero-badge{display:inline-flex;align-items:center;gap:.5rem;padding:.5rem 1rem;background:var(--card-bg);border:1px solid var(--border);border-radius:var(--radius);font-size:.875rem;font-weight:600;margin-bottom:1.5rem;color:var(--foreground)}.hero h1{font-size:clamp(32px,4vw,51px);font-weight:500;line-height:1.2;letter-spacing:-.03em;margin-bottom:1.5rem}.hero-subtitle{font-size:1.125rem;color:var(--muted);margin-bottom:2rem}.hero-meta{display:flex;gap:2rem;flex-wrap:wrap}.hero-meta-item{font-size:.875rem;color:var(--muted)}.hero-meta-item strong{color:var(--primary);font-weight:600}.section{padding:2.5rem 0}@media(min-width:768px){.section{padding:3.75rem 0}}.section-header{position:relative;margin-bottom:32px;padding-top:24px}.section-header::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:repeating-linear-gradient(to right,#9CA3AF 0,#9CA3AF 4px,transparent 4px,transparent 8px)}.section-tag{display:inline-block;font-size:.75rem;font-weight:600;text-transform:uppercase;letter-spacing:.1em;color:var(--primary);margin-bottom:.5rem}h2{font-size:32px;font-weight:300;line-height:1.2;letter-spacing:-.02em;margin-bottom:1rem}h3{font-size:20px;font-weight:600;line-height:1.3;margin-bottom:1rem}p{margin-bottom:1rem;color:var(--muted)}p:last-child{margin-bottom:0}.card{border:1px solid var(--border);border-radius:var(--radius);background:linear-gradient(135deg,rgba(255,255,255,.98) 0%,rgba(250,250,252,.95) 100%);padding:1.5rem;position:relative;overflow:hidden;transition:all .4s cubic-bezier(.4,0,.2,1)}.card:hover{transform:translateY(-4px);box-shadow:0 12px 32px rgba(0,0,0,.08),0 0 0 1px rgba(14,165,233,.1);border-color:rgba(14,165,233,.3)}.card-title{font-size:1.0625rem;font-weight:600;margin-bottom:.75rem;color:var(--foreground)}.card-description{font-size:.9375rem;line-height:1.75;color:var(--muted)}.grid{display:grid;gap:1.5rem}.grid-2{grid-template-columns:1fr}.grid-3{grid-template-columns:1fr}@media(min-width:768px){.grid-2{grid-template-columns:repeat(2,1fr)}.grid-3{grid-template-columns:repeat(3,1fr)}}.highlight-box{background:linear-gradient(135deg,rgba(14,165,233,.05) 0%,rgba(14,165,233,.02) 100%);border:1px solid rgba(14,165,233,.2);border-left:4px solid var(--primary);padding:1.25rem 1.5rem;border-radius:var(--radius);margin:1.5rem 0}.highlight-box p{margin:0;font-size:1rem}.highlight-box strong{color:var(--primary)}.warning-block{background:linear-gradient(135deg,rgba(239,68,68,.04) 0%,rgba(239,68,68,.01) 100%);border:1px solid rgba(239,68,68,.18);border-left:4px solid #ef4444;padding:1.25rem 1.5rem;border-radius:var(--radius);margin:1.5rem 0}.warning-block p{margin:0;font-size:.9375rem;color:var(--muted)}.warning-block strong{color:var(--foreground)}.phase-badge{background:linear-gradient(135deg,rgba(14,165,233,.07) 0%,rgba(14,165,233,.02) 100%);padding:2rem;border-radius:var(--radius);border:1px solid rgba(14,165,233,.22);margin-bottom:2rem}.phase-badge h3{color:var(--primary);margin-bottom:.5rem}.phase-badge p{font-size:1.0625rem;margin:0}.table-wrapper{overflow-x:auto;margin:1.5rem 0;border:1px solid var(--border);border-radius:var(--radius)}table{width:100%;border-collapse:collapse;background:#fff}th,td{padding:1rem;text-align:left;border-bottom:1px solid var(--border)}th{background:var(--card-bg);font-weight:600;font-size:.8125rem;text-transform:uppercase;letter-spacing:.05em;color:var(--foreground)}td{font-size:.9375rem;color:var(--muted)}tr:last-child td{border-bottom:none}tr:hover td{background:var(--card-bg)}.table-accent{color:var(--primary);font-weight:600}.badge{display:inline-block;padding:.25rem .75rem;border-radius:9999px;font-size:.75rem;font-weight:600}.badge-green{background:#d1fae5;color:#065f46}.badge-yellow{background:#fef3c7;color:#92400e}.badge-blue{background:var(--primary-bg);color:var(--primary-dark)}.formula-block{background:linear-gradient(135deg,rgba(14,165,233,.05) 0%,rgba(14,165,233,.02) 100%);border:1px solid rgba(14,165,233,.22);border-left:4px solid var(--primary);padding:2rem 2.5rem;border-radius:var(--radius);font-size:1.125rem;line-height:1.8;color:var(--foreground);margin:2rem 0}.ladder-visual{font-family:monospace;font-size:.875rem;line-height:1.6;background:var(--card-bg);border:1px solid var(--border);border-radius:var(--radius);padding:1.5rem 2rem;white-space:pre;overflow-x:auto;color:var(--foreground)}.step-card{border-left:4px solid var(--primary);padding:1.5rem;margin-bottom:1.5rem;background:linear-gradient(135deg,rgba(255,255,255,.98) 0%,rgba(250,250,252,.95) 100%);border:1px solid var(--border);border-radius:var(--radius)}.step-card h3{color:var(--primary);margin-bottom:.5rem}.step-meta{display:flex;gap:1rem;flex-wrap:wrap;margin:.75rem 0;font-size:.875rem}.step-meta span{background:var(--card-bg);padding:.25rem .75rem;border-radius:var(--radius);border:1px solid var(--border)}.footer{padding:2rem 0;border-top:1px solid var(--border);text-align:center;color:var(--muted);font-size:.875rem}@media(max-width:768px){.container{padding:0 1rem}h2{font-size:24px}h3{font-size:18px}.nav-links{gap:.75rem}.hero-meta{gap:1rem}.formula-block{padding:1.5rem;font-size:1rem}.ladder-visual{font-size:.75rem;padding:1rem}}
+</style>
 </head>
 <body>
 
-<!-- NAV -->
-<nav class="nav-wrap">
-  <div class="container">
-    <div class="nav-inner">
-      <div class="nav-logo"><img src="../assets/logo-horizontal-light.png" alt="Магия Масел"></div>
-      <div class="nav-links">
-        <a href="#logic">Логика</a>
-        <a href="#ladder">Лестница</a>
-        <a href="#economy">Экономика</a>
-        <a href="#transitions">Переходы</a>
-        <a href="#offline">Офлайн</a>
-        <a href="#capacity">Мощность</a>
-      </div>
-      <div class="nav-badge">M3 · Документ 3/7</div>
-    </div>
+<nav class="nav">
+  <div class="container nav-container">
+    <div class="nav-brand">Brand<span>OS</span> · Документ</div>
+    <ul class="nav-links">
+      <li><a href="#logic">Логика</a></li>
+      <li><a href="#schema">Схема</a></li>
+      <li><a href="#steps">Ступени</a></li>
+      <li><a href="#economics">Экономика</a></li>
+      <li><a href="#triggers">Триггеры</a></li>
+      <li><a href="#offline">Офлайн</a></li>
+      <li><a href="#capacity">Мощность</a></li>
+    </ul>
   </div>
 </nav>
 
-<!-- HERO -->
 <section class="hero">
   <div class="container">
-    <div class="hero-inner">
-      <div class="hero-logo-wrap">
-        <img src="../assets/logo-badge-dark.png" alt="Магия Масел — Кирилл Бродский">
-      </div>
-      <div class="hero-content">
-        <div class="hero-badge">M3 · Продуктовая стратегия · Документ 3 из 7</div>
-        <h1 class="hero-title">Продуктовая <span>лестница</span></h1>
-        <p class="hero-sub">5 ступеней от первой пробы до подарочного бокса — встроенная логика роста чека и повторных покупок.</p>
-        <div class="hero-meta">
-          <div class="hero-meta-item">
-            <span class="hero-meta-label">Клиент</span>
-            <span class="hero-meta-value">Кирилл Бродский</span>
-          </div>
-          <div class="hero-meta-item">
-            <span class="hero-meta-label">Дата</span>
-            <span class="hero-meta-value">27.03.2026</span>
-          </div>
-          <div class="hero-meta-item">
-            <span class="hero-meta-label">Версия</span>
-            <span class="hero-meta-value">2.0</span>
-          </div>
-          <div class="hero-meta-item">
-            <span class="hero-meta-label">Ступеней</span>
-            <span class="hero-meta-value">5</span>
-          </div>
-        </div>
-      </div>
+    <div class="hero-badge">M3-03 · Продукт · BrandOS</div>
+    <h1>Продуктовая лестница<br><span style="color:var(--primary)">BRODSKY OIL</span></h1>
+    <p class="hero-subtitle">Кирилл Бродский · v3.1 · 21.04.2026</p>
+    <div class="hero-meta">
+      <span class="hero-meta-item"><strong>Клиент:</strong> Кирилл Бродский</span>
+      <span class="hero-meta-item"><strong>Модуль:</strong> M3 — Продуктовая стратегия</span>
+      <span class="hero-meta-item"><strong>Версия:</strong> 3.1 (roundtable)</span>
+      <span class="hero-meta-item"><strong>Оценка:</strong> 9.0/10</span>
     </div>
   </div>
 </section>
 
-<!-- 1. ЛОГИКА ЛЕСТНИЦЫ -->
-<section class="section fade-up" id="logic">
+<!-- 01. Логика -->
+<section class="section" id="logic">
   <div class="container">
     <div class="section-header">
-      <div class="section-label">1. Логика</div>
-      <h2 class="section-title">Зачем нужна лестница</h2>
-      <p class="section-sub">Клиент сам поднимается, когда доверие растёт. Мы не давим — мы создаём следующую ступеньку в нужный момент.</p>
+      <span class="section-tag">01 — Логика лестницы</span>
+      <h2>Три задачи одной системы</h2>
     </div>
-    <div class="grid-3">
-      <div class="card fade-up">
-        <div class="card-icon">🚪</div>
-        <div class="card-title">Снижает барьер входа</div>
-        <p style="font-size:14px; color:var(--n600);">Есть точка с минимальным риском для новичка. Проба на рынке или первый 100 мл онлайн.</p>
-      </div>
-      <div class="card fade-up">
-        <div class="card-icon">📈</div>
-        <div class="card-title">Увеличивает чек</div>
-        <p style="font-size:14px; color:var(--n600);">Логика апсейла встроена в продуктовую архитектуру. Каждая ступень — выше предыдущей.</p>
-      </div>
-      <div class="card fade-up">
-        <div class="card-icon">🔁</div>
-        <div class="card-title">Обеспечивает повтор</div>
-        <p style="font-size:14px; color:var(--n600);">Каждая ступень ведёт к следующей естественным образом. Ремайндеры закрепляют ритуал.</p>
-      </div>
+    <div class="grid grid-3">
+      <div class="card"><div class="card-title">Снижает барьер входа</div><div class="card-description">Есть точка с минимальным риском — 890₽ за 100 мл, цена одного обеда.</div></div>
+      <div class="card"><div class="card-title">Увеличивает чек</div><div class="card-description">Каждая ступень СТРОГО дороже предыдущей: 890 → 2 490 → 4 990 → 8 990 → 19 900₽.</div></div>
+      <div class="card"><div class="card-title">Обеспечивает повтор</div><div class="card-description">Ремайндеры на 21-60 день. Клиент поднимается сам, когда доверие растёт.</div></div>
+    </div>
+    <div class="highlight-box"><p><strong>Принцип:</strong> Одна лестница = одно меню для клиента. GSO-пакеты — это маркетинговые названия ступеней, не параллельная система.</p></div>
+  </div>
+</section>
+
+<!-- 02. Схема -->
+<section class="section" id="schema">
+  <div class="container">
+    <div class="section-header">
+      <span class="section-tag">02 — Полная схема</span>
+      <h2>6 ступеней: от пробы к программе</h2>
+    </div>
+    <div class="ladder-visual">СТУПЕНЬ 5: «Персональный»                    19 900 ₽  |  3 слота/мес
+         4×250 мл + консультация + протокол
+              ↑
+СТУПЕНЬ 4: «Мастерский»                        8 990 ₽
+         5×250 мл + паспорт качества
+              ↑
+СТУПЕНЬ 3: «Семейный»                          4 990 ₽
+         3×250 мл под цель (60 дней)
+              ↑
+СТУПЕНЬ 2: «Дегустация»                        2 490 ₽
+         3×100 мл (подбор под задачу)
+              ↑
+СТУПЕНЬ 1: «Попробовать»                         890 ₽
+         1×100 мл (одно масло)
+              ↑
+СТУПЕНЬ 0: Бесплатный контакт                       0 ₽
+         Дегустация на рынке / контент в TG</div>
+    <div class="highlight-box"><p><strong>Проверка:</strong> 0 → 890 → 2 490 → 4 990 → 8 990 → 19 900 ₽ — каждая ступень строго дороже ✅</p></div>
+  </div>
+</section>
+
+<!-- 03. Ступени -->
+<section class="section" id="steps">
+  <div class="container">
+    <div class="section-header">
+      <span class="section-tag">03 — Детали ступеней</span>
+      <h2>Каждая ступень в деталях</h2>
+    </div>
+
+    <div class="step-card">
+      <h3>Ступень 0 · Бесплатный контакт (0 ₽)</h3>
+      <div class="step-meta"><span>Офлайн: дегустация на рынке</span><span>Онлайн: контент + квиз</span><span>Конверсия QR→TG: 15-25%</span></div>
+      <p>Задача: создать доверие, получить контакт в базу. QR на столе + «Запишу на напоминание когда масло заканчивается».</p>
+    </div>
+
+    <div class="step-card">
+      <h3>Ступень 1 · «Попробовать» — 1×100 мл (890 ₽)</h3>
+      <div class="step-meta"><span>Маржа: 75-85%</span><span>₽/литр: 8 900</span><span>Доля: 20%</span></div>
+      <p>Одно масло на выбор. Фиксированная цена. Карточка применения + ремайндер на 21-25 день.</p>
+    </div>
+
+    <div class="step-card">
+      <h3>Ступень 2 · «Дегустация» — 3×100 мл (2 490 ₽)</h3>
+      <div class="step-meta"><span>Маржа: 68-75%</span><span>₽/литр: 8 300</span><span>Доля: 30%</span></div>
+      <p>4 набора по задачам: «Здоровье» (тмин + расторопша + тыква), «Кухня» (кедр + грецкий + миндаль), «Красота» (миндаль + кедр + лён), «Энергия» (лён + тыква + подсолнечник). Протокол 30 дней + ремайндер на 28-30 день.</p>
+    </div>
+
+    <div class="step-card">
+      <h3>Ступень 3 · «Семейный» — 3×250 мл (4 990 ₽)</h3>
+      <div class="step-meta"><span>Маржа: 58-82%</span><span>₽/литр: 6 650</span><span>Доля: 35%</span></div>
+      <p>Подбор Кириллом под цель. Не 500 мл — 250 мл сохраняет разнообразие. Расширенная карточка (утро/вечер/еда) + ремайндер на 55-60 день.</p>
+    </div>
+
+    <div class="step-card">
+      <h3>Ступень 4 · «Мастерский» — 5×250 мл + паспорт (8 990 ₽)</h3>
+      <div class="step-meta"><span>Маржа: 55-83%</span><span>₽/литр: 7 190</span><span>Доля: 10%</span></div>
+      <p>Комплексное решение (здоровье + кухня + красота). Паспорт качества к каждой бутылке. Также работает как подарочный бокс. Триггер: 2+ покупки ступени 3.</p>
+    </div>
+
+    <div class="step-card">
+      <h3>Ступень 5 · «Персональный» — 4×250 мл + консультация (19 900 ₽)</h3>
+      <div class="step-meta"><span>Маржа: 85-90%</span><span>Лимит: 3/мес</span><span>Доля: 5%</span></div>
+      <p>Видеоконсультация 30-45 мин + протокол PDF + чат 14 дней. 3-4 ч/клиент, 59 700₽/мес за 9-12 часов. Якорь престижа + генератор кейсов.</p>
     </div>
   </div>
 </section>
 
-<!-- 2. ЛЕСТНИЦА -->
-<section class="section fade-up" id="ladder" style="background:#fff;">
+<!-- 04. Экономика -->
+<section class="section" id="economics">
   <div class="container">
     <div class="section-header">
-      <div class="section-label">2. Лестница</div>
-      <h2 class="section-title">5 ступеней — полная схема</h2>
-      <p class="section-sub">Снизу вверх: от первого касания к максимальному чеку.</p>
+      <span class="section-tag">04 — Экономика</span>
+      <h2>Экономика лестницы</h2>
     </div>
-
-    <div class="ladder">
-
-      <!-- СТУПЕНЬ 5 -->
-      <div class="ladder-step step-5 fade-up">
-        <div class="ladder-left">
-          <div class="ladder-num">5</div>
-          <div class="ladder-connector"></div>
-          <div class="ladder-arrow">↑</div>
-        </div>
-        <div class="ladder-card">
-          <div class="ladder-step-label">Ступень 5 · Максимальный чек</div>
-          <div class="ladder-title">Подарочный бокс</div>
-          <div class="ladder-price">4 000 – 6 000+ ₽</div>
-          <div class="ladder-trigger">Триггер: событие / забота о близком</div>
-          <div class="ladder-details">
-            <div class="ladder-detail-row"><strong>Состав:</strong> Флагманы 250 мл × 2–3 + красивая упаковка + карточка применения</div>
-            <div class="ladder-detail-row"><strong>Сборка:</strong> собирать руками самостоятельно ✅ (подтверждено 29.03)</div>
-            <div class="ladder-detail-row"><strong>Аудитория:</strong> все покупатели + дарители (НГ, 8 марта, дни рождения)</div>
-          </div>
-        </div>
-      </div>
-
-      <!-- СТУПЕНЬ 4 -->
-      <div class="ladder-step step-4 fade-up">
-        <div class="ladder-left">
-          <div class="ladder-num">4</div>
-          <div class="ladder-connector"></div>
-          <div class="ladder-arrow">↑</div>
-        </div>
-        <div class="ladder-card">
-          <div class="ladder-step-label">Ступень 4 · Основной ритуал</div>
-          <div class="ladder-title">1 флагман × 250 мл</div>
-          <div class="ladder-price">1 500 – 2 500 ₽</div>
-          <div class="ladder-trigger">Триггер: 100 мл закончился, результат есть</div>
-          <div class="ladder-details">
-            <div class="ladder-detail-row"><strong>Цель:</strong> Зафиксировать регулярное потребление. Повтор раз в 2–4 недели.</div>
-            <div class="ladder-detail-row"><strong>Ремайндер:</strong> на 21–25 день — полуручной, бот напоминает Кириллу → он пишет сам ✅</div>
-          </div>
-        </div>
-      </div>
-
-      <!-- СТУПЕНЬ 3 -->
-      <div class="ladder-step step-3 fade-up">
-        <div class="ladder-left">
-          <div class="ladder-num">3</div>
-          <div class="ladder-connector"></div>
-          <div class="ladder-arrow">↑</div>
-        </div>
-        <div class="ladder-card">
-          <div class="ladder-step-label">Ступень 3 · Ритуал 30 дней</div>
-          <div class="ladder-title">Набор под задачу — 3×100 мл</div>
-          <div class="ladder-price">2 500 – 3 500 ₽</div>
-          <div class="ladder-trigger">Триггер: первый пробник понравился, хочет курс</div>
-          <div class="ladder-details">
-            <div class="ladder-detail-row"><strong>Наборы:</strong> «Здоровье» (тмин + расторопша + тыква) · «Кухня» (кедр + грецкий + кунжут)</div>
-            <div class="ladder-detail-row"><strong>После покупки:</strong> Инструкция «Протокол 30 дней» + ремайндер на 28–30 день</div>
-          </div>
-        </div>
-      </div>
-
-      <!-- СТУПЕНЬ 2 -->
-      <div class="ladder-step step-2 fade-up">
-        <div class="ladder-left">
-          <div class="ladder-num">2</div>
-          <div class="ladder-connector"></div>
-          <div class="ladder-arrow">↑</div>
-        </div>
-        <div class="ladder-card">
-          <div class="ladder-step-label">Ступень 2 · Первая покупка</div>
-          <div class="ladder-title">1 масло × 100 мл</div>
-          <div class="ladder-price">700 – 1 200 ₽</div>
-          <div class="ladder-trigger">Триггер: рекомендация / контент / рынок</div>
-          <div class="ladder-details">
-            <div class="ladder-detail-row"><strong>Барьер:</strong> Минимальный. Если не понравился вкус — возврат (для онлайн)</div>
-            <div class="ladder-detail-row"><strong>Подбор:</strong> на рынке — Кирилл рекомендует; онлайн — квиз или ручной подбор в TG ⚠️ (формат уточняется)</div>
-            <div class="ladder-detail-row"><strong>После покупки:</strong> Схема применения + ремайндер на 21–25 день «Как масло? Закончилось?»</div>
-          </div>
-        </div>
-      </div>
-
-      <!-- СТУПЕНЬ 1 -->
-      <div class="ladder-step step-1 fade-up">
-        <div class="ladder-left">
-          <div class="ladder-num">1</div>
-        </div>
-        <div class="ladder-card">
-          <div class="ladder-step-label">Ступень 1 · Первый контакт</div>
-          <div class="ladder-title">Дегустация / Бесплатное касание</div>
-          <div class="ladder-price">0 ₽</div>
-          <div class="ladder-trigger">Триггер: интерес, вопрос, рекомендация</div>
-          <div class="ladder-details">
-            <div style="display:flex; gap:20px; flex-wrap:wrap; margin-bottom:8px;">
-              <div style="flex:1; min-width:200px;">
-                <div style="font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.05em; color:var(--n500); margin-bottom:6px;">Офлайн</div>
-                <div class="list-item"><span class="list-dot"></span> Дегустация на Дорогомиловском рынке</div>
-                <div class="list-item"><span class="list-dot"></span> Кирилл объясняет, даёт попробовать</div>
-                <div class="list-item"><span class="list-dot"></span> QR-код → TG-канал / подписка на базу</div>
-              </div>
-              <div style="flex:1; min-width:200px;">
-                <div style="font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.05em; color:var(--n500); margin-bottom:6px;">Онлайн</div>
-                <div class="list-item"><span class="list-dot"></span> Видео производства → первое доверие</div>
-                <div class="list-item"><span class="list-dot"></span> Образовательный пост про разницу отжима</div>
-                <div class="list-item"><span class="list-dot"></span> Ответ в TG на «какое масло мне подходит?»</div>
-              </div>
-            </div>
-            <div class="ladder-detail-row"><strong>Задача:</strong> Создать доверие. Получить контакт.</div>
-          </div>
-        </div>
-      </div>
-
-    </div>
-  </div>
-</section>
-
-<!-- 3. ЭКОНОМИКА ЛЕСТНИЦЫ -->
-<section class="section fade-up" id="economy">
-  <div class="container">
-    <div class="section-header">
-      <div class="section-label">3. Экономика</div>
-      <h2 class="section-title">Экономика лестницы</h2>
-      <p class="section-sub">Чек, маржа и целевое распределение продаж по ступеням.</p>
-    </div>
-    <div class="table-wrap fade-up">
+    <div class="table-wrapper">
       <table>
-        <thead>
-          <tr>
-            <th>Ступень</th>
-            <th>Продукт</th>
-            <th>Чек</th>
-            <th>Маржа</th>
-            <th>Цель</th>
-            <th>Доля продаж</th>
-          </tr>
-        </thead>
+        <thead><tr><th>Ступень</th><th>Название</th><th>Чек</th><th>Себест.</th><th>Маржа</th><th>₽/литр</th></tr></thead>
         <tbody>
-          <tr>
-            <td><span class="badge badge-brand">1</span></td>
-            <td>Дегустация</td>
-            <td><strong>0 ₽</strong></td>
-            <td>—</td>
-            <td>Доверие + контакт</td>
-            <td>—</td>
-          </tr>
-          <tr>
-            <td><span class="badge badge-green">2</span></td>
-            <td>1×100 мл</td>
-            <td><strong>700 – 1 200 ₽</strong></td>
-            <td><span class="badge badge-green">Высокая</span></td>
-            <td>Первый опыт</td>
-            <td>30%</td>
-          </tr>
-          <tr>
-            <td><span class="badge badge-green">3</span></td>
-            <td>3×100 мл набор</td>
-            <td><strong>2 500 – 3 500 ₽</strong></td>
-            <td><span class="badge badge-green">Высокая</span></td>
-            <td>Ритуал 30 дней</td>
-            <td><strong>40%</strong> ← основная</td>
-          </tr>
-          <tr>
-            <td><span class="badge badge-blue">4</span></td>
-            <td>250 мл основной</td>
-            <td><strong>1 500 – 2 500 ₽</strong></td>
-            <td><span class="badge badge-blue">Стандарт</span></td>
-            <td>Регулярный повтор</td>
-            <td>20%</td>
-          </tr>
-          <tr>
-            <td><span class="badge badge-accent">5</span></td>
-            <td>Подарочный бокс</td>
-            <td><strong>4 000 – 6 000+ ₽</strong></td>
-            <td><span class="badge badge-accent">Максимальная</span></td>
-            <td>Высокий чек</td>
-            <td>10%</td>
-          </tr>
+          <tr><td>0</td><td>Бесплатный контакт</td><td>0 ₽</td><td>—</td><td>—</td><td>—</td></tr>
+          <tr><td>1</td><td class="table-accent">«Попробовать»</td><td>890 ₽</td><td>50-150₽</td><td>~80%</td><td>8 900₽</td></tr>
+          <tr><td>2</td><td class="table-accent">«Дегустация»</td><td>2 490 ₽</td><td>150-450₽</td><td>~78%</td><td>8 300₽</td></tr>
+          <tr><td>3</td><td class="table-accent">«Семейный»</td><td>4 990 ₽</td><td>900-1 500₽</td><td>~65%</td><td>6 650₽</td></tr>
+          <tr><td>4</td><td class="table-accent">«Мастерский»</td><td>8 990 ₽</td><td>1 800-3 300₽</td><td>~60%</td><td>7 190₽</td></tr>
+          <tr><td>5</td><td class="table-accent">«Персональный»</td><td>19 900 ₽</td><td>1 500-2 000₽</td><td>~88%</td><td>—</td></tr>
         </tbody>
       </table>
     </div>
-    <div class="alert alert-brand fade-up">
-      <span class="alert-icon">💡</span>
-      <div>
-        <strong style="color:var(--brand-dark); display:block; margin-bottom:4px;">Ступень 3 — основная точка роста (40% продаж)</strong>
-        <p style="font-size:14px; color:var(--n600);">Набор 3×100 мл — это не просто апсейл, это ритуал. Клиент входит на месяц применения, получает результат, привыкает. Именно здесь формируется постоянный покупатель.</p>
-      </div>
-    </div>
-  </div>
-</section>
 
-<!-- 4. ТОЧКИ ПЕРЕХОДА -->
-<section class="section fade-up" id="transitions" style="background:#fff;">
-  <div class="container">
-    <div class="section-header">
-      <div class="section-label">4. Переходы</div>
-      <h2 class="section-title">Точки перехода и триггеры</h2>
-      <p class="section-sub">Что запускает движение клиента вверх по лестнице.</p>
-    </div>
-    <div class="table-wrap fade-up">
+    <h3 style="margin-top:2.5rem;">LTV-проекция (12 месяцев)</h3>
+    <div class="table-wrapper">
       <table>
-        <thead>
-          <tr>
-            <th>Переход</th>
-            <th>Что запускает движение вверх</th>
-          </tr>
-        </thead>
+        <thead><tr><th>Сценарий</th><th>Путь по ступеням</th><th>LTV за год</th><th>Литров</th></tr></thead>
         <tbody>
-          <tr>
-            <td><span class="badge badge-brand">1 → 2</span></td>
-            <td>Доверие + понятный вопрос о применении</td>
-          </tr>
-          <tr>
-            <td><span class="badge badge-green">2 → 3</span></td>
-            <td>Ремайндер на 21–25 день + вопрос «как масло?»</td>
-          </tr>
-          <tr>
-            <td><span class="badge badge-green">3 → 4</span></td>
-            <td>После набора — «какое из трёх понравилось больше?» → предложить 250 мл</td>
-          </tr>
-          <tr>
-            <td><span class="badge badge-blue">4 → 4</span></td>
-            <td>Автоматический ремайндер / подписка (повтор)</td>
-          </tr>
-          <tr>
-            <td><span class="badge badge-accent">Любой → 5</span></td>
-            <td>Сезон подарков / событие у клиента (НГ, 8 марта, ДР)</td>
-          </tr>
+          <tr><td>Минимальный</td><td>1 → 1 → уход</td><td>1 780₽</td><td>0.2 л</td></tr>
+          <tr><td class="table-accent">Типичный</td><td>1 → 2 → 2 → 3 → 3</td><td class="table-accent">15 860₽</td><td>2.1 л</td></tr>
+          <tr><td class="table-accent">Хороший</td><td>1 → 2 → 3 → 3 → 3 → 3</td><td class="table-accent">23 850₽</td><td>3.1 л</td></tr>
+          <tr><td>Отличный</td><td>1 → 2 → 3 → 4 → 3 → 3</td><td>27 850₽</td><td>3.9 л</td></tr>
+          <tr><td>Премиум</td><td>2 → 3 → 5 → 3 → 4</td><td>41 360₽</td><td>4.5 л</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3 style="margin-top:2.5rem;">Распределение клиентов (гипотеза)</h3>
+    <div class="table-wrapper">
+      <table>
+        <thead><tr><th>Ступень</th><th>% клиентов</th><th>Комментарий</th></tr></thead>
+        <tbody>
+          <tr><td>0 → уход</td><td>60-70%</td><td>Норма для food-ритейла</td></tr>
+          <tr><td class="table-accent">1 «Попробовать»</td><td>20%</td><td>Первая покупка</td></tr>
+          <tr><td class="table-accent">2 «Дегустация»</td><td>30%</td><td>Основной вход</td></tr>
+          <tr><td class="table-accent">3 «Семейный»</td><td>35%</td><td>Точка роста</td></tr>
+          <tr><td>4 «Мастерский»</td><td>10%</td><td>Премиум + подарки</td></tr>
+          <tr><td>5 «Персональный»</td><td>5%</td><td>Макс 3/мес</td></tr>
         </tbody>
       </table>
     </div>
   </div>
 </section>
 
-<!-- 5. РОЛЬ ОФЛАЙН ТОЧКИ -->
-<section class="section fade-up" id="offline">
+<!-- 05. Триггеры -->
+<section class="section" id="triggers">
   <div class="container">
     <div class="section-header">
-      <div class="section-label">5. Офлайн</div>
-      <h2 class="section-title">Роль офлайн точки в лестнице</h2>
-      <p class="section-sub">Дорогомиловский рынок — машина по запуску лестницы, а не просто точка продаж.</p>
+      <span class="section-tag">05 — Переходы</span>
+      <h2>Точки перехода и триггеры</h2>
     </div>
-    <div class="grid-2">
-      <div class="card-brand fade-up">
-        <div class="card-icon">🏪</div>
-        <div class="card-title">Что происходит на рынке</div>
-        <div class="list-item"><span class="list-dot"></span> Каждый посетитель = потенциальная ступень 1</div>
-        <div class="list-item"><span class="list-dot"></span> Каждая проба = переход на ступень 2</div>
-        <div class="list-item"><span class="list-dot"></span> QR → TG = закрепление клиента в базе для ремайндеров</div>
-      </div>
-      <div class="card fade-up" style="border-top:4px solid var(--error);">
-        <div class="card-icon">⚠️</div>
-        <div class="card-title" style="color:var(--error);">Текущая проблема</div>
-        <p style="font-size:14px; color:var(--n600); margin-bottom:16px;">Нет QR-кода, нет базы → клиенты возвращаются сами случайно.</p>
-        <div style="background:var(--n50); border-radius:var(--r-lg); padding:14px;">
-          <div style="font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:.05em; color:var(--brand); margin-bottom:8px;">Решение</div>
-          <div class="list-item"><span class="list-dot"></span> QR на столе (→ TG-канал)</div>
-          <div class="list-item"><span class="list-dot"></span> «Запишу вас на напоминание когда заканчивается»</div>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- 6. МОЩНОСТНОЕ ОГРАНИЧЕНИЕ -->
-<section class="section fade-up" id="capacity" style="background:#fff;">
-  <div class="container">
-    <div class="section-header">
-      <div class="section-label">6. Мощность</div>
-      <h2 class="section-title">Мощностное ограничение</h2>
-      <p class="section-sub">2 пресса → 40–60 л/мес. Это ограничение архитектуры — и одновременно аргумент малотиражности.</p>
-    </div>
-    <div class="table-wrap fade-up">
+    <div class="table-wrapper">
       <table>
-        <thead>
-          <tr>
-            <th>Объём</th>
-            <th>Что покрывает</th>
-          </tr>
-        </thead>
+        <thead><tr><th>Переход</th><th>Что запускает движение вверх</th></tr></thead>
         <tbody>
-          <tr>
-            <td><strong>40 л/мес</strong> = 160 бутылок 250 мл</td>
-            <td>~40–80 покупателей в месяц (при среднем чеке 3 бутылки)</td>
-          </tr>
-          <tr>
-            <td><strong>60 л/мес</strong> = 240 бутылок 250 мл или 600 бутылок 100 мл</td>
-            <td>Масштабируемость при онлайн запуске</td>
-          </tr>
+          <tr><td class="table-accent">0 → 1</td><td>Доверие после пробы/контента + ответ «какое масло мне»</td></tr>
+          <tr><td class="table-accent">1 → 2</td><td>Ремайндер на 21-25 день + «Попробуйте набор — 3 масла по цене 2.8»</td></tr>
+          <tr><td class="table-accent">2 → 3</td><td>Ремайндер на 28-30 день + «250 мл — хватит на 60 дней»</td></tr>
+          <tr><td class="table-accent">3 → 4</td><td>После 2+ покупок → «Мастерский — 5 масел, полная программа»</td></tr>
+          <tr><td>3 → 3</td><td>Автоматический ремайндер на 55-60 день → повтор</td></tr>
+          <tr><td>Любой → 5</td><td>«Персональный — программа от Кирилла, 3 слота/мес»</td></tr>
         </tbody>
       </table>
     </div>
-    <div class="alert alert-warning fade-up">
-      <span class="alert-icon">💡</span>
-      <div>
-        <strong style="color:#92400e; display:block; margin-bottom:4px;">На старте онлайн — не гнаться за охватом</strong>
-        <p style="font-size:14px; color:var(--n600);">Ограниченный запас = аргумент свежести и малотиражности. Используем это в коммуникации: «Мы делаем маленькими партиями — каждое масло свежее».</p>
-      </div>
+  </div>
+</section>
+
+<!-- 06. Офлайн -->
+<section class="section" id="offline">
+  <div class="container">
+    <div class="section-header">
+      <span class="section-tag">06 — Офлайн точка</span>
+      <h2>Дорогомиловский рынок = машина запуска лестницы</h2>
+    </div>
+    <div class="grid grid-3">
+      <div class="card"><div class="card-title">Каждый посетитель</div><div class="card-description">= потенциальная ступень 0</div></div>
+      <div class="card"><div class="card-title">Каждая проба</div><div class="card-description">= переход на ступень 1</div></div>
+      <div class="card"><div class="card-title">QR → TG</div><div class="card-description">= клиент в базе для ремайндеров</div></div>
+    </div>
+    <div class="warning-block"><p><strong>Текущая проблема:</strong> Нет QR-кода, нет базы → клиенты возвращаются случайно.<br><strong>Решение:</strong> QR на столе + «Запишу на напоминание».<br><strong>Конверсия QR→TG:</strong> 15-25% (реалистичная оценка, не 50-75%).</p></div>
+  </div>
+</section>
+
+<!-- 07. Мощность -->
+<section class="section" id="capacity">
+  <div class="container">
+    <div class="section-header">
+      <span class="section-tag">07 — Мощностное ограничение</span>
+      <h2>1 пресс · 40-60 л/мес · потолок 280-320К</h2>
+    </div>
+    <div class="table-wrapper">
+      <table>
+        <thead><tr><th>Параметр</th><th>Значение</th></tr></thead>
+        <tbody>
+          <tr><td>Текущее производство</td><td class="table-accent">~50 л/мес (83% загрузки)</td></tr>
+          <tr><td>Потолок</td><td class="table-accent">60 л/мес</td></tr>
+          <tr><td>Свободный запас</td><td>~10 л/мес = 40-50К₽ роста</td></tr>
+          <tr><td>Макс. выручка при 60 л</td><td class="table-accent">280-320К₽/мес</td></tr>
+          <tr><td>Для 500К/мес</td><td>Нужен 2-й пресс (~100-150К₽)</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="highlight-box"><p><strong>Дефицит = актив.</strong> «Мы производим 60 литров в месяц. Каждая бутылка — из конкретной партии с паспортом.» Фокус роста: не больше литров, а больше ₽/литр → смещение к 100 мл наборам (8 300₽/л vs 6 650₽/л).</p></div>
+  </div>
+</section>
+
+<!-- 08. Changelog -->
+<section class="section">
+  <div class="container">
+    <div class="section-header">
+      <span class="section-tag">08 — Changelog</span>
+      <h2>Изменения v3.0</h2>
+    </div>
+    <div class="table-wrapper">
+      <table>
+        <thead><tr><th>Что</th><th>Было (v2.0)</th><th>Стало (v3.0)</th><th>Причина</th></tr></thead>
+        <tbody>
+          <tr><td>Ступени</td><td>5 (0-4) + подарочный</td><td class="table-accent">6 (0-5) единая система</td><td>Объединение с GSO</td></tr>
+          <tr><td>Ступень 4 vs 3</td><td>4 дешевле 3</td><td class="table-accent">Каждая строго дороже</td><td>Roundtable</td></tr>
+          <tr><td>500 мл</td><td>Использовался</td><td class="table-accent">Убран</td><td>Низкая ₽/литр</td></tr>
+          <tr><td>Прессы</td><td>2</td><td class="table-accent">1</td><td>Факт от клиента</td></tr>
+          <tr><td>Потолок</td><td>Не указан</td><td class="table-accent">280-320К при 60 л</td><td>B3 расчёт</td></tr>
+          <tr><td>«Персональный»</td><td>Не было</td><td class="table-accent">19 900₽, 3/мес</td><td>Замена убыточного</td></tr>
+          <tr><td>QR→TG</td><td>50-75%</td><td class="table-accent">15-25%</td><td>Рыночные данные</td></tr>
+        </tbody>
+      </table>
     </div>
   </div>
 </section>
 
-<!-- FOOTER -->
 <footer class="footer">
   <div class="container">
-    <div class="footer-inner">
-      <div>
-        <img src="../assets/logo-horizontal-dark.png" alt="Магия Масел" style="height:48px; width:auto; border-radius:var(--r-lg);">
-        <div style="margin-top:8px; font-size:12px; color:var(--n600);">BrandOS · Фабрика Контента v5</div>
-      </div>
-      <div class="footer-meta">
-        <div class="footer-meta-item">
-          <span class="footer-meta-label">Документ</span>
-          <span class="footer-meta-value">M3-03 — Продуктовая лестница</span>
-        </div>
-        <div class="footer-meta-item">
-          <span class="footer-meta-label">Модуль</span>
-          <span class="footer-meta-value">M3 · 3 из 7</span>
-        </div>
-        <div class="footer-meta-item">
-          <span class="footer-meta-label">Версия</span>
-          <span class="footer-meta-value">2.0 · 27.03.2026</span>
-        </div>
-        <div class="footer-meta-item">
-          <span class="footer-meta-label">Источники</span>
-          <span class="footer-meta-value">Ответы Кирилла 27.03 + 29.03 + мастер-синтез M2</span>
-        </div>
-      </div>
-    </div>
+    BrandOS · BRODSKY OIL · M3-03 Продуктовая лестница · v3.1 · 2026
   </div>
 </footer>
 
-<script>
-  const observer = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) entry.target.classList.add('visible');
-    });
-  }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
-
-  document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
-</script>
 </body>
 </html>

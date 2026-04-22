@@ -1,500 +1,353 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>M3-06 — Требования к продукту · Магия Масел · Кирилл Бродский</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-    :root {
-      --brand: #2C5F2D; --brand-dark: #1a4a1b; --brand-light: #4a8f4b; --brand-bg: #e8f5e9;
-      --accent: #D4AF37; --accent-bg: #fdf8e8;
-      --n50: #f8fafc; --n100: #f1f5f9; --n200: #e2e8f0; --n300: #cbd5e1;
-      --n400: #94a3b8; --n500: #64748b; --n600: #475569; --n700: #334155;
-      --n800: #1e293b; --n900: #0f172a;
-      --success: #10b981; --warning: #f59e0b; --error: #ef4444; --info: #3b82f6;
-      --font: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-      --shadow-card: 0 1px 3px 0 rgba(0,0,0,.05), 0 1px 2px -1px rgba(0,0,0,.05);
-      --shadow-hover: 0 10px 25px -5px rgba(0,0,0,.08), 0 8px 10px -6px rgba(0,0,0,.04);
-      --r-lg:8px; --r-xl:12px; --r-2xl:16px; --r-full:9999px;
-    }
-
-    body { font-family: var(--font); font-size: 16px; line-height: 1.6; color: var(--n600); background: var(--n100); }
-    @keyframes fade-up { 0%{opacity:0;transform:translateY(20px)} 100%{opacity:1;transform:translateY(0)} }
-    .fade-up { opacity:0; transform:translateY(20px); transition:opacity .6s ease-out, transform .6s ease-out; }
-    .fade-up.visible { opacity:1; transform:translateY(0); }
-    .container { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
-    .section { padding: 80px 0; }
-
-    .nav-wrap { position:fixed; top:0; left:0; right:0; z-index:300; background:rgba(255,255,255,.93); backdrop-filter:blur(12px); border-bottom:1px solid var(--n200); height:64px; }
-    .nav-inner { height:100%; display:flex; align-items:center; justify-content:space-between; }
-    .nav-logo img { height:40px; width:auto; display:block; }
-    .nav-links { display:flex; gap:20px; flex-wrap:wrap; }
-    .nav-links a { font-size:13px; font-weight:500; color:var(--n600); text-decoration:none; transition:color .2s; }
-    .nav-links a:hover { color:var(--brand); }
-    .nav-badge { font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:.05em; color:var(--brand); background:var(--brand-bg); padding:5px 12px; border-radius:var(--r-full); white-space:nowrap; }
-
-    .section-header { margin-bottom:40px; }
-    .section-label { display:inline-block; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.08em; color:var(--brand); background:var(--brand-bg); padding:4px 12px; border-radius:var(--r-full); margin-bottom:12px; }
-    .section-title { font-size:30px; font-weight:600; color:var(--n900); line-height:1.25; margin-bottom:8px; }
-    .section-sub { font-size:16px; color:var(--n500); }
-
-    .grid-2 { display:grid; grid-template-columns:repeat(auto-fit,minmax(340px,1fr)); gap:20px; }
-    .grid-3 { display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:20px; }
-
-    .badge { display:inline-flex; align-items:center; padding:3px 10px; border-radius:var(--r-full); font-size:12px; font-weight:600; }
-    .badge-green { background:#d1fae5; color:#065f46; }
-    .badge-red { background:#fee2e2; color:#991b1b; }
-    .badge-yellow { background:#fef3c7; color:#92400e; }
-
-    .table-wrap { overflow-x:auto; border-radius:var(--r-2xl); border:1px solid var(--n200); margin:20px 0; }
-    table { width:100%; border-collapse:collapse; background:#fff; }
-    thead tr { background:var(--n50); border-bottom:2px solid var(--n200); }
-    th { padding:14px 18px; text-align:left; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.05em; color:var(--n500); }
-    td { padding:14px 18px; font-size:14px; color:var(--n600); border-bottom:1px solid var(--n200); }
-    tr:last-child td { border-bottom:none; }
-    tbody tr { transition:background .2s; }
-    tbody tr:hover { background:var(--n50); }
-
-    .alert { display:flex; gap:14px; border-radius:var(--r-xl); padding:18px; margin:16px 0; }
-    .alert-error { background:#fff1f2; border:1px solid #fecdd3; border-left:4px solid var(--error); }
-    .alert-brand { background:var(--brand-bg); border:1px solid #a5d6a7; border-left:4px solid var(--brand); }
-    .alert-icon { font-size:18px; flex-shrink:0; margin-top:1px; }
-
-    /* Req card */
-    .req-group {
-      background:#fff; border-radius:var(--r-2xl); border:1px solid var(--n200);
-      padding:24px 28px; box-shadow:var(--shadow-card); margin-bottom:20px;
-    }
-    .req-group-title {
-      font-size:13px; font-weight:700; text-transform:uppercase; letter-spacing:.06em;
-      color:var(--brand); margin-bottom:16px; padding-bottom:10px;
-      border-bottom:2px solid var(--brand-bg);
-    }
-    .req-item {
-      display:flex; gap:12px; align-items:flex-start;
-      padding:10px 0; border-bottom:1px solid var(--n100);
-      font-size:14px; color:var(--n600);
-    }
-    .req-item:last-child { border-bottom:none; }
-    .req-icon { font-size:16px; flex-shrink:0; margin-top:1px; }
-    .req-label { font-weight:600; color:var(--n900); display:block; margin-bottom:2px; }
-    .req-desc { font-size:13px; color:var(--n500); }
-
-    /* Forbidden */
-    .forbidden-item {
-      display:flex; gap:12px; align-items:flex-start;
-      padding:10px 0; border-bottom:1px solid var(--n100);
-      font-size:14px; color:var(--n600);
-    }
-    .forbidden-item:last-child { border-bottom:none; }
-    .forbidden-x { color:var(--error); font-size:16px; flex-shrink:0; margin-top:1px; font-weight:700; }
-
-    /* Service block */
-    .service-block {
-      background:#fff; border-radius:var(--r-2xl); border:1px solid var(--n200);
-      padding:24px 28px; box-shadow:var(--shadow-card);
-    }
-    .service-title { font-size:14px; font-weight:700; color:var(--n900); margin-bottom:12px; padding-bottom:8px; border-bottom:1px solid var(--n100); }
-
-    @media (max-width:768px) {
-      .nav-links { display:none; }
-      .section-title { font-size:24px; }
-      .grid-2, .grid-3 { grid-template-columns:1fr; }
-    }
-
-    .hero { background:linear-gradient(135deg,var(--brand-dark) 0%,var(--brand) 50%,var(--brand-light) 100%); padding:120px 0 80px; color:#fff; position:relative; overflow:hidden; }
-    .hero::before { content:''; position:absolute; inset:0; background:radial-gradient(ellipse at 70% 50%,rgba(212,175,55,.15) 0%,transparent 60%); }
-    .hero-inner { display:flex; align-items:center; gap:48px; flex-wrap:wrap; }
-    .hero-logo-wrap { flex-shrink:0; }
-    .hero-logo-wrap img { height:140px; width:auto; display:block; border-radius:var(--r-xl); }
-    .hero-content { flex:1; min-width:280px; }
-    .hero-badge { display:inline-block; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.1em; background:rgba(255,255,255,.15); color:#fff; border:1px solid rgba(255,255,255,.3); padding:6px 16px; border-radius:var(--r-full); margin-bottom:20px; backdrop-filter:blur(8px); }
-    .hero-title { font-size:52px; font-weight:700; line-height:1.1; margin-bottom:16px; }
-    .hero-title span { color:var(--accent); }
-    .hero-sub { font-size:18px; opacity:.85; max-width:600px; margin-bottom:32px; line-height:1.6; }
-    .hero-meta { display:flex; gap:24px; flex-wrap:wrap; }
-    .hero-meta-item { display:flex; flex-direction:column; gap:3px; }
-    .hero-meta-label { font-size:10px; text-transform:uppercase; letter-spacing:.08em; opacity:.6; }
-    .hero-meta-value { font-size:14px; font-weight:600; }
-    @media (max-width:768px) { .hero { padding:100px 0 60px; } .hero-title { font-size:34px; } .hero-logo-wrap img { height:80px; } }
-
-    .footer { background:var(--n900); color:var(--n400); padding:40px 0; font-size:13px; }
-    .footer-inner { display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:16px; }
-    .footer-meta { display:flex; gap:20px; flex-wrap:wrap; }
-    .footer-meta-item { display:flex; flex-direction:column; gap:2px; }
-    .footer-meta-label { font-size:10px; text-transform:uppercase; letter-spacing:.05em; color:var(--n600); }
-    .footer-meta-value { font-size:12px; color:var(--n400); }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>M3-06 · Требования к продукту — BRODSKY OIL · BrandOS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --primary: #0ea5e9;
+  --primary-dark: #0284c7;
+  --primary-light: #7dd3fc;
+  --primary-bg: #e0f2fe;
+  --background: #ffffff;
+  --foreground: #0f172a;
+  --card-bg: hsl(0,0%,97%);
+  --border: #1C1C1E;
+  --muted: #64748b;
+  --radius: 4px;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: 'Inter', sans-serif; background: var(--background); color: var(--foreground); line-height: 1.75; font-size: 16px; }
+.container { max-width: 1200px; margin: 0 auto; padding: 0 1.5rem; }
+.nav { position: sticky; top: 0; background: white; border-bottom: 1px solid var(--border); z-index: 100; padding: 1rem 0; }
+.nav-container { display: flex; justify-content: space-between; align-items: center; gap: 2rem; }
+.nav-brand { font-size: 1rem; font-weight: 700; color: var(--foreground); white-space: nowrap; }
+.nav-brand span { color: var(--primary); }
+.nav-links { display: flex; gap: 1.5rem; list-style: none; overflow-x: auto; flex-wrap: wrap; }
+.nav-links a { color: var(--foreground); text-decoration: none; font-size: .875rem; font-weight: 500; white-space: nowrap; transition: color .2s; }
+.nav-links a:hover { color: var(--primary); }
+.hero { padding: 3.75rem 0; background: linear-gradient(135deg, rgba(255,255,255,.98) 0%, rgba(240,249,255,.95) 100%); }
+.hero-badge { display: inline-flex; align-items: center; gap: .5rem; padding: .5rem 1rem; background: var(--card-bg); border: 1px solid var(--border); border-radius: var(--radius); font-size: .875rem; font-weight: 600; margin-bottom: 1.5rem; color: var(--foreground); }
+.hero h1 { font-size: clamp(32px, 4vw, 51px); font-weight: 500; line-height: 1.2; letter-spacing: -.03em; margin-bottom: 1.5rem; }
+.hero-subtitle { font-size: 1.125rem; color: var(--muted); margin-bottom: 2rem; }
+.hero-meta { display: flex; gap: 2rem; flex-wrap: wrap; }
+.hero-meta-item { font-size: .875rem; color: var(--muted); }
+.hero-meta-item strong { color: var(--primary); font-weight: 600; }
+.section { padding: 2.5rem 0; }
+@media (min-width: 768px) { .section { padding: 3.75rem 0; } }
+.section-header { position: relative; margin-bottom: 32px; padding-top: 24px; }
+.section-header::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px; background: repeating-linear-gradient(to right, #9CA3AF 0, #9CA3AF 4px, transparent 4px, transparent 8px); }
+.section-tag { display: inline-block; font-size: .75rem; font-weight: 600; text-transform: uppercase; letter-spacing: .1em; color: var(--primary); margin-bottom: .5rem; }
+h2 { font-size: 32px; font-weight: 300; line-height: 1.2; letter-spacing: -.02em; margin-bottom: 1rem; }
+h3 { font-size: 20px; font-weight: 600; line-height: 1.3; margin-bottom: 1rem; }
+p { margin-bottom: 1rem; color: var(--muted); }
+p:last-child { margin-bottom: 0; }
+.card { border: 1px solid var(--border); border-radius: var(--radius); background: linear-gradient(135deg, rgba(255,255,255,.98) 0%, rgba(250,250,252,.95) 100%); padding: 1.5rem; position: relative; overflow: hidden; transition: all .4s cubic-bezier(.4, 0, .2, 1); }
+.card:hover { transform: translateY(-4px); box-shadow: 0 12px 32px rgba(0,0,0,.08), 0 0 0 1px rgba(14,165,233,.1); border-color: rgba(14,165,233,.3); }
+.card-title { font-size: 1.0625rem; font-weight: 600; margin-bottom: .75rem; color: var(--foreground); }
+.card-description { font-size: .9375rem; line-height: 1.75; color: var(--muted); }
+.grid { display: grid; gap: 1.5rem; }
+.grid-2 { grid-template-columns: 1fr; }
+.grid-3 { grid-template-columns: 1fr; }
+@media (min-width: 768px) { .grid-2 { grid-template-columns: repeat(2, 1fr); } .grid-3 { grid-template-columns: repeat(3, 1fr); } }
+.highlight-box { background: linear-gradient(135deg, rgba(14,165,233,.05) 0%, rgba(14,165,233,.02) 100%); border: 1px solid rgba(14,165,233,.2); border-left: 4px solid var(--primary); padding: 1.25rem 1.5rem; border-radius: var(--radius); margin: 1.5rem 0; }
+.highlight-box p { margin: 0; font-size: 1rem; }
+.highlight-box strong { color: var(--primary); }
+.phase-badge { background: linear-gradient(135deg, rgba(14,165,233,.07) 0%, rgba(14,165,233,.02) 100%); padding: 2rem; border-radius: var(--radius); border: 1px solid rgba(14,165,233,.22); margin-bottom: 2rem; }
+.phase-badge h3 { color: var(--primary); margin-bottom: .5rem; }
+.phase-badge p { font-size: 1.0625rem; margin: 0; }
+.list-styled { list-style: none; padding: 0; }
+.list-styled li { padding-left: 1.5rem; margin-bottom: .75rem; position: relative; color: var(--muted); font-size: .9375rem; }
+.list-styled li::before { content: ''; position: absolute; left: 0; top: .65rem; width: 6px; height: 6px; background: var(--primary); border-radius: 50%; }
+.table-wrapper { overflow-x: auto; margin: 1.5rem 0; border: 1px solid var(--border); border-radius: var(--radius); }
+table { width: 100%; border-collapse: collapse; background: white; }
+th, td { padding: 1rem; text-align: left; border-bottom: 1px solid var(--border); }
+th { background: var(--card-bg); font-weight: 600; font-size: .8125rem; text-transform: uppercase; letter-spacing: .05em; color: var(--foreground); }
+td { font-size: .9375rem; color: var(--muted); }
+tr:last-child td { border-bottom: none; }
+tr:hover td { background: var(--card-bg); }
+.table-accent { color: var(--primary); font-weight: 600; }
+.warning-block { background: linear-gradient(135deg, rgba(239,68,68,.04) 0%, rgba(239,68,68,.01) 100%); border: 1px solid rgba(239,68,68,.18); border-left: 4px solid #ef4444; padding: 1.25rem 1.5rem; border-radius: var(--radius); margin: 1.5rem 0; }
+.warning-block p { margin: 0; font-size: .9375rem; color: var(--muted); }
+.warning-block strong { color: var(--foreground); }
+.formula-block { background: linear-gradient(135deg, rgba(14,165,233,.05) 0%, rgba(14,165,233,.02) 100%); border: 1px solid rgba(14,165,233,.22); border-left: 4px solid var(--primary); padding: 2rem 2.5rem; border-radius: var(--radius); font-size: 1.125rem; font-style: italic; line-height: 1.8; color: var(--foreground); margin: 2rem 0; }
+.badge { display: inline-block; padding: .25rem .75rem; border-radius: 9999px; font-size: .75rem; font-weight: 600; }
+.badge-green { background: #d1fae5; color: #065f46; }
+.badge-yellow { background: #fef3c7; color: #92400e; }
+.badge-red { background: #fee2e2; color: #991b1b; }
+.badge-blue { background: var(--primary-bg); color: var(--primary-dark); }
+.footer { padding: 2rem 0; border-top: 1px solid var(--border); text-align: center; color: var(--muted); font-size: .875rem; }
+@media (max-width: 768px) { .container { padding: 0 1rem; } h2 { font-size: 24px; } h3 { font-size: 18px; } .nav-links { gap: .75rem; } .hero-meta { gap: 1rem; } .formula-block { padding: 1.5rem; font-size: 1rem; } }
+</style>
 </head>
 <body>
 
-<nav class="nav-wrap">
-  <div class="container">
-    <div class="nav-inner">
-      <div class="nav-logo"><img src="../assets/logo-horizontal-light.png" alt="Магия Масел"></div>
-      <div class="nav-links">
-        <a href="#must">Должен иметь</a>
-        <a href="#mustnt">Не должен</a>
-        <a href="#quality">Стандарты</a>
-        <a href="#service">Сервис</a>
-      </div>
-      <div class="nav-badge">M3 · Документ 6/7</div>
-    </div>
+<nav class="nav">
+  <div class="container nav-container">
+    <div class="nav-brand">Brand<span>OS</span> · Документ</div>
+    <ul class="nav-links">
+      <li><a href="#must-have">Должен иметь</a></li>
+      <li><a href="#must-not">Не должен</a></li>
+      <li><a href="#quality">Стандарты качества</a></li>
+      <li><a href="#service">Сервисные стандарты</a></li>
+      <li><a href="#status">Статус реализации</a></li>
+    </ul>
   </div>
 </nav>
 
 <section class="hero">
   <div class="container">
-    <div class="hero-inner">
-      <div class="hero-logo-wrap">
-        <img src="../assets/logo-badge-dark.png" alt="Магия Масел — Кирилл Бродский">
+    <div class="hero-badge">M3-06 · Продукт · BrandOS</div>
+    <h1>Требования к продукту<br><span style="color:var(--primary)">BRODSKY OIL</span></h1>
+    <p class="hero-subtitle">Кирилл Бродский · v3.1 · 22.04.2026</p>
+    <div class="hero-meta">
+      <span class="hero-meta-item"><strong>Клиент:</strong> Кирилл Бродский</span>
+      <span class="hero-meta-item"><strong>Модуль:</strong> M3 — Продуктовая стратегия</span>
+      <span class="hero-meta-item"><strong>Версия:</strong> 3.1 (roundtable)</span>
+      <span class="hero-meta-item"><strong>Дата:</strong> 30.03.2026</span>
+    </div>
+  </div>
+</section>
+
+<!-- 6.1. Что продукт ДОЛЖЕН иметь -->
+<section class="section" id="must-have">
+  <div class="container">
+    <div class="section-header">
+      <span class="section-tag">§6.1</span>
+      <h2>Что продукт ДОЛЖЕН иметь</h2>
+    </div>
+
+    <div class="grid grid-3">
+      <div class="card">
+        <div class="card-title">Производство</div>
+        <div class="card-description">
+          <ul class="list-styled" style="margin-top:0;">
+            <li><strong style="color:var(--foreground)">Гидравлический пресс</strong> (не шнековый) — ключевой дифференциатор по качеству отжима</li>
+            <li><strong style="color:var(--foreground)">Температура ≤ 40°C</strong> — зафиксированная датчиком, не задекларированная</li>
+            <li><strong style="color:var(--foreground)">Малые партии</strong> — 40–60 л/мес, отжим под спрос, не под склад</li>
+            <li><strong style="color:var(--foreground)">Тёмное стекло</strong> — защита от ультрафиолета, обязательно для всей линейки</li>
+          </ul>
+        </div>
       </div>
-      <div class="hero-content">
-        <div class="hero-badge">M3 · Продуктовая стратегия · Документ 6 из 7</div>
-        <h1 class="hero-title">Требования к <span>продукту</span></h1>
-        <p class="hero-sub">PDR: что должен и что не должен делать продукт — производство, документация, коммуникация, сервис.</p>
-        <div class="hero-meta">
-          <div class="hero-meta-item"><span class="hero-meta-label">Клиент</span><span class="hero-meta-value">Кирилл Бродский</span></div>
-          <div class="hero-meta-item"><span class="hero-meta-label">Дата</span><span class="hero-meta-value">30.03.2026</span></div>
-          <div class="hero-meta-item"><span class="hero-meta-label">Версия</span><span class="hero-meta-value">1.0</span></div>
-          <div class="hero-meta-item"><span class="hero-meta-label">Тип</span><span class="hero-meta-value">PDR (Product Definition)</span></div>
+
+      <div class="card">
+        <div class="card-title">Документация и доверие</div>
+        <div class="card-description">
+          <ul class="list-styled" style="margin-top:0;">
+            <li><strong style="color:var(--foreground)">Государственные сертификаты</strong> на каждое масло — <span class="badge badge-green">✅ есть</span></li>
+            <li><strong style="color:var(--foreground)">Паспорт качества</strong> на каждую партию (температура, ПЧ, дата, сырьё) — <span class="badge badge-green">✅ есть</span>, ключевой дифференциатор</li>
+            <li><strong style="color:var(--foreground)">Сертификаты сырья</strong> от поставщика — <span class="badge badge-yellow">⚠️ нужно запросить</span></li>
+            <li><strong style="color:var(--foreground)">Дата отжима</strong> на каждой бутылке — <span class="badge badge-yellow">⚠️ нужно добавить</span></li>
+            <li><strong style="color:var(--foreground)">Дозатор</strong> — контроль дозировки — <span class="badge badge-green">✅ есть</span></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Продуктовая логика</div>
+        <div class="card-description">
+          <ul class="list-styled" style="margin-top:0;">
+            <li><strong style="color:var(--foreground)">Моно-масла</strong> — только чистые масла, без смешивания</li>
+            <li><strong style="color:var(--foreground)">Карточка применения</strong> в каждом наборе — как применять, зачем, кому</li>
+            <li><strong style="color:var(--foreground)">Инструкция «30-дневный протокол»</strong> в наборах 3×100 мл — конкретная схема применения</li>
+            <li><strong style="color:var(--foreground)">Напоминание на повтор</strong> — встроено в сервис (полуручной ремайндер)</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Коммуникация</div>
+        <div class="card-description">
+          <ul class="list-styled" style="margin-top:0;">
+            <li><strong style="color:var(--foreground)">Честное объяснение</strong> — что масло делает, что не делает, кому противопоказано</li>
+            <li><strong style="color:var(--foreground)">Предупреждение о противопоказаниях</strong> — всегда, без исключений</li>
+            <li><strong style="color:var(--foreground)">Кирилл как лицо</strong> — голос бренда присутствует в каждом касании</li>
+          </ul>
         </div>
       </div>
     </div>
   </div>
 </section>
 
-<!-- 6.1. ДОЛЖЕН ИМЕТЬ -->
-<section class="section fade-up" id="must">
+<!-- 6.2. Что продукт НЕ должен иметь -->
+<section class="section" id="must-not">
   <div class="container">
     <div class="section-header">
-      <div class="section-label">6.1 · Должен</div>
-      <h2 class="section-title">Что продукт <span style="color:var(--success);">ДОЛЖЕН</span> иметь</h2>
+      <span class="section-tag">§6.2</span>
+      <h2>Что продукт НЕ должен иметь</h2>
     </div>
-
-    <div class="req-group fade-up">
-      <div class="req-group-title">🏭 Производство</div>
-      <div class="req-item">
-        <div class="req-icon">✅</div>
-        <div>
-          <span class="req-label">Гидравлический пресс (не шнековый)</span>
-          <span class="req-desc">Ключевой дифференциатор по качеству отжима — нет нагрева, нет окисления</span>
-        </div>
-      </div>
-      <div class="req-item">
-        <div class="req-icon">✅</div>
-        <div>
-          <span class="req-label">Температура ≤ 40°C</span>
-          <span class="req-desc">Зафиксированная датчиком, не задекларированная</span>
-        </div>
-      </div>
-      <div class="req-item">
-        <div class="req-icon">✅</div>
-        <div>
-          <span class="req-label">Малые партии</span>
-          <span class="req-desc">40–60 л/мес, отжим под спрос — не под склад</span>
-        </div>
-      </div>
-      <div class="req-item">
-        <div class="req-icon">✅</div>
-        <div>
-          <span class="req-label">Тёмное стекло</span>
-          <span class="req-desc">Защита от ультрафиолета — обязательно для всей линейки</span>
-        </div>
-      </div>
-    </div>
-
-    <div class="req-group fade-up">
-      <div class="req-group-title">📄 Документация и доверие</div>
-      <div class="req-item">
-        <div class="req-icon">✅</div>
-        <div>
-          <span class="req-label">Государственные сертификаты</span>
-          <span class="req-desc">На каждое масло в линейке</span>
-        </div>
-      </div>
-      <div class="req-item">
-        <div class="req-icon">⚠️</div>
-        <div>
-          <span class="req-label">Сертификаты сырья от поставщика</span>
-          <span class="req-desc">Не только на готовый продукт — запросить у поставщика</span>
-        </div>
-      </div>
-      <div class="req-item">
-        <div class="req-icon">⚠️</div>
-        <div>
-          <span class="req-label">Дата отжима на каждой бутылке</span>
-          <span class="req-desc">Не дата розлива и не срок годности — добавить на этикетку</span>
-        </div>
-      </div>
-      <div class="req-item">
-        <div class="req-icon">✅</div>
-        <div>
-          <span class="req-label">Дозатор</span>
-          <span class="req-desc">Контроль дозировки — часть сервиса</span>
-        </div>
-      </div>
-    </div>
-
-    <div class="req-group fade-up">
-      <div class="req-group-title">📦 Продуктовая логика</div>
-      <div class="req-item">
-        <div class="req-icon">✅</div>
-        <div>
-          <span class="req-label">Моно-масла — только чистые</span>
-          <span class="req-desc">Без смешивания, без купажей</span>
-        </div>
-      </div>
-      <div class="req-item">
-        <div class="req-icon">✅</div>
-        <div>
-          <span class="req-label">Карточка применения в каждом наборе</span>
-          <span class="req-desc">Как применять, зачем, кому</span>
-        </div>
-      </div>
-      <div class="req-item">
-        <div class="req-icon">✅</div>
-        <div>
-          <span class="req-label">Инструкция «30-дневный протокол»</span>
-          <span class="req-desc">В наборах 3×100 мл — конкретная схема применения</span>
-        </div>
-      </div>
-      <div class="req-item">
-        <div class="req-icon">✅</div>
-        <div>
-          <span class="req-label">Напоминание на повтор</span>
-          <span class="req-desc">Встроено в сервис (полуручной ремайндер)</span>
-        </div>
-      </div>
-    </div>
-
-    <div class="req-group fade-up">
-      <div class="req-group-title">💬 Коммуникация</div>
-      <div class="req-item">
-        <div class="req-icon">✅</div>
-        <div>
-          <span class="req-label">Честное объяснение</span>
-          <span class="req-desc">Что масло делает, что не делает, кому противопоказано</span>
-        </div>
-      </div>
-      <div class="req-item">
-        <div class="req-icon">✅</div>
-        <div>
-          <span class="req-label">Предупреждение о противопоказаниях</span>
-          <span class="req-desc">Всегда, без исключений</span>
-        </div>
-      </div>
-      <div class="req-item">
-        <div class="req-icon">✅</div>
-        <div>
-          <span class="req-label">Кирилл как лицо</span>
-          <span class="req-desc">Голос бренда присутствует в каждом касании</span>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- 6.2. НЕ ДОЛЖЕН -->
-<section class="section fade-up" id="mustnt" style="background:#fff;">
-  <div class="container">
-    <div class="section-header">
-      <div class="section-label">6.2 · Не должен</div>
-      <h2 class="section-title">Что продукт <span style="color:var(--error);">НЕ ДОЛЖЕН</span> иметь</h2>
-    </div>
-    <div class="alert alert-error fade-up">
-      <span class="alert-icon">🚫</span>
-      <div>
-        <strong style="color:#991b1b; display:block; margin-bottom:4px;">Жёсткие ограничения — не обсуждать как опции</strong>
-        <p style="font-size:14px; color:var(--n600);">Купажи и капсулы — категорическое «нет». Медицинские заявления — юридически запрещены. Остальные ограничения — по позиционированию и возможностям производства.</p>
-      </div>
-    </div>
-    <div class="table-wrap fade-up">
+    <div class="table-wrapper">
       <table>
-        <thead>
-          <tr>
-            <th>Что запрещено</th>
-            <th>Причина</th>
-          </tr>
-        </thead>
+        <thead><tr><th>Что запрещено</th><th>Причина</th></tr></thead>
         <tbody>
-          <tr>
-            <td><strong>Купажи / смеси масел</strong></td>
-            <td>Кирилл категорически против. Нет технологических карт</td>
-          </tr>
-          <tr>
-            <td><strong>Капсульная форма</strong></td>
-            <td>Отказ подтверждён однозначно</td>
-          </tr>
-          <tr>
-            <td><strong>500 мл для премиальных масел</strong></td>
-            <td>Нет смысла — только лён и подсолнечник</td>
-          </tr>
-          <tr>
-            <td><strong>50 мл</strong></td>
-            <td>Тары нет</td>
-          </tr>
-          <tr>
-            <td><strong>Обещания лечения</strong></td>
-            <td>Юридические и этические ограничения</td>
-          </tr>
-          <tr>
-            <td><strong>Медицинские заявления</strong></td>
-            <td>«Инструмент, не чудо-средство»</td>
-          </tr>
-          <tr>
-            <td><strong>Агрессивные CTA</strong></td>
-            <td>«Купи сейчас!», «Последний шанс» — противоречат голосу бренда</td>
-          </tr>
-          <tr>
-            <td><strong>Амарант и облепиха (пищевые)</strong></td>
-            <td>Нереализуемо — нужен пресс 100 т</td>
-          </tr>
-          <tr>
-            <td><strong>Маркетплейсы</strong></td>
-            <td>Не рассматриваются на текущем этапе</td>
-          </tr>
-          <tr>
-            <td><strong>Молодёжный сленг</strong></td>
-            <td>Не соответствует аудитории и тону бренда</td>
-          </tr>
+          <tr><td class="table-accent">Купажи / смеси масел</td><td>Кирилл категорически против. Нет технологических карт</td></tr>
+          <tr><td class="table-accent">Капсульная форма</td><td>Отказ подтверждён однозначно</td></tr>
+          <tr><td class="table-accent">500 мл для премиальных масел</td><td>Нет смысла — только лён и подсолнечник</td></tr>
+          <tr><td class="table-accent">50 мл</td><td>Тары нет</td></tr>
+          <tr><td class="table-accent">Обещания лечения</td><td>Юридические и этические ограничения</td></tr>
+          <tr><td class="table-accent">Медицинские заявления</td><td>«Инструмент, не чудо-средство»</td></tr>
+          <tr><td class="table-accent">Агрессивные CTA</td><td>«Купи сейчас!», «Последний шанс» — противоречат голосу бренда</td></tr>
+          <tr><td class="table-accent">Амарант и облепиха (пищевые)</td><td>Нереализуемо — нужен пресс 100 т</td></tr>
+          <tr><td class="table-accent">Маркетплейсы</td><td>Не рассматриваются на текущем этапе</td></tr>
+          <tr><td class="table-accent">Молодёжный сленг</td><td>Не соответствует аудитории и тону бренда</td></tr>
         </tbody>
       </table>
     </div>
   </div>
 </section>
 
-<!-- 6.3. МИНИМАЛЬНЫЕ СТАНДАРТЫ -->
-<section class="section fade-up" id="quality">
+<!-- 6.3. Минимальные стандарты качества -->
+<section class="section" id="quality">
   <div class="container">
     <div class="section-header">
-      <div class="section-label">6.3 · Стандарты</div>
-      <h2 class="section-title">Минимальные стандарты качества</h2>
+      <span class="section-tag">§6.3</span>
+      <h2>Минимальные стандарты качества</h2>
     </div>
-    <div class="grid-3">
 
-      <div class="service-block fade-up">
-        <div class="service-title">🌾 Сырьё</div>
-        <div style="font-size:14px; color:var(--n600);">
-          <div style="padding:8px 0; border-bottom:1px solid var(--n100);">Семена из проверенных хозяйств с датой уборки</div>
-          <div style="padding:8px 0;">Свежесть сырья — приоритет над ценой</div>
+    <div class="grid grid-3">
+      <div class="card">
+        <div class="card-title">Сырьё</div>
+        <div class="card-description">
+          <ul class="list-styled" style="margin-top:0;">
+            <li>Семена из проверенных хозяйств с датой уборки</li>
+            <li>Свежесть сырья — приоритет над ценой</li>
+          </ul>
         </div>
       </div>
 
-      <div class="service-block fade-up">
-        <div class="service-title">⚙️ Процесс</div>
-        <div style="font-size:14px; color:var(--n600);">
-          <div style="padding:8px 0; border-bottom:1px solid var(--n100);">Контроль температуры на прессе — датчик, не оценка на глаз</div>
-          <div style="padding:8px 0; border-bottom:1px solid var(--n100);">Фильтрация без химии — только механика</div>
-          <div style="padding:8px 0;">Разлив в тёмное стекло сразу после отжима</div>
+      <div class="card">
+        <div class="card-title">Процесс</div>
+        <div class="card-description">
+          <ul class="list-styled" style="margin-top:0;">
+            <li>Контроль температуры на прессе — датчик, не оценка на глаз</li>
+            <li>Фильтрация без химии — только механика</li>
+            <li>Разлив в тёмное стекло сразу после отжима</li>
+          </ul>
         </div>
       </div>
 
-      <div class="service-block fade-up">
-        <div class="service-title">🫙 Готовый продукт</div>
-        <div style="font-size:14px; color:var(--n600);">
-          <div style="padding:8px 0; border-bottom:1px solid var(--n100);">Каждая партия — под спрос (не залёживается)</div>
-          <div style="padding:8px 0; border-bottom:1px solid var(--n100);">Срок хранения соответствует дате отжима</div>
-          <div style="padding:8px 0;">Этикетка содержит дату производства конкретной партии</div>
+      <div class="card">
+        <div class="card-title">Готовый продукт</div>
+        <div class="card-description">
+          <ul class="list-styled" style="margin-top:0;">
+            <li>Каждая партия — под спрос (не залёживается на складе)</li>
+            <li>Срок хранения соответствует дате отжима (не максимально растянутый)</li>
+            <li>Этикетка содержит дату производства конкретной партии</li>
+          </ul>
         </div>
       </div>
 
-    </div>
-    <div class="alert alert-brand fade-up" style="margin-top:20px;">
-      <span class="alert-icon">📋</span>
-      <div>
-        <strong style="color:var(--brand-dark); display:block; margin-bottom:4px;">Документация</strong>
-        <p style="font-size:14px; color:var(--n600);">Госсертификаты актуальны ✅ · Сертификаты сырья хранятся и могут быть показаны ⚠️ (запросить у поставщика)</p>
+      <div class="card">
+        <div class="card-title">Документация</div>
+        <div class="card-description">
+          <ul class="list-styled" style="margin-top:0;">
+            <li>Госсертификаты актуальны</li>
+            <li>Сертификаты сырья хранятся и могут быть показаны</li>
+          </ul>
+        </div>
       </div>
     </div>
   </div>
 </section>
 
-<!-- 6.4. СЕРВИСНЫЕ СТАНДАРТЫ -->
-<section class="section fade-up" id="service" style="background:#fff;">
+<!-- 6.4. Сервисные стандарты -->
+<section class="section" id="service">
   <div class="container">
     <div class="section-header">
-      <div class="section-label">6.4 · Сервис</div>
-      <h2 class="section-title">Сервисные стандарты</h2>
+      <span class="section-tag">§6.4</span>
+      <h2>Сервисные стандарты</h2>
     </div>
 
-    <div class="grid-2">
-
-      <div class="service-block fade-up">
-        <div class="service-title">🛒 До покупки</div>
-        <div style="font-size:14px; color:var(--n600);">
-          <div style="padding:8px 0; border-bottom:1px solid var(--n100);">Кирилл лично объясняет: какое масло → для какой задачи → как принимать</div>
-          <div style="padding:8px 0; border-bottom:1px solid var(--n100);">Консультация без давления — «попробуйте, если понравится — приходите»</div>
-          <div style="padding:8px 0;">Онлайн: подбор через TG или квиз/инструкция</div>
+    <div class="grid grid-2">
+      <div class="card">
+        <div class="card-title">До покупки</div>
+        <div class="card-description">
+          <ul class="list-styled" style="margin-top:0;">
+            <li>Кирилл лично объясняет: какое масло → для какой задачи → как принимать</li>
+            <li>Консультация без давления — «попробуйте, если понравится — приходите»</li>
+            <li>Для онлайн: подбор через TG или квиз/инструкция</li>
+          </ul>
         </div>
       </div>
 
-      <div class="service-block fade-up">
-        <div class="service-title">🔔 После покупки — ремайндеры</div>
-        <div style="font-size:14px; color:var(--n700);">
-          <div style="padding:8px 0; border-bottom:1px solid var(--n100);">
-            <span style="font-weight:600;">100 мл:</span>
-            <span style="color:var(--n600);"> напоминание на 21–25 день</span>
-          </div>
-          <div style="padding:8px 0; border-bottom:1px solid var(--n100);">
-            <span style="font-weight:600;">250 мл:</span>
-            <span style="color:var(--n600);"> напоминание на 28–30 день</span>
-          </div>
-          <div style="padding:8px 0; border-bottom:1px solid var(--n100);">
-            <span style="font-weight:600;">500 мл:</span>
-            <span style="color:var(--n600);"> напоминание на 45–50 день</span>
-          </div>
-          <div style="padding:8px 0; font-size:13px; color:var(--n500);">Полуручной: система триггерит Кирилла → он пишет клиенту лично. Не массовая рассылка.</div>
+      <div class="card">
+        <div class="card-title">После покупки — полуручной ремайндер</div>
+        <div class="card-description">Система напоминает Кириллу → он пишет клиенту лично</div>
+        <p style="margin-top:.75rem;font-size:.9375rem;">
+          <strong style="color:var(--foreground)">1×100 мл:</strong> напоминание на 21–25 день<br>
+          <strong style="color:var(--foreground)">3×100 мл набор:</strong> напоминание на 28–30 день<br>
+          <strong style="color:var(--foreground)">3×250 мл набор:</strong> напоминание на 55–60 день
+        </p>
+        <p style="font-size:.875rem">Повторная продажа через личный контакт, не массовую рассылку.</p>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Набор / подарок</div>
+        <div class="card-description">
+          <ul class="list-styled" style="margin-top:0;">
+            <li>Подарочный бокс: Кирилл собирает вручную → персональный характер</li>
+            <li>Карточка применения вложена в каждый набор</li>
+            <li>Упаковка доставки: вакуумная (уже применяется)</li>
+          </ul>
         </div>
       </div>
 
-      <div class="service-block fade-up">
-        <div class="service-title">🎁 Набор / подарок</div>
-        <div style="font-size:14px; color:var(--n600);">
-          <div style="padding:8px 0; border-bottom:1px solid var(--n100);">Подарочный бокс: Кирилл собирает вручную → персональный характер</div>
-          <div style="padding:8px 0; border-bottom:1px solid var(--n100);">Карточка применения вложена в каждый набор</div>
-          <div style="padding:8px 0;">Упаковка доставки: вакуумная ✅ (уже применяется)</div>
+      <div class="card">
+        <div class="card-title">Гарантия (онлайн)</div>
+        <div class="card-description">
+          <ul class="list-styled" style="margin-top:0;">
+            <li>Возврат если вкус не подошёл</li>
+            <li>100% возврат если данные не соответствуют заявленным</li>
+          </ul>
         </div>
       </div>
-
-      <div class="service-block fade-up">
-        <div class="service-title">🛡 Гарантия (онлайн)</div>
-        <div style="font-size:14px; color:var(--n600);">
-          <div style="padding:8px 0; border-bottom:1px solid var(--n100);">Возврат если вкус не подошёл</div>
-          <div style="padding:8px 0;">100% возврат если данные не соответствуют заявленным</div>
-        </div>
-      </div>
-
     </div>
+  </div>
+</section>
+
+<!-- 6.5. Статус реализации -->
+<section class="section" id="status">
+  <div class="container">
+    <div class="section-header">
+      <span class="section-tag">§6.5</span>
+      <h2>Статус реализации</h2>
+    </div>
+    <div class="table-wrapper">
+      <table>
+        <thead><tr><th>Требование</th><th>Статус</th><th>Действие</th></tr></thead>
+        <tbody>
+          <tr><td class="table-accent">Гидравлический пресс</td><td><span class="badge badge-green">✅ Есть</span></td><td>—</td></tr>
+          <tr><td class="table-accent">Тёмное стекло</td><td><span class="badge badge-green">✅ Есть</span></td><td>—</td></tr>
+          <tr><td class="table-accent">Госсертификаты</td><td><span class="badge badge-green">✅ Есть</span></td><td>—</td></tr>
+          <tr><td class="table-accent">Паспорт качества</td><td><span class="badge badge-green">✅ Есть</span></td><td>Ключевой дифференциатор</td></tr>
+          <tr><td class="table-accent">Дозатор</td><td><span class="badge badge-green">✅ Есть</span></td><td>—</td></tr>
+          <tr><td class="table-accent">Моно-масла без купажей</td><td><span class="badge badge-green">✅ Есть</span></td><td>—</td></tr>
+          <tr><td class="table-accent">Карточки применения</td><td><span class="badge badge-yellow">🔶 Частично</span></td><td>Есть для 3 масел, расширить на все</td></tr>
+          <tr><td class="table-accent">Протокол 30 дней</td><td><span class="badge badge-yellow">⚠️ Нужно</span></td><td>Создать для каждого набора</td></tr>
+          <tr><td class="table-accent">Дата отжима на этикетке</td><td><span class="badge badge-yellow">⚠️ Нужно</span></td><td>Добавить на этикетку</td></tr>
+          <tr><td class="table-accent">Сертификаты сырья</td><td><span class="badge badge-yellow">⚠️ Нужно</span></td><td>Запросить у поставщика</td></tr>
+          <tr><td class="table-accent">Видео производства</td><td><span class="badge badge-yellow">⚠️ Нужно</span></td><td>Снять для онлайн-канала</td></tr>
+          <tr><td class="table-accent">Ремайндер-система</td><td><span class="badge badge-yellow">⚠️ Нужно</span></td><td>TG-бот или напоминалка для Кирилла</td></tr>
+          <tr><td class="table-accent">Квиз подбора масла</td><td><span class="badge badge-yellow">⚠️ Нужно</span></td><td>Для онлайн-продаж</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="highlight-box">
+      <p>B2-ревью 21.04: 8 из 20+ требований = wish list. Таблица выше разделяет «есть» и «нужно».</p>
+    </div>
+    <p style="font-size:.875rem;margin-top:1rem;">Источники: YADRO §2, §7; ARKHITEKTURA §1, §6; GIPOTEZY; ответы Кирилла 29.03; roundtable 21.04</p>
   </div>
 </section>
 
 <footer class="footer">
   <div class="container">
-    <div class="footer-inner">
-      <div>
-        <img src="../assets/logo-horizontal-dark.png" alt="Магия Масел" style="height:48px; width:auto; border-radius:var(--r-lg);">
-        <div style="margin-top:8px; font-size:12px; color:var(--n600);">BrandOS · Фабрика Контента v5</div>
-      </div>
-      <div class="footer-meta">
-        <div class="footer-meta-item"><span class="footer-meta-label">Документ</span><span class="footer-meta-value">M3-06 — Требования к продукту</span></div>
-        <div class="footer-meta-item"><span class="footer-meta-label">Модуль</span><span class="footer-meta-value">M3 · 6 из 7</span></div>
-        <div class="footer-meta-item"><span class="footer-meta-label">Версия</span><span class="footer-meta-value">1.0 · 30.03.2026</span></div>
-        <div class="footer-meta-item"><span class="footer-meta-label">Источники</span><span class="footer-meta-value">YADRO §2 §7 · ARKHITEKTURA §1 §6 · GIPOTEZY · ответы Кирилла 29.03</span></div>
-      </div>
-    </div>
+    BrandOS · BRODSKY OIL · M3-06 Требования к продукту · v3.1 · 2026
   </div>
 </footer>
 
-<script>
-  const observer = new IntersectionObserver((entries) => {
-    entries.forEach(entry => { if (entry.isIntersecting) entry.target.classList.add('visible'); });
-  }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
-  document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
-</script>
 </body>
 </html>

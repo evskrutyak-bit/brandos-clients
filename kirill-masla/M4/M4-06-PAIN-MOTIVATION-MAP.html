@@ -1,909 +1,294 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>M4-06 — Pain-Motivation Map · Магия Масел</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-    :root {
-      --brand: #2C5F2D;
-      --brand-dark: #1a4a1b;
-      --brand-light: #4a8f4b;
-      --brand-bg: #e8f5e9;
-      --accent: #D4AF37;
-      --accent-bg: #fdf8e8;
-      --n50: #f8fafc; --n100: #f1f5f9; --n200: #e2e8f0;
-      --n300: #cbd5e1; --n400: #94a3b8; --n500: #64748b;
-      --n600: #475569; --n700: #334155; --n800: #1e293b; --n900: #0f172a;
-      --success: #10b981; --warning: #f59e0b; --error: #ef4444; --info: #3b82f6;
-      --font: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-      --shadow-card: 0 1px 3px 0 rgba(0,0,0,.05), 0 1px 2px -1px rgba(0,0,0,.05);
-      --shadow-hover: 0 10px 25px -5px rgba(0,0,0,.08), 0 8px 10px -6px rgba(0,0,0,.04);
-      --shadow-btn: 0 4px 14px 0 rgba(44,95,45,.35);
-      --r-sm:4px; --r-md:6px; --r-lg:8px; --r-xl:12px; --r-2xl:16px; --r-3xl:24px; --r-full:9999px;
-    }
-
-    body { font-family: var(--font); font-size: 16px; line-height: 1.6; color: var(--n600); background: var(--n100); }
-
-    @keyframes fade-up { 0%{opacity:0;transform:translateY(20px)} 100%{opacity:1;transform:translateY(0)} }
-    .fade-up { opacity:0; transform:translateY(20px); transition:opacity .6s ease-out, transform .6s ease-out; }
-    .fade-up.visible { opacity:1; transform:translateY(0); }
-
-    .container { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
-    .section { padding: 80px 0; }
-
-    /* Nav */
-    .nav-wrap {
-      position: fixed; top: 0; left: 0; right: 0; z-index: 300;
-      background: rgba(255,255,255,.93); backdrop-filter: blur(12px);
-      border-bottom: 1px solid var(--n200); height: 64px;
-    }
-    .nav-inner { height:100%; display:flex; align-items:center; justify-content:space-between; }
-    .nav-logo img { height:40px; width:auto; display:block; }
-    .nav-links { display:flex; gap:20px; flex-wrap:wrap; }
-    .nav-links a { font-size:13px; font-weight:500; color:var(--n600); text-decoration:none; transition:color .2s; }
-    .nav-links a:hover { color:var(--brand); }
-    .nav-badge {
-      font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:.05em;
-      color:var(--brand); background:var(--brand-bg);
-      padding:5px 12px; border-radius:var(--r-full); white-space:nowrap;
-    }
-
-    /* Section header */
-    .section-header { margin-bottom:40px; }
-    .section-label {
-      display:inline-block; font-size:11px; font-weight:700; text-transform:uppercase;
-      letter-spacing:.08em; color:var(--brand); background:var(--brand-bg);
-      padding:4px 12px; border-radius:var(--r-full); margin-bottom:12px;
-    }
-    .section-title { font-size:30px; font-weight:600; color:var(--n900); line-height:1.25; margin-bottom:8px; }
-    .section-sub { font-size:16px; color:var(--n500); }
-
-    /* Grid */
-    .grid-2 { display:grid; grid-template-columns:repeat(auto-fit,minmax(340px,1fr)); gap:20px; }
-    .grid-3 { display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:20px; }
-
-    /* Badge */
-    .badge { display:inline-flex; align-items:center; padding:3px 10px; border-radius:var(--r-full); font-size:12px; font-weight:600; }
-    .badge-green { background:#d1fae5; color:#065f46; }
-    .badge-yellow { background:#fef3c7; color:#92400e; }
-    .badge-blue { background:#dbeafe; color:#1e40af; }
-    .badge-brand { background:var(--brand-bg); color:var(--brand-dark); }
-    .badge-accent { background:var(--accent-bg); color:#7a6000; }
-    .badge-red { background:#fee2e2; color:#991b1b; }
-    .badge-gray { background:var(--n100); color:var(--n500); }
-
-    /* Table */
-    .table-wrap { overflow-x:auto; border-radius:var(--r-2xl); border:1px solid var(--n200); margin:20px 0; }
-    table { width:100%; border-collapse:collapse; background:#fff; }
-    thead tr { background:var(--n50); border-bottom:2px solid var(--n200); }
-    th { padding:14px 18px; text-align:left; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.05em; color:var(--n500); }
-    td { padding:14px 18px; font-size:14px; color:var(--n600); border-bottom:1px solid var(--n200); }
-    tr:last-child td { border-bottom:none; }
-    tbody tr { transition:background .2s; }
-    tbody tr:hover { background:var(--n50); }
-    .td-num { font-size:13px; color:var(--n400); font-family:monospace; }
-
-    /* Alert */
-    .alert { display:flex; gap:14px; border-radius:var(--r-xl); padding:18px; margin:16px 0; }
-    .alert-warning { background:#fffbeb; border:1px solid #fde68a; border-left:4px solid var(--warning); }
-    .alert-error { background:#fff1f2; border:1px solid #fecdd3; border-left:4px solid var(--error); }
-    .alert-info { background:#eff6ff; border:1px solid #bfdbfe; border-left:4px solid var(--info); }
-    .alert-success { background:#f0fdf4; border:1px solid #bbf7d0; border-left:4px solid var(--success); }
-    .alert-brand { background:var(--brand-bg); border:1px solid #a5d6a7; border-left:4px solid var(--brand); }
-    .alert-icon { font-size:18px; flex-shrink:0; margin-top:1px; }
-
-    /* Card */
-    .card {
-      background:#fff; border-radius:var(--r-2xl); border:1px solid var(--n200);
-      padding:28px; box-shadow:var(--shadow-card);
-      transition:transform .3s ease, box-shadow .3s ease;
-    }
-    .card:hover { transform:translateY(-3px); box-shadow:var(--shadow-hover); }
-    .card-brand {
-      background: linear-gradient(135deg, var(--brand-bg) 0%, #fff 100%);
-      border-radius:var(--r-2xl); border:1px solid #a5d6a7; padding:28px; box-shadow:var(--shadow-card);
-    }
-    .card-accent {
-      background: var(--accent-bg);
-      border-radius:var(--r-2xl); border:1px solid #e8d87a; padding:28px; box-shadow:var(--shadow-card);
-    }
-    .card-title { font-size:16px; font-weight:700; color:var(--n900); margin-bottom:12px; }
-    .card-icon { font-size:24px; margin-bottom:12px; }
-
-    /* Stat cards */
-    .stat-card {
-      background:linear-gradient(135deg,var(--brand) 0%,var(--brand-dark) 100%);
-      border-radius:var(--r-2xl); padding:24px; color:#fff; box-shadow:var(--shadow-btn);
-    }
-    .stat-label { font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.05em; opacity:.75; margin-bottom:8px; }
-    .stat-value { font-size:28px; font-weight:700; line-height:1; margin-bottom:6px; }
-    .stat-desc { font-size:13px; opacity:.8; }
-
-    /* List item */
-    .list-item {
-      display:flex; gap:10px; align-items:flex-start;
-      padding:9px 0; border-bottom:1px solid var(--n100);
-      font-size:14px; color:var(--n600);
-    }
-    .list-item:last-child { border-bottom:none; }
-    .list-dot { width:8px; height:8px; border-radius:50%; background:var(--brand); flex-shrink:0; margin-top:6px; }
-    .list-dot-red { width:8px; height:8px; border-radius:50%; background:var(--error); flex-shrink:0; margin-top:6px; }
-
-    /* Status icons */
-    .s-ok { color:var(--success); font-weight:600; }
-    .s-warn { color:var(--warning); font-weight:600; }
-    .s-need { color:#f97316; font-weight:600; }
-
-    @media (max-width:768px) {
-      .nav-links { display:none; }
-      .section-title { font-size:24px; }
-      .grid-2, .grid-3 { grid-template-columns:1fr; }
-    }
-
-    /* Hero */
-    .hero {
-      background: linear-gradient(135deg, var(--brand-dark) 0%, var(--brand) 50%, var(--brand-light) 100%);
-      padding: 120px 0 80px; color:#fff; position:relative; overflow:hidden;
-    }
-    .hero::before {
-      content:''; position:absolute; inset:0;
-      background: radial-gradient(ellipse at 70% 50%, rgba(212,175,55,.15) 0%, transparent 60%);
-    }
-    .hero-inner { display:flex; align-items:center; gap:48px; flex-wrap:wrap; }
-    .hero-logo-wrap { flex-shrink:0; }
-    .hero-logo-wrap img { height:140px; width:auto; display:block; border-radius:var(--r-xl); }
-    .hero-content { flex:1; min-width:280px; }
-    .hero-badge {
-      display:inline-block; font-size:11px; font-weight:700; text-transform:uppercase;
-      letter-spacing:.1em; background:rgba(255,255,255,.15); color:#fff;
-      border:1px solid rgba(255,255,255,.3); padding:6px 16px;
-      border-radius:var(--r-full); margin-bottom:20px; backdrop-filter:blur(8px);
-    }
-    .hero-title { font-size:52px; font-weight:700; line-height:1.1; margin-bottom:16px; }
-    .hero-title span { color:var(--accent); }
-    .hero-sub { font-size:18px; opacity:.85; max-width:600px; margin-bottom:32px; line-height:1.6; }
-    .hero-meta { display:flex; gap:24px; flex-wrap:wrap; }
-    .hero-meta-item { display:flex; flex-direction:column; gap:3px; }
-    .hero-meta-label { font-size:10px; text-transform:uppercase; letter-spacing:.08em; opacity:.6; }
-    .hero-meta-value { font-size:14px; font-weight:600; }
-
-    @media (max-width:768px) {
-      .hero { padding: 100px 0 60px; }
-      .hero-title { font-size:34px; }
-      .hero-logo-wrap img { height:80px; }
-    }
-
-    /* Footer */
-    .footer { background:var(--n900); color:var(--n400); padding:40px 0; font-size:13px; }
-    .footer-inner { display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:16px; }
-    .footer-meta { display:flex; gap:20px; flex-wrap:wrap; }
-    .footer-meta-item { display:flex; flex-direction:column; gap:2px; }
-    .footer-meta-label { font-size:10px; text-transform:uppercase; letter-spacing:.05em; color:var(--n600); }
-    .footer-meta-value { font-size:12px; color:var(--n400); }
-
-    /* Pain layer cards */
-    .pain-card {
-      background:#fff; border-radius:var(--r-2xl); border:1px solid var(--n200);
-      padding:24px; box-shadow:var(--shadow-card);
-    }
-    .pain-card-surface { border-top:4px solid var(--info); }
-    .pain-card-deep { border-top:4px solid var(--warning); }
-    .pain-card-hidden { border-top:4px solid var(--brand); }
-
-    .hook-box {
-      background:var(--n50); border-radius:var(--r-lg); padding:14px 18px;
-      font-size:14px; color:var(--n700); font-style:italic; margin-top:12px;
-      border-left:3px solid var(--brand);
-    }
-    .pain-layer-badge {
-      font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:.07em;
-      padding:3px 10px; border-radius:var(--r-full); margin-bottom:10px; display:inline-block;
-    }
-    .layer-surface { background:#dbeafe; color:#1e40af; }
-    .layer-deep { background:#fef3c7; color:#92400e; }
-    .layer-hidden { background:var(--brand-bg); color:var(--brand-dark); }
-
-    .segment-header {
-      background: linear-gradient(135deg, var(--brand-bg) 0%, #f0f9f0 100%);
-      border-radius:var(--r-2xl); border:1px solid #a5d6a7;
-      padding:20px 28px; margin-bottom:24px;
-    }
-    .segment-title { font-size:20px; font-weight:700; color:var(--n900); margin-bottom:4px; }
-    .segment-avatar { font-size:14px; color:var(--n500); font-style:italic; }
-
-    /* Refusal cards */
-    .refusal-card {
-      background:#fff; border-radius:var(--r-2xl); border:1px solid var(--n200);
-      padding:24px; box-shadow:var(--shadow-card); border-left:4px solid var(--warning);
-    }
-    .refusal-title { font-size:15px; font-weight:700; color:var(--n900); margin-bottom:8px; }
-    .refusal-what { font-size:13px; color:var(--n500); margin-bottom:12px; font-style:italic; }
-    .action-item {
-      display:flex; gap:10px; align-items:flex-start;
-      padding:8px 0; border-bottom:1px solid var(--n100); font-size:13px; color:var(--n700);
-    }
-    .action-item:last-child { border-bottom:none; }
-    .action-num {
-      width:22px; height:22px; border-radius:50%; background:var(--brand); color:#fff;
-      font-size:11px; font-weight:700; display:flex; align-items:center; justify-content:center;
-      flex-shrink:0; margin-top:1px;
-    }
-
-    .hook-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:16px; margin-top:24px; }
-    .hook-item {
-      background:#fff; border-radius:var(--r-xl); border:1px solid var(--n200);
-      padding:18px; font-size:14px; color:var(--n700); font-style:italic;
-      border-left:3px solid var(--accent);
-    }
-    .hook-item-seg { font-size:11px; font-weight:700; text-transform:uppercase; color:var(--brand); margin-bottom:8px; }
-    .hook-item-type { font-size:11px; color:var(--n400); margin-top:8px; font-style:normal; }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>M4-06 · Карта болей и мотиваций — BRODSKY OIL · BrandOS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --primary: #0ea5e9; --primary-dark: #0284c7; --primary-light: #7dd3fc;
+  --primary-bg: #e0f2fe; --background: #ffffff; --foreground: #0f172a;
+  --card-bg: hsl(0,0%,97%); --border: #1C1C1E; --muted: #64748b; --radius: 4px;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: 'Inter', sans-serif; background: var(--background); color: var(--foreground); line-height: 1.75; font-size: 16px; }
+.container { max-width: 1200px; margin: 0 auto; padding: 0 1.5rem; }
+.nav { position: sticky; top: 0; background: white; border-bottom: 1px solid var(--border); z-index: 100; padding: 1rem 0; }
+.nav-container { display: flex; justify-content: space-between; align-items: center; gap: 2rem; }
+.nav-brand { font-size: 1rem; font-weight: 700; color: var(--foreground); white-space: nowrap; }
+.nav-brand span { color: var(--primary); }
+.nav-links { display: flex; gap: 1.5rem; list-style: none; overflow-x: auto; flex-wrap: wrap; }
+.nav-links a { color: var(--foreground); text-decoration: none; font-size: .875rem; font-weight: 500; white-space: nowrap; transition: color .2s; }
+.nav-links a:hover { color: var(--primary); }
+.hero { padding: 3.75rem 0; background: linear-gradient(135deg, rgba(255,255,255,.98) 0%, rgba(240,249,255,.95) 100%); }
+.hero-badge { display: inline-flex; align-items: center; gap: .5rem; padding: .5rem 1rem; background: var(--card-bg); border: 1px solid var(--border); border-radius: var(--radius); font-size: .875rem; font-weight: 600; margin-bottom: 1.5rem; color: var(--foreground); }
+.hero h1 { font-size: clamp(32px, 4vw, 51px); font-weight: 500; line-height: 1.2; letter-spacing: -.03em; margin-bottom: 1.5rem; }
+.hero-subtitle { font-size: 1.125rem; color: var(--muted); margin-bottom: 2rem; }
+.hero-meta { display: flex; gap: 2rem; flex-wrap: wrap; }
+.hero-meta-item { font-size: .875rem; color: var(--muted); }
+.hero-meta-item strong { color: var(--primary); font-weight: 600; }
+.section { padding: 2.5rem 0; }
+@media (min-width: 768px) { .section { padding: 3.75rem 0; } }
+.section-header { position: relative; margin-bottom: 32px; padding-top: 24px; }
+.section-header::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px; background: repeating-linear-gradient(to right, #9CA3AF 0, #9CA3AF 4px, transparent 4px, transparent 8px); }
+.section-tag { display: inline-block; font-size: .75rem; font-weight: 600; text-transform: uppercase; letter-spacing: .1em; color: var(--primary); margin-bottom: .5rem; }
+h2 { font-size: 32px; font-weight: 300; line-height: 1.2; letter-spacing: -.02em; margin-bottom: 1rem; }
+h3 { font-size: 20px; font-weight: 600; line-height: 1.3; margin-bottom: 1rem; }
+p { margin-bottom: 1rem; color: var(--muted); }
+p:last-child { margin-bottom: 0; }
+.card { border: 1px solid var(--border); border-radius: var(--radius); background: linear-gradient(135deg, rgba(255,255,255,.98) 0%, rgba(250,250,252,.95) 100%); padding: 1.5rem; position: relative; overflow: hidden; transition: all .4s cubic-bezier(.4, 0, .2, 1); }
+.card:hover { transform: translateY(-4px); box-shadow: 0 12px 32px rgba(0,0,0,.08), 0 0 0 1px rgba(14,165,233,.1); border-color: rgba(14,165,233,.3); }
+.card-title { font-size: 1.0625rem; font-weight: 600; margin-bottom: .75rem; color: var(--foreground); }
+.card-description { font-size: .9375rem; line-height: 1.75; color: var(--muted); }
+.grid { display: grid; gap: 1.5rem; }
+.grid-2 { grid-template-columns: 1fr; }
+.grid-3 { grid-template-columns: 1fr; }
+@media (min-width: 768px) { .grid-2 { grid-template-columns: repeat(2, 1fr); } .grid-3 { grid-template-columns: repeat(3, 1fr); } }
+.highlight-box { background: linear-gradient(135deg, rgba(14,165,233,.05) 0%, rgba(14,165,233,.02) 100%); border: 1px solid rgba(14,165,233,.2); border-left: 4px solid var(--primary); padding: 1.25rem 1.5rem; border-radius: var(--radius); margin: 1.5rem 0; }
+.highlight-box p { margin: 0; font-size: 1rem; }
+.highlight-box strong { color: var(--primary); }
+.phase-badge { background: linear-gradient(135deg, rgba(14,165,233,.07) 0%, rgba(14,165,233,.02) 100%); padding: 2rem; border-radius: var(--radius); border: 1px solid rgba(14,165,233,.22); margin-bottom: 2rem; }
+.phase-badge h3 { color: var(--primary); margin-bottom: .5rem; }
+.phase-badge p { font-size: 1.0625rem; margin: 0; }
+.list-styled { list-style: none; padding: 0; }
+.list-styled li { padding-left: 1.5rem; margin-bottom: .75rem; position: relative; color: var(--muted); font-size: .9375rem; }
+.list-styled li::before { content: ''; position: absolute; left: 0; top: .65rem; width: 6px; height: 6px; background: var(--primary); border-radius: 50%; }
+.table-wrapper { overflow-x: auto; margin: 1.5rem 0; border: 1px solid var(--border); border-radius: var(--radius); }
+table { width: 100%; border-collapse: collapse; background: white; }
+th, td { padding: 1rem; text-align: left; border-bottom: 1px solid var(--border); }
+th { background: var(--card-bg); font-weight: 600; font-size: .8125rem; text-transform: uppercase; letter-spacing: .05em; color: var(--foreground); }
+td { font-size: .9375rem; color: var(--muted); }
+tr:last-child td { border-bottom: none; }
+tr:hover td { background: var(--card-bg); }
+.table-accent { color: var(--primary); font-weight: 600; }
+.warning-block { background: linear-gradient(135deg, rgba(239,68,68,.04) 0%, rgba(239,68,68,.01) 100%); border: 1px solid rgba(239,68,68,.18); border-left: 4px solid #ef4444; padding: 1.25rem 1.5rem; border-radius: var(--radius); margin: 1.5rem 0; }
+.warning-block p { margin: 0; font-size: .9375rem; color: var(--muted); }
+.warning-block strong { color: var(--foreground); }
+.formula-block { background: linear-gradient(135deg, rgba(14,165,233,.05) 0%, rgba(14,165,233,.02) 100%); border: 1px solid rgba(14,165,233,.22); border-left: 4px solid var(--primary); padding: 2rem 2.5rem; border-radius: var(--radius); font-size: 1.125rem; font-style: italic; line-height: 1.8; color: var(--foreground); margin: 2rem 0; }
+.badge { display: inline-block; padding: .25rem .75rem; border-radius: 9999px; font-size: .75rem; font-weight: 600; }
+.badge-green { background: #d1fae5; color: #065f46; }
+.badge-yellow { background: #fef3c7; color: #92400e; }
+.badge-blue { background: var(--primary-bg); color: var(--primary-dark); }
+.footer { padding: 2rem 0; border-top: 1px solid var(--border); text-align: center; color: var(--muted); font-size: .875rem; }
+.pain-card { border: 1px solid rgba(239,68,68,.2); border-radius: var(--radius); background: linear-gradient(135deg, rgba(239,68,68,.03) 0%, rgba(255,255,255,1) 100%); padding: 1.5rem; }
+.pain-card .card-title { color: #dc2626; }
+.motiv-card { border: 1px solid rgba(14,165,233,.2); border-radius: var(--radius); background: linear-gradient(135deg, rgba(14,165,233,.04) 0%, rgba(255,255,255,1) 100%); padding: 1.5rem; }
+.motiv-card .card-title { color: var(--primary); }
+.hook-box { background: var(--card-bg); border: 1px solid var(--border); border-radius: var(--radius); padding: 1rem 1.25rem; margin: .75rem 0; font-style: italic; font-size: .9375rem; color: var(--foreground); }
+.hook-label { font-size: .75rem; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: var(--primary); margin-bottom: .25rem; font-style: normal; }
+@media (max-width: 768px) { .container { padding: 0 1rem; } h2 { font-size: 24px; } h3 { font-size: 18px; } .nav-links { gap: .75rem; } .hero-meta { gap: 1rem; } .formula-block { padding: 1.5rem; font-size: 1rem; } }
+</style>
 </head>
 <body>
 
-<!-- NAV -->
-<nav class="nav-wrap">
-  <div class="container">
-    <div class="nav-inner">
-      <div class="nav-logo"><img src="../../assets/logo-horizontal-light.png" alt="Магия Масел"></div>
-      <div class="nav-links">
-        <a href="#principle">Принцип</a>
-        <a href="#pains">Боли по сегментам</a>
-        <a href="#motivators">Мотиваторы</a>
-        <a href="#refusals">Почему нет</a>
-        <a href="#map">Карта боль→решение</a>
-        <a href="#hooks">Хуки</a>
-      </div>
-      <div class="nav-badge">M4 · Документ 6/8</div>
-    </div>
+<nav class="nav">
+  <div class="container nav-container">
+    <div class="nav-brand">Brand<span>OS</span> · Документ</div>
+    <ul class="nav-links">
+      <li><a href="#principle">Принцип</a></li>
+      <li><a href="#s1">С1</a></li>
+      <li><a href="#s2">С2</a></li>
+      <li><a href="#s3">С3</a></li>
+      <li><a href="#s4">С4</a></li>
+      <li><a href="#s5">С5</a></li>
+    </ul>
   </div>
 </nav>
 
-<!-- HERO -->
 <section class="hero">
   <div class="container">
-    <div class="hero-inner">
-      <div class="hero-logo-wrap">
-        <img src="../../assets/logo-badge-dark.png" alt="Магия Масел — Кирилл Бродский">
-      </div>
-      <div class="hero-content">
-        <div class="hero-badge">M4 · Аудитория · Документ 6 из 8</div>
-        <h1 class="hero-title">Pain <span>Motivation Map</span></h1>
-        <p class="hero-sub">Три слоя боли, мотиваторы, причины покупки и НЕ-покупки по сегментам.</p>
-        <div class="hero-meta">
-          <div class="hero-meta-item">
-            <span class="hero-meta-label">Клиент</span>
-            <span class="hero-meta-value">Кирилл Бродский</span>
-          </div>
-          <div class="hero-meta-item">
-            <span class="hero-meta-label">Дата</span>
-            <span class="hero-meta-value">31.03.2026</span>
-          </div>
-          <div class="hero-meta-item">
-            <span class="hero-meta-label">Версия</span>
-            <span class="hero-meta-value">1.0 (Opus)</span>
-          </div>
-          <div class="hero-meta-item">
-            <span class="hero-meta-label">Сегментов</span>
-            <span class="hero-meta-value">5 (С1–С5)</span>
-          </div>
-        </div>
-      </div>
+    <div class="hero-badge">M4-06 · Аудитория · BrandOS</div>
+    <h1>Карта болей и мотиваций<br><span style="color:var(--primary)">BRODSKY OIL</span></h1>
+    <p class="hero-subtitle">Кирилл Бродский · v3.1 · 31.03.2026</p>
+    <div class="hero-meta">
+      <span class="hero-meta-item"><strong>Клиент:</strong> Кирилл Бродский</span>
+      <span class="hero-meta-item"><strong>Модуль:</strong> M4 — Аудитория</span>
+      <span class="hero-meta-item"><strong>Версия:</strong> 3.1 (roundtable)</span>
+      <span class="hero-meta-item"><strong>Слоёв боли:</strong> 3 (поверхностная, глубокая, скрытая)</span>
     </div>
   </div>
 </section>
 
-<!-- 1. ПРИНЦИП -->
-<section class="section fade-up" id="principle">
+<!-- Принцип -->
+<section class="section" id="principle">
   <div class="container">
     <div class="section-header">
-      <div class="section-label">1. Принцип</div>
-      <h2 class="section-title">Три слоя боли</h2>
-      <p class="section-sub">Каждый покупатель масла Кирилла приходит с тремя слоями боли одновременно. Только один из них он произносит вслух.</p>
+      <span class="section-tag">Принцип</span>
+      <h2>Три слоя боли</h2>
     </div>
-    <div class="alert alert-brand fade-up">
-      <span class="alert-icon">💡</span>
-      <div>
-        <strong style="color:var(--brand-dark); display:block; margin-bottom:6px;">Правило трёх слоёв</strong>
-        <p style="font-size:14px; color:var(--n600);">Контент, который касается только поверхностного слоя — <strong>информирует</strong>. Контент, который достигает глубокого — <strong>убеждает</strong>. Контент, который резонирует со скрытым — <strong>создаёт лояльность</strong>.</p>
-      </div>
+    <div class="highlight-box">
+      <p>Каждый покупатель масла Кирилла приходит с тремя слоями боли одновременно. <strong>Только один из них он произносит вслух.</strong></p>
     </div>
-    <div class="table-wrap fade-up" style="margin-top:24px;">
+    <div class="table-wrapper">
       <table>
-        <thead>
-          <tr>
-            <th>Слой</th>
-            <th>Что это</th>
-            <th>Как проявляется</th>
-            <th>Роль в контенте</th>
-          </tr>
-        </thead>
+        <thead><tr><th>Слой</th><th>Что это</th><th>Как проявляется</th><th>Роль в контенте</th></tr></thead>
         <tbody>
           <tr>
-            <td><span class="badge badge-blue">Поверхностная</span></td>
-            <td><strong>Что говорит вслух</strong></td>
-            <td style="font-size:13px;">Конкретная проблема: «хочу поддержать иммунитет», «выпадают волосы», «ищу нормальное масло»</td>
-            <td style="font-size:13px;">Заголовки, хуки, SEO-ключевики</td>
+            <td class="table-accent">Поверхностная</td>
+            <td>Что говорит вслух</td>
+            <td>«хочу поддержать иммунитет», «ищу нормальное масло»</td>
+            <td>Заголовки, хуки, SEO-ключевики</td>
           </tr>
           <tr>
-            <td><span class="badge badge-yellow">Глубокая</span></td>
-            <td><strong>Что стоит за словами</strong></td>
-            <td style="font-size:13px;">Страх, тревога, усталость: «устала от синтетики», «не знаю кому верить», «боюсь что не поможет»</td>
-            <td style="font-size:13px;">Тело поста, эмоциональный слой</td>
+            <td class="table-accent">Глубокая</td>
+            <td>Что стоит за словами</td>
+            <td>Страх, тревога, усталость: «устала от синтетики», «не знаю кому верить»</td>
+            <td>Тело поста, эмоциональный слой</td>
           </tr>
           <tr>
-            <td><span class="badge badge-brand">Скрытая</span></td>
-            <td><strong>Никогда не скажет вслух</strong></td>
-            <td style="font-size:13px;">Желание контроля, страх старения, потребность в принадлежности, социальное признание</td>
-            <td style="font-size:13px;">Нарратив, идентичность, глубинная связь с брендом</td>
+            <td class="table-accent">Скрытая</td>
+            <td>Никогда не скажет вслух</td>
+            <td>Желание контроля, страх старения, социальное признание</td>
+            <td>Нарратив, идентичность, глубинная связь с брендом</td>
           </tr>
         </tbody>
       </table>
     </div>
+    <div class="phase-badge">
+      <h3>Правило контента</h3>
+      <p>Контент, который касается только поверхностного слоя — информирует. Контент, который достигает глубокого — убеждает. Контент, который резонирует со скрытым — создаёт лояльность.</p>
+    </div>
   </div>
 </section>
 
-<!-- 2. БОЛИ ПО СЕГМЕНТАМ -->
-<section class="section fade-up" id="pains" style="background:#fff;">
+<!-- С1 -->
+<section class="section" id="s1">
   <div class="container">
     <div class="section-header">
-      <div class="section-label">2. Боли по сегментам</div>
-      <h2 class="section-title">Три слоя боли — 5 сегментов</h2>
-      <p class="section-sub">Для каждого сегмента — три слоя с hook-формулировками.</p>
+      <span class="section-tag">С1 — Функциональный · Татьяна, 47 лет</span>
+      <h2>Боли и мотивации С1</h2>
     </div>
-
-    <!-- С1 -->
-    <div class="fade-up" style="margin-bottom:48px;">
-      <div class="segment-header">
-        <div class="segment-title">С1 — ФУНКЦИОНАЛЬНЫЙ</div>
-        <div class="segment-avatar">Татьяна, 47 лет. ЛОР сказал пить тмин. Пьёт капсулы Омега — непонятно, помогает ли.</div>
+    <div class="grid grid-3">
+      <div class="pain-card">
+        <div class="card-title">Поверхностная боль</div>
+        <p>«Хочу поддержать иммунитет / найти альтернативу таблеткам. Врач посоветовал масло тмина, но не знаю какое брать и как принимать.»</p>
+        <div class="hook-box"><div class="hook-label">Hook</div>Врач сказал «попейте масло тмина». Открыли Яндекс Маркет — 47 позиций. Как выбрать единственное правильное?</div>
       </div>
-      <div class="grid-3">
-        <div class="pain-card pain-card-surface">
-          <div class="pain-layer-badge layer-surface">Поверхностная боль</div>
-          <div class="card-title" style="font-size:14px; margin-bottom:8px;">Что говорит вслух</div>
-          <p style="font-size:14px; color:var(--n600);">«Хочу поддержать иммунитет / решить проблему с ЖКТ / найти альтернативу таблеткам. Врач посоветовал масло тмина, но я не знаю какое брать и как правильно принимать.»</p>
-          <div class="hook-box">Врач сказал «попейте масло тмина». Открыли Яндекс Маркет — 47 позиций. Как выбрать единственное правильное?</div>
-        </div>
-        <div class="pain-card pain-card-deep">
-          <div class="pain-layer-badge layer-deep">Глубокая боль</div>
-          <div class="card-title" style="font-size:14px; margin-bottom:8px;">Что стоит за словами</div>
-          <p style="font-size:14px; color:var(--n600);">Анализы в норме, но «что-то не так». Устала от синтетики. Капсулы Омега пропила три месяца — забыла купить, непонятно, был ли эффект. Тревога: «трачу деньги и время — а вдруг ничего не изменится».</p>
-          <div class="hook-box">Пила капсулы Омега три месяца. Забыла купить — и не заметила разницы. Знакомо?</div>
-        </div>
-        <div class="pain-card pain-card-hidden">
-          <div class="pain-layer-badge layer-hidden">Скрытая боль</div>
-          <div class="card-title" style="font-size:14px; margin-bottom:8px;">Никогда не скажет</div>
-          <p style="font-size:14px; color:var(--n600);">Хочет вернуть ощущение контроля над здоровьем. Желание найти «своего» поставщика — как мясника из маминого детства. Для биохакеров (С1б) — желание быть «в теме» превентивной медицины.</p>
-          <div class="hook-box">Помните, как у мамы был «свой» мясник на рынке? Которому не нужно объяснять. Вот это ощущение — его больше нигде нет. Или есть?</div>
-        </div>
+      <div class="warning-block" style="margin:0">
+        <p><strong>Глубокая боль</strong><br>Анализы в норме, но «что-то не так». Устала от синтетики. Омега три месяца — забыла купить, непонятно был ли эффект. «Я не больна, зачем пить химию». Тревога: «трачу деньги и время — а вдруг ничего».</p>
+        <div class="hook-box" style="margin-top:.75rem"><div class="hook-label">Hook</div>Пила капсулы Омега три месяца. Забыла купить — и не заметила разницы. Знакомо?</div>
       </div>
-    </div>
-
-    <!-- С2 -->
-    <div class="fade-up" style="margin-bottom:48px;">
-      <div class="segment-header">
-        <div class="segment-title">С2 — СЕМЕЙНЫЙ ЗОЖ</div>
-        <div class="segment-avatar">Ольга, 36 лет. Двое детей. Читает состав на упаковках. Льняное из магазина один раз пропало — выкинула.</div>
-      </div>
-      <div class="grid-3">
-        <div class="pain-card pain-card-surface">
-          <div class="pain-layer-badge layer-surface">Поверхностная боль</div>
-          <div class="card-title" style="font-size:14px; margin-bottom:8px;">Что говорит вслух</div>
-          <p style="font-size:14px; color:var(--n600);">«Хочу дать семье нормальное масло вместо рафинированного. Педиатр упомянул Омегу для детей, но капсулы ребёнок не глотает. Не знаю, как хранить, чтобы не испортилось.»</p>
-          <div class="hook-box">Педиатр сказал «Омега нужна». Ребёнок капсулу не глотает. Что делать — добавить в кашу?</div>
-        </div>
-        <div class="pain-card pain-card-deep">
-          <div class="pain-layer-badge layer-deep">Глубокая боль</div>
-          <div class="card-title" style="font-size:14px; margin-bottom:8px;">Что стоит за словами</div>
-          <p style="font-size:14px; color:var(--n600);">Тревога «правильно ли я кормлю детей». Один раз открыла льняное — пахло странно, выкинула. Главный незакрытый вопрос: «Можно ли детям? С какого возраста? Сколько?»</p>
-          <div class="hook-box">Купила льняное. Открыла через неделю — пахнет странно. Выкинула. 850 рублей в мусор. Потому что никто не рассказал три правила хранения.</div>
-        </div>
-        <div class="pain-card pain-card-hidden">
-          <div class="pain-layer-badge layer-hidden">Скрытая боль</div>
-          <div class="card-title" style="font-size:14px; margin-bottom:8px;">Никогда не скажет</div>
-          <p style="font-size:14px; color:var(--n600);">Хочет быть «осознанной мамой». В родительском чате «я даю детям льняное масло в кашу» — маленькое социальное очко. Маленькое действие несёт огромный эмоциональный вес: «я молодец».</p>
-          <div class="hook-box">Одно простое действие утром. Ложка льняного в кашу. Дети не заметили. Но вы-то знаете — вы сделали правильное.</div>
-        </div>
-      </div>
-    </div>
-
-    <!-- С3 -->
-    <div class="fade-up" style="margin-bottom:48px;">
-      <div class="segment-header">
-        <div class="segment-title">С3 — КРАФТ-КОНТРОЛЁР</div>
-        <div class="segment-avatar">Андрей, 53 года. Инженер. Купил тыквенное на маркетплейсе — горькое, в прозрачной бутылке. Выкинул. Три года не покупал холодный отжим.</div>
-      </div>
-      <div class="grid-3">
-        <div class="pain-card pain-card-surface">
-          <div class="pain-layer-badge layer-surface">Поверхностная боль</div>
-          <div class="card-title" style="font-size:14px; margin-bottom:8px;">Что говорит вслух</div>
-          <p style="font-size:14px; color:var(--n600);">«Ищу производителя, у которого точно свежее. Хочу видеть дату отжима, тёмное стекло, понимать что именно покупаю. Один раз уже обжёгся — не хочу повторять.»</p>
-          <div class="hook-box">Купил «холодный отжим» на маркетплейсе. Прозрачная бутылка. Горькое. Написал в поддержку — «так и должно быть». Выкинул. Знакомо?</div>
-        </div>
-        <div class="pain-card pain-card-deep">
-          <div class="pain-layer-badge layer-deep">Глубокая боль</div>
-          <div class="card-title" style="font-size:14px; margin-bottom:8px;">Что стоит за словами</div>
-          <p style="font-size:14px; color:var(--n600);">Глубокое разочарование в рынке. Ощущение, что его обманули. Злость на маркетплейс, который ответил «так и должно быть». Один негативный опыт закрыл не потребность, а только доверие.</p>
-          <div class="hook-box">«Натуральное. Холодный отжим. Премиум.» Написано на каждой второй бутылке. Как отличить настоящее от маркетинга?</div>
-        </div>
-        <div class="pain-card pain-card-hidden">
-          <div class="pain-layer-badge layer-hidden">Скрытая боль</div>
-          <div class="card-title" style="font-size:14px; margin-bottom:8px;">Никогда не скажет</div>
-          <p style="font-size:14px; color:var(--n600);">Страх снова почувствовать себя обманутым. «Повестись на красивую этикетку» — удар по самооценке. Когда Кирилл объясняет гидравлику и температуру — это резонирует: «Этот человек говорит на моём языке».</p>
-          <div class="hook-box">Вы спрашиваете «какой пресс?» — а вам отвечают «натуральное, всё свежее». Тогда вот наш: гидравлический, температура не выше 35 °C, дата отжима — на каждой бутылке.</div>
-        </div>
-      </div>
-    </div>
-
-    <!-- С4 -->
-    <div class="fade-up" style="margin-bottom:48px;">
-      <div class="segment-header">
-        <div class="segment-title">С4 — ГАСТРОНОМ</div>
-        <div class="segment-avatar">Михаил, 42 года. Коммерческий директор. Готовит дома как хобби. Испанское оливковое на всё — скучно.</div>
-      </div>
-      <div class="grid-3">
-        <div class="pain-card pain-card-surface">
-          <div class="pain-layer-badge layer-surface">Поверхностная боль</div>
-          <div class="card-title" style="font-size:14px; margin-bottom:8px;">Что говорит вслух</div>
-          <p style="font-size:14px; color:var(--n600);">«Оливковое на всё надоело. Хочу разнообразие — ореховое, кедровое, кунжутное. Но боюсь нестабильного вкуса: в прошлый раз одно масло заглушило всё блюдо.»</p>
-          <div class="hook-box">Оливковое на всё — как соль: необходимо, но нет характера. А если добавить один новый вкус?</div>
-        </div>
-        <div class="pain-card pain-card-deep">
-          <div class="pain-layer-badge layer-deep">Глубокая боль</div>
-          <div class="card-title" style="font-size:14px; margin-bottom:8px;">Что стоит за словами</div>
-          <p style="font-size:14px; color:var(--n600);">Нестабильность вкуса от партии к партии — главный источник фрустрации. Не понимает, как применять незнакомые масла: какое куда, с чем сочетать. Ищет не просто масло, а линейку с объяснением.</p>
-          <div class="hook-box">Кедровое — на пасту, на финиш. Грецкое — с горькой зеленью и сыром. Не путайте, они разные. Вот конкретно — какое куда.</div>
-        </div>
-        <div class="pain-card pain-card-hidden">
-          <div class="pain-layer-badge layer-hidden">Скрытая боль</div>
-          <div class="card-title" style="font-size:14px; margin-bottom:8px;">Никогда не скажет</div>
-          <p style="font-size:14px; color:var(--n600);">Хочет произвести впечатление на гостей. «Масло местного производителя, он сам давит» — это история, которую можно рассказать. Подарить набор гурману — подтверждение статуса дарящего.</p>
-          <div class="hook-box">«Откуда это масло?» — спросят гости. И вот тут начинается история. Про конкретного человека. Про гидравлический пресс. Про дату на бутылке.</div>
-        </div>
-      </div>
-    </div>
-
-    <!-- С5 -->
-    <div class="fade-up" style="margin-bottom:16px;">
-      <div class="segment-header">
-        <div class="segment-title">С5 — КРАСОТА ИЗНУТРИ</div>
-        <div class="segment-avatar">Елена, 33 года. Менеджер проектов. Полтора года выпадают волосы. Кремы дают временный эффект. Начала искать решение изнутри.</div>
-      </div>
-      <div class="grid-3">
-        <div class="pain-card pain-card-surface">
-          <div class="pain-layer-badge layer-surface">Поверхностная боль</div>
-          <div class="card-title" style="font-size:14px; margin-bottom:8px;">Что говорит вслух</div>
-          <p style="font-size:14px; color:var(--n600);">«У меня выпадают волосы / ломаются ногти / сухая кожа. Кремы помогают пока мажу. Хочу решить проблему изнутри — но не знаю какое масло, сколько пить и когда ждать результат.»</p>
-          <div class="hook-box">Расчёска каждое утро — страшно смотреть. Кремы помогают пока мажешь. А если начать изнутри?</div>
-        </div>
-        <div class="pain-card pain-card-deep">
-          <div class="pain-layer-badge layer-deep">Глубокая боль</div>
-          <div class="card-title" style="font-size:14px; margin-bottom:8px;">Что стоит за словами</div>
-          <p style="font-size:14px; color:var(--n600);">Устала от продуктов, которые «обещают и не дают». Боится потратить ещё раз деньги впустую. Первый месяц без видимого эффекта — стандартная точка слива. Не понимает, что цикл роста волоса = 60 дней минимум.</p>
-          <div class="hook-box">Месяц пила масло. Ничего не изменилось. А потом узнала про цикл роста волоса — и всё встало на место.</div>
-        </div>
-        <div class="pain-card pain-card-hidden">
-          <div class="pain-layer-badge layer-hidden">Скрытая боль</div>
-          <div class="card-title" style="font-size:14px; margin-bottom:8px;">Никогда не скажет</div>
-          <p style="font-size:14px; color:var(--n600);">Страх стареть. Волосы, ногти, кожа — видимые маркеры возраста. Хочет чувствовать «я слежу за собой по-взрослому» — не крем из масс-маркета, а осознанный нутритивный подход.</p>
-          <div class="hook-box">Кремы работают снаружи. Но волос растёт изнутри. Что если дать ему то, что ему нужно — на клеточном уровне?</div>
-        </div>
+      <div class="motiv-card">
+        <div class="card-title">Скрытая боль</div>
+        <p>Хочет вернуть ощущение контроля над своим здоровьем. Боится, что тело начинает «сдавать». Желание найти «своего» поставщика — как мясника из маминого детства.</p>
+        <div class="hook-box"><div class="hook-label">Hook</div>Помните, как у мамы был «свой» мясник на рынке? Которому не нужно объяснять. Или есть?</div>
       </div>
     </div>
   </div>
 </section>
 
-<!-- 3. МОТИВАТОРЫ -->
-<section class="section fade-up" id="motivators">
+<!-- С2 -->
+<section class="section" id="s2">
   <div class="container">
     <div class="section-header">
-      <div class="section-label">3. Мотиваторы</div>
-      <h2 class="section-title">Мотиваторы к покупке по сегментам</h2>
-      <p class="section-sub">Рациональные, эмоциональные и социальные мотиваторы — как проявляются в речи покупателей.</p>
+      <span class="section-tag">С2 — Семейный ЗОЖ · Ольга, 36 лет</span>
+      <h2>Боли и мотивации С2</h2>
     </div>
-    <div class="table-wrap fade-up">
-      <table>
-        <thead>
-          <tr>
-            <th>Тип</th>
-            <th>С1 Функциональный</th>
-            <th>С2 Семейный ЗОЖ</th>
-            <th>С3 Крафт-контролёр</th>
-            <th>С4 Гастроном</th>
-            <th>С5 Красота изнутри</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td><span class="badge badge-blue">Рациональный</span></td>
-            <td style="font-size:13px;">Протокол приёма. Замена синтетических БАДов. Механизм действия (тимохинон)</td>
-            <td style="font-size:13px;">Простое применение (в кашу, в салат). Понятный состав. Ответ «можно ли детям»</td>
-            <td style="font-size:13px;">Дата отжима на бутылке. Тёмное стекло, гидравлический пресс. Объяснение вкуса</td>
-            <td style="font-size:13px;">Конкретные применения по блюдам. Линейка вместо одного оливкового. Стабильность вкуса</td>
-            <td style="font-size:13px;">Протокол + срок + результат. Механизм цикла волоса. Альтернатива рыбьему жиру</td>
-          </tr>
-          <tr>
-            <td><span class="badge badge-yellow">Эмоциональный</span></td>
-            <td style="font-size:13px;">Ощущение контроля: «я делаю конкретное действие». Доверие к производителю как снятие тревоги</td>
-            <td style="font-size:13px;">«Я делаю правильное для семьи». Спокойствие от понятного состава</td>
-            <td style="font-size:13px;">Уверенность «я не дал себя обмануть». Завершение утомительного поиска</td>
-            <td style="font-size:13px;">Удовольствие от открытия нового вкуса. «Правильный выбор: фермерское, не с полки»</td>
-            <td style="font-size:13px;">Надежда с честными ожиданиями. «Я слежу за собой по-взрослому»</td>
-          </tr>
-          <tr>
-            <td><span class="badge badge-brand">Социальный</span></td>
-            <td style="font-size:13px;">Тихая рекомендация в кругу. «Есть один человек на Дорогомиловском». Принадлежность к «людям в теме»</td>
-            <td style="font-size:13px;">«Я забочусь о близких». «Осознанная мама» в родительском чате</td>
-            <td style="font-size:13px;">«Есть один нормальный» — активная точечная рекомендация. «Я разбираюсь, меня не обманешь»</td>
-            <td style="font-size:13px;">История для ужина. Подарок со смыслом — статус дарящего</td>
-            <td style="font-size:13px;">В тренде натуральной красоты изнутри. Рекомендация с фотодоказательством</td>
-          </tr>
-        </tbody>
-      </table>
+    <div class="grid grid-3">
+      <div class="pain-card">
+        <div class="card-title">Поверхностная боль</div>
+        <p>«Хочу дать семье нормальное масло вместо рафинированного. Педиатр упомянул Омегу для детей, но капсулы ребёнок не глотает.»</p>
+        <div class="hook-box"><div class="hook-label">Hook</div>Педиатр сказал «Омега нужна». Ребёнок капсулу не глотает. Что делать — добавить в кашу?</div>
+      </div>
+      <div class="warning-block" style="margin:0">
+        <p><strong>Глубокая боль</strong><br>Тревога «правильно ли я кормлю детей». Один раз открыла льняное — пахло странно, выкинула. Главный незакрытый вопрос: «Можно ли детям? С какого возраста? Не навредит?»</p>
+        <div class="hook-box" style="margin-top:.75rem"><div class="hook-label">Hook</div>Купила льняное. Открыла через неделю — пахнет странно. Выкинула. 850 рублей в мусор. Никто не рассказал три правила хранения.</div>
+      </div>
+      <div class="motiv-card">
+        <div class="card-title">Скрытая боль</div>
+        <p>Хочет быть «осознанной мамой» — не фанатичной, но ответственной. В родительском чате «я даю детям льняное в кашу» — маленькое социальное очко. Маленькое действие несёт огромный эмоциональный вес.</p>
+        <div class="hook-box"><div class="hook-label">Hook</div>Одно простое действие утром. Ложка льняного в кашу. Дети не заметили. Но вы-то знаете — вы сделали правильное.</div>
+      </div>
     </div>
   </div>
 </section>
 
-<!-- 4. ПРИЧИНЫ НЕ-ПОКУПКИ -->
-<section class="section fade-up" id="refusals" style="background:#fff;">
+<!-- С3 -->
+<section class="section" id="s3">
   <div class="container">
     <div class="section-header">
-      <div class="section-label">4. Причины НЕ-покупки</div>
-      <h2 class="section-title">Почему уходят — и что делать</h2>
-      <p class="section-sub">Кирилл (29.03.2026): «Чаще уходит до покупки». Фразы при уходе: «Вернусь в следующий раз», «Похожу по рынку, подумаю». Ценовое возражение скрытое — не спорят, уходят.</p>
+      <span class="section-tag">С3 — Крафт-контролёр · Андрей, 53 года</span>
+      <h2>Боли и мотивации С3</h2>
     </div>
-
-    <div class="alert alert-error fade-up">
-      <span class="alert-icon">🚨</span>
-      <div>
-        <strong style="color:#991b1b; display:block; margin-bottom:4px;">Системная проблема</strong>
-        <p style="font-size:14px; color:var(--n600);">Нет клиентской базы. Человек, который ушёл «подумать», — потерян навсегда. QR-код на точке + TG-канал = приоритет номер один. Каждый ушедший без подписки — потерянный LTV в 15 000–30 000 рублей в год.</p>
+    <div class="grid grid-3">
+      <div class="pain-card">
+        <div class="card-title">Поверхностная боль</div>
+        <p>«Ищу производителя, у которого точно свежее. Хочу видеть дату отжима, тёмное стекло. Один раз уже обжёгся — не хочу повторять.»</p>
+        <div class="hook-box"><div class="hook-label">Hook</div>Купил «холодный отжим» на маркетплейсе. Прозрачная бутылка. Горькое. Написал в поддержку — «так и должно быть». Знакомо?</div>
       </div>
-    </div>
-
-    <div class="grid-2" style="margin-top:24px;">
-      <div class="refusal-card fade-up">
-        <div class="refusal-title">Фраза 1: «Вернусь в следующий раз, ещё есть»</div>
-        <div class="refusal-what">Что реально стоит за этим: нет ощущения срочности, не понял чем масло Кирилла отличается от того что дома. Возможно «дорого», замаскированное под «не сейчас».</div>
-        <div class="action-item">
-          <div class="action-num">1</div>
-          <div>Предложить 100 мл на пробу: «Возьмите маленькую. Попробуете сравнить с тем, что дома стоит. Обычно разница заметна с первой ложки.»</div>
-        </div>
-        <div class="action-item">
-          <div class="action-num">2</div>
-          <div>Дать QR-код на TG-канал: «Вот QR — там пишу когда свежая партия. Когда решите — напишете.» (Не потерять контакт — главное)</div>
-        </div>
-        <div class="action-item">
-          <div class="action-num">3</div>
-          <div>Задать уточняющий вопрос: «А какое масло сейчас дома стоит?» — переключает с ухода на разговор.</div>
-        </div>
+      <div class="warning-block" style="margin:0">
+        <p><strong>Глубокая боль</strong><br>Глубокое разочарование в рынке. «Все пишут "натуральное" — а внутри непонятно что». Ощущение, что его обманули. Потребность в масле осталась (3 года без покупки), но доверие к категории уничтожено.</p>
+        <div class="hook-box" style="margin-top:.75rem"><div class="hook-label">Hook</div>«Натуральное. Холодный отжим. Премиум.» Написано на каждой второй бутылке. Как отличить настоящее от маркетинга?</div>
       </div>
-
-      <div class="refusal-card fade-up">
-        <div class="refusal-title">Фраза 2: «Похожу по рынку, подумаю и вернусь»</div>
-        <div class="refusal-what">Что реально стоит за этим: не получил достаточно доказательств ценности. Страх принять «неправильное» решение. Для С2: «Надо спросить мужа / посоветоваться».</div>
-        <div class="action-item">
-          <div class="action-num">1</div>
-          <div>Дать попробовать: «Подождите — попробуйте хотя бы кедровое на кончике ложки. Вкус скажет больше, чем я.» (Дегустация — самый мощный конвертер в офлайне)</div>
-        </div>
-        <div class="action-item">
-          <div class="action-num">2</div>
-          <div>Дать конкретную точку отличия: «Обратите внимание на дату отжима. Если её нет — масло может стоять на полке полгода. У меня — вот дата.»</div>
-        </div>
-        <div class="action-item">
-          <div class="action-num">3</div>
-          <div>QR-код + визитка: «Там есть видео как давлю, и ответы на частые вопросы. Если останутся сомнения — напишите, отвечу честно.»</div>
-        </div>
-      </div>
-
-      <div class="refusal-card fade-up">
-        <div class="refusal-title">Фраза 3: «Дорого» (скрытое — не произносят прямо, уходят молча)</div>
-        <div class="refusal-what">Что реально стоит за этим: сравнивает с рафинированным / аптечным маслом (200–400 руб./л). Не понял, что это нутрицевтик, а не бакалея.</div>
-        <div class="action-item">
-          <div class="action-num">1</div>
-          <div>Сместить фрейм сравнения: «Капсулы Омега-3 из аптеки — 1 200 рублей за 60 штук. Бутылка льняного 250 мл — те же Омега-3, но живые, не синтетические.»</div>
-        </div>
-        <div class="action-item">
-          <div class="action-num">2</div>
-          <div>Предложить 100 мл: «Попробуйте 100 мл. Если не понравится — знаете что не ваше. А если понравится — поговорим про 250 мл.»</div>
-        </div>
-        <div class="action-item">
-          <div class="action-num">3</div>
-          <div>Объяснить себестоимость: «Из килограмма семян тмина получается 200 мл масла. Остальное — жмых. Поэтому такая цена — не наценка, а выход продукта.»</div>
-        </div>
-      </div>
-
-      <div class="refusal-card fade-up">
-        <div class="refusal-title">Фраза 4: Уход без объяснений (молча)</div>
-        <div class="refusal-what">Что реально стоит за этим: информационный перегруз. Не нашёл своё — не понял какое масло именно ему нужно. Пришёл «просто посмотреть».</div>
-        <div class="action-item">
-          <div class="action-num">1</div>
-          <div>Упростить выбор: «Три самых популярных: тмин — иммунитет, лён — Омега, кедровое — вкус в еде. Какая задача ближе?»</div>
-        </div>
-        <div class="action-item">
-          <div class="action-num">2</div>
-          <div>QR-код как мягкий мостик: «Подпишитесь на канал — там разобрал каждое масло отдельно. Когда будет интерес — напишете.» (Не давить, дать уйти с контактом)</div>
-        </div>
-      </div>
-    </div>
-
-    <div class="alert alert-warning fade-up" style="margin-top:32px;">
-      <span class="alert-icon">⚠️</span>
-      <div>
-        <strong style="color:#92400e; display:block; margin-bottom:4px;">Причины покупки — почему ДА</strong>
-        <p style="font-size:14px; color:var(--n600);">Конвертируют «смотрю» в «беру»: Кирилл объясняет механизм, а не продаёт · Конкретный протокол · Честность о противопоказаниях · Прозрачность производства (дата, пресс, тара) · Малый входной объём 100 мл · Дегустация на рынке · Сарафан от доверенного человека · Личный контакт — Кирилл отвечает в личку · Реакция «давайте разберёмся» на жалобу</p>
+      <div class="motiv-card">
+        <div class="card-title">Скрытая боль</div>
+        <p>Страх снова почувствовать себя обманутым. Для инженерного мышления «повестись на красивую этикетку» — удар по самооценке. Хочет уважение к своему интеллекту.</p>
+        <div class="hook-box"><div class="hook-label">Hook</div>Вы спрашиваете «какой пресс?» — а вам отвечают «натуральное, всё свежее». Вот и весь ответ? Тогда вот наш: гидравлический, температура не выше 35°C, дата отжима — на каждой бутылке.</div>
       </div>
     </div>
   </div>
 </section>
 
-<!-- 5. КАРТА БОЛЬ → РЕШЕНИЕ -->
-<section class="section fade-up" id="map">
+<!-- С4 -->
+<section class="section" id="s4">
   <div class="container">
     <div class="section-header">
-      <div class="section-label">5. Карта</div>
-      <h2 class="section-title">Боль → Решение Кирилла</h2>
-      <p class="section-sub">Как каждая боль покупателя закрывается конкретным инструментом.</p>
+      <span class="section-tag">С4 — Гастроном · Михаил, 42 года</span>
+      <h2>Боли и мотивации С4</h2>
     </div>
-    <div class="table-wrap fade-up">
-      <table>
-        <thead>
-          <tr>
-            <th>Боль (голос покупателя)</th>
-            <th>Сегмент</th>
-            <th>Решение Кирилла</th>
-            <th>Формат решения</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td style="font-size:13px; font-style:italic;">«Не знаю каким маслам доверять»</td>
-            <td><span class="badge badge-gray">Все</span></td>
-            <td style="font-size:13px;">Прозрачность: видео производства, дата отжима, тёмное стекло, гидравлический пресс</td>
-            <td style="font-size:13px;">Контент (видео) + этикетка</td>
-          </tr>
-          <tr>
-            <td style="font-size:13px; font-style:italic;">«Пью БАДы — не вижу результата»</td>
-            <td><span class="badge badge-brand">С1, С5</span></td>
-            <td style="font-size:13px;">Живой нутриент из еды вместо синтетики + протокол с честными сроками</td>
-            <td style="font-size:13px;">Консультация + карточка протокола</td>
-          </tr>
-          <tr>
-            <td style="font-size:13px; font-style:italic;">«Кремы помогают пока мажу»</td>
-            <td><span class="badge badge-brand">С5</span></td>
-            <td style="font-size:13px;">Курс 60 дней изнутри: миндальное/кедровое + объяснение цикла волоса/ногтя</td>
-            <td style="font-size:13px;">Контент + личная консультация</td>
-          </tr>
-          <tr>
-            <td style="font-size:13px; font-style:italic;">«Масло в супермаркете — неизвестное качество»</td>
-            <td><span class="badge badge-brand">С2, С3</span></td>
-            <td style="font-size:13px;">Малые партии, конкретная дата, можно написать лично и спросить</td>
-            <td style="font-size:13px;">TG-канал + личные сообщения</td>
-          </tr>
-          <tr>
-            <td style="font-size:13px; font-style:italic;">«Дорого, не понимаю за что плачу»</td>
-            <td><span class="badge badge-brand">С1, С2</span></td>
-            <td style="font-size:13px;">Объяснение: кг семян = 200 мл масла. Сравнение с ценой капсул</td>
-            <td style="font-size:13px;">Контент + живая консультация</td>
-          </tr>
-          <tr>
-            <td style="font-size:13px; font-style:italic;">«Горькое = испорченное»</td>
-            <td><span class="badge badge-brand">С3, С1</span></td>
-            <td style="font-size:13px;">Разное объяснение: тмин горчит = норма (тимохинон), лён горчит = проблема (окисление)</td>
-            <td style="font-size:13px;">Карточка в упаковке + контент</td>
-          </tr>
-          <tr>
-            <td style="font-size:13px; font-style:italic;">«Не знаю как хранить»</td>
-            <td><span class="badge badge-brand">С2, С3</span></td>
-            <td style="font-size:13px;">3 правила: холодильник, тёмная тара, не стоит долго после вскрытия</td>
-            <td style="font-size:13px;">Пост + карточка в упаковке</td>
-          </tr>
-          <tr>
-            <td style="font-size:13px; font-style:italic;">«Можно ли детям?»</td>
-            <td><span class="badge badge-brand">С2</span></td>
-            <td style="font-size:13px;">Конкретный ответ: какое масло, с какого возраста, сколько, как давать</td>
-            <td style="font-size:13px;">Отдельный пост + ответ в личке</td>
-          </tr>
-          <tr>
-            <td style="font-size:13px; font-style:italic;">«Оливковое на всё — скучно»</td>
-            <td><span class="badge badge-brand">С4</span></td>
-            <td style="font-size:13px;">Линейка с характером + конкретные применения к блюдам</td>
-            <td style="font-size:13px;">Рецептурный контент + набор «Кухня»</td>
-          </tr>
-          <tr>
-            <td style="font-size:13px; font-style:italic;">«Не почувствовал эффект за первый месяц»</td>
-            <td><span class="badge badge-brand">С1, С5</span></td>
-            <td style="font-size:13px;">Честный срок (21–60 дней) + объяснение механизма + ремайндер</td>
-            <td style="font-size:13px;">Консультация + TG-напоминание</td>
-          </tr>
-          <tr>
-            <td style="font-size:13px; font-style:italic;">«Забываю купить вовремя»</td>
-            <td><span class="badge badge-brand">С1, С3</span></td>
-            <td style="font-size:13px;">Ремайндер через 21–25 дней: «Заканчивается?»</td>
-            <td style="font-size:13px;">TG-бот / ручное сообщение</td>
-          </tr>
-          <tr>
-            <td style="font-size:13px; font-style:italic;">«Нестабильный вкус от партии к партии»</td>
-            <td><span class="badge badge-brand">С3, С4</span></td>
-            <td style="font-size:13px;">Малые партии + контроль параметров + объяснение сезонных отличий</td>
-            <td style="font-size:13px;">Контент про производство</td>
-          </tr>
-        </tbody>
-      </table>
+    <div class="grid grid-3">
+      <div class="pain-card">
+        <div class="card-title">Поверхностная боль</div>
+        <p>«Оливковое на всё надоело. Хочу разнообразие — ореховое, кедровое, кунжутное. Но боюсь нестабильного вкуса.»</p>
+        <div class="hook-box"><div class="hook-label">Hook</div>Оливковое на всё — как соль: необходимо, но нет характера. А если добавить один новый вкус?</div>
+      </div>
+      <div class="warning-block" style="margin:0">
+        <p><strong>Глубокая боль</strong><br>Раздражение от «безликости» магазинных масел. Нестабильность вкуса от партии к партии. Не понимает как применять незнакомые масла: какое куда, с чем сочетать.</p>
+        <div class="hook-box" style="margin-top:.75rem"><div class="hook-label">Hook</div>Кедровое — на пасту, на финиш. Грецкое — с горькой зеленью и сыром. Не путайте, они разные. Вот конкретно — какое куда.</div>
+      </div>
+      <div class="motiv-card">
+        <div class="card-title">Скрытая боль</div>
+        <p>Хочет произвести впечатление на гостей за ужином. «Масло местного производителя, он сам давит, гидравлический пресс» — это история, которую можно рассказать. Масло = социальный капитал.</p>
+        <div class="hook-box"><div class="hook-label">Hook</div>«Откуда это масло?» — спросят гости. И вот тут начинается история. Про конкретного человека. Про гидравлический пресс. Про дату на бутылке.</div>
+      </div>
     </div>
   </div>
 </section>
 
-<!-- 6. ХУКИ -->
-<section class="section fade-up" id="hooks" style="background:#fff;">
+<!-- С5 -->
+<section class="section" id="s5">
   <div class="container">
     <div class="section-header">
-      <div class="section-label">6. Хуки</div>
-      <h2 class="section-title">Хуки по трём слоям боли</h2>
-      <p class="section-sub">Готовые формулировки для входа в контент через каждый уровень боли.</p>
+      <span class="section-tag">С5 — Красота изнутри · Елена, 33 года</span>
+      <h2>Боли и мотивации С5</h2>
     </div>
-
-    <div class="section-header" style="margin-bottom:16px;">
-      <div class="section-label" style="background:#dbeafe; color:#1e40af;">Поверхностный слой — узнаваемость, вход</div>
-    </div>
-    <div class="hook-grid fade-up" style="margin-bottom:40px;">
-      <div class="hook-item">
-        <div class="hook-item-seg">С1</div>
-        Врач сказал «попейте масло тмина». Открыли маркетплейс — 47 позиций. Как выбрать?
-        <div class="hook-item-type">Тип: образовательный</div>
+    <div class="grid grid-3">
+      <div class="pain-card">
+        <div class="card-title">Поверхностная боль</div>
+        <p>«Выпадают волосы. Ломаются ногти. Кремы помогают только пока мажу. Рыбий жир — отрыжка, невозможно принимать.»</p>
+        <div class="hook-box"><div class="hook-label">Hook</div>Расчёска каждое утро — страшно смотреть. Кремы? Помогают пока мажу. Капсулы? Отрыжка рыбная. А что если изнутри?</div>
       </div>
-      <div class="hook-item">
-        <div class="hook-item-seg">С1</div>
-        Капсулы Омега-3 за 1 200 рублей или бутылка живого масла за ту же цену. Что усваивается лучше?
-        <div class="hook-item-type">Тип: сравнительный</div>
+      <div class="warning-block" style="margin:0">
+        <p><strong>Глубокая боль</strong><br>Страх что проблема неразрешима. «Месяц пила — ничего не изменилось». Не понимает, помогло ли — «или просто совпадение». Не хочет тратить деньги на очередной неработающий продукт.</p>
+        <div class="hook-box" style="margin-top:.75rem"><div class="hook-label">Hook</div>Принимала масло месяц. Ничего не изменилось. Или изменилось, но я не заметила? Вот почему важно фотографировать расчёску до и после.</div>
       </div>
-      <div class="hook-item">
-        <div class="hook-item-seg">С2</div>
-        Педиатр сказал: «Омега нужна». Ребёнок капсулу не глотает. Что делать?
-        <div class="hook-item-type">Тип: решение проблемы</div>
+      <div class="motiv-card">
+        <div class="card-title">Скрытая боль</div>
+        <p>«Слежу за собой по-взрослому» — идентичность. Не крем из масс-маркета. Не рыбий жир из аптеки. Осознанный выбор. Желание увидеть конкретный измеримый результат — «сфотографировала расчёску до и после».</p>
+        <div class="hook-box"><div class="hook-label">Hook</div>Ногти заметно окрепли. Уменьшился волосопад. 60 дней, ложка миндального масла утром. Это не магия. Это жирные кислоты изнутри.</div>
       </div>
-      <div class="hook-item">
-        <div class="hook-item-seg">С2</div>
-        Три правила хранения масла. Без них — 850 рублей в мусор.
-        <div class="hook-item-type">Тип: лайфхак</div>
-      </div>
-      <div class="hook-item">
-        <div class="hook-item-seg">С3</div>
-        «Натуральное. Холодный отжим. Премиум.» Написано на каждой второй бутылке. Как отличить?
-        <div class="hook-item-type">Тип: разоблачительный</div>
-      </div>
-      <div class="hook-item">
-        <div class="hook-item-seg">С4</div>
-        Оливковое — как соль: необходимо, но без характера. Четыре масла, которые изменят вашу кухню.
-        <div class="hook-item-type">Тип: гастрономический</div>
-      </div>
-      <div class="hook-item">
-        <div class="hook-item-seg">С5</div>
-        Месяц пила масло. Ничего не изменилось. А потом узнала про цикл роста волоса.
-        <div class="hook-item-type">Тип: сторителлинг</div>
-      </div>
-    </div>
-
-    <div class="section-header" style="margin-bottom:16px;">
-      <div class="section-label" style="background:#fef3c7; color:#92400e;">Глубокий слой — эмпатия, доверие</div>
-    </div>
-    <div class="hook-grid fade-up" style="margin-bottom:40px;">
-      <div class="hook-item" style="border-left-color:var(--warning);">
-        <div class="hook-item-seg">С1</div>
-        Анализы в норме. Но ощущение «ватной головы» после обеда не уходит. Знакомо?
-        <div class="hook-item-type">Тип: эмоциональный</div>
-      </div>
-      <div class="hook-item" style="border-left-color:var(--warning);">
-        <div class="hook-item-seg">С1</div>
-        Пила капсулы три месяца. Забыла купить — и не заметила. А если заменить на живое?
-        <div class="hook-item-type">Тип: переосмысление</div>
-      </div>
-      <div class="hook-item" style="border-left-color:var(--warning);">
-        <div class="hook-item-seg">С2</div>
-        Купила «полезное масло». Открыла через неделю — пахнет странно. Выкинула. Виновата не я — никто не объяснил.
-        <div class="hook-item-type">Тип: снятие вины</div>
-      </div>
-      <div class="hook-item" style="border-left-color:var(--warning);">
-        <div class="hook-item-seg">С3</div>
-        Купил на маркетплейсе. Горькое. Написал в поддержку: «Так и должно быть». Три слова, которые убивают доверие навсегда.
-        <div class="hook-item-type">Тип: боль к решению</div>
-      </div>
-      <div class="hook-item" style="border-left-color:var(--warning);">
-        <div class="hook-item-seg">С5</div>
-        Кремы работают снаружи. Волос растёт изнутри. Между ними — 60 дней и одна чайная ложка.
-        <div class="hook-item-type">Тип: механизм</div>
-      </div>
-    </div>
-
-    <div class="section-header" style="margin-bottom:16px;">
-      <div class="section-label">Скрытый слой — лояльность, идентичность</div>
-    </div>
-    <div class="hook-grid fade-up">
-      <div class="hook-item" style="border-left-color:var(--brand);">
-        <div class="hook-item-seg">С1</div>
-        У мамы был «свой» мясник на рынке. Которому не нужно было объяснять. Вот это ощущение «своего» — где его найти сегодня?
-        <div class="hook-item-type">Тип: нарративный</div>
-      </div>
-      <div class="hook-item" style="border-left-color:var(--brand);">
-        <div class="hook-item-seg">С2</div>
-        Одно маленькое действие утром. Ложка масла в кашу. Дети не заметили. Но вы знаете — вы сделали правильное.
-        <div class="hook-item-type">Тип: ролевой</div>
-      </div>
-      <div class="hook-item" style="border-left-color:var(--brand);">
-        <div class="hook-item-seg">С3</div>
-        «Какой пресс?» — «Гидравлический. Температура не выше 35 °C. Дата — на бутылке». Когда производитель говорит на вашем языке.
-        <div class="hook-item-type">Тип: уважение</div>
-      </div>
-      <div class="hook-item" style="border-left-color:var(--brand);">
-        <div class="hook-item-seg">С4</div>
-        «Откуда это масло?» — спросят гости. И начнётся история. Про конкретного человека. Про гидравлику. Про дату.
-        <div class="hook-item-type">Тип: статусный</div>
-      </div>
-      <div class="hook-item" style="border-left-color:var(--brand);">
-        <div class="hook-item-seg">С5</div>
-        Не крем из рекламы. Не капсула из аптеки. Осознанное решение, которое работает изнутри. Для тех, кто следит за собой по-взрослому.
-        <div class="hook-item-type">Тип: идентичность</div>
-      </div>
-    </div>
-
-    <div class="card-brand fade-up" style="margin-top:40px;">
-      <div class="card-title">Формула поста по трём слоям</div>
-      <div style="font-size:14px; color:var(--n700); font-family:monospace; white-space:pre-line; background:rgba(44,95,45,.05); padding:16px; border-radius:var(--r-lg); border-left:3px solid var(--brand); margin-top:12px;">1. ОТКРЫТИЕ (поверхностный слой) — узнаваемая ситуация
-   «Врач сказал попить масло тмина»
-
-2. УГЛУБЛЕНИЕ (глубокий слой) — что реально стоит за этим
-   «Открыли маркетплейс — 47 позиций. Как понять?»
-
-3. РЕЗОНАНС (скрытый слой) — то, что никогда не скажут вслух
-   «Хочется найти своего. Как в детстве — одного человека, которому доверяешь.»
-
-4. РЕШЕНИЕ (мост к Кириллу)
-   «Вот почему мы ставим дату отжима на каждой бутылке.»</div>
     </div>
   </div>
 </section>
 
-<!-- FOOTER -->
 <footer class="footer">
   <div class="container">
-    <div class="footer-inner">
-      <img src="../../assets/logo-horizontal-dark.png" alt="Магия Масел" style="height:32px; width:auto; opacity:.7;">
-      <div class="footer-meta">
-        <div class="footer-meta-item">
-          <span class="footer-meta-label">Клиент</span>
-          <span class="footer-meta-value">Кирилл Бродский</span>
-        </div>
-        <div class="footer-meta-item">
-          <span class="footer-meta-label">Документ</span>
-          <span class="footer-meta-value">M4 · 6 из 8</span>
-        </div>
-        <div class="footer-meta-item">
-          <span class="footer-meta-label">Версия</span>
-          <span class="footer-meta-value">1.0 (Opus) · 31.03.2026</span>
-        </div>
-        <div class="footer-meta-item">
-          <span class="footer-meta-label">Источники</span>
-          <span class="footer-meta-value">M2 DR ЦА + M4 SEGMENTY + JTBD + KASTDEV</span>
-        </div>
-      </div>
-    </div>
+    BrandOS · BRODSKY OIL · M4-06 Карта болей и мотиваций · v3.1 · 2026
   </div>
 </footer>
 
-<script>
-  const observer = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) entry.target.classList.add('visible');
-    });
-  }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
-
-  document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
-</script>
 </body>
 </html>

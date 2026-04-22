@@ -1,705 +1,315 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>M3-04 — Ценовая модель · Магия Масел · Кирилл Бродский</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-    :root {
-      --brand: #2C5F2D;
-      --brand-dark: #1a4a1b;
-      --brand-light: #4a8f4b;
-      --brand-bg: #e8f5e9;
-      --accent: #D4AF37;
-      --accent-bg: #fdf8e8;
-      --n50: #f8fafc; --n100: #f1f5f9; --n200: #e2e8f0;
-      --n300: #cbd5e1; --n400: #94a3b8; --n500: #64748b;
-      --n600: #475569; --n700: #334155; --n800: #1e293b; --n900: #0f172a;
-      --success: #10b981; --warning: #f59e0b; --error: #ef4444; --info: #3b82f6;
-      --font: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-      --shadow-card: 0 1px 3px 0 rgba(0,0,0,.05), 0 1px 2px -1px rgba(0,0,0,.05);
-      --shadow-hover: 0 10px 25px -5px rgba(0,0,0,.08), 0 8px 10px -6px rgba(0,0,0,.04);
-      --shadow-btn: 0 4px 14px 0 rgba(44,95,45,.35);
-      --r-sm:4px; --r-md:6px; --r-lg:8px; --r-xl:12px; --r-2xl:16px; --r-3xl:24px; --r-full:9999px;
-    }
-
-    body { font-family: var(--font); font-size: 16px; line-height: 1.6; color: var(--n600); background: var(--n100); }
-
-    @keyframes fade-up { 0%{opacity:0;transform:translateY(20px)} 100%{opacity:1;transform:translateY(0)} }
-    .fade-up { opacity:0; transform:translateY(20px); transition:opacity .6s ease-out, transform .6s ease-out; }
-    .fade-up.visible { opacity:1; transform:translateY(0); }
-
-    .container { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
-    .section { padding: 80px 0; }
-
-    /* Nav */
-    .nav-wrap {
-      position: fixed; top: 0; left: 0; right: 0; z-index: 300;
-      background: rgba(255,255,255,.93); backdrop-filter: blur(12px);
-      border-bottom: 1px solid var(--n200); height: 64px;
-    }
-    .nav-inner { height:100%; display:flex; align-items:center; justify-content:space-between; }
-    .nav-logo img { height:40px; width:auto; display:block; }
-    .nav-links { display:flex; gap:20px; flex-wrap:wrap; }
-    .nav-links a { font-size:13px; font-weight:500; color:var(--n600); text-decoration:none; transition:color .2s; }
-    .nav-links a:hover { color:var(--brand); }
-    .nav-badge {
-      font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:.05em;
-      color:var(--brand); background:var(--brand-bg);
-      padding:5px 12px; border-radius:var(--r-full); white-space:nowrap;
-    }
-
-    /* Section header */
-    .section-header { margin-bottom:40px; }
-    .section-label {
-      display:inline-block; font-size:11px; font-weight:700; text-transform:uppercase;
-      letter-spacing:.08em; color:var(--brand); background:var(--brand-bg);
-      padding:4px 12px; border-radius:var(--r-full); margin-bottom:12px;
-    }
-    .section-title { font-size:30px; font-weight:600; color:var(--n900); line-height:1.25; margin-bottom:8px; }
-    .section-sub { font-size:16px; color:var(--n500); }
-
-    /* Grid */
-    .grid-2 { display:grid; grid-template-columns:repeat(auto-fit,minmax(340px,1fr)); gap:20px; }
-    .grid-3 { display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:20px; }
-
-    /* Badge */
-    .badge { display:inline-flex; align-items:center; padding:3px 10px; border-radius:var(--r-full); font-size:12px; font-weight:600; }
-    .badge-green { background:#d1fae5; color:#065f46; }
-    .badge-yellow { background:#fef3c7; color:#92400e; }
-    .badge-blue { background:#dbeafe; color:#1e40af; }
-    .badge-brand { background:var(--brand-bg); color:var(--brand-dark); }
-    .badge-accent { background:var(--accent-bg); color:#7a6000; }
-    .badge-red { background:#fee2e2; color:#991b1b; }
-    .badge-gray { background:var(--n100); color:var(--n500); }
-
-    /* Table */
-    .table-wrap { overflow-x:auto; border-radius:var(--r-2xl); border:1px solid var(--n200); margin:20px 0; }
-    table { width:100%; border-collapse:collapse; background:#fff; }
-    thead tr { background:var(--n50); border-bottom:2px solid var(--n200); }
-    th { padding:14px 18px; text-align:left; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.05em; color:var(--n500); }
-    td { padding:14px 18px; font-size:14px; color:var(--n600); border-bottom:1px solid var(--n200); }
-    tr:last-child td { border-bottom:none; }
-    tbody tr { transition:background .2s; }
-    tbody tr:hover { background:var(--n50); }
-    .td-num { font-size:13px; color:var(--n400); font-family:monospace; }
-
-    /* Alert */
-    .alert { display:flex; gap:14px; border-radius:var(--r-xl); padding:18px; margin:16px 0; }
-    .alert-warning { background:#fffbeb; border:1px solid #fde68a; border-left:4px solid var(--warning); }
-    .alert-error { background:#fff1f2; border:1px solid #fecdd3; border-left:4px solid var(--error); }
-    .alert-info { background:#eff6ff; border:1px solid #bfdbfe; border-left:4px solid var(--info); }
-    .alert-success { background:#f0fdf4; border:1px solid #bbf7d0; border-left:4px solid var(--success); }
-    .alert-brand { background:var(--brand-bg); border:1px solid #a5d6a7; border-left:4px solid var(--brand); }
-    .alert-icon { font-size:18px; flex-shrink:0; margin-top:1px; }
-
-    /* Card */
-    .card {
-      background:#fff; border-radius:var(--r-2xl); border:1px solid var(--n200);
-      padding:28px; box-shadow:var(--shadow-card);
-      transition:transform .3s ease, box-shadow .3s ease;
-    }
-    .card:hover { transform:translateY(-3px); box-shadow:var(--shadow-hover); }
-    .card-brand {
-      background: linear-gradient(135deg, var(--brand-bg) 0%, #fff 100%);
-      border-radius:var(--r-2xl); border:1px solid #a5d6a7; padding:28px; box-shadow:var(--shadow-card);
-    }
-    .card-accent {
-      background: var(--accent-bg);
-      border-radius:var(--r-2xl); border:1px solid #e8d87a; padding:28px; box-shadow:var(--shadow-card);
-    }
-    .card-title { font-size:16px; font-weight:700; color:var(--n900); margin-bottom:12px; }
-    .card-icon { font-size:24px; margin-bottom:12px; }
-
-    /* Stat cards */
-    .stat-card {
-      background:linear-gradient(135deg,var(--brand) 0%,var(--brand-dark) 100%);
-      border-radius:var(--r-2xl); padding:24px; color:#fff; box-shadow:var(--shadow-btn);
-    }
-    .stat-label { font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.05em; opacity:.75; margin-bottom:8px; }
-    .stat-value { font-size:28px; font-weight:700; line-height:1; margin-bottom:6px; }
-    .stat-desc { font-size:13px; opacity:.8; }
-
-    /* List item */
-    .list-item {
-      display:flex; gap:10px; align-items:flex-start;
-      padding:9px 0; border-bottom:1px solid var(--n100);
-      font-size:14px; color:var(--n600);
-    }
-    .list-item:last-child { border-bottom:none; }
-    .list-dot { width:8px; height:8px; border-radius:50%; background:var(--brand); flex-shrink:0; margin-top:6px; }
-    .list-dot-red { width:8px; height:8px; border-radius:50%; background:var(--error); flex-shrink:0; margin-top:6px; }
-
-    /* Status icons */
-    .s-ok { color:var(--success); font-weight:600; }
-    .s-warn { color:var(--warning); font-weight:600; }
-    .s-need { color:#f97316; font-weight:600; }
-
-    @media (max-width:768px) {
-      .nav-links { display:none; }
-      .section-title { font-size:24px; }
-      .grid-2, .grid-3 { grid-template-columns:1fr; }
-    }
-
-    /* Hero */
-    .hero {
-      background: linear-gradient(135deg, var(--brand-dark) 0%, var(--brand) 50%, var(--brand-light) 100%);
-      padding: 120px 0 80px; color:#fff; position:relative; overflow:hidden;
-    }
-    .hero::before {
-      content:''; position:absolute; inset:0;
-      background: radial-gradient(ellipse at 70% 50%, rgba(212,175,55,.15) 0%, transparent 60%);
-    }
-    .hero-inner { display:flex; align-items:center; gap:48px; flex-wrap:wrap; }
-    .hero-logo-wrap { flex-shrink:0; }
-    .hero-logo-wrap img { height:140px; width:auto; display:block; border-radius:var(--r-xl); }
-    .hero-content { flex:1; min-width:280px; }
-    .hero-badge {
-      display:inline-block; font-size:11px; font-weight:700; text-transform:uppercase;
-      letter-spacing:.1em; background:rgba(255,255,255,.15); color:#fff;
-      border:1px solid rgba(255,255,255,.3); padding:6px 16px;
-      border-radius:var(--r-full); margin-bottom:20px; backdrop-filter:blur(8px);
-    }
-    .hero-title { font-size:52px; font-weight:700; line-height:1.1; margin-bottom:16px; }
-    .hero-title span { color:var(--accent); }
-    .hero-sub { font-size:18px; opacity:.85; max-width:600px; margin-bottom:32px; line-height:1.6; }
-    .hero-meta { display:flex; gap:24px; flex-wrap:wrap; }
-    .hero-meta-item { display:flex; flex-direction:column; gap:3px; }
-    .hero-meta-label { font-size:10px; text-transform:uppercase; letter-spacing:.08em; opacity:.6; }
-    .hero-meta-value { font-size:14px; font-weight:600; }
-
-    @media (max-width:768px) {
-      .hero { padding: 100px 0 60px; }
-      .hero-title { font-size:34px; }
-      .hero-logo-wrap img { height:80px; }
-    }
-
-    /* Footer */
-    .footer { background:var(--n900); color:var(--n400); padding:40px 0; font-size:13px; }
-    .footer-inner { display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:16px; }
-    .footer-meta { display:flex; gap:20px; flex-wrap:wrap; }
-    .footer-meta-item { display:flex; flex-direction:column; gap:2px; }
-    .footer-meta-label { font-size:10px; text-transform:uppercase; letter-spacing:.05em; color:var(--n600); }
-    .footer-meta-value { font-size:12px; color:var(--n400); }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>M3-04 · Ценовая модель — BRODSKY OIL · BrandOS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--primary:#0ea5e9;--primary-dark:#0284c7;--primary-light:#7dd3fc;--primary-bg:#e0f2fe;--background:#fff;--foreground:#0f172a;--card-bg:hsl(0,0%,97%);--border:#1C1C1E;--muted:#64748b;--radius:4px}*{margin:0;padding:0;box-sizing:border-box}body{font-family:'Inter',sans-serif;background:var(--background);color:var(--foreground);line-height:1.75;font-size:16px}.container{max-width:1200px;margin:0 auto;padding:0 1.5rem}.nav{position:sticky;top:0;background:#fff;border-bottom:1px solid var(--border);z-index:100;padding:1rem 0}.nav-container{display:flex;justify-content:space-between;align-items:center;gap:2rem}.nav-brand{font-size:1rem;font-weight:700;color:var(--foreground);white-space:nowrap}.nav-brand span{color:var(--primary)}.nav-links{display:flex;gap:1.5rem;list-style:none;overflow-x:auto;flex-wrap:wrap}.nav-links a{color:var(--foreground);text-decoration:none;font-size:.875rem;font-weight:500;white-space:nowrap;transition:color .2s}.nav-links a:hover{color:var(--primary)}.hero{padding:3.75rem 0;background:linear-gradient(135deg,rgba(255,255,255,.98) 0%,rgba(240,249,255,.95) 100%)}.hero-badge{display:inline-flex;align-items:center;gap:.5rem;padding:.5rem 1rem;background:var(--card-bg);border:1px solid var(--border);border-radius:var(--radius);font-size:.875rem;font-weight:600;margin-bottom:1.5rem;color:var(--foreground)}.hero h1{font-size:clamp(32px,4vw,51px);font-weight:500;line-height:1.2;letter-spacing:-.03em;margin-bottom:1.5rem}.hero-subtitle{font-size:1.125rem;color:var(--muted);margin-bottom:2rem}.hero-meta{display:flex;gap:2rem;flex-wrap:wrap}.hero-meta-item{font-size:.875rem;color:var(--muted)}.hero-meta-item strong{color:var(--primary);font-weight:600}.section{padding:2.5rem 0}@media(min-width:768px){.section{padding:3.75rem 0}}.section-header{position:relative;margin-bottom:32px;padding-top:24px}.section-header::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:repeating-linear-gradient(to right,#9CA3AF 0,#9CA3AF 4px,transparent 4px,transparent 8px)}.section-tag{display:inline-block;font-size:.75rem;font-weight:600;text-transform:uppercase;letter-spacing:.1em;color:var(--primary);margin-bottom:.5rem}h2{font-size:32px;font-weight:300;line-height:1.2;letter-spacing:-.02em;margin-bottom:1rem}h3{font-size:20px;font-weight:600;line-height:1.3;margin-bottom:1rem}p{margin-bottom:1rem;color:var(--muted)}p:last-child{margin-bottom:0}.card{border:1px solid var(--border);border-radius:var(--radius);background:linear-gradient(135deg,rgba(255,255,255,.98) 0%,rgba(250,250,252,.95) 100%);padding:1.5rem;transition:all .4s cubic-bezier(.4,0,.2,1)}.card:hover{transform:translateY(-4px);box-shadow:0 12px 32px rgba(0,0,0,.08)}.card-title{font-size:1.0625rem;font-weight:600;margin-bottom:.75rem;color:var(--foreground)}.card-description{font-size:.9375rem;line-height:1.75;color:var(--muted)}.grid{display:grid;gap:1.5rem}.grid-2{grid-template-columns:1fr}.grid-3{grid-template-columns:1fr}@media(min-width:768px){.grid-2{grid-template-columns:repeat(2,1fr)}.grid-3{grid-template-columns:repeat(3,1fr)}}.highlight-box{background:linear-gradient(135deg,rgba(14,165,233,.05) 0%,rgba(14,165,233,.02) 100%);border:1px solid rgba(14,165,233,.2);border-left:4px solid var(--primary);padding:1.25rem 1.5rem;border-radius:var(--radius);margin:1.5rem 0}.highlight-box p{margin:0;font-size:1rem}.highlight-box strong{color:var(--primary)}.warning-block{background:linear-gradient(135deg,rgba(239,68,68,.04) 0%,rgba(239,68,68,.01) 100%);border:1px solid rgba(239,68,68,.18);border-left:4px solid #ef4444;padding:1.25rem 1.5rem;border-radius:var(--radius);margin:1.5rem 0}.warning-block p{margin:0;font-size:.9375rem;color:var(--muted)}.warning-block strong{color:var(--foreground)}.table-wrapper{overflow-x:auto;margin:1.5rem 0;border:1px solid var(--border);border-radius:var(--radius)}table{width:100%;border-collapse:collapse;background:#fff}th,td{padding:1rem;text-align:left;border-bottom:1px solid var(--border)}th{background:var(--card-bg);font-weight:600;font-size:.8125rem;text-transform:uppercase;letter-spacing:.05em;color:var(--foreground)}td{font-size:.9375rem;color:var(--muted)}tr:last-child td{border-bottom:none}tr:hover td{background:var(--card-bg)}.table-accent{color:var(--primary);font-weight:600}.badge{display:inline-block;padding:.25rem .75rem;border-radius:9999px;font-size:.75rem;font-weight:600}.badge-green{background:#d1fae5;color:#065f46}.badge-yellow{background:#fef3c7;color:#92400e}.badge-blue{background:var(--primary-bg);color:var(--primary-dark)}.formula-block{background:linear-gradient(135deg,rgba(14,165,233,.05) 0%,rgba(14,165,233,.02) 100%);border:1px solid rgba(14,165,233,.22);border-left:4px solid var(--primary);padding:2rem 2.5rem;border-radius:var(--radius);font-size:1.125rem;line-height:1.8;color:var(--foreground);margin:2rem 0}.footer{padding:2rem 0;border-top:1px solid var(--border);text-align:center;color:var(--muted);font-size:.875rem}@media(max-width:768px){.container{padding:0 1rem}h2{font-size:24px}h3{font-size:18px}.nav-links{gap:.75rem}.formula-block{padding:1.5rem;font-size:1rem}}
+</style>
 </head>
 <body>
 
-<!-- NAV -->
-<nav class="nav-wrap">
-  <div class="container">
-    <div class="nav-inner">
-      <div class="nav-logo"><img src="../assets/logo-horizontal-light.png" alt="Магия Масел"></div>
-      <div class="nav-links">
-        <a href="#costs">Себестоимость</a>
-        <a href="#prices">Цены</a>
-        <a href="#sets">Наборы</a>
-        <a href="#justify">Обоснование</a>
-        <a href="#risk">Риск</a>
-        <a href="#financials">Финансы</a>
-      </div>
-      <div class="nav-badge">M3 · Документ 4/7</div>
-    </div>
+<nav class="nav">
+  <div class="container nav-container">
+    <div class="nav-brand">Brand<span>OS</span> · Документ</div>
+    <ul class="nav-links">
+      <li><a href="#cogs">Себестоимости</a></li>
+      <li><a href="#prices">Цены</a></li>
+      <li><a href="#steps">Ступени</a></li>
+      <li><a href="#perliter">₽/литр</a></li>
+      <li><a href="#capacity">Потолок</a></li>
+      <li><a href="#justify">Обоснование</a></li>
+      <li><a href="#repeat">Повторы</a></li>
+    </ul>
   </div>
 </nav>
 
-<!-- HERO -->
 <section class="hero">
   <div class="container">
-    <div class="hero-inner">
-      <div class="hero-logo-wrap">
-        <img src="../assets/logo-badge-dark.png" alt="Магия Масел — Кирилл Бродский">
-      </div>
-      <div class="hero-content">
-        <div class="hero-badge">M3 · Продуктовая стратегия · Документ 4 из 7</div>
-        <h1 class="hero-title">Ценовая <span>модель</span></h1>
-        <p class="hero-sub">Себестоимости, розничные ориентиры, маржа наборов и финансовые цели.</p>
-        <div class="hero-meta">
-          <div class="hero-meta-item">
-            <span class="hero-meta-label">Клиент</span>
-            <span class="hero-meta-value">Кирилл Бродский</span>
-          </div>
-          <div class="hero-meta-item">
-            <span class="hero-meta-label">Обновлено</span>
-            <span class="hero-meta-value">29.03.2026</span>
-          </div>
-          <div class="hero-meta-item">
-            <span class="hero-meta-label">Версия</span>
-            <span class="hero-meta-value">2.0 (финальная)</span>
-          </div>
-          <div class="hero-meta-item">
-            <span class="hero-meta-label">Себестоимости</span>
-            <span class="hero-meta-value">Все получены</span>
-          </div>
-        </div>
-      </div>
+    <div class="hero-badge">M3-04 · Продукт · BrandOS</div>
+    <h1>Ценовая модель<br><span style="color:var(--primary)">BRODSKY OIL</span></h1>
+    <p class="hero-subtitle">Кирилл Бродский · v3.1 · 21.04.2026</p>
+    <div class="hero-meta">
+      <span class="hero-meta-item"><strong>Клиент:</strong> Кирилл Бродский</span>
+      <span class="hero-meta-item"><strong>Модуль:</strong> M3 — Продуктовая стратегия</span>
+      <span class="hero-meta-item"><strong>Версия:</strong> 3.1 (roundtable)</span>
+      <span class="hero-meta-item"><strong>Оценка:</strong> 9.0/10</span>
     </div>
   </div>
 </section>
 
-<!-- 1. СЕБЕСТОИМОСТИ -->
-<section class="section fade-up" id="costs">
+<!-- 01. Себестоимости -->
+<section class="section" id="cogs">
   <div class="container">
     <div class="section-header">
-      <div class="section-label">1. Себестоимость</div>
-      <h2 class="section-title">Себестоимости (финал, с тарой)</h2>
-      <p class="section-sub">Источник: ответы Кирилла 29.03.2026. Все цены включают тару.</p>
+      <span class="section-tag">01 — Себестоимости</span>
+      <h2>Данные Кирилла, 29.03.2026</h2>
     </div>
-    <div class="alert alert-warning fade-up">
-      <span class="alert-icon">⚠️</span>
-      <div>
-        <strong style="color:#92400e; display:block; margin-bottom:4px;">Расторопша — исправление!</strong>
-        <p style="font-size:14px; color:var(--n600);">Себестоимость 1 000 ₽/л (не 6 000 ₽ — ошибка в первой записи). Это делает расторопшу одним из самых маржинальных масел в линейке.</p>
-      </div>
-    </div>
-    <div class="table-wrap fade-up">
+    <div class="table-wrapper">
       <table>
-        <thead>
-          <tr>
-            <th>Масло</th>
-            <th>Себест. /л</th>
-            <th>100 мл</th>
-            <th>250 мл</th>
-            <th>Примечание</th>
-          </tr>
-        </thead>
+        <thead><tr><th>Масло</th><th>Себест. /л</th><th>100 мл</th><th>250 мл</th><th>Категория</th></tr></thead>
         <tbody>
-          <tr>
-            <td><strong>Чёрный тмин</strong></td>
-            <td class="td-num">2 000 ₽</td>
-            <td class="td-num">200 ₽</td>
-            <td class="td-num">500 ₽</td>
-            <td><span class="badge badge-brand">Флагман</span></td>
-          </tr>
-          <tr>
-            <td><strong>Расторопша</strong></td>
-            <td class="td-num">1 000 ₽</td>
-            <td class="td-num">100 ₽</td>
-            <td class="td-num">250 ₽</td>
-            <td><span class="badge badge-green">Высокая маржа</span></td>
-          </tr>
-          <tr>
-            <td><strong>Тыква</strong></td>
-            <td class="td-num" style="color:var(--error); font-weight:600;">2 800 ₽</td>
-            <td class="td-num">280 ₽</td>
-            <td class="td-num">700 ₽</td>
-            <td><span class="badge badge-red">Макс. себест.</span> Флагман, топ-3 по спросу</td>
-          </tr>
-          <tr>
-            <td><strong>Миндаль</strong></td>
-            <td class="td-num">2 400 ₽</td>
-            <td class="td-num">240 ₽</td>
-            <td class="td-num">600 ₽</td>
-            <td>Исправлено (было 1 000–1 400)</td>
-          </tr>
-          <tr>
-            <td><strong>Грецкий орех</strong></td>
-            <td class="td-num">1 500 ₽</td>
-            <td class="td-num">150 ₽</td>
-            <td class="td-num">375 ₽</td>
-            <td>Данные получены</td>
-          </tr>
-          <tr>
-            <td><strong>Кедр</strong></td>
-            <td class="td-num">2 000 ₽</td>
-            <td class="td-num">200 ₽</td>
-            <td class="td-num">500 ₽</td>
-            <td>Подтверждено</td>
-          </tr>
-          <tr>
-            <td><strong>Лён</strong></td>
-            <td class="td-num">700 ₽</td>
-            <td class="td-num">70 ₽</td>
-            <td class="td-num">175 ₽</td>
-            <td>Данные получены</td>
-          </tr>
-          <tr>
-            <td><strong>Подсолнечник</strong></td>
-            <td class="td-num">700 ₽</td>
-            <td class="td-num">70 ₽</td>
-            <td class="td-num">175 ₽</td>
-            <td>Подтверждено</td>
-          </tr>
-          <tr style="opacity:.6;">
-            <td><strong>Конопля</strong></td>
-            <td>н/д</td>
-            <td>—</td>
-            <td>—</td>
-            <td><span class="badge badge-yellow">только запускается</span></td>
-          </tr>
-          <tr style="opacity:.6;">
-            <td><strong>Кунжут</strong></td>
-            <td>н/д</td>
-            <td>—</td>
-            <td>—</td>
-            <td><span class="badge badge-yellow">только запускается</span></td>
-          </tr>
+          <tr><td>Лён</td><td>700 ₽</td><td>70 ₽</td><td>175 ₽</td><td><span class="badge badge-green">Базовое</span></td></tr>
+          <tr><td>Подсолнух</td><td>700 ₽</td><td>70 ₽</td><td>175 ₽</td><td><span class="badge badge-green">Базовое</span></td></tr>
+          <tr><td>Расторопша</td><td>1 000 ₽</td><td>100 ₽</td><td>250 ₽</td><td><span class="badge badge-blue">Среднее</span></td></tr>
+          <tr><td>Грецкий орех</td><td>1 500 ₽</td><td>150 ₽</td><td>375 ₽</td><td><span class="badge badge-blue">Среднее</span></td></tr>
+          <tr><td class="table-accent">Кедр</td><td>2 000 ₽</td><td>200 ₽</td><td>500 ₽</td><td><span class="badge badge-yellow">Флагман</span></td></tr>
+          <tr><td class="table-accent">Тмин</td><td>2 000 ₽</td><td>200 ₽</td><td>500 ₽</td><td><span class="badge badge-yellow">Флагман</span></td></tr>
+          <tr><td class="table-accent">Миндаль</td><td>2 400 ₽</td><td>240 ₽</td><td>600 ₽</td><td><span class="badge badge-yellow">Флагман</span></td></tr>
+          <tr><td class="table-accent">Тыква</td><td>2 800 ₽</td><td>280 ₽</td><td>700 ₽</td><td><span class="badge badge-yellow">Флагман макс.</span></td></tr>
+          <tr><td>Конопля</td><td>н/д</td><td>—</td><td>—</td><td>В разработке</td></tr>
+          <tr><td>Кунжут</td><td>н/д</td><td>—</td><td>—</td><td>В разработке</td></tr>
         </tbody>
       </table>
     </div>
-    <div class="alert alert-brand fade-up">
-      <span class="alert-icon">💡</span>
-      <div>
-        <strong style="color:var(--brand-dark); display:block; margin-bottom:4px;">Тыква — особый случай</strong>
-        <p style="font-size:14px; color:var(--n600);">Себестоимость 2 800 ₽/л — самая высокая в линейке. При этом топ-3 по спросу. Розничная цена должна это отражать: занижать нельзя.</p>
-      </div>
-    </div>
+    <p>Упаковка: ~50₽ (100 мл), ~80₽ (250 мл), ~200-300₽ (набор с коробкой).</p>
   </div>
 </section>
 
-<!-- 2. ОРИЕНТИРЫ РОЗНИЧНЫХ ЦЕН -->
-<section class="section fade-up" id="prices" style="background:#fff;">
+<!-- 02. Цены -->
+<section class="section" id="prices">
   <div class="container">
     <div class="section-header">
-      <div class="section-label">2. Розничные цены</div>
-      <h2 class="section-title">Ориентиры розничных цен</h2>
-      <p class="section-sub">Кирилл: «Мои цены на 10–15% ниже средних конкурентов». Ниже — гипотезы для выравнивания позиционирования.</p>
+      <span class="section-tag">02 — Розничные цены</span>
+      <h2>Бенчмарк и рекомендации</h2>
     </div>
-    <div class="alert alert-info fade-up">
-      <span class="alert-icon">ℹ️</span>
-      <div>
-        <strong style="color:#1e40af; display:block; margin-bottom:4px;">Контекст рынка</strong>
-        <p style="font-size:14px; color:var(--n600);">Рыночный премиум-диапазон: 1 500–2 500 ₽ за 250 мл · TRAWA (конкурент): 2 000–3 000 ₽ за 250 мл · Кирилл называл «около 2 000 ₽» за 250 мл тмина.</p>
-      </div>
-    </div>
-    <div class="table-wrap fade-up">
+    <div class="highlight-box"><p><strong>Принцип:</strong> Кирилл продаёт на 10-15% ниже конкурентов. При ребрендинге в BRODSKY OIL рекомендовано выровнять до рыночных (+15-20%). Фамильный бренд = премиум-цена.</p></div>
+
+    <h3>Бенчмарк конкурентов (M5)</h3>
+    <div class="table-wrapper">
       <table>
-        <thead>
-          <tr>
-            <th>Продукт</th>
-            <th>Нижняя граница</th>
-            <th>Рыночный центр</th>
-            <th>Предлагаемая</th>
-          </tr>
-        </thead>
+        <thead><tr><th>Масло (250 мл)</th><th>TRAWA</th><th>Радость Здоровья</th><th>Масляный Король</th><th>BRODSKY OIL</th></tr></thead>
         <tbody>
-          <tr>
-            <td><strong>Тмин 100 мл</strong></td>
-            <td class="td-num">600 ₽</td>
-            <td class="td-num">800–900 ₽</td>
-            <td class="td-num" style="color:var(--brand); font-weight:600;">850–900 ₽</td>
-          </tr>
-          <tr>
-            <td><strong>Тмин 250 мл</strong></td>
-            <td class="td-num">1 500 ₽</td>
-            <td class="td-num">1 800–2 000 ₽</td>
-            <td class="td-num" style="color:var(--brand); font-weight:600;">1 900–2 000 ₽</td>
-          </tr>
-          <tr>
-            <td><strong>Расторопша 100 мл</strong></td>
-            <td class="td-num">900 ₽</td>
-            <td class="td-num">1 200–1 500 ₽</td>
-            <td class="td-num" style="color:var(--brand); font-weight:600;">1 400–1 500 ₽</td>
-          </tr>
-          <tr>
-            <td><strong>Расторопша 250 мл</strong></td>
-            <td class="td-num">2 000 ₽</td>
-            <td class="td-num">2 500–3 000 ₽</td>
-            <td class="td-num" style="color:var(--brand); font-weight:600;">2 800–3 000 ₽</td>
-          </tr>
-          <tr>
-            <td><strong>Миндаль 100 мл</strong></td>
-            <td class="td-num">400 ₽</td>
-            <td class="td-num">600–800 ₽</td>
-            <td class="td-num" style="color:var(--brand); font-weight:600;">700–800 ₽</td>
-          </tr>
-          <tr>
-            <td><strong>Миндаль 250 мл</strong></td>
-            <td class="td-num">900 ₽</td>
-            <td class="td-num">1 200–1 500 ₽</td>
-            <td class="td-num" style="color:var(--brand); font-weight:600;">1 300–1 500 ₽</td>
-          </tr>
-          <tr>
-            <td><strong>Кедр 100 мл</strong></td>
-            <td class="td-num">500 ₽</td>
-            <td class="td-num">700–900 ₽</td>
-            <td class="td-num" style="color:var(--brand); font-weight:600;">800–900 ₽</td>
-          </tr>
-          <tr>
-            <td><strong>Кедр 250 мл</strong></td>
-            <td class="td-num">1 200 ₽</td>
-            <td class="td-num">1 500–2 000 ₽</td>
-            <td class="td-num" style="color:var(--brand); font-weight:600;">1 700–1 900 ₽</td>
-          </tr>
-          <tr>
-            <td><strong>Подсолнечник 250 мл</strong></td>
-            <td class="td-num">400 ₽</td>
-            <td class="td-num">500–700 ₽</td>
-            <td class="td-num" style="color:var(--brand); font-weight:600;">500 ₽</td>
-          </tr>
-          <tr>
-            <td><strong>Подсолнечник 500 мл</strong></td>
-            <td class="td-num">700 ₽</td>
-            <td class="td-num">900–1 200 ₽</td>
-            <td class="td-num" style="color:var(--brand); font-weight:600;">900 ₽</td>
-          </tr>
+          <tr><td>Тмин</td><td>2 200-2 800₽</td><td>1 500-1 800₽</td><td>1 200-1 500₽</td><td class="table-accent">2 290₽</td></tr>
+          <tr><td>Кедр</td><td>2 500-3 200₽</td><td>1 800-2 200₽</td><td>1 400-1 800₽</td><td class="table-accent">2 290₽</td></tr>
+          <tr><td>Миндаль</td><td>1 800-2 500₽</td><td>1 200-1 600₽</td><td>900-1 200₽</td><td class="table-accent">2 490₽</td></tr>
         </tbody>
       </table>
     </div>
-    <div class="alert alert-warning fade-up">
-      <span class="alert-icon">⚠️</span>
-      <div>
-        <strong style="color:#92400e; display:block; margin-bottom:4px;">Все цены — гипотезы</strong>
-        <p style="font-size:14px; color:var(--n600);">Нужно уточнение реальных розничных цен у Кирилла до публикации.</p>
-      </div>
-    </div>
-  </div>
-</section>
+    <p>BRODSKY OIL позиционируется между TRAWA (лидер) и средним рынком — «честная премиальная цена с паспортом качества».</p>
 
-<!-- 3. ЦЕНООБРАЗОВАНИЕ НАБОРОВ -->
-<section class="section fade-up" id="sets">
-  <div class="container">
-    <div class="section-header">
-      <div class="section-label">3. Наборы</div>
-      <h2 class="section-title">Ценообразование наборов</h2>
-      <p class="section-sub">3×100 мл = 3 бутылки + упаковка. Скидка 10% vs поштучно — не ниже.</p>
-    </div>
-    <div class="table-wrap fade-up">
+    <h3 style="margin-top:2.5rem;">Цены по SKU</h3>
+    <div class="table-wrapper">
       <table>
-        <thead>
-          <tr>
-            <th>Набор</th>
-            <th>Состав</th>
-            <th>Себест. ×3</th>
-            <th>Цена продажи</th>
-            <th>Маржа</th>
-          </tr>
-        </thead>
+        <thead><tr><th>Масло</th><th>100 мл</th><th>Маржа</th><th>250 мл</th><th>Маржа</th></tr></thead>
         <tbody>
-          <tr>
-            <td><strong>«Здоровье»</strong></td>
-            <td>Тмин + расторопша + тыква</td>
-            <td class="td-num">580 ₽</td>
-            <td class="td-num" style="color:var(--brand); font-weight:600;">2 500 – 3 000 ₽</td>
-            <td><span class="badge badge-green">~75–80%</span></td>
-          </tr>
-          <tr>
-            <td><strong>«Кухня»</strong></td>
-            <td>Кедр + грецкий + кунжут*</td>
-            <td class="td-num">590 ₽</td>
-            <td class="td-num" style="color:var(--brand); font-weight:600;">2 200 – 2 700 ₽</td>
-            <td><span class="badge badge-green">~75%</span></td>
-          </tr>
+          <tr><td>Лён</td><td>590 ₽</td><td>88%</td><td>1 290 ₽</td><td>86%</td></tr>
+          <tr><td>Подсолнух</td><td>590 ₽</td><td>88%</td><td>1 290 ₽</td><td>86%</td></tr>
+          <tr><td>Расторопша</td><td>790 ₽</td><td>87%</td><td>1 790 ₽</td><td>86%</td></tr>
+          <tr><td>Грецкий орех</td><td>890 ₽</td><td>83%</td><td>1 990 ₽</td><td>81%</td></tr>
+          <tr><td class="table-accent">Кедр</td><td>990 ₽</td><td>80%</td><td>2 290 ₽</td><td>78%</td></tr>
+          <tr><td class="table-accent">Тмин</td><td>990 ₽</td><td>80%</td><td>2 290 ₽</td><td>78%</td></tr>
+          <tr><td class="table-accent">Миндаль</td><td>990 ₽</td><td>76%</td><td>2 490 ₽</td><td>76%</td></tr>
+          <tr><td class="table-accent">Тыква</td><td>1 190 ₽</td><td>76%</td><td>2 790 ₽</td><td>75%</td></tr>
         </tbody>
       </table>
     </div>
-    <div class="alert alert-info fade-up">
-      <span class="alert-icon">ℹ️</span>
-      <div>
-        <p style="font-size:14px; color:var(--n600);">* Кунжут — когда появится. До тех пор: кедр + грецкий + подсолнух или миндаль.<br>
-        <strong>Принцип:</strong> Скидка 10% при покупке набора vs поштучно. Не ниже — иначе убиваем ценность.</p>
-      </div>
-    </div>
-
-    <div class="grid-2" style="margin-top:28px;">
-      <div class="card-brand fade-up">
-        <div class="card-icon">🎁</div>
-        <div class="card-title">Подарочный бокс — цены</div>
-        <div style="font-size:14px; color:var(--n700); padding:10px 0; border-bottom:1px solid rgba(44,95,45,.1);">
-          <strong>2 флагмана 250 мл + упаковка</strong>
-          <div style="font-size:18px; font-weight:700; color:var(--brand); margin-top:4px;">4 000 – 5 000 ₽</div>
-        </div>
-        <div style="font-size:14px; color:var(--n700); padding:10px 0;">
-          <strong>3 флагмана 250 мл + упаковка</strong>
-          <div style="font-size:18px; font-weight:700; color:var(--brand); margin-top:4px;">5 500 – 7 000 ₽</div>
-        </div>
-      </div>
-      <div class="card fade-up">
-        <div class="card-icon">🔁</div>
-        <div class="card-title">Модель повторной покупки</div>
-        <div style="margin-bottom:12px;">
-          <div style="font-size:12px; font-weight:700; text-transform:uppercase; color:var(--success); margin-bottom:4px;">✅ Подтверждено 29.03</div>
-          <div style="font-size:14px; color:var(--n700);">Полуручной: бот/система напоминает Кириллу → он пишет клиенту сам</div>
-        </div>
-        <div style="opacity:.6;">
-          <div style="font-size:12px; font-weight:700; text-transform:uppercase; color:var(--warning); margin-bottom:4px;">⚠️ Позже</div>
-          <div style="font-size:14px; color:var(--n600);">Автоподписка: масло по расписанию — требует логистики</div>
-        </div>
-      </div>
-    </div>
+    <div class="warning-block"><p><strong>Все цены — рекомендация.</strong> Требуют верификации у Кирилла и A/B теста в первый месяц онлайн-продаж.</p></div>
   </div>
 </section>
 
-<!-- 4. ОБОСНОВАНИЕ ЦЕНЫ -->
-<section class="section fade-up" id="justify" style="background:#fff;">
+<!-- 03. Ступени -->
+<section class="section" id="steps">
   <div class="container">
     <div class="section-header">
-      <div class="section-label">4. Обоснование</div>
-      <h2 class="section-title">Обоснование цены</h2>
-      <p class="section-sub">Цена = сумма доказательств. Каждый элемент должен быть виден или объяснён покупателю.</p>
+      <span class="section-tag">03 — Ступени лестницы</span>
+      <h2>Единая ценовая система</h2>
     </div>
-    <div class="table-wrap fade-up">
+    <div class="table-wrapper">
       <table>
-        <thead>
-          <tr>
-            <th>Элемент</th>
-            <th>Что значит</th>
-            <th>Статус</th>
-          </tr>
-        </thead>
+        <thead><tr><th>Ступень</th><th>Название</th><th>Состав</th><th>Себест.</th><th>Цена</th><th>Маржа</th></tr></thead>
         <tbody>
-          <tr>
-            <td><strong>Гидравлический пресс (не шнек)</strong></td>
-            <td>Нет нагрева → нет окисления → полезные вещества сохранены</td>
-            <td><span class="s-ok">✅ Готов объяснять</span></td>
-          </tr>
-          <tr>
-            <td><strong>Тёмное стекло</strong></td>
-            <td>Защита от ультрафиолета</td>
-            <td><span class="s-ok">✅ Уже в упаковке</span></td>
-          </tr>
-          <tr>
-            <td><strong>Малые партии</strong></td>
-            <td>Масло свежее, не залёживается</td>
-            <td><span class="s-ok">✅ Реальность производства</span></td>
-          </tr>
-          <tr>
-            <td><strong>Госсертификат</strong></td>
-            <td>Официальная проверка</td>
-            <td><span class="s-ok">✅ Есть на все масла</span></td>
-          </tr>
-          <tr>
-            <td><strong>Видео производства</strong></td>
-            <td>«Вижу кто и как делает»</td>
-            <td><span class="s-warn">⚠️ Нужно снять</span></td>
-          </tr>
-          <tr>
-            <td><strong>Дата отжима</strong></td>
-            <td>«Знаю когда сделано»</td>
-            <td><span class="s-warn">⚠️ Нужно добавить на этикетку</span></td>
-          </tr>
-          <tr>
-            <td><strong>Сертификат сырья</strong></td>
-            <td>Поставщик проверен</td>
-            <td><span class="s-warn">⚠️ Запросить у поставщика</span></td>
-          </tr>
-          <tr>
-            <td><strong>Инструкция по применению</strong></td>
-            <td>«Знаю как использовать»</td>
-            <td><span class="s-need">🔶 Есть для 3 масел — нужно расширить</span></td>
-          </tr>
+          <tr><td>1</td><td class="table-accent">«Попробовать»</td><td>1×100 мл</td><td>70-280₽</td><td><strong>890 ₽</strong></td><td>69-92%</td></tr>
+          <tr><td>2</td><td class="table-accent">«Дегустация»</td><td>3×100 мл</td><td>260-790₽</td><td><strong>2 490 ₽</strong></td><td>68-90%</td></tr>
+          <tr><td>3</td><td class="table-accent">«Семейный»</td><td>3×250 мл</td><td>800-2 400₽</td><td><strong>4 990 ₽</strong></td><td>52-84%</td></tr>
+          <tr><td>4</td><td class="table-accent">«Мастерский»</td><td>5×250 мл + паспорт</td><td>1 500-3 800₽</td><td><strong>8 990 ₽</strong></td><td>58-83%</td></tr>
+          <tr><td>5</td><td class="table-accent">«Персональный»</td><td>4×250 мл + консульт.</td><td>1 500-2 200₽</td><td><strong>19 900 ₽</strong></td><td>89-92%</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3 style="margin-top:2.5rem;">Маржа «Дегустации» по наборам</h3>
+    <div class="table-wrapper">
+      <table>
+        <thead><tr><th>Набор</th><th>Состав</th><th>Себест.</th><th>Маржа</th></tr></thead>
+        <tbody>
+          <tr><td class="table-accent">«Здоровье»</td><td>тмин + расторопша + тыква</td><td>780₽</td><td><strong>69%</strong></td></tr>
+          <tr><td class="table-accent">«Кухня»</td><td>кедр + грецкий + миндаль</td><td>790₽</td><td><strong>68%</strong></td></tr>
+          <tr><td class="table-accent">«Красота»</td><td>миндаль + кедр + лён</td><td>710₽</td><td><strong>71%</strong></td></tr>
+          <tr><td class="table-accent">«Энергия»</td><td>лён + тыква + подсолнух</td><td>620₽</td><td><strong>75%</strong></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3 style="margin-top:2.5rem;">Маржа «Семейного» по комплектации</h3>
+    <div class="table-wrapper">
+      <table>
+        <thead><tr><th>Вариант</th><th>Состав 3×250 мл</th><th>Себест.</th><th>Маржа</th></tr></thead>
+        <tbody>
+          <tr><td>Базовые</td><td>лён + подсолнух + расторопша</td><td>900₽</td><td><strong>82%</strong></td></tr>
+          <tr><td>Средний микс</td><td>тмин + грецкий + расторопша</td><td>1 425₽</td><td><strong>71%</strong></td></tr>
+          <tr><td>Флагманы</td><td>тмин + тыква + миндаль</td><td>2 100₽</td><td><strong>58%</strong></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="highlight-box"><p><strong>Рекомендация:</strong> Комбинировать 1 флагман + 1 среднее + 1 базовое в наборе по умолчанию → маржа ~70%.</p></div>
+  </div>
+</section>
+
+<!-- 04. ₽/литр -->
+<section class="section" id="perliter">
+  <div class="container">
+    <div class="section-header">
+      <span class="section-tag">04 — Выручка на литр</span>
+      <h2>Ключевая метрика при дефиците мощности</h2>
+    </div>
+    <div class="table-wrapper">
+      <table>
+        <thead><tr><th>Формат</th><th>₽/литр</th><th>Когда</th></tr></thead>
+        <tbody>
+          <tr><td>100 мл поштучно (ст. 1)</td><td class="table-accent">8 900₽</td><td>Первая покупка</td></tr>
+          <tr><td>100 мл набор (ст. 2)</td><td class="table-accent">8 300₽</td><td>Знакомство</td></tr>
+          <tr><td>250 мл набор (ст. 3)</td><td>6 650₽</td><td>Ритуал</td></tr>
+          <tr><td>250 мл × 5 (ст. 4)</td><td>7 190₽</td><td>Премиум</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3 style="margin-top:2.5rem;">Средневзвешенная по миксу</h3>
+    <div class="table-wrapper">
+      <table>
+        <thead><tr><th>Микс</th><th>Распределение</th><th>Средняя ₽/л</th></tr></thead>
+        <tbody>
+          <tr><td>Текущий (офлайн)</td><td>80% ст. 1-2, 20% ст. 3</td><td>~7 850₽</td></tr>
+          <tr><td class="table-accent">Целевой (офл. + онл.)</td><td>50% ст. 1-2, 35% ст. 3, 15% ст. 4</td><td class="table-accent">~7 400₽</td></tr>
+          <tr><td>Оптимальный (фокус 100 мл)</td><td>70% ст. 1-2, 20% ст. 3, 10% ст. 4</td><td>~7 950₽</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="highlight-box"><p><strong>Стратегия:</strong> На старте — фокус на 100 мл (макс. ₽/литр). По мере роста базы — 250 мл для удержания. Реальный потолок с учётом микса: <strong>280-320К₽/мес</strong>.</p></div>
+  </div>
+</section>
+
+<!-- 05. Потолок -->
+<section class="section" id="capacity">
+  <div class="container">
+    <div class="section-header">
+      <span class="section-tag">05 — Потолок мощности</span>
+      <h2>Финансовые ориентиры</h2>
+    </div>
+    <div class="grid grid-3">
+      <div class="card"><div class="card-title">Выручка</div><div class="card-description" style="font-size:1.5rem;font-weight:700;color:var(--primary)">~200К₽/мес</div></div>
+      <div class="card"><div class="card-title">Аренда</div><div class="card-description" style="font-size:1.5rem;font-weight:700;color:var(--foreground)">100К₽/мес</div></div>
+      <div class="card"><div class="card-title">Производство</div><div class="card-description" style="font-size:1.5rem;font-weight:700;color:var(--primary)">50 л/мес (83%)</div></div>
+    </div>
+
+    <h3 style="margin-top:2.5rem;">Сценарии при 60 л/мес</h3>
+    <div class="table-wrapper">
+      <table>
+        <thead><tr><th>Сценарий</th><th>₽/литр</th><th>Выручка</th><th>Прибыль</th></tr></thead>
+        <tbody>
+          <tr><td>Текущий микс</td><td>4 000₽</td><td>240К₽</td><td>~25К₽</td></tr>
+          <tr><td class="table-accent">Смещение к 100 мл</td><td>4 500₽</td><td>270К₽</td><td>~45К₽</td></tr>
+          <tr><td class="table-accent">Оптимальный премиум</td><td>5 200₽</td><td>312К₽</td><td>~70К₽</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3 style="margin-top:2.5rem;">Для роста до 500К</h3>
+    <div class="table-wrapper">
+      <table>
+        <thead><tr><th>Что нужно</th><th>Инвестиция</th><th>Окупаемость</th></tr></thead>
+        <tbody>
+          <tr><td>2-й пресс</td><td class="table-accent">~100-150К₽</td><td>2-3 мес</td></tr>
+          <tr><td>Помощник (полставки)</td><td>~40-50К₽/мес</td><td>С 250К+</td></tr>
+          <tr><td>Онлайн (бот, контент)</td><td>0₽</td><td>—</td></tr>
         </tbody>
       </table>
     </div>
   </div>
 </section>
 
-<!-- 5. ЦЕНОВОЙ РИСК -->
-<section class="section fade-up" id="risk">
+<!-- 06. Обоснование -->
+<section class="section" id="justify">
   <div class="container">
     <div class="section-header">
-      <div class="section-label">5. Риск</div>
-      <h2 class="section-title">Ценовой риск — ниже рынка</h2>
-      <p class="section-sub">Кирилл продаёт на 10–15% дешевле конкурентов при заявленном качестве выше рынка.</p>
+      <span class="section-tag">06 — Обоснование цены</span>
+      <h2>Как объяснять покупателю</h2>
     </div>
-    <div class="alert alert-error fade-up">
-      <span class="alert-icon">🚨</span>
-      <div>
-        <strong style="color:#991b1b; display:block; margin-bottom:4px;">Когнитивный диссонанс</strong>
-        <p style="font-size:14px; color:var(--n600);">«Хорошее дешевле хорошего» — не работает как логика в премиум-категории. Покупатель недоверчив: «Почему дешевле? Что-то не так?»</p>
-      </div>
-    </div>
-    <div class="grid-2" style="margin-top:24px;">
-      <div class="card fade-up" style="border-top:4px solid var(--brand);">
-        <div class="card-icon">💡</div>
-        <div class="card-title">Рекомендация M3</div>
-        <div style="font-size:14px; color:var(--n600);">
-          <div style="padding:8px 0; border-bottom:1px solid var(--n100);">Не снижать цены дальше</div>
-          <div style="padding:8px 0; border-bottom:1px solid var(--n100);">При первом онлайн-запуске — протестировать рыночные цены (не ниже среднего)</div>
-          <div style="padding:8px 0; border-bottom:1px solid var(--n100);">Если хочет быть «чуть дешевле» — объяснять: «Я не переплачиваю за маркетинг и аренду офиса — только производство»</div>
-          <div style="padding:8px 0;">Альтернатива: специальная цена для подписчиков TG = нет публичного демпинга</div>
-        </div>
-      </div>
-      <div class="card-brand fade-up">
-        <div class="card-icon">📣</div>
-        <div class="card-title">Как объяснять цену</div>
-        <div style="font-size:14px; color:var(--n700); font-style:italic; padding:12px; background:rgba(44,95,45,.05); border-radius:var(--r-lg); border-left:3px solid var(--brand);">
-          «Я не переплачиваю за маркетинг, красивый офис и менеджеров по продажам. Только производство — поэтому цена честная, а качество не снижается.»
-        </div>
-      </div>
+    <div class="table-wrapper">
+      <table>
+        <thead><tr><th>Элемент</th><th>Что значит</th><th>Статус</th></tr></thead>
+        <tbody>
+          <tr><td>Гидравлический пресс</td><td>Нет нагрева → вещества сохранены</td><td><span class="badge badge-green">Готово</span></td></tr>
+          <tr><td>Тёмное стекло</td><td>Защита от ультрафиолета</td><td><span class="badge badge-green">Готово</span></td></tr>
+          <tr><td>Малые партии (60 л/мес)</td><td>Свежее, не залёживается</td><td><span class="badge badge-green">Готово</span></td></tr>
+          <tr><td>Паспорт качества</td><td>Температура, ПЧ, дата, сырьё</td><td><span class="badge badge-green">Готово</span></td></tr>
+          <tr><td>Отжим при клиенте</td><td>Видит процесс — уникальное УТП</td><td><span class="badge badge-green">Готово</span></td></tr>
+          <tr><td>Дата отжима на этикетке</td><td>«Знаю когда сделано»</td><td><span class="badge badge-yellow">Добавить</span></td></tr>
+          <tr><td>Видео производства</td><td>«Вижу кто и как делает»</td><td><span class="badge badge-yellow">Снять</span></td></tr>
+        </tbody>
+      </table>
     </div>
   </div>
 </section>
 
-<!-- 6. ФИНАНСОВЫЕ ОРИЕНТИРЫ -->
-<section class="section fade-up" id="financials" style="background:#fff;">
+<!-- 07. Повторы -->
+<section class="section" id="repeat">
   <div class="container">
     <div class="section-header">
-      <div class="section-label">6. Финансы</div>
-      <h2 class="section-title">Финансовые ориентиры</h2>
-      <p class="section-sub">Текущий уровень, цель 90 дней и цель 2026 года.</p>
+      <span class="section-tag">07 — Повторные покупки</span>
+      <h2>Модели и циклы</h2>
     </div>
-
-    <div class="grid-3" style="margin-bottom:32px;">
-      <div class="stat-card fade-up">
-        <div class="stat-label">Сейчас (офлайн)</div>
-        <div class="stat-value">~105 тыс ₽</div>
-        <div class="stat-desc">в месяц · ~1 л/день = 25–30 л/мес реальных продаж</div>
+    <div class="grid grid-2">
+      <div class="card">
+        <div class="card-title">Полуручной ремайндер <span class="badge badge-green">Подтверждено</span></div>
+        <div class="card-description">Бот напоминает Кириллу → он пишет клиенту лично. Формат выбран 29.03.</div>
       </div>
-      <div class="stat-card fade-up" style="background:linear-gradient(135deg,var(--accent) 0%,#b8960e 100%); color:var(--n900);">
-        <div class="stat-label" style="color:var(--n700);">Цель 90 дней</div>
-        <div class="stat-value" style="color:var(--n900);">300–500 тыс ₽</div>
-        <div class="stat-desc" style="color:var(--n700);">онлайн + офлайн · ~120–200 продаж/мес при чеке 2 500 ₽</div>
-      </div>
-      <div class="stat-card fade-up">
-        <div class="stat-label">Цель 2026 года</div>
-        <div class="stat-value">300–500 тыс ₽</div>
-        <div class="stat-desc">онлайн база 500–1 000 клиентов + ремайндеры + средний чек 2 500–3 000 ₽</div>
+      <div class="card">
+        <div class="card-title">Автоподписка <span class="badge badge-yellow">Позже</span></div>
+        <div class="card-description">Масло по расписанию. Требует логистики — не на старте.</div>
       </div>
     </div>
-
-    <div class="alert alert-brand fade-up">
-      <span class="alert-icon">📊</span>
-      <div>
-        <strong style="color:var(--brand-dark); display:block; margin-bottom:4px;">Мощность при цели 90 дней</strong>
-        <p style="font-size:14px; color:var(--n600);">60 л/мес = 240 бутылок 250 мл или 600 бутылок 100 мл. 120–200 продаж/мес при среднем чеке 2 500 ₽ — достижимо в рамках текущих мощностей.</p>
-      </div>
+    <h3 style="margin-top:2rem;">Циклы повтора</h3>
+    <div class="grid grid-3" style="margin-top:1rem;">
+      <div class="card"><div class="card-title">100 мл</div><div class="card-description" style="font-size:1.25rem;font-weight:700;color:var(--primary)">21-25 дней</div></div>
+      <div class="card"><div class="card-title">250 мл</div><div class="card-description" style="font-size:1.25rem;font-weight:700;color:var(--primary)">55-60 дней</div></div>
+      <div class="card"><div class="card-title">3×250 мл</div><div class="card-description" style="font-size:1.25rem;font-weight:700;color:var(--primary)">60-75 дней</div></div>
     </div>
   </div>
 </section>
 
-<!-- FOOTER -->
+<!-- 08. Changelog -->
+<section class="section">
+  <div class="container">
+    <div class="section-header">
+      <span class="section-tag">08 — Changelog</span>
+      <h2>Изменения v3.0</h2>
+    </div>
+    <div class="table-wrapper">
+      <table>
+        <thead><tr><th>Что</th><th>Было (v2.0)</th><th>Стало (v3.0)</th></tr></thead>
+        <tbody>
+          <tr><td>Ценовая система</td><td>Две (лестница + GSO)</td><td class="table-accent">Единая (5 ступеней)</td></tr>
+          <tr><td>Розничные цены</td><td>Гипотезы, ниже рынка</td><td class="table-accent">Бенчмарк конкурентов, рыночные</td></tr>
+          <tr><td>Выручка</td><td>100-110К</td><td class="table-accent">200К, аренда 100К</td></tr>
+          <tr><td>Потолок</td><td>Не указан</td><td class="table-accent">280-320К при 60 л</td></tr>
+          <tr><td>«Персональный»</td><td>Не было</td><td class="table-accent">19 900₽, 3/мес</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
 <footer class="footer">
   <div class="container">
-    <div class="footer-inner">
-      <div>
-        <img src="../assets/logo-horizontal-dark.png" alt="Магия Масел" style="height:48px; width:auto; border-radius:var(--r-lg);">
-        <div style="margin-top:8px; font-size:12px; color:var(--n600);">BrandOS · Фабрика Контента v5</div>
-      </div>
-      <div class="footer-meta">
-        <div class="footer-meta-item">
-          <span class="footer-meta-label">Документ</span>
-          <span class="footer-meta-value">M3-04 — Ценовая модель</span>
-        </div>
-        <div class="footer-meta-item">
-          <span class="footer-meta-label">Модуль</span>
-          <span class="footer-meta-value">M3 · 4 из 7</span>
-        </div>
-        <div class="footer-meta-item">
-          <span class="footer-meta-label">Версия</span>
-          <span class="footer-meta-value">2.0 (финальная) · 29.03.2026</span>
-        </div>
-        <div class="footer-meta-item">
-          <span class="footer-meta-label">Источники</span>
-          <span class="footer-meta-value">Ответы Кирилла 27.03 + 29.03 + мастер-синтез M2</span>
-        </div>
-      </div>
-    </div>
+    BrandOS · BRODSKY OIL · M3-04 Ценовая модель · v3.1 · 2026
   </div>
 </footer>
 
-<script>
-  const observer = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) entry.target.classList.add('visible');
-    });
-  }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
-
-  document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
-</script>
 </body>
 </html>

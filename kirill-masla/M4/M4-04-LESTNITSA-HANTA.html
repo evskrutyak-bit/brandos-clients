@@ -1,1383 +1,265 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>M4-04 — Лестница Ханта · Магия Масел</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-    :root {
-      --brand: #2C5F2D;
-      --brand-dark: #1a4a1b;
-      --brand-light: #4a8f4b;
-      --brand-bg: #e8f5e9;
-      --accent: #D4AF37;
-      --accent-bg: #fdf8e8;
-      --n50: #f8fafc; --n100: #f1f5f9; --n200: #e2e8f0;
-      --n300: #cbd5e1; --n400: #94a3b8; --n500: #64748b;
-      --n600: #475569; --n700: #334155; --n800: #1e293b; --n900: #0f172a;
-      --success: #10b981; --warning: #f59e0b; --error: #ef4444; --info: #3b82f6;
-      --font: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-      --shadow-card: 0 1px 3px 0 rgba(0,0,0,.05), 0 1px 2px -1px rgba(0,0,0,.05);
-      --shadow-hover: 0 10px 25px -5px rgba(0,0,0,.08), 0 8px 10px -6px rgba(0,0,0,.04);
-      --shadow-btn: 0 4px 14px 0 rgba(44,95,45,.35);
-      --r-sm:4px; --r-md:6px; --r-lg:8px; --r-xl:12px; --r-2xl:16px; --r-3xl:24px; --r-full:9999px;
-    }
-
-    body { font-family: var(--font); font-size: 16px; line-height: 1.6; color: var(--n600); background: var(--n100); }
-
-    @keyframes fade-up { 0%{opacity:0;transform:translateY(20px)} 100%{opacity:1;transform:translateY(0)} }
-    .fade-up { opacity:0; transform:translateY(20px); transition:opacity .6s ease-out, transform .6s ease-out; }
-    .fade-up.visible { opacity:1; transform:translateY(0); }
-
-    .container { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
-    .section { padding: 80px 0; }
-
-    /* Nav */
-    .nav-wrap {
-      position: fixed; top: 0; left: 0; right: 0; z-index: 300;
-      background: rgba(255,255,255,.93); backdrop-filter: blur(12px);
-      border-bottom: 1px solid var(--n200); height: 64px;
-    }
-    .nav-inner { height:100%; display:flex; align-items:center; justify-content:space-between; }
-    .nav-logo img { height:40px; width:auto; display:block; }
-    .nav-links { display:flex; gap:20px; flex-wrap:wrap; }
-    .nav-links a { font-size:13px; font-weight:500; color:var(--n600); text-decoration:none; transition:color .2s; }
-    .nav-links a:hover { color:var(--brand); }
-    .nav-badge {
-      font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:.05em;
-      color:var(--brand); background:var(--brand-bg);
-      padding:5px 12px; border-radius:var(--r-full); white-space:nowrap;
-    }
-
-    /* Section header */
-    .section-header { margin-bottom:40px; }
-    .section-label {
-      display:inline-block; font-size:11px; font-weight:700; text-transform:uppercase;
-      letter-spacing:.08em; color:var(--brand); background:var(--brand-bg);
-      padding:4px 12px; border-radius:var(--r-full); margin-bottom:12px;
-    }
-    .section-title { font-size:30px; font-weight:600; color:var(--n900); line-height:1.25; margin-bottom:8px; }
-    .section-sub { font-size:16px; color:var(--n500); }
-
-    /* Grid */
-    .grid-2 { display:grid; grid-template-columns:repeat(auto-fit,minmax(340px,1fr)); gap:20px; }
-    .grid-3 { display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:20px; }
-
-    /* Badge */
-    .badge { display:inline-flex; align-items:center; padding:3px 10px; border-radius:var(--r-full); font-size:12px; font-weight:600; }
-    .badge-green { background:#d1fae5; color:#065f46; }
-    .badge-yellow { background:#fef3c7; color:#92400e; }
-    .badge-blue { background:#dbeafe; color:#1e40af; }
-    .badge-brand { background:var(--brand-bg); color:var(--brand-dark); }
-    .badge-accent { background:var(--accent-bg); color:#7a6000; }
-    .badge-red { background:#fee2e2; color:#991b1b; }
-    .badge-gray { background:var(--n100); color:var(--n500); }
-
-    /* Table */
-    .table-wrap { overflow-x:auto; border-radius:var(--r-2xl); border:1px solid var(--n200); margin:20px 0; }
-    table { width:100%; border-collapse:collapse; background:#fff; }
-    thead tr { background:var(--n50); border-bottom:2px solid var(--n200); }
-    th { padding:14px 18px; text-align:left; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.05em; color:var(--n500); }
-    td { padding:14px 18px; font-size:14px; color:var(--n600); border-bottom:1px solid var(--n200); }
-    tr:last-child td { border-bottom:none; }
-    tbody tr { transition:background .2s; }
-    tbody tr:hover { background:var(--n50); }
-    .td-num { font-size:13px; color:var(--n400); font-family:monospace; }
-
-    /* Alert */
-    .alert { display:flex; gap:14px; border-radius:var(--r-xl); padding:18px; margin:16px 0; }
-    .alert-warning { background:#fffbeb; border:1px solid #fde68a; border-left:4px solid var(--warning); }
-    .alert-error { background:#fff1f2; border:1px solid #fecdd3; border-left:4px solid var(--error); }
-    .alert-info { background:#eff6ff; border:1px solid #bfdbfe; border-left:4px solid var(--info); }
-    .alert-success { background:#f0fdf4; border:1px solid #bbf7d0; border-left:4px solid var(--success); }
-    .alert-brand { background:var(--brand-bg); border:1px solid #a5d6a7; border-left:4px solid var(--brand); }
-    .alert-icon { font-size:18px; flex-shrink:0; margin-top:1px; }
-
-    /* Card */
-    .card {
-      background:#fff; border-radius:var(--r-2xl); border:1px solid var(--n200);
-      padding:28px; box-shadow:var(--shadow-card);
-      transition:transform .3s ease, box-shadow .3s ease;
-    }
-    .card:hover { transform:translateY(-3px); box-shadow:var(--shadow-hover); }
-    .card-brand {
-      background: linear-gradient(135deg, var(--brand-bg) 0%, #fff 100%);
-      border-radius:var(--r-2xl); border:1px solid #a5d6a7; padding:28px; box-shadow:var(--shadow-card);
-    }
-    .card-accent {
-      background: var(--accent-bg);
-      border-radius:var(--r-2xl); border:1px solid #e8d87a; padding:28px; box-shadow:var(--shadow-card);
-    }
-    .card-title { font-size:16px; font-weight:700; color:var(--n900); margin-bottom:12px; }
-    .card-icon { font-size:24px; margin-bottom:12px; }
-
-    /* Stat cards */
-    .stat-card {
-      background:linear-gradient(135deg,var(--brand) 0%,var(--brand-dark) 100%);
-      border-radius:var(--r-2xl); padding:24px; color:#fff; box-shadow:var(--shadow-btn);
-    }
-    .stat-label { font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.05em; opacity:.75; margin-bottom:8px; }
-    .stat-value { font-size:28px; font-weight:700; line-height:1; margin-bottom:6px; }
-    .stat-desc { font-size:13px; opacity:.8; }
-
-    /* List item */
-    .list-item {
-      display:flex; gap:10px; align-items:flex-start;
-      padding:9px 0; border-bottom:1px solid var(--n100);
-      font-size:14px; color:var(--n600);
-    }
-    .list-item:last-child { border-bottom:none; }
-    .list-dot { width:8px; height:8px; border-radius:50%; background:var(--brand); flex-shrink:0; margin-top:6px; }
-    .list-dot-red { width:8px; height:8px; border-radius:50%; background:var(--error); flex-shrink:0; margin-top:6px; }
-
-    /* Status icons */
-    .s-ok { color:var(--success); font-weight:600; }
-    .s-warn { color:var(--warning); font-weight:600; }
-    .s-need { color:#f97316; font-weight:600; }
-
-    @media (max-width:768px) {
-      .nav-links { display:none; }
-      .section-title { font-size:24px; }
-      .grid-2, .grid-3 { grid-template-columns:1fr; }
-    }
-
-    /* Hero */
-    .hero {
-      background: linear-gradient(135deg, var(--brand-dark) 0%, var(--brand) 50%, var(--brand-light) 100%);
-      padding: 120px 0 80px; color:#fff; position:relative; overflow:hidden;
-    }
-    .hero::before {
-      content:''; position:absolute; inset:0;
-      background: radial-gradient(ellipse at 70% 50%, rgba(212,175,55,.15) 0%, transparent 60%);
-    }
-    .hero-inner { display:flex; align-items:center; gap:48px; flex-wrap:wrap; }
-    .hero-logo-wrap { flex-shrink:0; }
-    .hero-logo-wrap img { height:140px; width:auto; display:block; border-radius:var(--r-xl); }
-    .hero-content { flex:1; min-width:280px; }
-    .hero-badge {
-      display:inline-block; font-size:11px; font-weight:700; text-transform:uppercase;
-      letter-spacing:.1em; background:rgba(255,255,255,.15); color:#fff;
-      border:1px solid rgba(255,255,255,.3); padding:6px 16px;
-      border-radius:var(--r-full); margin-bottom:20px; backdrop-filter:blur(8px);
-    }
-    .hero-title { font-size:52px; font-weight:700; line-height:1.1; margin-bottom:16px; }
-    .hero-title span { color:var(--accent); }
-    .hero-sub { font-size:18px; opacity:.85; max-width:600px; margin-bottom:32px; line-height:1.6; }
-    .hero-meta { display:flex; gap:24px; flex-wrap:wrap; }
-    .hero-meta-item { display:flex; flex-direction:column; gap:3px; }
-    .hero-meta-label { font-size:10px; text-transform:uppercase; letter-spacing:.08em; opacity:.6; }
-    .hero-meta-value { font-size:14px; font-weight:600; }
-
-    @media (max-width:768px) {
-      .hero { padding: 100px 0 60px; }
-      .hero-title { font-size:34px; }
-      .hero-logo-wrap img { height:80px; }
-    }
-
-    /* Footer */
-    .footer { background:var(--n900); color:var(--n400); padding:40px 0; font-size:13px; }
-    .footer-inner { display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:16px; }
-    .footer-meta { display:flex; gap:20px; flex-wrap:wrap; }
-    .footer-meta-item { display:flex; flex-direction:column; gap:2px; }
-    .footer-meta-label { font-size:10px; text-transform:uppercase; letter-spacing:.05em; color:var(--n600); }
-    .footer-meta-value { font-size:12px; color:var(--n400); }
-
-    /* Segment-specific */
-    .segment-header {
-      background: linear-gradient(135deg, var(--brand-dark) 0%, var(--brand) 100%);
-      border-radius:var(--r-2xl); padding:24px 28px; color:#fff; margin-bottom:28px;
-    }
-    .segment-title { font-size:22px; font-weight:700; margin-bottom:6px; }
-    .segment-avatar { font-size:14px; opacity:.8; font-style:italic; }
-    .segment-section { margin-bottom:60px; padding-bottom:60px; border-bottom:2px solid var(--n200); }
-    .segment-section:last-child { border-bottom:none; margin-bottom:0; }
-
-    /* Step card */
-    .step-card {
-      background:#fff; border-radius:var(--r-2xl); border:1px solid var(--n200);
-      padding:24px; box-shadow:var(--shadow-card); margin-bottom:16px;
-      transition:transform .3s ease, box-shadow .3s ease;
-    }
-    .step-card:hover { transform:translateY(-2px); box-shadow:var(--shadow-hover); }
-    .step-num {
-      display:inline-flex; align-items:center; justify-content:center;
-      width:32px; height:32px; border-radius:50%;
-      background:var(--brand); color:#fff; font-size:13px; font-weight:700;
-      margin-bottom:12px;
-    }
-    .step-title { font-size:15px; font-weight:700; color:var(--n900); margin-bottom:8px; }
-    .field-label {
-      font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.06em;
-      color:var(--n400); margin-bottom:6px; margin-top:14px;
-    }
-    .content-box {
-      background:var(--n50); border-radius:var(--r-lg); padding:12px 16px;
-      font-size:14px; color:var(--n600); border:1px solid var(--n200);
-    }
-    .hook-tag {
-      display:inline-block; background:#dbeafe; color:#1e40af;
-      font-size:12px; font-weight:600; padding:3px 10px;
-      border-radius:var(--r-full); margin-bottom:6px;
-    }
-    blockquote {
-      border-left:3px solid var(--brand); padding:10px 16px;
-      background:var(--brand-bg); border-radius:0 var(--r-lg) var(--r-lg) 0;
-      font-size:14px; color:var(--n700); font-style:italic; margin:8px 0;
-    }
-    .code-block {
-      background:var(--n50); border:1px solid var(--n200); border-radius:var(--r-lg);
-      padding:16px; font-family:monospace; font-size:13px; color:var(--n700);
-      line-height:1.8; margin:12px 0;
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>M4-04 · Лестница Ханта — BRODSKY OIL · BrandOS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --primary: #0ea5e9; --primary-dark: #0284c7; --primary-light: #7dd3fc;
+  --primary-bg: #e0f2fe; --background: #ffffff; --foreground: #0f172a;
+  --card-bg: hsl(0,0%,97%); --border: #1C1C1E; --muted: #64748b; --radius: 4px;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: 'Inter', sans-serif; background: var(--background); color: var(--foreground); line-height: 1.75; font-size: 16px; }
+.container { max-width: 1200px; margin: 0 auto; padding: 0 1.5rem; }
+.nav { position: sticky; top: 0; background: white; border-bottom: 1px solid var(--border); z-index: 100; padding: 1rem 0; }
+.nav-container { display: flex; justify-content: space-between; align-items: center; gap: 2rem; }
+.nav-brand { font-size: 1rem; font-weight: 700; color: var(--foreground); white-space: nowrap; }
+.nav-brand span { color: var(--primary); }
+.nav-links { display: flex; gap: 1.5rem; list-style: none; overflow-x: auto; flex-wrap: wrap; }
+.nav-links a { color: var(--foreground); text-decoration: none; font-size: .875rem; font-weight: 500; white-space: nowrap; transition: color .2s; }
+.nav-links a:hover { color: var(--primary); }
+.hero { padding: 3.75rem 0; background: linear-gradient(135deg, rgba(255,255,255,.98) 0%, rgba(240,249,255,.95) 100%); }
+.hero-badge { display: inline-flex; align-items: center; gap: .5rem; padding: .5rem 1rem; background: var(--card-bg); border: 1px solid var(--border); border-radius: var(--radius); font-size: .875rem; font-weight: 600; margin-bottom: 1.5rem; color: var(--foreground); }
+.hero h1 { font-size: clamp(32px, 4vw, 51px); font-weight: 500; line-height: 1.2; letter-spacing: -.03em; margin-bottom: 1.5rem; }
+.hero-subtitle { font-size: 1.125rem; color: var(--muted); margin-bottom: 2rem; }
+.hero-meta { display: flex; gap: 2rem; flex-wrap: wrap; }
+.hero-meta-item { font-size: .875rem; color: var(--muted); }
+.hero-meta-item strong { color: var(--primary); font-weight: 600; }
+.section { padding: 2.5rem 0; }
+@media (min-width: 768px) { .section { padding: 3.75rem 0; } }
+.section-header { position: relative; margin-bottom: 32px; padding-top: 24px; }
+.section-header::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px; background: repeating-linear-gradient(to right, #9CA3AF 0, #9CA3AF 4px, transparent 4px, transparent 8px); }
+.section-tag { display: inline-block; font-size: .75rem; font-weight: 600; text-transform: uppercase; letter-spacing: .1em; color: var(--primary); margin-bottom: .5rem; }
+h2 { font-size: 32px; font-weight: 300; line-height: 1.2; letter-spacing: -.02em; margin-bottom: 1rem; }
+h3 { font-size: 20px; font-weight: 600; line-height: 1.3; margin-bottom: 1rem; }
+p { margin-bottom: 1rem; color: var(--muted); }
+p:last-child { margin-bottom: 0; }
+.card { border: 1px solid var(--border); border-radius: var(--radius); background: linear-gradient(135deg, rgba(255,255,255,.98) 0%, rgba(250,250,252,.95) 100%); padding: 1.5rem; position: relative; overflow: hidden; transition: all .4s cubic-bezier(.4, 0, .2, 1); }
+.card:hover { transform: translateY(-4px); box-shadow: 0 12px 32px rgba(0,0,0,.08), 0 0 0 1px rgba(14,165,233,.1); border-color: rgba(14,165,233,.3); }
+.card-title { font-size: 1.0625rem; font-weight: 600; margin-bottom: .75rem; color: var(--foreground); }
+.card-description { font-size: .9375rem; line-height: 1.75; color: var(--muted); }
+.grid { display: grid; gap: 1.5rem; }
+.grid-2 { grid-template-columns: 1fr; }
+.grid-3 { grid-template-columns: 1fr; }
+@media (min-width: 768px) { .grid-2 { grid-template-columns: repeat(2, 1fr); } .grid-3 { grid-template-columns: repeat(3, 1fr); } }
+.highlight-box { background: linear-gradient(135deg, rgba(14,165,233,.05) 0%, rgba(14,165,233,.02) 100%); border: 1px solid rgba(14,165,233,.2); border-left: 4px solid var(--primary); padding: 1.25rem 1.5rem; border-radius: var(--radius); margin: 1.5rem 0; }
+.highlight-box p { margin: 0; font-size: 1rem; }
+.highlight-box strong { color: var(--primary); }
+.phase-badge { background: linear-gradient(135deg, rgba(14,165,233,.07) 0%, rgba(14,165,233,.02) 100%); padding: 2rem; border-radius: var(--radius); border: 1px solid rgba(14,165,233,.22); margin-bottom: 2rem; }
+.phase-badge h3 { color: var(--primary); margin-bottom: .5rem; }
+.phase-badge p { font-size: 1.0625rem; margin: 0; }
+.list-styled { list-style: none; padding: 0; }
+.list-styled li { padding-left: 1.5rem; margin-bottom: .75rem; position: relative; color: var(--muted); font-size: .9375rem; }
+.list-styled li::before { content: ''; position: absolute; left: 0; top: .65rem; width: 6px; height: 6px; background: var(--primary); border-radius: 50%; }
+.table-wrapper { overflow-x: auto; margin: 1.5rem 0; border: 1px solid var(--border); border-radius: var(--radius); }
+table { width: 100%; border-collapse: collapse; background: white; }
+th, td { padding: 1rem; text-align: left; border-bottom: 1px solid var(--border); }
+th { background: var(--card-bg); font-weight: 600; font-size: .8125rem; text-transform: uppercase; letter-spacing: .05em; color: var(--foreground); }
+td { font-size: .9375rem; color: var(--muted); }
+tr:last-child td { border-bottom: none; }
+tr:hover td { background: var(--card-bg); }
+.table-accent { color: var(--primary); font-weight: 600; }
+.warning-block { background: linear-gradient(135deg, rgba(239,68,68,.04) 0%, rgba(239,68,68,.01) 100%); border: 1px solid rgba(239,68,68,.18); border-left: 4px solid #ef4444; padding: 1.25rem 1.5rem; border-radius: var(--radius); margin: 1.5rem 0; }
+.warning-block p { margin: 0; font-size: .9375rem; color: var(--muted); }
+.warning-block strong { color: var(--foreground); }
+.formula-block { background: linear-gradient(135deg, rgba(14,165,233,.05) 0%, rgba(14,165,233,.02) 100%); border: 1px solid rgba(14,165,233,.22); border-left: 4px solid var(--primary); padding: 2rem 2.5rem; border-radius: var(--radius); font-size: 1.125rem; font-style: italic; line-height: 1.8; color: var(--foreground); margin: 2rem 0; }
+.badge { display: inline-block; padding: .25rem .75rem; border-radius: 9999px; font-size: .75rem; font-weight: 600; }
+.badge-green { background: #d1fae5; color: #065f46; }
+.badge-yellow { background: #fef3c7; color: #92400e; }
+.badge-blue { background: var(--primary-bg); color: var(--primary-dark); }
+.footer { padding: 2rem 0; border-top: 1px solid var(--border); text-align: center; color: var(--muted); font-size: .875rem; }
+.step-row { display: flex; gap: 1.5rem; margin-bottom: 1.5rem; align-items: flex-start; }
+.step-number { flex-shrink: 0; width: 48px; height: 48px; background: var(--primary); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 1.125rem; }
+.step-content { flex: 1; }
+.step-content h3 { margin-bottom: .5rem; }
+.quote { border-left: 3px solid var(--primary-light); padding: .75rem 1.25rem; margin: .75rem 0; background: var(--card-bg); border-radius: 0 var(--radius) var(--radius) 0; }
+.quote p { font-style: italic; color: var(--muted); margin: 0; font-size: .9375rem; }
+.quote cite { display: block; font-size: .8125rem; color: var(--primary); font-style: normal; margin-top: .5rem; font-weight: 600; }
+@media (max-width: 768px) { .container { padding: 0 1rem; } h2 { font-size: 24px; } h3 { font-size: 18px; } .nav-links { gap: .75rem; } .hero-meta { gap: 1rem; } .formula-block { padding: 1.5rem; font-size: 1rem; } .step-row { flex-direction: column; } }
+</style>
 </head>
 <body>
 
-<!-- NAV -->
-<nav class="nav-wrap">
-  <div class="container">
-    <div class="nav-inner">
-      <div class="nav-logo"><img src="../../assets/logo-horizontal-light.png" alt="Магия Масел"></div>
-      <div class="nav-links">
-        <a href="#principle">Принцип</a>
-        <a href="#positions">Позиции</a>
-        <a href="#s1a">С1а</a>
-        <a href="#s1b">С1б</a>
-        <a href="#s1v">С1в</a>
-        <a href="#s2">С2</a>
-        <a href="#s3">С3</a>
-        <a href="#s4">С4</a>
-        <a href="#s5">С5</a>
-        <a href="#transitions">Переходы</a>
-        <a href="#channels">Каналы</a>
-        <a href="#barriers">Барьеры</a>
-        <a href="#content">Контент</a>
-      </div>
-      <div class="nav-badge">M4 · Документ 4/8</div>
-    </div>
+<nav class="nav">
+  <div class="container nav-container">
+    <div class="nav-brand">Brand<span>OS</span> · Документ</div>
+    <ul class="nav-links">
+      <li><a href="#principle">Принцип</a></li>
+      <li><a href="#start">Стартовые позиции</a></li>
+      <li><a href="#step1">Ступень 1</a></li>
+      <li><a href="#step2">Ступень 2</a></li>
+      <li><a href="#step3">Ступень 3</a></li>
+      <li><a href="#step4">Ступень 4</a></li>
+      <li><a href="#step5">Ступень 5</a></li>
+    </ul>
   </div>
 </nav>
 
-<!-- HERO -->
 <section class="hero">
   <div class="container">
-    <div class="hero-inner">
-      <div class="hero-logo-wrap">
-        <img src="../../assets/logo-badge-dark.png" alt="Магия Масел — Кирилл Бродский">
-      </div>
-      <div class="hero-content">
-        <div class="hero-badge">M4 · Аудитория · Документ 4 из 8</div>
-        <h1 class="hero-title">Лестница <span>Ханта</span></h1>
-        <p class="hero-sub">5 ступеней осведомлённости × 7 подсегментов. Триггеры, барьеры, контент для каждой ступени.</p>
-        <div class="hero-meta">
-          <div class="hero-meta-item">
-            <span class="hero-meta-label">Клиент</span>
-            <span class="hero-meta-value">Кирилл Бродский</span>
-          </div>
-          <div class="hero-meta-item">
-            <span class="hero-meta-label">Дата</span>
-            <span class="hero-meta-value">31.03.2026</span>
-          </div>
-          <div class="hero-meta-item">
-            <span class="hero-meta-label">Версия</span>
-            <span class="hero-meta-value">1.0 (Opus)</span>
-          </div>
-          <div class="hero-meta-item">
-            <span class="hero-meta-label">Подсегментов</span>
-            <span class="hero-meta-value">7 веток</span>
-          </div>
-        </div>
-      </div>
+    <div class="hero-badge">M4-04 · Аудитория · BrandOS</div>
+    <h1>Лестница Ханта<br><span style="color:var(--primary)">BRODSKY OIL</span></h1>
+    <p class="hero-subtitle">Кирилл Бродский · v3.1 · 31.03.2026</p>
+    <div class="hero-meta">
+      <span class="hero-meta-item"><strong>Клиент:</strong> Кирилл Бродский</span>
+      <span class="hero-meta-item"><strong>Модуль:</strong> M4 — Аудитория</span>
+      <span class="hero-meta-item"><strong>Версия:</strong> 3.1 (roundtable)</span>
+      <span class="hero-meta-item"><strong>Ступеней:</strong> 5</span>
     </div>
   </div>
 </section>
 
-<!-- ПРИНЦИП -->
-<section class="section fade-up" id="principle">
+<!-- Принцип -->
+<section class="section" id="principle">
   <div class="container">
     <div class="section-header">
-      <div class="section-label">Принцип</div>
-      <h2 class="section-title">5 ступеней осведомлённости</h2>
-      <p class="section-sub">Коммуникация, которая не совпадает с уровнем осведомлённости — не работает, даже если текст хорош.</p>
+      <span class="section-tag">Принцип</span>
+      <h2>Ступени осведомлённости</h2>
     </div>
-    <div class="alert alert-brand fade-up">
-      <span class="alert-icon">💡</span>
-      <div>
-        <strong style="color:var(--brand-dark); display:block; margin-bottom:4px;">Ключевой принцип</strong>
-        <p style="font-size:14px; color:var(--n600);">Человека нельзя перетащить через несколько ступеней одним контентом. Каждый контакт сдвигает на одну ступень вверх. Исключение — <strong>дегустация на рынке</strong>: Кирилл может провести человека с 1 до 5 за один разговор.</p>
-      </div>
+    <div class="highlight-box">
+      <p>Лестница Ханта описывает <strong>где в голове покупателя</strong> находится человек в момент первого контакта с брендом. Коммуникация, которая не совпадает с уровнем осведомлённости — не работает, даже если текст хорош.</p>
     </div>
-    <div class="table-wrap fade-up">
+    <div class="table-wrapper">
+      <table>
+        <thead><tr><th>#</th><th>Ступень</th><th>Что происходит в голове</th><th>Ощущение человека</th></tr></thead>
+        <tbody>
+          <tr><td class="table-accent">1</td><td><strong>Не осознаёт</strong></td><td>Проблемы нет. Живёт как живёт.</td><td>«У меня всё нормально»</td></tr>
+          <tr><td class="table-accent">2</td><td><strong>Осознаёт проблему</strong></td><td>Что-то не так, но не знает решения.</td><td>«Надо что-то менять, но что?»</td></tr>
+          <tr><td class="table-accent">3</td><td><strong>Осознаёт решение</strong></td><td>Знает что решения существуют, ищет конкретное.</td><td>«Масло холодного отжима — но какое и где?»</td></tr>
+          <tr><td class="table-accent">4</td><td><strong>Осознаёт продукт</strong></td><td>Знает о BRODSKY OIL, сравнивает с альтернативами.</td><td>«Кирилл выглядит убедительно, но...»</td></tr>
+          <tr><td class="table-accent">5</td><td><strong>Максимально осведомлён</strong></td><td>Знает Кирилла, готов купить — нужен повод.</td><td>«Надо заказать, но руки не дошли»</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="warning-block">
+      <p><strong>Ключевой принцип:</strong> Человека нельзя перетащить через несколько ступеней одним контентом. Каждый контакт сдвигает на одну ступень вверх. Исключение — <strong>дегустация на рынке</strong>: Кирилл может провести человека с 1 до 5 за один разговор.</p>
+    </div>
+  </div>
+</section>
+
+<!-- Стартовые позиции -->
+<section class="section" id="start">
+  <div class="container">
+    <div class="section-header">
+      <span class="section-tag">Сводная таблица</span>
+      <h2>Стартовые позиции сегментов</h2>
+    </div>
+    <div class="table-wrapper">
       <table>
         <thead>
-          <tr>
-            <th>#</th>
-            <th>Ступень</th>
-            <th>Что происходит в голове</th>
-            <th>Ощущение человека</th>
-          </tr>
+          <tr><th>Подсегмент</th><th>Точка входа</th><th>Почему</th><th>Цикл до покупки</th></tr>
         </thead>
         <tbody>
-          <tr>
-            <td><span class="badge badge-gray">1</span></td>
-            <td><strong>Не осознаёт</strong></td>
-            <td>Проблемы нет. Живёт как живёт.</td>
-            <td style="font-style:italic; color:var(--n400);">«У меня всё нормально»</td>
-          </tr>
-          <tr>
-            <td><span class="badge badge-yellow">2</span></td>
-            <td><strong>Осознаёт проблему</strong></td>
-            <td>Что-то не так, но не знает решения.</td>
-            <td style="font-style:italic; color:var(--n400);">«Надо что-то менять, но что?»</td>
-          </tr>
-          <tr>
-            <td><span class="badge badge-blue">3</span></td>
-            <td><strong>Осознаёт решение</strong></td>
-            <td>Знает что решения существуют, ищет конкретное.</td>
-            <td style="font-style:italic; color:var(--n400);">«Масло холодного отжима — но какое и где?»</td>
-          </tr>
-          <tr>
-            <td><span class="badge badge-brand">4</span></td>
-            <td><strong>Осознаёт продукт</strong></td>
-            <td>Знает о «Магии Масел», сравнивает с альтернативами.</td>
-            <td style="font-style:italic; color:var(--n400);">«Кирилл выглядит убедительно, но...»</td>
-          </tr>
-          <tr>
-            <td><span class="badge badge-green">5</span></td>
-            <td><strong>Максимально осведомлён</strong></td>
-            <td>Знает Кирилла, готов купить — нужен повод.</td>
-            <td style="font-style:italic; color:var(--n400);">«Надо заказать, но руки не дошли»</td>
-          </tr>
+          <tr><td class="table-accent">С1а — «Назначил врач»</td><td>3–4</td><td>Врач уже создал осведомлённость о решении</td><td>3–7 дней</td></tr>
+          <tr><td class="table-accent">С1б — «Биохакер»</td><td>3–4</td><td>Сам изучил тему, ищет конкретный продукт</td><td>7–14 дней</td></tr>
+          <tr><td class="table-accent">С1в — «ЖКТ/Печень»</td><td>2–3</td><td>Проблема есть, решение знает частично</td><td>14–30 дней</td></tr>
+          <tr><td class="table-accent">С2 — Семейный ЗОЖ</td><td>1–2</td><td>Потребность размытая, не ищет активно</td><td>14–45 дней</td></tr>
+          <tr><td class="table-accent">С3 — Крафт-контролёр</td><td>2 (откат)</td><td>Был на 4–5, обжёгся — вернулся к недоверию</td><td>7–21 день</td></tr>
+          <tr><td class="table-accent">С4 — Гастроном</td><td>2–3</td><td>Знает что масла разные, не знает крафтовый отжим</td><td>1–14 дней (импульс)</td></tr>
+          <tr><td class="table-accent">С5 — Красота изнутри</td><td>1–2</td><td>Не знает что масло внутрь = beauty-решение</td><td>21–60 дней</td></tr>
         </tbody>
       </table>
     </div>
   </div>
 </section>
 
-<!-- СТАРТОВЫЕ ПОЗИЦИИ -->
-<section class="section fade-up" id="positions" style="background:#fff;">
+<!-- 5 ступеней — детально для С1а (Татьяна) -->
+<section class="section" id="step1">
   <div class="container">
     <div class="section-header">
-      <div class="section-label">Стартовые позиции</div>
-      <h2 class="section-title">Точки входа по подсегментам</h2>
-      <p class="section-sub">Каждый подсегмент входит на своей ступени с разным циклом до покупки.</p>
+      <span class="section-tag">Ступень 1 · С1а Татьяна</span>
+      <h2>Не осознаёт</h2>
     </div>
-    <div class="table-wrap fade-up">
-      <table>
-        <thead>
-          <tr>
-            <th>Подсегмент</th>
-            <th>Точка входа</th>
-            <th>Почему</th>
-            <th>Траектория</th>
-            <th>Цикл до покупки</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td><strong>С1а — «Назначил врач»</strong></td>
-            <td><span class="badge badge-brand">3–4</span></td>
-            <td style="font-size:13px;">Врач уже создал осведомлённость о решении</td>
-            <td style="font-size:13px;">Быстрая: 3→4→5 через объяснение протокола</td>
-            <td><span class="badge badge-green">3–7 дней</span></td>
-          </tr>
-          <tr>
-            <td><strong>С1б — «Биохакер»</strong></td>
-            <td><span class="badge badge-brand">3–4</span></td>
-            <td style="font-size:13px;">Сам изучил тему, ищет конкретный продукт</td>
-            <td style="font-size:13px;">Требовательная: хочет доказательств, не доверия</td>
-            <td><span class="badge badge-yellow">7–14 дней</span></td>
-          </tr>
-          <tr>
-            <td><strong>С1в — «ЖКТ/Печень»</strong></td>
-            <td><span class="badge badge-blue">2–3</span></td>
-            <td style="font-size:13px;">Проблема есть, решение знает частично</td>
-            <td style="font-size:13px;">Медленная: нужна мягкая образовательная цепочка</td>
-            <td><span class="badge badge-yellow">14–30 дней</span></td>
-          </tr>
-          <tr>
-            <td><strong>С2 — Семейный ЗОЖ</strong></td>
-            <td><span class="badge badge-gray">1–2</span></td>
-            <td style="font-size:13px;">Потребность размытая, не ищет активно</td>
-            <td style="font-size:13px;">Ситуативная: включается от конкретного триггера</td>
-            <td><span class="badge badge-yellow">14–45 дней</span></td>
-          </tr>
-          <tr>
-            <td><strong>С3 — Крафт-контролёр</strong></td>
-            <td><span class="badge badge-red">2 (откат)</span></td>
-            <td style="font-size:13px;">Был на 4–5, обжёгся — вернулся к недоверию</td>
-            <td style="font-size:13px;">Восстановительная: нужны доказательства, не слова</td>
-            <td><span class="badge badge-yellow">7–21 день</span></td>
-          </tr>
-          <tr>
-            <td><strong>С4 — Гастроном</strong></td>
-            <td><span class="badge badge-blue">2–3</span></td>
-            <td style="font-size:13px;">Знает что масла разные, не знает крафтовый отжим</td>
-            <td style="font-size:13px;">Рецептурная: вход через вкус, не через здоровье</td>
-            <td><span class="badge badge-green">1–14 дней (импульс)</span></td>
-          </tr>
-          <tr>
-            <td><strong>С5 — Красота изнутри</strong></td>
-            <td><span class="badge badge-gray">1–2</span></td>
-            <td style="font-size:13px;">Не знает что масло внутрь = beauty-решение</td>
-            <td style="font-size:13px;">Образовательная: нужно связать симптом с решением</td>
-            <td><span class="badge badge-red">21–60 дней</span></td>
-          </tr>
-        </tbody>
-      </table>
+    <div class="phase-badge">
+      <h3>Ситуация в жизни</h3>
+      <p>Татьяна лежит в кровати в 22:40, листает Telegram. Принимает капсулы Омега-3 из аптеки, потому что «все говорят нужно». Иногда забывает купить. Масло как нутрицевтик — не в горизонте её внимания.</p>
+    </div>
+    <div class="quote"><p>«Ну простуда и простуда — зима. У всех так.»</p><cite>— Татьяна, ступень 1</cite></div>
+    <div class="warning-block">
+      <p><strong>Что помогает:</strong> Ничего. На этой стадии Кирилл бессилен. Триггер придёт извне — от врача, подруги, поиска.</p>
     </div>
   </div>
 </section>
 
-<!-- С1а -->
-<section class="section fade-up" id="s1a">
-  <div class="container">
-    <div class="segment-section">
-      <div class="segment-header">
-        <div class="segment-title">С1а — «Назначил врач»</div>
-        <div class="segment-avatar">Татьяна, 47 лет. Бухгалтер. ЛОР сказал попробовать масло тмина на приёме в ноябре.</div>
-      </div>
-
-      <div class="step-card fade-up">
-        <div class="step-num">1</div>
-        <div class="step-title">Не осознаёт</div>
-        <div class="field-label">Ситуация в жизни</div>
-        <p style="font-size:14px; color:var(--n600); margin-bottom:10px;">Татьяна лежит в кровати в 22:40, листает Telegram. Принимает капсулы Омега-3 из аптеки. Масло как нутрицевтик — не в горизонте её внимания. Масло = то, что стоит на кухне рядом с солью.</p>
-        <div class="field-label">Фразы</div>
-        <blockquote>«Ну простуда и простуда, что делать — зима»</blockquote>
-        <blockquote>«Пью омегу в капсулах — вроде все так делают»</blockquote>
-        <div class="field-label">Барьер</div>
-        <div class="content-box">Проблема не осознана как проблема. «Все болеют зимой» — нормализация.</div>
-        <div class="field-label">Триггер перехода на 2</div>
-        <div class="content-box">Поход к ЛОРу. Врач упоминает: «Можно попробовать масло чёрного тмина — есть данные по иммунному ответу. Тимохинон работает на иммунитет верхних дыхательных путей». Татьяна записывает в блокнот. Вечером гуглит.</div>
-      </div>
-
-      <div class="step-card fade-up">
-        <div class="step-num">2</div>
-        <div class="step-title">Осознаёт проблему</div>
-        <div class="field-label">Ситуация в жизни</div>
-        <p style="font-size:14px; color:var(--n600); margin-bottom:10px;">Назначение врача получено. Вечером открывает Яндекс Маркет. Видит 47 товаров с одинаковыми описаниями. Цены от 300 до 2500 рублей за похожие бутылки. Непонятно кому доверять.</p>
-        <div class="field-label">Фразы</div>
-        <blockquote>«Мне назначили масло тмина, но я не понимаю где взять нормальное»</blockquote>
-        <blockquote>«Все пишут "холодный отжим" — как понять, кто из них настоящий»</blockquote>
-        <div class="field-label">Барьер</div>
-        <div class="content-box">Не отсутствие желания — отсутствие критериев выбора. 47 товаров = паралич выбора.</div>
-        <div class="field-label">Контент</div>
-        <div class="hook-tag">Hook</div>
-        <div class="content-box">«Вам назначили масло тмина. Вот почему 90% покупают не то»<br><span style="color:var(--n500); display:block; margin-top:8px;">CTA: «Подпишитесь на канал — расскажу как отличить настоящий холодный отжим»</span></div>
-      </div>
-
-      <div class="step-card fade-up">
-        <div class="step-num">3</div>
-        <div class="step-title">Осознаёт решение</div>
-        <div class="field-label">Ситуация в жизни</div>
-        <p style="font-size:14px; color:var(--n600); margin-bottom:10px;">Татьяна теперь знает: нужен гидравлический холодный отжим, тёмная тара, свежий. Но производителей много. Выбирает по принципу «кто объясняет честно, а не кто громче кричит».</p>
-        <div class="field-label">Фразы</div>
-        <blockquote>«Мне ЛОР сказал попробовать масло тмина — ищу где взять нормальное»</blockquote>
-        <blockquote>«Видел что надо именно гидравлический отжим — где вообще такое берут?»</blockquote>
-        <div class="field-label">Барьер</div>
-        <div class="content-box">Не знает кому доверять. Страх купить окисленное или поддельное. На маркетплейсе отзывы могут быть накрученными.</div>
-        <div class="field-label">Триггер перехода на 4</div>
-        <div class="content-box">Видео производства Кирилла — «Смотрите: вот пресс, вот сегодняшняя порция тмина». Видит дату отжима на этикетке. Понимает: этот человек объясняет, а не продаёт.</div>
-        <div class="field-label">Контент</div>
-        <div class="hook-tag">Hook</div>
-        <div class="content-box">«Как выбрать настоящее масло тмина: 4 признака которые видно невооружённым глазом»<br><span style="color:var(--n500); display:block; margin-top:8px;">CTA: «Приезжайте на Дорогомиловский — покажу разницу живьём. Или напишите в личку»</span></div>
-      </div>
-
-      <div class="step-card fade-up">
-        <div class="step-num">4</div>
-        <div class="step-title">Осознаёт продукт (знает Кирилла)</div>
-        <div class="field-label">Ситуация в жизни</div>
-        <p style="font-size:14px; color:var(--n600); margin-bottom:10px;">Татьяна уже в TG-канале. Хочет попробовать. Но есть последнее сомнение: вкус тмина. Подруга сказала «горький как лекарство».</p>
-        <div class="field-label">Фразы</div>
-        <blockquote>«Видела ваш канал — как принимать тмин, сколько? И он правда горчит?»</blockquote>
-        <blockquote>«А можно как-то смягчить? Я с желудком осторожничаю»</blockquote>
-        <div class="field-label">Барьер</div>
-        <div class="content-box">Вкус тмина — главный стоп для С1а. «Цена высокая — не уверена в результате». «А вдруг выброшу деньги?»</div>
-        <div class="field-label">Конкретная ситуация перехода</div>
-        <blockquote>Лежит в 22:30, листает TG. Видит пост Кирилла «Сегодня отжали тмин — первая партия марта». Смотрит видео: 42 секунды, камера на прессе. Дочитывает описание. Сохраняет пост. Утром пишет мужу: «Надо в субботу на Дорогомиловский».</blockquote>
-        <div class="field-label">Контент</div>
-        <div class="hook-tag">Hook</div>
-        <div class="content-box">«Масло тмина горчит — и вот почему это именно то, чего вы хотели»<br><span style="color:var(--n500); display:block; margin-top:8px;">CTA: «Сохраните протокол на 30 дней. 100 мл хватит на первый курс»</span></div>
-      </div>
-
-      <div class="step-card fade-up">
-        <div class="step-num">5</div>
-        <div class="step-title">Максимально осведомлён — готов купить</div>
-        <div class="field-label">Ситуация в жизни</div>
-        <p style="font-size:14px; color:var(--n600); margin-bottom:10px;">Доверие есть. Протокол на руках. Нужен повод действовать сейчас. Главный враг — инерция. Бутылка кончилась 3 дня назад, но «завтра куплю» повторяется четвёртый день.</p>
-        <div class="field-label">Фразы</div>
-        <blockquote>«Ложку на голодный желудок — буду заказывать ещё» (Яндекс Маркет, 20.08.2025)</blockquote>
-        <blockquote>«Назначил принимать ЛОР. Натощак, пол года. Ваше взял» (Яндекс Маркет, 25.07.2025)</blockquote>
-        <div class="field-label">Барьер</div>
-        <div class="content-box">Инерция. «Куплю на следующей неделе». Нет триггера «сейчас».</div>
-        <div class="field-label">Триггер покупки</div>
-        <div class="content-box">Ремайндер от Кирилла на 21–25 день: «Татьяна, как тмин? Бутылка должна быть на исходе — отжали свежий вчера, могу отложить»</div>
-        <div class="field-label">Контент</div>
-        <div class="hook-tag">Hook</div>
-        <div class="content-box">«[Дата] Отжали новый тмин — дата и первое фото»<br><span style="color:var(--n500); display:block; margin-top:8px;">CTA: «Напишите в личку — отложу вашу порцию. Доставка обсуждается»</span></div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- С1б -->
-<section class="section fade-up" id="s1b" style="background:#fff;">
-  <div class="container">
-    <div class="segment-section">
-      <div class="segment-header">
-        <div class="segment-title">С1б — «Биохакер» (отдельная ветка)</div>
-        <div class="segment-avatar">Игорь, 38 лет. Разработчик. Отслеживает HRV, пьёт АТФ, читает Huberman и PubMed. Стек утренних добавок — 7 позиций.</div>
-      </div>
-      <div class="alert alert-info fade-up">
-        <span class="alert-icon">ℹ️</span>
-        <div>
-          <strong style="color:#1e40af; display:block; margin-bottom:4px;">Почему отдельная ветка</strong>
-          <p style="font-size:14px; color:var(--n600);">Биохакер входит на ступени 3–4, но его требования к доказательствам кардинально отличаются от С1а. Один и тот же контент про «тимохинон» для С1а — убедительное объяснение, для С1б — минимальный порог. Ему нужен кислотный профиль, температура давления и происхождение сырья.</p>
-        </div>
-      </div>
-
-      <div class="step-card fade-up">
-        <div class="step-num" style="background:var(--n400);">1–2</div>
-        <div class="step-title">Ступени 1–2: Пропущены</div>
-        <p style="font-size:14px; color:var(--n600);">Биохакер не бывает на ступенях 1–2 для категории масел. Вопрос не «нужно ли масло», а «чьё масло достаточно качественное».</p>
-      </div>
-
-      <div class="step-card fade-up">
-        <div class="step-num">3</div>
-        <div class="step-title">Осознаёт решение (точка входа С1б)</div>
-        <div class="field-label">Фразы (технический язык)</div>
-        <blockquote>«Хочу тмин первого отжима — есть ли у вас паспорт партии или хроматография кислотного профиля?»</blockquote>
-        <blockquote>«Какая температура при гидравлическом отжиме? Шнек даёт 60–80°C — тимохинон разрушается выше 50°C»</blockquote>
-        <blockquote>«Сырьё откуда? Сирийский и эфиопский тмин различаются по содержанию тимохинона в 2–3 раза»</blockquote>
-        <div class="field-label">Барьер</div>
-        <div class="content-box">Недостаток технических данных. «Все говорят "холодный отжим" — но никто не показывает температуру давления». Красивые слова без цифр = маркетинг = не доверяю.</div>
-        <div class="field-label">Триггер перехода на 4</div>
-        <div class="content-box">Пост Кирилла: «Сегодня отжали 8 кг тмина. Сырьё: Краснодарский край. Гидравлический пресс — температура не поднимается выше 28°C (замерял). Выход: 2,1 л. Дата: 14.04.2026».</div>
-        <div class="field-label">Контент</div>
-        <div class="hook-tag">Hook</div>
-        <div class="content-box">«Почему гидравлический пресс: температура давления 28°C и что это значит для тимохинона»<br><span style="color:var(--n500); display:block; margin-top:8px;">CTA: «Задайте технический вопрос — отвечу с цифрами, не с лозунгами»</span></div>
-      </div>
-
-      <div class="step-card fade-up">
-        <div class="step-num">4</div>
-        <div class="step-title">Осознаёт продукт</div>
-        <div class="field-label">Фразы</div>
-        <blockquote>«Хочу взять на пробу — есть 100 мл? Если устроит, буду брать регулярно»</blockquote>
-        <blockquote>«Можно ли получить данные по конкретной партии — что давили, когда, какой выход?»</blockquote>
-        <div class="field-label">Барьер</div>
-        <div class="content-box">«Первая партия может быть хорошей, вторая — хуже». Биохакер оценивает не одну покупку — он оценивает систему контроля.</div>
-        <div class="field-label">Контент</div>
-        <div class="hook-tag">Hook</div>
-        <div class="content-box">«Как я контролирую каждую партию: от сырья до этикетки»<br><span style="color:var(--n500); display:block; margin-top:8px;">CTA: «100 мл на пробу — оцените сами. Если устроит — обсудим регулярные поставки»</span></div>
-      </div>
-
-      <div class="step-card fade-up">
-        <div class="step-num">5</div>
-        <div class="step-title">Лояльный биохакер</div>
-        <div class="field-label">Ситуация</div>
-        <p style="font-size:14px; color:var(--n600); margin-bottom:10px;">Игорь вписал масло Кирилла в свой стек. Заказывает раз в 3 недели. Главное — стабильность и предсказуемость. Один сбой = пересмотр всего стека.</p>
-        <div class="field-label">Фразы после покупки</div>
-        <blockquote>«Третья партия подряд — вкус идентичен. Это важно»</blockquote>
-        <blockquote>«Порекомендовал в чате биохакеров — спросят про температуру давления, будьте готовы»</blockquote>
-        <div class="field-label">Контент</div>
-        <div class="hook-tag">Hook</div>
-        <div class="content-box">«Тмин партия 12.04 — 8 кг, Кабардино-Балкария, давление при 28°C, выход 2,1 л»<br><span style="color:var(--n500); display:block; margin-top:8px;">CTA: «В очередь на следующую партию — напишите. Объём ограничен»</span></div>
-      </div>
-
-      <div class="alert alert-warning fade-up">
-        <span class="alert-icon">⚠️</span>
-        <div>
-          <strong style="color:#92400e; display:block; margin-bottom:4px;">Нестандартный путь С1б → С3</strong>
-          <p style="font-size:14px; color:var(--n600);">Если Игорь обнаружит несоответствие между тем, что сказал Кирилл, и тем, что он ощутил — он переходит в режим С3 (глубокое недоверие). Откат жёсткий: биохакер диагностирует проблему и публично фиксирует.</p>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- С1в -->
-<section class="section fade-up" id="s1v">
-  <div class="container">
-    <div class="segment-section">
-      <div class="segment-header">
-        <div class="segment-title">С1в — «ЖКТ/Печень»</div>
-        <div class="segment-avatar">Ирина, 52 года. Бухгалтер на пенсии. Хронический гастрит, устала от таблеток. Подруга упоминала расторопшу.</div>
-      </div>
-
-      <div class="step-card fade-up">
-        <div class="step-num">1</div>
-        <div class="step-title">Не осознаёт (масло как решение)</div>
-        <div class="field-label">Фразы</div>
-        <blockquote>«Ну гастрит и гастрит — у кого его нет»</blockquote>
-        <blockquote>«Таблетки пью — куда деваться»</blockquote>
-        <div class="field-label">Барьер</div>
-        <div class="content-box">Полная нормализация. «Все мои подруги тоже на таблетках».</div>
-      </div>
-
-      <div class="step-card fade-up">
-        <div class="step-num">2</div>
-        <div class="step-title">Осознаёт проблему (точка входа С1в)</div>
-        <div class="field-label">Фразы</div>
-        <blockquote>«У меня гастрит — слышала расторопша помогает, это правда?»</blockquote>
-        <blockquote>«Врач не запрещает, но и не назначает. Хочу попробовать — но боюсь навредить»</blockquote>
-        <blockquote>«Долго на таблетках — хочу что-то мягче, природнее»</blockquote>
-        <div class="field-label">Барьер</div>
-        <div class="content-box">Страх навредить. «А вдруг масло раздражает слизистую?» Нет чёткой инструкции — не действует.</div>
-        <div class="field-label">Контент</div>
-        <div class="hook-tag">Hook</div>
-        <div class="content-box">«Расторопша при проблемах с печенью и желудком — когда можно и когда нельзя»<br><span style="color:var(--n500); display:block; margin-top:8px;">CTA: «Напишите в личку — подберу вариант под вашу ситуацию. Начнём с 100 мл»</span></div>
-      </div>
-
-      <div class="step-card fade-up">
-        <div class="step-num">3</div>
-        <div class="step-title">Осознаёт решение</div>
-        <div class="field-label">Фразы</div>
-        <blockquote>«Хочу попробовать расторопшу — но только хорошую, не аптечную синтетику»</blockquote>
-        <blockquote>«В аптеке есть за 180 рублей — но непонятно, оно живое или нет»</blockquote>
-        <div class="field-label">Барьер</div>
-        <div class="content-box">Не понимает разницу между аптечным (часто рафинированным) и крафтовым холодного отжима. Плюс — цена: аптечное 180 рублей, у Кирилла 700–1000.</div>
-        <div class="field-label">Контент</div>
-        <div class="hook-tag">Hook</div>
-        <div class="content-box">«Расторопша из аптеки за 180 рублей vs холодный отжим за 700 — в чём разница и кому что подходит»<br><span style="color:var(--n500); display:block; margin-top:8px;">CTA: «100 мл — на месяц пробного курса. Инструкция внутри»</span></div>
-      </div>
-
-      <div class="step-card fade-up">
-        <div class="step-num">4</div>
-        <div class="step-title">Знает Кирилла</div>
-        <div class="field-label">Ситуация</div>
-        <p style="font-size:14px; color:var(--n600); margin-bottom:10px;">Ирина читает канал. Видит: Кирилл предупреждает о противопоказаниях. Это парадоксально повышает доверие — «если говорит когда нельзя, значит когда говорит можно — это правда».</p>
-        <div class="field-label">Фразы</div>
-        <blockquote>«Видела ваш пост про расторопшу — мне можно? У меня гастрит в ремиссии»</blockquote>
-        <div class="field-label">Барьер</div>
-        <div class="content-box">Последний страх: «а вдруг именно мне нельзя». Нужно личное подтверждение от Кирилла.</div>
-        <div class="field-label">Триггер перехода на 5</div>
-        <div class="content-box">Кирилл отвечает лично: «При ремиссии — можно. Начните после еды, не натощак. Половина чайной ложки. Если через 3 дня комфортно — увеличивайте до полной». Индивидуальный протокол = снятие тревоги.</div>
-      </div>
-
-      <div class="step-card fade-up">
-        <div class="step-num">5</div>
-        <div class="step-title">Покупка и ритуал</div>
-        <div class="field-label">Ситуация</div>
-        <p style="font-size:14px; color:var(--n600); margin-bottom:10px;">Ирина взяла 100 мл. Добавляет после завтрака. Через месяц — заканчивается.</p>
-        <div class="field-label">Триггер повтора</div>
-        <div class="content-box">Ремайндер от Кирилла: «Ирина, как расторопша? Закончилась? Отжали свежую на этой неделе». Ирина: «Да, давайте 250 мл — я уже привыкла».</div>
-        <div class="field-label">Фразы после покупки</div>
-        <blockquote>«Рассказала подруге — та тоже хочет. Можно её к вам отправить?»</blockquote>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- С2 -->
-<section class="section fade-up" id="s2" style="background:#fff;">
-  <div class="container">
-    <div class="segment-section">
-      <div class="segment-header">
-        <div class="segment-title">С2 — «Семейный ЗОЖ»</div>
-        <div class="segment-avatar">Ольга, 36 лет. Маркетолог. Читает состав на упаковках. Двое детей: 8 и 4 года. Хочет «правильно, но просто».</div>
-      </div>
-
-      <div class="step-card fade-up">
-        <div class="step-num">1</div>
-        <div class="step-title">Не осознаёт</div>
-        <div class="field-label">Ситуация</div>
-        <p style="font-size:14px; color:var(--n600); margin-bottom:10px;">Ольга покупает оливковое extra virgin. Льняное тоже есть — из магазина здорового питания. Но «холодный отжим от человека» — этого понятия в её картине мира нет.</p>
-        <div class="field-label">Фразы</div>
-        <blockquote>«У нас дома оливковое — нормальное, хорошее»</blockquote>
-        <blockquote>«Льняное пробовала — горьковатое, не поняла зачем»</blockquote>
-        <div class="field-label">Триггер перехода на 2</div>
-        <div class="content-box">Педиатр на осмотре: «Омега-3 для ребёнка важна — капсулы не обязательно, можно с едой». Или пост «5 масел которые должны быть в рационе ребёнка».</div>
-      </div>
-
-      <div class="step-card fade-up">
-        <div class="step-num">2</div>
-        <div class="step-title">Осознаёт проблему</div>
-        <div class="field-label">Фразы</div>
-        <blockquote>«Читала что рафинированное масло вредно — надо менять, но не знаю на что»</blockquote>
-        <blockquote>«Педиатр упомянул омегу для детей — не знаю откуда взять, кроме капсул»</blockquote>
-        <div class="field-label">Барьер</div>
-        <div class="content-box">Размытость потребности. Нет конкретной задачи = нет действия. Три тревоги: «испортится ли?», «можно ли детям?», «как хранить?»</div>
-        <div class="field-label">Контент</div>
-        <div class="hook-tag">Hook</div>
-        <div class="content-box">«Одна замена на кухне: убираем подсолнечное, добавляем льняное — вот всё что нужно знать»<br><span style="color:var(--n500); display:block; margin-top:8px;">CTA: «Напишите — подберу размер под вашу семью»</span></div>
-      </div>
-
-      <div class="step-card fade-up">
-        <div class="step-num">3</div>
-        <div class="step-title">Осознаёт решение</div>
-        <div class="field-label">Фразы</div>
-        <blockquote>«Знаю что льняное полезнее — ищу нормальное, не аптечное»</blockquote>
-        <blockquote>«Можно ли детям льняное — хочу добавлять в кашу, но боюсь»</blockquote>
-        <div class="field-label">Барьер</div>
-        <div class="content-box">Три вопроса одновременно: «Испортится ли?», «Можно ли детям с 4 лет?», «Как хранить после вскрытия?». Пока не получила ответы — не покупает.</div>
-        <div class="field-label">Контент</div>
-        <div class="hook-tag">Hook</div>
-        <div class="content-box">«Можно ли льняное масло детям — честный ответ: с какого возраста, сколько, в каком виде»<br><span style="color:var(--n500); display:block; margin-top:8px;">CTA: «100 мл — идеальный размер для первой недели семьи»</span></div>
-      </div>
-
-      <div class="step-card fade-up">
-        <div class="step-num">4</div>
-        <div class="step-title">Знает Кирилла</div>
-        <div class="field-label">Фразы</div>
-        <blockquote>«А это вот для детей можно? Льняное — в кашу?»</blockquote>
-        <blockquote>«Беру уже не в первый раз... подешевле — совсем не то» (Яндекс Маркет, 27.05.2025)</blockquote>
-        <div class="field-label">Барьер</div>
-        <div class="content-box">«А вдруг дети не будут есть — выброшу деньги?»</div>
-        <div class="field-label">Триггер покупки</div>
-        <div class="content-box">100 мл = минимальный финансовый риск. «Дети обычно даже не замечают — масло мягкое, без горечи, растворяется в каше».</div>
-      </div>
-
-      <div class="step-card fade-up">
-        <div class="step-num">5</div>
-        <div class="step-title">Лояльная покупательница + переход в С5</div>
-        <div class="field-label">Ситуация</div>
-        <p style="font-size:14px; color:var(--n600); margin-bottom:10px;">Взяла 100 мл. Дома добавила в кашу — дети съели без возражений. Это ключевой момент доверия для С2. Через 6–8 недель замечает: ногти перестали ломаться. Переходит в режим С5 — берёт миндальное уже для себя.</p>
-        <div class="field-label">Контент</div>
-        <div class="hook-tag">Hook</div>
-        <div class="content-box">«Ольга начала брать льняное для детей — а потом заметила кое-что про свои ногти»<br><span style="color:var(--n500); display:block; margin-top:8px;">CTA: «Масло закончилось? Напишите — отложу свежее»</span></div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- С3 -->
-<section class="section fade-up" id="s3">
-  <div class="container">
-    <div class="segment-section">
-      <div class="segment-header">
-        <div class="segment-title">С3 — «Крафт-контролёр»</div>
-        <div class="segment-avatar">Андрей, 53 года. Начальник отдела на производстве. Уже покупал холодный отжим — горчило, решил: испорчено. Обжёгся. С тех пор не доверяет.</div>
-      </div>
-      <div class="alert alert-warning fade-up">
-        <span class="alert-icon">⚠️</span>
-        <div>
-          <strong style="color:#92400e; display:block; margin-bottom:4px;">Критический сегмент — откатная логика</strong>
-          <p style="font-size:14px; color:var(--n600);">Классическая лестница 1→2→3→4→5 здесь НЕ работает. С3 уже был на 4–5, получил негативный опыт и откатился до ступени 2. Нужна не образовательная цепочка, а восстановление доверия через доказательства.</p>
-        </div>
-      </div>
-
-      <div class="code-block fade-up">
-        <span style="color:var(--n500);">ПУТЬ С3 (ОТКАТНАЯ ЛОГИКА):</span><br>
-        [Было] 4–5 (знал, покупал, доверял)<br>
-        <span style="color:var(--error);">↓ негативный опыт</span><br>
-        [Стало] 2 (глубокое недоверие ко всей категории)<br>
-        <span style="color:var(--warning);">↓ видимые доказательства (дата, видео, тёмное стекло)</span><br>
-        [Восстановление] 3–4 (начинает доверять конкретному человеку)<br>
-        <span style="color:var(--success);">↓ первый позитивный опыт (100 мл без сюрпризов)</span><br>
-        <span style="color:var(--brand); font-weight:600;">[Результат] 5 (самый лояльный + максимальный сарафан)</span>
-      </div>
-
-      <div class="step-card fade-up">
-        <div class="step-num" style="background:var(--error);">2</div>
-        <div class="step-title">Ступень 2 (откат): «Снова ищу, но никому не верю»</div>
-        <div class="field-label">Фразы</div>
-        <blockquote>«Брал холодный отжим — открыл, горчит. Выкинул. С тех пор не беру»</blockquote>
-        <blockquote>«Все пишут "натуральное" — а откуда знать? Уже обжигался»</blockquote>
-        <blockquote>«Прозрачная бутылка — сразу минус. Явно хранится на свету»</blockquote>
-        <div class="field-label">Барьер</div>
-        <div class="content-box">Не недостаток информации — недостаток доверия. Словам не верит — он уже слышал красивые слова. Нужны видимые доказательства, которые нельзя подделать.</div>
-        <div class="field-label">Что НЕ работает для С3</div>
-        <div class="content-box">«Свежее, натуральное, качественное» / Красивая этикетка без технических данных / Отзывы на маркетплейсе / Скидки и промо (воспринимает как «избавляются от залежавшегося»)</div>
-        <div class="field-label">Контент</div>
-        <div class="hook-tag">Hook</div>
-        <div class="content-box">«Почему горчит масло тмина — и почему горечь льна означает совсем другое»<br><span style="color:var(--n500); display:block; margin-top:8px;">CTA: «Если хотите убедиться — приходите на рынок, покажу живьём»</span></div>
-      </div>
-
-      <div class="step-card fade-up">
-        <div class="step-num">3–4</div>
-        <div class="step-title">Восстановленное доверие</div>
-        <div class="field-label">Фразы</div>
-        <blockquote>«Нашёл хорошего человека — хочу проверить лично»</blockquote>
-        <blockquote>«Не горчит — значит свежее. Дата... нормальная» (Яндекс Маркет, 03.11.2024)</blockquote>
-        <div class="field-label">Триггер перехода на 5</div>
-        <div class="content-box">100 мл = минимальный финансовый риск. Плюс Кирилл: «Если не то — вернём деньги, без вопросов». Политика возврата без конфликта = снятие последнего барьера.</div>
-        <div class="field-label">Контент</div>
-        <div class="hook-tag">Hook</div>
-        <div class="content-box">«Он пришёл с недоверием — вот 3 вещи которые его убедили»<br><span style="color:var(--n500); display:block; margin-top:8px;">CTA: «Первый раз — берите 100 мл. Если не то — вернём без вопросов»</span></div>
-      </div>
-
-      <div class="step-card fade-up">
-        <div class="step-num">5</div>
-        <div class="step-title">Самый лояльный покупатель + максимальный сарафан</div>
-        <div class="field-label">Ситуация</div>
-        <p style="font-size:14px; color:var(--n600); margin-bottom:10px;">С3 становится самым ценным сегментом по качеству сарафанного радио. Рекомендует с авторитетом человека, который «разбирается и проверил лично».</p>
-        <div class="field-label">Фразы после покупки</div>
-        <blockquote>«Нашёл хорошего человека — рекомендую всем знакомым»</blockquote>
-        <blockquote>«Наконец-то нашёл своего — больше не ищу»</blockquote>
-        <div class="alert alert-error" style="margin-top:16px;">
-          <span class="alert-icon">🚨</span>
-          <div>
-            <strong style="color:#991b1b; display:block; margin-bottom:4px;">Критически важно для удержания С3</strong>
-            <p style="font-size:14px; color:var(--n600);">Один «плохой» опыт = уход навсегда + негативные отзывы. Это самый чувствительный сегмент к качественным сбоям. Стабильность качества для С3 — не маркетинг, а условие существования отношений.</p>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- С4 -->
-<section class="section fade-up" id="s4" style="background:#fff;">
-  <div class="container">
-    <div class="segment-section">
-      <div class="segment-header">
-        <div class="segment-title">С4 — «Гастроном»</div>
-        <div class="segment-avatar">Михаил, 42 года. Коммерческий директор. Готовит дома как хобби. Одно оливковое на всё — надоело.</div>
-      </div>
-
-      <div class="step-card fade-up">
-        <div class="step-num">1</div>
-        <div class="step-title">Не осознаёт (крафтовый холодный отжим)</div>
-        <div class="field-label">Фразы</div>
-        <blockquote>«У меня хорошее оливковое — мне хватает»</blockquote>
-        <blockquote>«Кедровое? Это же в аптеке продаётся, для здоровья»</blockquote>
-        <div class="field-label">Барьер</div>
-        <div class="content-box">Масло холодного отжима ассоциируется с аптекой и здоровьем, не с кухней и вкусом.</div>
-      </div>
-
-      <div class="step-card fade-up">
-        <div class="step-num">2</div>
-        <div class="step-title">Осознаёт задачу</div>
-        <div class="field-label">Фразы</div>
-        <blockquote>«Хочу что-то интересное для заправок — оливковое надоело»</blockquote>
-        <blockquote>«Идёт на ура... не перебивая вкус» (Яндекс Маркет, 15.05.2024)</blockquote>
-        <div class="field-label">Контент</div>
-        <div class="hook-tag">Hook</div>
-        <div class="content-box">«Кедровое масло в пасту: почему это работает — и рецепт на 15 минут»<br><span style="color:var(--n500); display:block; margin-top:8px;">CTA: «Набор "Кухня" — три масла для трёх разных блюд, по 100 мл»</span></div>
-      </div>
-
-      <div class="step-card fade-up">
-        <div class="step-num">3</div>
-        <div class="step-title">Осознаёт решение, сравнивает</div>
-        <div class="field-label">Фразы</div>
-        <blockquote>«Видел ваш канал — интересные масла. Кедровое у вас сейчас есть?»</blockquote>
-        <blockquote>«А кунжутное как — не перебивает блюдо?»</blockquote>
-        <div class="field-label">Барьер</div>
-        <div class="content-box">«В крафте вкус может плавать от партии к партии — как с вином». Нестабильность = риск испортить блюдо.</div>
-      </div>
-
-      <div class="step-card fade-up">
-        <div class="step-num">4</div>
-        <div class="step-title">Знает Кирилла, готов к покупке</div>
-        <div class="field-label">Конкретная ситуация</div>
-        <blockquote>Михаил в субботу на рынке. Просит попробовать кедровое. Кирилл наливает каплю на хлеб. Михаил: «Ммм — вот это характер. А грецкое?». Берёт набор «Кухня» — кедровое + грецкое + миндальное, по 100 мл.</blockquote>
-        <div class="field-label">Контент</div>
-        <div class="hook-tag">Hook</div>
-        <div class="content-box">«Набор "Кухня" — три масла для трёх историй на вашей тарелке»<br><span style="color:var(--n500); display:block; margin-top:8px;">CTA: «Приходите на рынок — дам попробовать каждое. Или напишите — соберу набор»</span></div>
-      </div>
-
-      <div class="step-card fade-up">
-        <div class="step-num">5</div>
-        <div class="step-title">Лояльный гастроном + подарочный сценарий</div>
-        <div class="field-label">Ситуация</div>
-        <p style="font-size:14px; color:var(--n600); margin-bottom:10px;">После первого опыта С4 входит в два цикла: повторная покупка для себя + подарочный цикл. Набор «Кухня» становится его подарком «гурману, у которого всё есть».</p>
-        <div class="field-label">Контент</div>
-        <div class="hook-tag">Hook</div>
-        <div class="content-box">«Три масла которые изменят ваши салаты — набор "Кухня" теперь в подарочной упаковке»<br><span style="color:var(--n500); display:block; margin-top:8px;">CTA: «Напишите — соберу под ваши предпочтения»</span></div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- С5 -->
-<section class="section fade-up" id="s5">
-  <div class="container">
-    <div class="segment-section">
-      <div class="segment-header">
-        <div class="segment-title">С5 — «Красота изнутри»</div>
-        <div class="segment-avatar">Елена, 33 года. Менеджер проектов. Перепробовала кремы — результат временный. Читала про «красоту изнутри», но не знает что конкретно делать.</div>
-      </div>
-
-      <div class="step-card fade-up">
-        <div class="step-num">1</div>
-        <div class="step-title">Не осознаёт</div>
-        <div class="field-label">Фразы</div>
-        <blockquote>«Кремы — это мой уход, при чём тут масло?»</blockquote>
-        <blockquote>«Миндальное? Это же для массажа, не для еды»</blockquote>
-        <div class="field-label">Барьер</div>
-        <div class="content-box">Масло = кухня или аптека. Не beauty-продукт.</div>
-        <div class="field-label">Триггер перехода на 2</div>
-        <div class="content-box">Reels: «Почему кремы работают снаружи, а жиры изнутри — это совсем другой механизм». Или история подруги — «начала пить льняное, ногти перестали ломаться».</div>
-      </div>
-
-      <div class="step-card fade-up">
-        <div class="step-num">2</div>
-        <div class="step-title">Осознаёт проблему</div>
-        <div class="field-label">Фразы</div>
-        <blockquote>«Кожа сухая — кремы помогают пока мажу. Хочу решить изнутри»</blockquote>
-        <blockquote>«Ногти ломаются — слышала что нужны жиры, но какие?»</blockquote>
-        <blockquote>«Ногти заметно окрепли... уменьшился волосопад» (iRecommend, 24.07.2025)</blockquote>
-        <div class="field-label">Контент</div>
-        <div class="hook-tag">Hook</div>
-        <div class="content-box">«Ломкие ногти и сухая кожа — это сигнал о жирах, а не о кальции»<br><span style="color:var(--n500); display:block; margin-top:8px;">CTA: «Подпишитесь — объясню какое масло под какую beauty-задачу»</span></div>
-      </div>
-
-      <div class="step-card fade-up">
-        <div class="step-num">3</div>
-        <div class="step-title">Осознаёт решение</div>
-        <div class="field-label">Фразы</div>
-        <blockquote>«Слышала про жиры изнутри для кожи — что именно пить?»</blockquote>
-        <blockquote>«В аптеке есть миндальное за 150 — оно то же самое?»</blockquote>
-        <div class="field-label">Барьер</div>
-        <div class="content-box">Не понимает разницу между «миндальным косметическим» (рафинированное, для наружного применения) и «миндальным пищевым холодного отжима». Выбирает по цене — берёт дешевле.</div>
-        <div class="field-label">Контент</div>
-        <div class="hook-tag">Hook</div>
-        <div class="content-box">«Миндальное масло: аптечное vs пищевой холодный отжим — в чём разница и почему это важно для ваших ногтей»<br><span style="color:var(--n500); display:block; margin-top:8px;">CTA: «Протокол на 60 дней — напишите, пришлю. И подберу масло под вашу задачу»</span></div>
-      </div>
-
-      <div class="step-card fade-up">
-        <div class="step-num">4</div>
-        <div class="step-title">Знает Кирилла</div>
-        <div class="field-label">Фразы</div>
-        <blockquote>«Хочу попробовать миндальное для ногтей — 100 мл хватит?»</blockquote>
-        <div class="field-label">Барьер</div>
-        <div class="content-box">«Я уже столько всего пробовала — вдруг и это не поможет?» Усталость от обещаний.</div>
-        <div class="field-label">Триггер покупки</div>
-        <div class="content-box">100 мл как первый месяц курса. Честные ожидания: «Не обещаю чудо — но даю чёткий протокол и срок для оценки». История другой покупательницы.</div>
-      </div>
-
-      <div class="step-card fade-up">
-        <div class="step-num">5</div>
-        <div class="step-title">Покупка → курс → оценка → повтор</div>
-        <div class="field-label">Ситуация</div>
-        <p style="font-size:14px; color:var(--n600); margin-bottom:10px;">Елена взяла 100 мл миндального. Пьёт по протоколу — 1 ч.л. утром с кашей. Через 30 дней масло заканчивается.</p>
-        <div class="field-label">Триггер повтора</div>
-        <div class="content-box">Ремайндер от Кирилла: «Елена, как миндальное? 30 дней прошло — заметили что-то? Для полного курса нужно 60 дней — берём 250 мл?»</div>
-        <div class="field-label">Контент</div>
-        <div class="hook-tag">Hook</div>
-        <div class="content-box">«Она начала брать миндальное — вот что стало через 30 дней (честный отчёт без гарантий)»<br><span style="color:var(--n500); display:block; margin-top:8px;">CTA: «100 мл — начать курс. 250 мл — полный 60-дневный цикл»</span></div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- НЕСТАНДАРТНЫЕ ПЕРЕХОДЫ -->
-<section class="section fade-up" id="transitions" style="background:#fff;">
+<section class="section" id="step2">
   <div class="container">
     <div class="section-header">
-      <div class="section-label">Нестандартные переходы</div>
-      <h2 class="section-title">Переходы вне классической лестницы</h2>
-      <p class="section-sub">Создают ценность без дополнительных затрат на привлечение.</p>
+      <span class="section-tag">Ступень 2 · С1а Татьяна</span>
+      <h2>Осознаёт проблему</h2>
     </div>
-
-    <div class="alert alert-warning fade-up">
-      <span class="alert-icon">⚠️</span>
-      <div>
-        <strong style="color:#92400e; display:block; margin-bottom:4px;">1. С3 — «Откат» (4–5 → 2)</strong>
-        <p style="font-size:14px; color:var(--n600);">Человек уже был на 4–5, получил негативный опыт и откатился до ступени 2. При этом потребность сохранилась. Это не потеря клиента — это уязвимый лид с высоким потенциалом. Стратегия: не вести по образовательной цепочке 1→2→3, а сразу — видео производства + объяснение горечи.</p>
-      </div>
+    <div class="phase-badge">
+      <h3>Ситуация в жизни</h3>
+      <p>ЛОР на приёме: «Попробуйте масло чёрного тмина — есть данные по иммунному ответу. Тимохинон работает». Татьяна записывает в блокнот. Вечером гуглит. Находит 47 товаров на Яндекс Маркете с одинаковыми описаниями. Паралич выбора.</p>
     </div>
-
-    <div class="alert alert-brand fade-up">
-      <span class="alert-icon">🔄</span>
-      <div>
-        <strong style="color:var(--brand-dark); display:block; margin-bottom:4px;">2. С2 → С5 (органический переход)</strong>
-        <p style="font-size:14px; color:var(--n600);">Ольга берёт льняное для семьи (С2). Через 6–8 недель замечает: кожа мягче, ногти не ломаются. Переходит в режим С5 — берёт миндальное для себя, с осознанной beauty-задачей. Масло не меняется — меняется задача. Бесплатное расширение без отдельной рекламы.</p>
-      </div>
-    </div>
-
-    <div class="alert alert-warning fade-up">
-      <span class="alert-icon">⚠️</span>
-      <div>
-        <strong style="color:#92400e; display:block; margin-bottom:4px;">3. С1б → С3 (при разочаровании)</strong>
-        <p style="font-size:14px; color:var(--n600);">Если Кирилл не может ответить на технический вопрос биохакера — он переходит в режим С3 и публично фиксирует разочарование в своём чате. Один технический пост с цифрами предотвращает этот сценарий.</p>
-      </div>
-    </div>
-
-    <div class="alert alert-brand fade-up">
-      <span class="alert-icon">🚀</span>
-      <div>
-        <strong style="color:var(--brand-dark); display:block; margin-bottom:4px;">4. Рынок — резкий подъём с 1 до 5</strong>
-        <p style="font-size:14px; color:var(--n600);">Человек заходит на Дорогомиловский без запроса (ступень 1). 15 минут разговора — человек уже на 5. Все 4 ступени за один контакт. <strong>Этот путь невозможно воспроизвести онлайн.</strong> Задача онлайн-контента — привести человека на рынок уже со ступени 2–3.</p>
-      </div>
+    <div class="quote"><p>«Врач сказал попробовать масло тмина — открыла маркетплейс, 47 позиций. Как выбрать?»</p><cite>— Татьяна, ступень 2</cite></div>
+    <div class="highlight-box">
+      <p><strong>Контент для этой ступени:</strong> Hook — «Вам назначили масло тмина. Вот почему 90% покупают не то». CTA — подписаться на канал. Формат: образовательный пост / SEO-статья.</p>
     </div>
   </div>
 </section>
 
-<!-- КАРТА КАНАЛОВ -->
-<section class="section fade-up" id="channels">
+<section class="section" id="step3">
   <div class="container">
     <div class="section-header">
-      <div class="section-label">Карта каналов</div>
-      <h2 class="section-title">Ступени осведомлённости по каналам</h2>
-      <p class="section-sub">Каждый канал работает на свою ступень.</p>
+      <span class="section-tag">Ступень 3 · С1а Татьяна</span>
+      <h2>Осознаёт решение</h2>
     </div>
-    <div class="table-wrap fade-up">
-      <table>
-        <thead>
-          <tr>
-            <th>Канал</th>
-            <th>Ступень входящего</th>
-            <th>Задача канала</th>
-            <th>Инструмент</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td><strong>Дорогомиловский рынок</strong></td>
-            <td><span class="badge badge-gray">1–2</span> → до 5</td>
-            <td>Полный подъём через дегустацию + консультацию</td>
-            <td>Живая проба, объяснение, QR → TG</td>
-          </tr>
-          <tr>
-            <td><strong>TG-канал (органика)</strong></td>
-            <td><span class="badge badge-blue">2–3</span></td>
-            <td>Перевести с 3 на 4–5 через контент</td>
-            <td>Видео, протоколы, FAQ, обновления партий</td>
-          </tr>
-          <tr>
-            <td><strong>Сарафанное радио</strong></td>
-            <td><span class="badge badge-brand">3–4</span></td>
-            <td>Подтвердить доверие → покупка</td>
-            <td>Рекомендация знакомого + первый контакт</td>
-          </tr>
-          <tr>
-            <td><strong>Яндекс Маркет / отзывы</strong></td>
-            <td><span class="badge badge-blue">3</span></td>
-            <td>Перевести на 4 через отзывы и рейтинг</td>
-            <td>Реальные отзывы покупателей</td>
-          </tr>
-          <tr>
-            <td><strong>Reels / Shorts</strong></td>
-            <td><span class="badge badge-gray">1–2</span></td>
-            <td>Создать осведомлённость → подписка на TG</td>
-            <td>Короткие видео с хуками (симптомы, рецепты)</td>
-          </tr>
-          <tr>
-            <td><strong>Повторный клиент</strong></td>
-            <td><span class="badge badge-green">5</span></td>
-            <td>Ремайндер = готовая покупка</td>
-            <td>Личное сообщение Кирилла на 21–25 день</td>
-          </tr>
-          <tr>
-            <td><strong>Beauty TG / iRecommend</strong></td>
-            <td><span class="badge badge-gray">1–2</span> (С5)</td>
-            <td>Связать симптом с решением</td>
-            <td>Истории «30 дней с маслом»</td>
-          </tr>
-          <tr>
-            <td><strong>Рекомендация врача</strong></td>
-            <td><span class="badge badge-brand">3–4</span> (С1а)</td>
-            <td>Ускорить до покупки</td>
-            <td>Протокол + объяснение разницы производителей</td>
-          </tr>
-        </tbody>
-      </table>
+    <div class="phase-badge">
+      <h3>Ситуация в жизни</h3>
+      <p>Татьяна теперь знает: нужен именно гидравлический холодный отжим, тёмная тара, свежий. Но производителей много. В 22:30 листает TG — видит пост Кирилла «Сегодня отжали тмин — первая партия марта». 42 секунды видео. Камера на прессе. Дата написана маркером на крышке. Дочитывает. Сохраняет. Утром пишет мужу: «Надо в субботу на Дорогомиловский».</p>
+    </div>
+    <div class="highlight-box">
+      <p><strong>Контент для этой ступени:</strong> Видео производства (30–60 сек). Hook — «Как выбрать настоящее масло тмина: 4 признака». CTA — «Приезжайте на Дорогомиловский — покажу разницу живьём».</p>
     </div>
   </div>
 </section>
 
-<!-- БАРЬЕРЫ -->
-<section class="section fade-up" id="barriers" style="background:#fff;">
+<section class="section" id="step4">
   <div class="container">
     <div class="section-header">
-      <div class="section-label">Барьеры</div>
-      <h2 class="section-title">Барьеры перехода — сводно</h2>
-      <p class="section-sub">Общие и специфические барьеры по сегментам.</p>
+      <span class="section-tag">Ступень 4 · С1а Татьяна</span>
+      <h2>Осознаёт продукт</h2>
     </div>
-    <div class="table-wrap fade-up">
-      <table>
-        <thead>
-          <tr>
-            <th>Переход</th>
-            <th>Главный барьер</th>
-            <th>Чем снять</th>
-            <th>Формат контента</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td><strong>1 → 2</strong></td>
-            <td>Проблема не осознана как проблема</td>
-            <td>Контент о симптомах</td>
-            <td style="font-size:13px; font-style:italic;">«5 признаков что не хватает правильных жиров»</td>
-          </tr>
-          <tr>
-            <td><strong>2 → 3</strong></td>
-            <td>Не знает что масло — это решение</td>
-            <td>Связка «симптом → механизм → масло»</td>
-            <td style="font-size:13px; font-style:italic;">Образовательный пост со схемой</td>
-          </tr>
-          <tr>
-            <td><strong>3 → 4</strong></td>
-            <td>Не знает кому доверять</td>
-            <td>Видео производства + дата отжима + Кирилл как лицо</td>
-            <td style="font-size:13px; font-style:italic;">Видео 30–60 сек + развёрнутый пост</td>
-          </tr>
-          <tr>
-            <td><strong>4 → 5</strong></td>
-            <td>Последнее сомнение (вкус / цена / «не увижу эффекта»)</td>
-            <td>Протокол + 100 мл = минимальный риск + честные ожидания</td>
-            <td style="font-size:13px; font-style:italic;">Q&A + инструкция + дегустация</td>
-          </tr>
-          <tr>
-            <td><strong>5 → повтор</strong></td>
-            <td>Инерция / забыл купить / прервал курс</td>
-            <td>Ремайндер от Кирилла на 21–25 день</td>
-            <td style="font-size:13px; font-style:italic;">Личное сообщение</td>
-          </tr>
-          <tr>
-            <td><strong>5 → 4 (откат)</strong></td>
-            <td>Негативный опыт вкуса / качества</td>
-            <td>Объяснение + стабильность + возврат при несоответствии</td>
-            <td style="font-size:13px; font-style:italic;">Политика возврата + пост про горечь</td>
-          </tr>
-        </tbody>
-      </table>
+    <div class="phase-badge">
+      <h3>Ситуация в жизни</h3>
+      <p>Татьяна уже в TG-канале. Читает несколько постов за неделю. Видит: человек объясняет, а не продаёт. Хочет попробовать. Но есть последнее сомнение — вкус тмина. Подруга сказала «горький как лекарство».</p>
     </div>
-
-    <h3 style="font-size:20px; font-weight:600; color:var(--n900); margin:40px 0 20px;">Специфические барьеры по сегментам</h3>
-    <div class="table-wrap fade-up">
-      <table>
-        <thead>
-          <tr>
-            <th>Сегмент</th>
-            <th>Уникальный барьер</th>
-            <th>Конкретное проявление</th>
-            <th>Решение</th>
-            <th>Приоритет</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td><strong>С1а</strong></td>
-            <td>Вкус тмина</td>
-            <td style="font-size:13px;">«Горит — значит испортилось»</td>
-            <td style="font-size:13px;">«Тмин должен жечь — вот почему. С мёдом или тёплой водой»</td>
-            <td><span class="badge badge-red">Высокий</span></td>
-          </tr>
-          <tr>
-            <td><strong>С1б</strong></td>
-            <td>Нет технических данных</td>
-            <td style="font-size:13px;">«Покажите температуру давления»</td>
-            <td style="font-size:13px;">Один технический пост с цифрами и параметрами</td>
-            <td><span class="badge badge-red">Высокий</span></td>
-          </tr>
-          <tr>
-            <td><strong>С1в</strong></td>
-            <td>Страх навредить</td>
-            <td style="font-size:13px;">«У меня гастрит — мне нельзя ничего жёсткого»</td>
-            <td style="font-size:13px;">Честные противопоказания + «при ремиссии — можно»</td>
-            <td><span class="badge badge-red">Критический</span></td>
-          </tr>
-          <tr>
-            <td><strong>С2</strong></td>
-            <td>Три вопроса без ответа</td>
-            <td style="font-size:13px;">«Испортится / детям / хранить»</td>
-            <td style="font-size:13px;">FAQ: все три ответа в одном посте</td>
-            <td><span class="badge badge-red">Высокий</span></td>
-          </tr>
-          <tr>
-            <td><strong>С3</strong></td>
-            <td>Прошлый негативный опыт</td>
-            <td style="font-size:13px;">«Уже обжигался — не верю словам»</td>
-            <td style="font-size:13px;">Видимые доказательства: дата, тёмное стекло, видео процесса</td>
-            <td><span class="badge badge-red">Критический</span></td>
-          </tr>
-          <tr>
-            <td><strong>С4</strong></td>
-            <td>Нестабильность вкуса</td>
-            <td style="font-size:13px;">«В крафте вкус плавает от партии»</td>
-            <td style="font-size:13px;">Вкусовые описания + объяснение контроля малых партий</td>
-            <td><span class="badge badge-yellow">Средний</span></td>
-          </tr>
-          <tr>
-            <td><strong>С5</strong></td>
-            <td>Субъективность эффекта</td>
-            <td style="font-size:13px;">«Не пойму — масло помогло или само прошло»</td>
-            <td style="font-size:13px;">Реалистичные ожидания + конкретный срок + мини-дневник</td>
-            <td><span class="badge badge-red">Высокий</span></td>
-          </tr>
-        </tbody>
-      </table>
+    <div class="quote"><p>«Видела ваш канал — как принимать тмин, сколько? И он правда горчит? Можно как-то смягчить? Я с желудком осторожничаю.»</p><cite>— Татьяна, ступень 4</cite></div>
+    <div class="highlight-box">
+      <p><strong>Триггер перехода на 5:</strong> Кирилл отвечает лично — «Да, тмин горчит и жжёт — это тимохинон, это признак активного вещества. Вот как принимать чтобы не было дискомфорта: 0,5 ч.л. с мёдом или сразу запить тёплой водой». Конкретный протокол + честность о вкусе = тревога снята.</p>
     </div>
   </div>
 </section>
 
-<!-- МАТРИЦА КОНТЕНТА -->
-<section class="section fade-up" id="content">
+<section class="section" id="step5">
   <div class="container">
     <div class="section-header">
-      <div class="section-label">Матрица контента</div>
-      <h2 class="section-title">Контент-приоритеты. Первые 90 дней TG-канала</h2>
-      <p class="section-sub">Ступень × формат × hook × CTA × целевой сегмент.</p>
+      <span class="section-tag">Ступень 5 · С1а Татьяна</span>
+      <h2>Максимально осведомлён — готов купить</h2>
     </div>
-
-    <div class="grid-3" style="margin-bottom:40px;">
-      <div class="stat-card fade-up">
-        <div class="stat-label">Приоритет 1 — онлайн</div>
-        <div class="stat-value" style="font-size:22px;">3 → 4</div>
-        <div class="stat-desc">Большинство в TG уже знают о холодном отжиме. Задача — перевести с «знают» на «знают и доверяют Кириллу».</div>
-      </div>
-      <div class="stat-card fade-up">
-        <div class="stat-label">Приоритет 2 — охват</div>
-        <div class="stat-value" style="font-size:22px;">1 → 2</div>
-        <div class="stat-desc">Образовательные хуки с симптомами для Reels и рекламы. Расширение аудитории.</div>
-      </div>
-      <div class="stat-card fade-up">
-        <div class="stat-label">Приоритет 3 — удержание</div>
-        <div class="stat-value" style="font-size:22px;">4 → 5</div>
-        <div class="stat-desc">Обновления партий, ремайндеры на 21–25 день. Для существующих подписчиков.</div>
-      </div>
+    <div class="phase-badge">
+      <h3>Ситуация в жизни</h3>
+      <p>Доверие есть. Протокол на руках. Нужен повод действовать сейчас, а не «на следующей неделе». Главный враг на этой ступени — инерция. Человек откладывает не потому что сомневается, а потому что «всё хорошо». Бутылка кончилась 3 дня назад, но «завтра куплю» повторяется четвёртый день.</p>
     </div>
-
-    <div class="table-wrap fade-up">
-      <table>
-        <thead>
-          <tr>
-            <th>Ступень</th>
-            <th>Формат</th>
-            <th>Hook (пример)</th>
-            <th>CTA</th>
-            <th>Сегменты</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td><span class="badge badge-gray">1</span></td>
-            <td>Reels/Shorts (15–30 сек)</td>
-            <td style="font-size:13px; font-style:italic;">«Что происходит когда пьёшь настоящее масло тмина 30 дней»</td>
-            <td style="font-size:13px;">Подписаться на канал</td>
-            <td><span class="badge badge-brand">С1, С5</span></td>
-          </tr>
-          <tr>
-            <td><span class="badge badge-gray">1</span></td>
-            <td>Reels (рецептурный)</td>
-            <td style="font-size:13px; font-style:italic;">«Одно масло которое изменит ваши салаты навсегда»</td>
-            <td style="font-size:13px;">Подписаться</td>
-            <td><span class="badge badge-brand">С4, С2</span></td>
-          </tr>
-          <tr>
-            <td><span class="badge badge-yellow">2</span></td>
-            <td>Пост «симптом → решение»</td>
-            <td style="font-size:13px; font-style:italic;">«Анализы в норме, но ощущение — не норма. Это о жирах»</td>
-            <td style="font-size:13px;">Подписаться, сохранить</td>
-            <td><span class="badge badge-brand">С1, С5</span></td>
-          </tr>
-          <tr>
-            <td><span class="badge badge-yellow">2</span></td>
-            <td>Пост «одно действие»</td>
-            <td style="font-size:13px; font-style:italic;">«Замените подсолнечное на льняное — вот что изменится за месяц»</td>
-            <td style="font-size:13px;">Подписаться</td>
-            <td><span class="badge badge-brand">С2</span></td>
-          </tr>
-          <tr>
-            <td><span class="badge badge-blue">3</span></td>
-            <td>Видео производства + критерии</td>
-            <td style="font-size:13px; font-style:italic;">«Как выбрать честный холодный отжим: 4 признака»</td>
-            <td style="font-size:13px;">Написать в личку / приехать</td>
-            <td><span class="badge badge-brand">С1, С3</span></td>
-          </tr>
-          <tr>
-            <td><span class="badge badge-blue">3</span></td>
-            <td>FAQ-пост</td>
-            <td style="font-size:13px; font-style:italic;">«Можно ли льняное масло детям — честный ответ»</td>
-            <td style="font-size:13px;">Написать для подбора</td>
-            <td><span class="badge badge-brand">С2</span></td>
-          </tr>
-          <tr>
-            <td><span class="badge badge-blue">3</span></td>
-            <td>Рецептурный пост с пейрингами</td>
-            <td style="font-size:13px; font-style:italic;">«Кедровое в пасту: рецепт на 15 минут»</td>
-            <td style="font-size:13px;">Набор "Кухня"</td>
-            <td><span class="badge badge-brand">С4</span></td>
-          </tr>
-          <tr>
-            <td><span class="badge badge-brand">4</span></td>
-            <td>Протокол + Q&A</td>
-            <td style="font-size:13px; font-style:italic;">«Схема приёма тмина на 30 дней — сохраните»</td>
-            <td style="font-size:13px;">Купить 100 мл</td>
-            <td><span class="badge badge-brand">С1</span></td>
-          </tr>
-          <tr>
-            <td><span class="badge badge-brand">4</span></td>
-            <td>Технический пост с параметрами</td>
-            <td style="font-size:13px; font-style:italic;">«Температура давления 28°C — что это значит для тимохинона»</td>
-            <td style="font-size:13px;">Задать вопрос</td>
-            <td><span class="badge badge-brand">С1б</span></td>
-          </tr>
-          <tr>
-            <td><span class="badge badge-brand">4</span></td>
-            <td>Пост с честными ожиданиями</td>
-            <td style="font-size:13px; font-style:italic;">«Миндальное для ногтей — протокол 60 дней: чего ожидать»</td>
-            <td style="font-size:13px;">Купить 100 мл</td>
-            <td><span class="badge badge-brand">С5</span></td>
-          </tr>
-          <tr>
-            <td><span class="badge badge-green">5</span></td>
-            <td>Обновление партии + ремайндер</td>
-            <td style="font-size:13px; font-style:italic;">«Отжали тмин [дата] — дата и фото»</td>
-            <td style="font-size:13px;">Написать «хочу»</td>
-            <td><span class="badge badge-brand">Все</span></td>
-          </tr>
-          <tr>
-            <td><span class="badge badge-green">5</span></td>
-            <td>Подарочный набор</td>
-            <td style="font-size:13px; font-style:italic;">«Набор для гурмана — собираю руками, в красивой упаковке»</td>
-            <td style="font-size:13px;">Заказать</td>
-            <td><span class="badge badge-brand">С4</span></td>
-          </tr>
-        </tbody>
-      </table>
+    <div class="highlight-box">
+      <p><strong>Что работает:</strong> Ремайндер на 21–25 день («Татьяна, как тмин? Отжали свежий вчера, могу отложить»). Личное сообщение, не бот. Вопрос «как масло?» перед предложением повтора.</p>
     </div>
-
-    <div class="alert alert-brand fade-up" style="margin-top:32px;">
-      <span class="alert-icon">📊</span>
-      <div>
-        <strong style="color:var(--brand-dark); display:block; margin-bottom:4px;">Ключевой инсайт: Ханта × Продуктовая лестница (M3)</strong>
-        <p style="font-size:14px; color:var(--n600);">Переход с продуктовой ступени 2 на 3 (с пробника на набор) — это переход с Ханта 4 на 5. Главный рычаг — <strong>ремайндер от Кирилла на 21–25 день</strong>. Без него С1 забывает купить и цикл разрывается. Главная причина потери клиентов — не качество и не цена, а отсутствие дисциплины у потребителя.</p>
-      </div>
+    <div class="highlight-box" style="margin-top:1rem">
+      <p><strong>Конверсия:</strong> Рынок — 70–90% при дегустации. Онлайн — 15–25% при правильном контенте. Главные потери — между ступенью 3 и первой покупкой.</p>
     </div>
   </div>
 </section>
 
-<!-- FOOTER -->
 <footer class="footer">
   <div class="container">
-    <div class="footer-inner">
-      <div>
-        <img src="../../assets/logo-horizontal-dark.png" alt="Магия Масел" style="height:48px; width:auto; border-radius:var(--r-lg);">
-        <div style="margin-top:8px; font-size:12px; color:var(--n600);">BrandOS · Фабрика Контента v5</div>
-      </div>
-      <div class="footer-meta">
-        <div class="footer-meta-item">
-          <span class="footer-meta-label">Документ</span>
-          <span class="footer-meta-value">M4-04 — Лестница Ханта</span>
-        </div>
-        <div class="footer-meta-item">
-          <span class="footer-meta-label">Модуль</span>
-          <span class="footer-meta-value">M4 · 4 из 8</span>
-        </div>
-        <div class="footer-meta-item">
-          <span class="footer-meta-label">Дата</span>
-          <span class="footer-meta-value">31.03.2026</span>
-        </div>
-        <div class="footer-meta-item">
-          <span class="footer-meta-label">Версия</span>
-          <span class="footer-meta-value">1.0 (Opus)</span>
-        </div>
-        <div class="footer-meta-item">
-          <span class="footer-meta-label">Клиент</span>
-          <span class="footer-meta-value">Кирилл Бродский</span>
-        </div>
-      </div>
-    </div>
+    BrandOS · BRODSKY OIL · M4-04 Лестница Ханта · v3.1 · 2026
   </div>
 </footer>
 
-<script>
-  const observer = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) entry.target.classList.add('visible');
-    });
-  }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
-
-  document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
-</script>
 </body>
 </html>

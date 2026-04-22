@@ -1,594 +1,417 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>M3-05 — Гипотезы M3 · Магия Масел · Кирилл Бродский</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-    :root {
-      --brand: #2C5F2D;
-      --brand-dark: #1a4a1b;
-      --brand-light: #4a8f4b;
-      --brand-bg: #e8f5e9;
-      --accent: #D4AF37;
-      --accent-bg: #fdf8e8;
-      --n50: #f8fafc; --n100: #f1f5f9; --n200: #e2e8f0;
-      --n300: #cbd5e1; --n400: #94a3b8; --n500: #64748b;
-      --n600: #475569; --n700: #334155; --n800: #1e293b; --n900: #0f172a;
-      --success: #10b981; --warning: #f59e0b; --error: #ef4444; --info: #3b82f6;
-      --font: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-      --shadow-card: 0 1px 3px 0 rgba(0,0,0,.05), 0 1px 2px -1px rgba(0,0,0,.05);
-      --shadow-hover: 0 10px 25px -5px rgba(0,0,0,.08), 0 8px 10px -6px rgba(0,0,0,.04);
-      --r-sm:4px; --r-md:6px; --r-lg:8px; --r-xl:12px; --r-2xl:16px; --r-full:9999px;
-    }
-
-    body { font-family: var(--font); font-size: 16px; line-height: 1.6; color: var(--n600); background: var(--n100); }
-
-    @keyframes fade-up { 0%{opacity:0;transform:translateY(20px)} 100%{opacity:1;transform:translateY(0)} }
-    .fade-up { opacity:0; transform:translateY(20px); transition:opacity .6s ease-out, transform .6s ease-out; }
-    .fade-up.visible { opacity:1; transform:translateY(0); }
-
-    .container { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
-    .section { padding: 80px 0; }
-
-    .nav-wrap {
-      position: fixed; top: 0; left: 0; right: 0; z-index: 300;
-      background: rgba(255,255,255,.93); backdrop-filter: blur(12px);
-      border-bottom: 1px solid var(--n200); height: 64px;
-    }
-    .nav-inner { height:100%; display:flex; align-items:center; justify-content:space-between; }
-    .nav-logo img { height:40px; width:auto; display:block; }
-    .nav-links { display:flex; gap:20px; flex-wrap:wrap; }
-    .nav-links a { font-size:13px; font-weight:500; color:var(--n600); text-decoration:none; transition:color .2s; }
-    .nav-links a:hover { color:var(--brand); }
-    .nav-badge {
-      font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:.05em;
-      color:var(--brand); background:var(--brand-bg); padding:5px 12px; border-radius:var(--r-full); white-space:nowrap;
-    }
-
-    .section-header { margin-bottom:40px; }
-    .section-label {
-      display:inline-block; font-size:11px; font-weight:700; text-transform:uppercase;
-      letter-spacing:.08em; color:var(--brand); background:var(--brand-bg);
-      padding:4px 12px; border-radius:var(--r-full); margin-bottom:12px;
-    }
-    .section-title { font-size:30px; font-weight:600; color:var(--n900); line-height:1.25; margin-bottom:8px; }
-    .section-sub { font-size:16px; color:var(--n500); }
-
-    .grid-2 { display:grid; grid-template-columns:repeat(auto-fit,minmax(340px,1fr)); gap:20px; }
-    .grid-3 { display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:16px; }
-
-    .badge { display:inline-flex; align-items:center; padding:3px 10px; border-radius:var(--r-full); font-size:12px; font-weight:600; }
-    .badge-green { background:#d1fae5; color:#065f46; }
-    .badge-yellow { background:#fef3c7; color:#92400e; }
-    .badge-blue { background:#dbeafe; color:#1e40af; }
-    .badge-brand { background:var(--brand-bg); color:var(--brand-dark); }
-    .badge-red { background:#fee2e2; color:#991b1b; }
-    .badge-gray { background:var(--n100); color:var(--n500); }
-    .badge-orange { background:#fed7aa; color:#9a3412; }
-
-    /* Hypothesis card */
-    .hypo-card {
-      background:#fff; border-radius:var(--r-2xl); border:1px solid var(--n200);
-      padding:20px 24px; box-shadow:var(--shadow-card); margin-bottom:14px;
-      display:flex; gap:16px; align-items:flex-start;
-      transition:transform .3s ease, box-shadow .3s ease;
-    }
-    .hypo-card:hover { transform:translateY(-2px); box-shadow:var(--shadow-hover); }
-    .hypo-card.confirmed { border-left:4px solid var(--success); }
-    .hypo-card.partial { border-left:4px solid var(--warning); }
-    .hypo-card.assumption { border-left:4px solid var(--info); }
-    .hypo-card.rejected { border-left:4px solid var(--error); opacity:.8; }
-    .hypo-card.risk { border-left:4px solid var(--error); background:#fff8f8; }
-
-    .hypo-status { flex-shrink:0; margin-top:2px; }
-    .hypo-body { flex:1; }
-    .hypo-id { font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.07em; color:var(--n400); margin-bottom:4px; }
-    .hypo-title { font-size:15px; font-weight:700; color:var(--n900); margin-bottom:6px; }
-    .hypo-text { font-size:13px; color:var(--n600); font-style:italic; margin-bottom:8px; }
-    .hypo-source { font-size:12px; color:var(--n400); }
-    .hypo-detail { font-size:13px; color:var(--n600); margin-top:8px; padding-top:8px; border-top:1px solid var(--n100); }
-    .hypo-detail strong { color:var(--n700); }
-
-    /* Priority section */
-    .priority-block { background:#fff; border-radius:var(--r-2xl); border:1px solid var(--n200); padding:24px 28px; box-shadow:var(--shadow-card); margin-bottom:20px; }
-    .priority-header { display:flex; align-items:center; gap:10px; margin-bottom:16px; }
-    .priority-dot { width:12px; height:12px; border-radius:50%; flex-shrink:0; }
-    .dot-red { background:var(--error); }
-    .dot-orange { background:var(--warning); }
-    .dot-yellow { background:#eab308; }
-    .dot-gray { background:var(--n300); }
-    .priority-title { font-size:14px; font-weight:700; color:var(--n900); }
-
-    .priority-item {
-      display:flex; gap:12px; align-items:flex-start;
-      padding:8px 0; border-bottom:1px solid var(--n100);
-      font-size:14px; color:var(--n600);
-    }
-    .priority-item:last-child { border-bottom:none; }
-    .priority-num {
-      width:22px; height:22px; border-radius:50%;
-      font-size:11px; font-weight:700; color:#fff;
-      display:flex; align-items:center; justify-content:center;
-      flex-shrink:0; margin-top:1px;
-    }
-
-    /* Legend */
-    .legend { display:flex; gap:12px; flex-wrap:wrap; margin-bottom:32px; }
-    .legend-item { display:flex; align-items:center; gap:8px; font-size:13px; color:var(--n600); }
-    .legend-dot { width:10px; height:10px; border-radius:50%; flex-shrink:0; }
-
-    @media (max-width:768px) {
-      .nav-links { display:none; }
-      .section-title { font-size:24px; }
-      .grid-2, .grid-3 { grid-template-columns:1fr; }
-    }
-
-    .hero {
-      background: linear-gradient(135deg, var(--brand-dark) 0%, var(--brand) 50%, var(--brand-light) 100%);
-      padding: 120px 0 80px; color:#fff; position:relative; overflow:hidden;
-    }
-    .hero::before {
-      content:''; position:absolute; inset:0;
-      background: radial-gradient(ellipse at 70% 50%, rgba(212,175,55,.15) 0%, transparent 60%);
-    }
-    .hero-inner { display:flex; align-items:center; gap:48px; flex-wrap:wrap; }
-    .hero-logo-wrap { flex-shrink:0; }
-    .hero-logo-wrap img { height:140px; width:auto; display:block; border-radius:var(--r-xl); }
-    .hero-content { flex:1; min-width:280px; }
-    .hero-badge {
-      display:inline-block; font-size:11px; font-weight:700; text-transform:uppercase;
-      letter-spacing:.1em; background:rgba(255,255,255,.15); color:#fff;
-      border:1px solid rgba(255,255,255,.3); padding:6px 16px;
-      border-radius:var(--r-full); margin-bottom:20px; backdrop-filter:blur(8px);
-    }
-    .hero-title { font-size:52px; font-weight:700; line-height:1.1; margin-bottom:16px; }
-    .hero-title span { color:var(--accent); }
-    .hero-sub { font-size:18px; opacity:.85; max-width:600px; margin-bottom:32px; line-height:1.6; }
-    .hero-meta { display:flex; gap:24px; flex-wrap:wrap; }
-    .hero-meta-item { display:flex; flex-direction:column; gap:3px; }
-    .hero-meta-label { font-size:10px; text-transform:uppercase; letter-spacing:.08em; opacity:.6; }
-    .hero-meta-value { font-size:14px; font-weight:600; }
-
-    @media (max-width:768px) {
-      .hero { padding: 100px 0 60px; }
-      .hero-title { font-size:34px; }
-      .hero-logo-wrap img { height:80px; }
-    }
-
-    .footer { background:var(--n900); color:var(--n400); padding:40px 0; font-size:13px; }
-    .footer-inner { display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:16px; }
-    .footer-meta { display:flex; gap:20px; flex-wrap:wrap; }
-    .footer-meta-item { display:flex; flex-direction:column; gap:2px; }
-    .footer-meta-label { font-size:10px; text-transform:uppercase; letter-spacing:.05em; color:var(--n600); }
-    .footer-meta-value { font-size:12px; color:var(--n400); }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>M3-05 · Гипотезы M3 — BRODSKY OIL · BrandOS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --primary: #0ea5e9;
+  --primary-dark: #0284c7;
+  --primary-light: #7dd3fc;
+  --primary-bg: #e0f2fe;
+  --background: #ffffff;
+  --foreground: #0f172a;
+  --card-bg: hsl(0,0%,97%);
+  --border: #1C1C1E;
+  --muted: #64748b;
+  --radius: 4px;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: 'Inter', sans-serif; background: var(--background); color: var(--foreground); line-height: 1.75; font-size: 16px; }
+.container { max-width: 1200px; margin: 0 auto; padding: 0 1.5rem; }
+.nav { position: sticky; top: 0; background: white; border-bottom: 1px solid var(--border); z-index: 100; padding: 1rem 0; }
+.nav-container { display: flex; justify-content: space-between; align-items: center; gap: 2rem; }
+.nav-brand { font-size: 1rem; font-weight: 700; color: var(--foreground); white-space: nowrap; }
+.nav-brand span { color: var(--primary); }
+.nav-links { display: flex; gap: 1.5rem; list-style: none; overflow-x: auto; flex-wrap: wrap; }
+.nav-links a { color: var(--foreground); text-decoration: none; font-size: .875rem; font-weight: 500; white-space: nowrap; transition: color .2s; }
+.nav-links a:hover { color: var(--primary); }
+.hero { padding: 3.75rem 0; background: linear-gradient(135deg, rgba(255,255,255,.98) 0%, rgba(240,249,255,.95) 100%); }
+.hero-badge { display: inline-flex; align-items: center; gap: .5rem; padding: .5rem 1rem; background: var(--card-bg); border: 1px solid var(--border); border-radius: var(--radius); font-size: .875rem; font-weight: 600; margin-bottom: 1.5rem; color: var(--foreground); }
+.hero h1 { font-size: clamp(32px, 4vw, 51px); font-weight: 500; line-height: 1.2; letter-spacing: -.03em; margin-bottom: 1.5rem; }
+.hero-subtitle { font-size: 1.125rem; color: var(--muted); margin-bottom: 2rem; }
+.hero-meta { display: flex; gap: 2rem; flex-wrap: wrap; }
+.hero-meta-item { font-size: .875rem; color: var(--muted); }
+.hero-meta-item strong { color: var(--primary); font-weight: 600; }
+.section { padding: 2.5rem 0; }
+@media (min-width: 768px) { .section { padding: 3.75rem 0; } }
+.section-header { position: relative; margin-bottom: 32px; padding-top: 24px; }
+.section-header::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px; background: repeating-linear-gradient(to right, #9CA3AF 0, #9CA3AF 4px, transparent 4px, transparent 8px); }
+.section-tag { display: inline-block; font-size: .75rem; font-weight: 600; text-transform: uppercase; letter-spacing: .1em; color: var(--primary); margin-bottom: .5rem; }
+h2 { font-size: 32px; font-weight: 300; line-height: 1.2; letter-spacing: -.02em; margin-bottom: 1rem; }
+h3 { font-size: 20px; font-weight: 600; line-height: 1.3; margin-bottom: 1rem; }
+p { margin-bottom: 1rem; color: var(--muted); }
+p:last-child { margin-bottom: 0; }
+.card { border: 1px solid var(--border); border-radius: var(--radius); background: linear-gradient(135deg, rgba(255,255,255,.98) 0%, rgba(250,250,252,.95) 100%); padding: 1.5rem; position: relative; overflow: hidden; transition: all .4s cubic-bezier(.4, 0, .2, 1); }
+.card:hover { transform: translateY(-4px); box-shadow: 0 12px 32px rgba(0,0,0,.08), 0 0 0 1px rgba(14,165,233,.1); border-color: rgba(14,165,233,.3); }
+.card-title { font-size: 1.0625rem; font-weight: 600; margin-bottom: .75rem; color: var(--foreground); }
+.card-description { font-size: .9375rem; line-height: 1.75; color: var(--muted); }
+.grid { display: grid; gap: 1.5rem; }
+.grid-2 { grid-template-columns: 1fr; }
+.grid-3 { grid-template-columns: 1fr; }
+@media (min-width: 768px) { .grid-2 { grid-template-columns: repeat(2, 1fr); } .grid-3 { grid-template-columns: repeat(3, 1fr); } }
+.highlight-box { background: linear-gradient(135deg, rgba(14,165,233,.05) 0%, rgba(14,165,233,.02) 100%); border: 1px solid rgba(14,165,233,.2); border-left: 4px solid var(--primary); padding: 1.25rem 1.5rem; border-radius: var(--radius); margin: 1.5rem 0; }
+.highlight-box p { margin: 0; font-size: 1rem; }
+.highlight-box strong { color: var(--primary); }
+.phase-badge { background: linear-gradient(135deg, rgba(14,165,233,.07) 0%, rgba(14,165,233,.02) 100%); padding: 2rem; border-radius: var(--radius); border: 1px solid rgba(14,165,233,.22); margin-bottom: 2rem; }
+.phase-badge h3 { color: var(--primary); margin-bottom: .5rem; }
+.phase-badge p { font-size: 1.0625rem; margin: 0; }
+.list-styled { list-style: none; padding: 0; }
+.list-styled li { padding-left: 1.5rem; margin-bottom: .75rem; position: relative; color: var(--muted); font-size: .9375rem; }
+.list-styled li::before { content: ''; position: absolute; left: 0; top: .65rem; width: 6px; height: 6px; background: var(--primary); border-radius: 50%; }
+.table-wrapper { overflow-x: auto; margin: 1.5rem 0; border: 1px solid var(--border); border-radius: var(--radius); }
+table { width: 100%; border-collapse: collapse; background: white; }
+th, td { padding: 1rem; text-align: left; border-bottom: 1px solid var(--border); }
+th { background: var(--card-bg); font-weight: 600; font-size: .8125rem; text-transform: uppercase; letter-spacing: .05em; color: var(--foreground); }
+td { font-size: .9375rem; color: var(--muted); }
+tr:last-child td { border-bottom: none; }
+tr:hover td { background: var(--card-bg); }
+.table-accent { color: var(--primary); font-weight: 600; }
+.warning-block { background: linear-gradient(135deg, rgba(239,68,68,.04) 0%, rgba(239,68,68,.01) 100%); border: 1px solid rgba(239,68,68,.18); border-left: 4px solid #ef4444; padding: 1.25rem 1.5rem; border-radius: var(--radius); margin: 1.5rem 0; }
+.warning-block p { margin: 0; font-size: .9375rem; color: var(--muted); }
+.warning-block strong { color: var(--foreground); }
+.formula-block { background: linear-gradient(135deg, rgba(14,165,233,.05) 0%, rgba(14,165,233,.02) 100%); border: 1px solid rgba(14,165,233,.22); border-left: 4px solid var(--primary); padding: 2rem 2.5rem; border-radius: var(--radius); font-size: 1.125rem; font-style: italic; line-height: 1.8; color: var(--foreground); margin: 2rem 0; }
+.badge { display: inline-block; padding: .25rem .75rem; border-radius: 9999px; font-size: .75rem; font-weight: 600; }
+.badge-green { background: #d1fae5; color: #065f46; }
+.badge-yellow { background: #fef3c7; color: #92400e; }
+.badge-red { background: #fee2e2; color: #991b1b; }
+.badge-blue { background: var(--primary-bg); color: var(--primary-dark); }
+.footer { padding: 2rem 0; border-top: 1px solid var(--border); text-align: center; color: var(--muted); font-size: .875rem; }
+@media (max-width: 768px) { .container { padding: 0 1rem; } h2 { font-size: 24px; } h3 { font-size: 18px; } .nav-links { gap: .75rem; } .hero-meta { gap: 1rem; } .formula-block { padding: 1.5rem; font-size: 1rem; } }
+</style>
 </head>
 <body>
 
-<nav class="nav-wrap">
-  <div class="container">
-    <div class="nav-inner">
-      <div class="nav-logo"><img src="../assets/logo-horizontal-light.png" alt="Магия Масел"></div>
-      <div class="nav-links">
-        <a href="#positioning">Позиционирование</a>
-        <a href="#product">Продукт</a>
-        <a href="#pricing">Ценообразование</a>
-        <a href="#service">Сервис</a>
-        <a href="#channels">Каналы</a>
-        <a href="#priorities">Приоритеты</a>
-      </div>
-      <div class="nav-badge">M3 · Документ 5/7</div>
-    </div>
+<nav class="nav">
+  <div class="container nav-container">
+    <div class="nav-brand">Brand<span>OS</span> · Документ</div>
+    <ul class="nav-links">
+      <li><a href="#legend">Легенда</a></li>
+      <li><a href="#positioning">Позиционирование</a></li>
+      <li><a href="#product">Продукт</a></li>
+      <li><a href="#pricing">Ценообразование</a></li>
+      <li><a href="#service">Сервис</a></li>
+      <li><a href="#channels">Каналы</a></li>
+      <li><a href="#priorities">Приоритеты</a></li>
+      <li><a href="#roundtable">Корректировки</a></li>
+    </ul>
   </div>
 </nav>
 
 <section class="hero">
   <div class="container">
-    <div class="hero-inner">
-      <div class="hero-logo-wrap">
-        <img src="../assets/logo-badge-dark.png" alt="Магия Масел — Кирилл Бродский">
-      </div>
-      <div class="hero-content">
-        <div class="hero-badge">M3 · Продуктовая стратегия · Документ 5 из 7</div>
-        <h1 class="hero-title">Гипотезы <span>M3</span></h1>
-        <p class="hero-sub">Приоритизированные гипотезы по позиционированию, продукту, цене, сервису и каналам — со статусами верификации.</p>
-        <div class="hero-meta">
-          <div class="hero-meta-item">
-            <span class="hero-meta-label">Клиент</span>
-            <span class="hero-meta-value">Кирилл Бродский</span>
-          </div>
-          <div class="hero-meta-item">
-            <span class="hero-meta-label">Обновлено</span>
-            <span class="hero-meta-value">29.03.2026</span>
-          </div>
-          <div class="hero-meta-item">
-            <span class="hero-meta-label">Всего гипотез</span>
-            <span class="hero-meta-value">14</span>
-          </div>
-          <div class="hero-meta-item">
-            <span class="hero-meta-label">Подтверждено</span>
-            <span class="hero-meta-value">12 ✅</span>
-          </div>
-        </div>
-      </div>
+    <div class="hero-badge">M3-05 · Продукт · BrandOS</div>
+    <h1>Гипотезы M3<br><span style="color:var(--primary)">BRODSKY OIL</span></h1>
+    <p class="hero-subtitle">Кирилл Бродский · v3.1 · 22.04.2026</p>
+    <div class="hero-meta">
+      <span class="hero-meta-item"><strong>Клиент:</strong> Кирилл Бродский</span>
+      <span class="hero-meta-item"><strong>Модуль:</strong> M3 — Продуктовая стратегия</span>
+      <span class="hero-meta-item"><strong>Версия:</strong> 3.1 (roundtable)</span>
+      <span class="hero-meta-item"><strong>Дата:</strong> 27.03.2026</span>
     </div>
   </div>
 </section>
 
-<!-- ЛЕГЕНДА -->
-<section class="section fade-up" style="padding-bottom:0;">
-  <div class="container">
-    <div class="legend">
-      <div class="legend-item"><div class="legend-dot" style="background:var(--success);"></div> ✅ Подтверждена Кириллом</div>
-      <div class="legend-item"><div class="legend-dot" style="background:var(--warning);"></div> 🔶 Частично / косвенно</div>
-      <div class="legend-item"><div class="legend-dot" style="background:var(--info);"></div> ⚠️ Допущение из данных</div>
-      <div class="legend-item"><div class="legend-dot" style="background:var(--error);"></div> ❌ Отклонена / 🔴 Критический риск</div>
-    </div>
-  </div>
-</section>
-
-<!-- РАЗДЕЛ 1. ПОЗИЦИОНИРОВАНИЕ -->
-<section class="section fade-up" id="positioning" style="padding-top:32px;">
+<!-- Легенда -->
+<section class="section" id="legend">
   <div class="container">
     <div class="section-header">
-      <div class="section-label">Раздел 1</div>
-      <h2 class="section-title">Позиционирование</h2>
+      <span class="section-tag">Легенда</span>
+      <h2>Статусы гипотез</h2>
+    </div>
+    <div class="table-wrapper">
+      <table>
+        <thead><tr><th>Маркер</th><th>Значение</th></tr></thead>
+        <tbody>
+          <tr><td><span class="badge badge-green">✅ ПОДТВЕРЖДЕНА</span></td><td>Кирилл подтвердил прямо (Источник A)</td></tr>
+          <tr><td><span class="badge badge-yellow">🔶 ЧАСТИЧНО</span></td><td>Подтверждена косвенно или неполно</td></tr>
+          <tr><td><span class="badge badge-yellow">⚠️ ДОПУЩЕНИЕ</span></td><td>Выводится из данных, клиент не отвечал</td></tr>
+          <tr><td><span class="badge badge-red">❌ ОТКЛОНЕНА</span></td><td>Кирилл явно отказал или данные опровергают</td></tr>
+          <tr><td><span class="badge badge-red">🔴 РИСК</span></td><td>Критический риск — нужно решить до запуска</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- Раздел 1. Позиционирование -->
+<section class="section" id="positioning">
+  <div class="container">
+    <div class="section-header">
+      <span class="section-tag">Раздел 1</span>
+      <h2>Позиционирование</h2>
     </div>
 
-    <div class="hypo-card confirmed fade-up">
-      <div class="hypo-status"><span class="badge badge-green">✅ Подтверждена</span></div>
-      <div class="hypo-body">
-        <div class="hypo-id">Г-1.1</div>
-        <div class="hypo-title">Лицо и голос бренда — Кирилл</div>
-        <div class="hypo-text">«готов, хочу и буду лицом. Прятаться не хочу.»</div>
-        <div class="hypo-detail"><strong>Приоритет:</strong> Критический. Всё позиционирование строится на личном бренде.</div>
+    <div class="grid grid-2">
+      <div class="card">
+        <div class="card-title">Г-1.1 · Лицо и голос бренда — Кирилл <span class="badge badge-green">✅ ПОДТВЕРЖДЕНА</span></div>
+        <div class="card-description">Кирилл готов быть лицом, голосом и руками бренда. Публичность ведёт сам.<br><br><em>A: «готов, хочу и буду лицом. Прятаться не хочу.»</em></div>
+        <p style="margin-top:.75rem;font-size:.875rem"><strong style="color:var(--foreground)">Приоритет:</strong> Критический. Всё позиционирование строится на личном бренде.</p>
       </div>
-    </div>
 
-    <div class="hypo-card confirmed fade-up">
-      <div class="hypo-status"><span class="badge badge-green">✅ Подтверждена</span></div>
-      <div class="hypo-body">
-        <div class="hypo-id">Г-1.2</div>
-        <div class="hypo-title">Язык бренда — тёплый, спокойный, ненавязчивый</div>
-        <div class="hypo-text">«тёплый, спокойный, ненавязчивый» (29.03)</div>
-        <div class="hypo-detail"><strong>Уточнение:</strong> Меняем лексику: убираем лечебные обещания, добавляем тепло + факты. Название «Магия Масел» — оставляем.</div>
+      <div class="card">
+        <div class="card-title">Г-1.2 · Язык бренда — тёплый, спокойный, ненавязчивый <span class="badge badge-green">✅ ПОДТВЕРЖДЕНА</span></div>
+        <div class="card-description">Не «магия здоровья» и не сухой инженерный язык. Тепло + честность + без давления.<br><br><em>A 29.03: «тёплый, спокойный, ненавязчивый»; ранее: «не панацея», «советую с врачом»</em></div>
+        <p style="margin-top:.75rem;font-size:.875rem"><strong style="color:var(--foreground)">Уточнение:</strong> Ребрендинг апрель 2026: «Магия Масел» → BRODSKY OIL / Масла Бродского. Лексика: убираем лечебные обещания, добавляем тепло + факты.</p>
       </div>
-    </div>
 
-    <div class="hypo-card confirmed fade-up">
-      <div class="hypo-status"><span class="badge badge-green">✅ Подтверждена</span></div>
-      <div class="hypo-body">
-        <div class="hypo-id">Г-1.3</div>
-        <div class="hypo-title">Образ позиционирования — «Тёплый Ремесленник» + «Консьерж-система»</div>
-        <div class="hypo-text">«Основной — Тёплый Ремесленник. Дополнительный — Консьерж-система» (29.03)</div>
-        <div class="hypo-detail"><strong>Корректировка от 27.03:</strong> Гипотеза «инженерный крафт» не выбрана. Кирилл выбрал тепло.<br>
-        <strong>Для контента:</strong> личная история, руки, процесс, забота — а не цифры и технические термины.</div>
+      <div class="card">
+        <div class="card-title">Г-1.3 · Образ — «Тёплый Ремесленник» + «Консьерж-система» <span class="badge badge-green">✅ ПОДТВЕРЖДЕНА</span></div>
+        <div class="card-description">Основной образ: Тёплый Ремесленник. Дополнительный: Консьерж-система (подбор под цель).<br><br><em>A 29.03: «Основной — Тёплый Ремесленник. Дополнительный — Консьерж-система»</em></div>
+        <p style="margin-top:.75rem;font-size:.875rem"><strong style="color:var(--foreground)">Корректировка от 27.03:</strong> Была гипотеза «инженерный крафт» — Кирилл её не выбрал. Выбрал тепло. Синтез: не ремесло ради ремесла, а тёплый эксперт который знает продукт и помогает подобрать под задачу.</p>
+        <p style="font-size:.875rem"><strong style="color:var(--foreground)">Для контента:</strong> личная история, руки, процесс, забота — а не цифры и технические термины.</p>
       </div>
-    </div>
 
-    <div class="hypo-card partial fade-up">
-      <div class="hypo-status"><span class="badge badge-yellow">🔶 Частично</span></div>
-      <div class="hypo-body">
-        <div class="hypo-id">Г-1.4</div>
-        <div class="hypo-title">Конкурентная дифференциация через доказательность</div>
-        <div class="hypo-text">Для цены 2 000 ₽ нужны 6 опор: происхождение, технология, свежесть, паспорт партии, подбор, повторный сервис.</div>
-        <div class="hypo-detail">Госсертификаты ✅ · Сертификаты сырья — запросит ⚠️ · Лабораторные анализы — нет ❌<br>
-        <strong>🔴 Риск:</strong> Лаб. анализов нет. <strong>Минимальный старт:</strong> QR + дата партии + видео процесса + госсертификат.</div>
+      <div class="card">
+        <div class="card-title">Г-1.4 · Конкурентная дифференциация через доказательность <span class="badge badge-green">✅ ПОДТВЕРЖДЕНА</span></div>
+        <div class="card-description">Для цены 2 000 ₽ нужны 6 опор: происхождение, технология, свежесть, паспорт партии, подбор, повторный сервис.<br><br><em>A: госсертификаты есть, сертификаты сырья — запросит, лаборатория — нет</em></div>
+        <p style="margin-top:.75rem;font-size:.875rem"><span class="badge badge-red">🔴 РИСК</span> Лабораторных анализов нет. Паспорт партии пока только на уровне намерения.</p>
+        <p style="font-size:.875rem"><strong style="color:var(--foreground)">Действие:</strong> Минимальный старт — QR + дата партии + видео процесса + госсертификат. Лаборатория — позже.</p>
       </div>
     </div>
   </div>
 </section>
 
-<!-- РАЗДЕЛ 2. ПРОДУКТ -->
-<section class="section fade-up" id="product" style="background:#fff;">
+<!-- Раздел 2. Продукт и линейка -->
+<section class="section" id="product">
   <div class="container">
     <div class="section-header">
-      <div class="section-label">Раздел 2</div>
-      <h2 class="section-title">Продукт и линейка</h2>
+      <span class="section-tag">Раздел 2</span>
+      <h2>Продукт и линейка</h2>
     </div>
 
-    <div class="hypo-card confirmed fade-up">
-      <div class="hypo-status"><span class="badge badge-green">✅ Подтверждена</span></div>
-      <div class="hypo-body">
-        <div class="hypo-id">Г-2.1</div>
-        <div class="hypo-title">Флагманы: чёрный тмин, расторопша, тыква</div>
-        <div class="hypo-text">«тмин, расторопша, тыква — лучшие по спросу и марже»</div>
-        <div class="hypo-detail"><strong>Приоритет:</strong> Критический. На них строится витрина, первый контент, первые наборы.<br>
-        <strong>Себестоимости:</strong> Тмин 2 000 ₽/л · Расторопша 1 000 ₽/л · Тыква 2 800 ₽/л (самая дорогая).</div>
+    <div class="grid grid-2">
+      <div class="card">
+        <div class="card-title">Г-2.1 · Флагманы: чёрный тмин, расторопша, тыква <span class="badge badge-green">✅ ПОДТВЕРЖДЕНА</span></div>
+        <div class="card-description">Эти три масла — ядро выручки, ядро маржи и ядро повторных покупок.<br><br><em>A: «тмин, расторопша, тыква — лучшие по спросу и марже»</em></div>
+        <p style="margin-top:.75rem;font-size:.875rem"><strong style="color:var(--foreground)">Приоритет:</strong> Критический. На них строится витрина, первый контент, первые наборы. Себестоимости: Тмин 2 000 ₽/л, Расторопша 1 000 ₽/л, Тыква 2 800 ₽/л.</p>
       </div>
-    </div>
 
-    <div class="hypo-card confirmed fade-up">
-      <div class="hypo-status"><span class="badge badge-green">✅ Подтверждена</span></div>
-      <div class="hypo-body">
-        <div class="hypo-id">Г-2.2</div>
-        <div class="hypo-title">Формат 100 мл — главный входной продукт</div>
-        <div class="hypo-text">«100 мл однозначно есть, маржинальность выше. 3×100 мл — идеальный вариант»</div>
-        <div class="hypo-detail"><strong>Приоритет:</strong> Критический. Первый онлайн-запуск начинается с набора 3×100 мл.</div>
+      <div class="card">
+        <div class="card-title">Г-2.2 · Формат 100 мл — главный входной продукт <span class="badge badge-green">✅ ПОДТВЕРЖДЕНА</span></div>
+        <div class="card-description">100 мл — безопасный вход в категорию, высокая маржа, набор 3×100 мл = месячный курс.<br><br><em>A: «100 мл однозначно есть, маржинальность выше. 3×100 мл — идеальный вариант»</em></div>
+        <p style="margin-top:.75rem;font-size:.875rem"><strong style="color:var(--foreground)">Приоритет:</strong> Критический. Первый запуск онлайн начинается с 3×100 мл набора.</p>
       </div>
-    </div>
 
-    <div class="hypo-card confirmed fade-up">
-      <div class="hypo-status"><span class="badge badge-green">✅ Подтверждена</span></div>
-      <div class="hypo-body">
-        <div class="hypo-id">Г-2.3</div>
-        <div class="hypo-title">Структура: моно-масла → наборы под цель</div>
-        <div class="hypo-text">«моно — основа. Наборы готов делать. Купажи — нет, не понимаю зачем»</div>
-        <div class="hypo-detail"><span class="badge badge-red" style="font-size:11px; margin-right:4px;">❌ Купажи отклонены</span> — не предлагать никогда.<br>
-        <strong>Наборы (подтверждено 29.03):</strong> Здоровье + Кухня.</div>
+      <div class="card">
+        <div class="card-title">Г-2.3 · Структура: моно-масла → наборы под цель <span class="badge badge-green">✅ ПОДТВЕРЖДЕНА</span></div>
+        <div class="card-description">Монопродукты — основа. Наборы — апсейл. Купажи — нет.<br><br><em>A: «моно — основа. Наборы готов делать. Купажи — нет, не понимаю зачем»</em></div>
+        <p style="margin-top:.75rem;font-size:.875rem"><span class="badge badge-red">❌ Купажи отклонены</span> — не предлагать.<br><strong style="color:var(--foreground)">Наборы (4 вектора):</strong> Здоровье + Кухня (подтверждено 29.03) + Красота + Энергия (добавлены roundtable 21.04)</p>
       </div>
-    </div>
 
-    <div class="hypo-card confirmed fade-up">
-      <div class="hypo-status"><span class="badge badge-green">✅ Подтверждена</span></div>
-      <div class="hypo-body">
-        <div class="hypo-id">Г-2.4</div>
-        <div class="hypo-title">Расширение: конопля и кунжут — первыми</div>
-        <div class="hypo-text">«конопля и кунжут — добавляю сейчас. Амарант и облепиха — нереально пока»</div>
-        <div class="hypo-detail"><span class="badge badge-red" style="font-size:11px; margin-right:4px;">❌ Амарант, облепиха в M3 не планируем</span></div>
+      <div class="card">
+        <div class="card-title">Г-2.4 · Расширение линейки: конопля и кунжут — первыми <span class="badge badge-green">✅ ПОДТВЕРЖДЕНА</span></div>
+        <div class="card-description">Из новых масел — конопля и кунжут запускаются сейчас. Амарант и облепиха — нереально (нужен пресс 100 т).<br><br><em>A: «конопля и кунжут — добавляю сейчас. Амарант и облепиха — нереально пока»</em></div>
+        <p style="margin-top:.75rem;font-size:.875rem"><span class="badge badge-red">❌ Амарант, облепиха в M3 не планируем</span> — исключить из основной линейки.</p>
       </div>
-    </div>
 
-    <div class="hypo-card confirmed fade-up">
-      <div class="hypo-status"><span class="badge badge-green">✅ Подтверждена</span></div>
-      <div class="hypo-body">
-        <div class="hypo-id">Г-2.5</div>
-        <div class="hypo-title">Косметическая линейка — отдельный трек</div>
-        <div class="hypo-text">«30 мл только косметика — пипетка, отдельная линейка. Амарант туда подойдёт»</div>
-        <div class="hypo-detail">В M3 обозначен как отдельный ассортиментный трек. Детали — в M4.</div>
+      <div class="card">
+        <div class="card-title">Г-2.5 · Косметическая линейка — отдельный трек <span class="badge badge-green">✅ ПОДТВЕРЖДЕНА</span></div>
+        <div class="card-description">30 мл с пипеткой — самостоятельная ветка. Не смешивать с пищевой в позиционировании.<br><br><em>A: «30 мл только косметика — пипетка, отдельная линейка. Амарант туда подойдёт»</em></div>
+        <p style="margin-top:.75rem;font-size:.875rem"><strong style="color:var(--foreground)">Действие:</strong> В M3 обозначить как отдельный ассортиментный трек, детали — в M4.</p>
       </div>
-    </div>
 
-    <div class="hypo-card assumption fade-up">
-      <div class="hypo-status"><span class="badge badge-blue">⚠️ Допущение</span></div>
-      <div class="hypo-body">
-        <div class="hypo-id">Г-2.6</div>
-        <div class="hypo-title">Формат «курс на 30 дней» как продукт</div>
-        <div class="hypo-text">3×100 мл = 1 месяц применения = «ритуал на 30 дней». Рынком не занято.</div>
-        <div class="hypo-detail"><strong>Приоритет:</strong> Высокий. Это якорный формат для онлайн-запуска и удержания.</div>
+      <div class="card">
+        <div class="card-title">Г-2.6 · Формат «курс на 30 дней» как продукт <span class="badge badge-yellow">⚠️ ДОПУЩЕНИЕ</span></div>
+        <div class="card-description">3×100 мл = 1 месяц применения = готовый продукт «ритуал на 30 дней». Рынком не занято.<br><br><em>B: «курс на 30 дней» свободен на рынке; A: Кирилл понимает 3×100 мл набор</em></div>
+        <p style="margin-top:.75rem;font-size:.875rem"><strong style="color:var(--foreground)">Приоритет:</strong> Высокий. Это якорный формат для онлайн-запуска и удержания.</p>
       </div>
-    </div>
 
-    <div class="hypo-card confirmed fade-up">
-      <div class="hypo-status"><span class="badge badge-green">✅ Подтверждена</span></div>
-      <div class="hypo-body">
-        <div class="hypo-id">Г-2.7</div>
-        <div class="hypo-title">Без капсул</div>
-        <div class="hypo-text">«какое-то извращение... зачем глотать капсулы, если можно выпить ложку»</div>
+      <div class="card">
+        <div class="card-title">Г-2.7 · Без капсул <span class="badge badge-green">✅ ПОДТВЕРЖДЕНА</span></div>
+        <div class="card-description">Капсульная форма — нет.<br><br><em>A: «какое-то извращение... зачем глотать капсулы, если можно выпить ложку»</em></div>
       </div>
     </div>
   </div>
 </section>
 
-<!-- РАЗДЕЛ 3. ЦЕНООБРАЗОВАНИЕ -->
-<section class="section fade-up" id="pricing">
+<!-- Раздел 3. Ценообразование -->
+<section class="section" id="pricing">
   <div class="container">
     <div class="section-header">
-      <div class="section-label">Раздел 3</div>
-      <h2 class="section-title">Ценообразование</h2>
+      <span class="section-tag">Раздел 3</span>
+      <h2>Ценообразование</h2>
     </div>
 
-    <div class="hypo-card risk fade-up">
-      <div class="hypo-status"><span class="badge badge-red">🔴 Риск</span></div>
-      <div class="hypo-body">
-        <div class="hypo-id">Г-3.1</div>
-        <div class="hypo-title">Текущая цена ниже конкурентов на 10–15%</div>
-        <div class="hypo-text">«средняя стоимость моих масел по многим конкурентам меньше на 10–15%»</div>
-        <div class="hypo-detail"><strong>🔴 Риск:</strong> Цена ниже рынка при заявленном качестве выше рынка — когнитивный диссонанс.<br>
-        <strong>Действие:</strong> Проработать обоснование цены и точки роста.</div>
+    <div class="grid grid-2">
+      <div class="card">
+        <div class="card-title">Г-3.1 · Текущая цена ниже конкурентов на 10–15% <span class="badge badge-green">✅ ПОДТВЕРЖДЕНА</span></div>
+        <div class="card-description">Кирилл ставит цену ниже среднего рынка. Это не premium-сигнал.<br><br><em>A: «средняя стоимость моих масел даже по многим конкурентам меньше на 10–15%»</em></div>
+        <p style="margin-top:.75rem;font-size:.875rem"><span class="badge badge-red">🔴 РИСК</span> Цена ниже рынка при заявленном качестве выше рынка — когнитивный диссонанс.</p>
+        <p style="font-size:.875rem"><strong style="color:var(--foreground)">Решение (roundtable 21.04):</strong> Повышение цен +15-20% при ребрендинге в BRODSKY OIL. Фамильный бренд = премиум-цена. Цены рекомендованы в M3-04 v3.1.</p>
       </div>
-    </div>
 
-    <div class="hypo-card confirmed fade-up">
-      <div class="hypo-status"><span class="badge badge-green">✅ Подтверждена</span></div>
-      <div class="hypo-body">
-        <div class="hypo-id">Г-3.2</div>
-        <div class="hypo-title">100 мл — маржинальнее 250 мл</div>
-        <div class="hypo-text">«маржинальность больше в любом случае»</div>
+      <div class="card">
+        <div class="card-title">Г-3.2 · 100 мл — маржинальнее 250 мл <span class="badge badge-green">✅ ПОДТВЕРЖДЕНА</span></div>
+        <div class="card-description">Маленький формат выгоднее по марже.<br><br><em>A: «маржинальность больше в любом случае»</em></div>
       </div>
-    </div>
 
-    <div class="hypo-card confirmed fade-up">
-      <div class="hypo-status"><span class="badge badge-green">✅ Подтверждена</span></div>
-      <div class="hypo-body">
-        <div class="hypo-id">Г-3.3</div>
-        <div class="hypo-title">500 мл — только лён и подсолнечник</div>
-        <div class="hypo-text">Большой формат имеет смысл только для двух масел с низкой ценой.</div>
-        <div class="hypo-detail"><strong>Действие:</strong> В архитектуре исключить 500 мл для премиальных масел.</div>
+      <div class="card">
+        <div class="card-title">Г-3.3 · 500 мл — только лён и подсолнечник <span class="badge badge-green">✅ ПОДТВЕРЖДЕНА</span></div>
+        <div class="card-description">Большой формат имеет смысл только для двух масел с низкой ценой.<br><br><em>A: явно сказал</em></div>
+        <p style="margin-top:.75rem;font-size:.875rem"><strong style="color:var(--foreground)">Действие:</strong> В архитектуре исключить 500 мл для премиальных масел.</p>
       </div>
-    </div>
 
-    <div class="hypo-card confirmed fade-up">
-      <div class="hypo-status"><span class="badge badge-green">✅ Исправлена</span></div>
-      <div class="hypo-body">
-        <div class="hypo-id">Г-3.4</div>
-        <div class="hypo-title">Себестоимость расторопши — исправлена</div>
-        <div class="hypo-text">Первая запись 6 000 ₽/л была ошибочной. Уточнённая себестоимость — 1 000 ₽/л (с тарой).</div>
-        <div class="hypo-detail"><strong>Важно:</strong> Тыква = 2 800 ₽/л — самая высокая себестоимость в линейке. Флагман с максимальными затратами → цена продажи должна это отражать.</div>
+      <div class="card">
+        <div class="card-title">Г-3.4 · Себестоимость расторопши — исправлена <span class="badge badge-green">✅ ИСПРАВЛЕНА</span></div>
+        <div class="card-description">Первая запись 6 000 ₽/л была ошибочной. Уточнённая себестоимость — 1 000 ₽/л (с тарой).<br><br><em>A 29.03: финальная таблица от Кирилла</em></div>
+        <p style="margin-top:.75rem;font-size:.875rem"><strong style="color:var(--foreground)">Важно:</strong> Тыква = самая высокая себестоимость в линейке (2 800 ₽/л). Цена продажи должна это отражать.</p>
       </div>
     </div>
   </div>
 </section>
 
-<!-- РАЗДЕЛ 4. СЕРВИС -->
-<section class="section fade-up" id="service" style="background:#fff;">
+<!-- Раздел 4. Сервис и повторные покупки -->
+<section class="section" id="service">
   <div class="container">
     <div class="section-header">
-      <div class="section-label">Раздел 4</div>
-      <h2 class="section-title">Сервис и повторные покупки</h2>
+      <span class="section-tag">Раздел 4</span>
+      <h2>Сервис и повторные покупки</h2>
     </div>
 
-    <div class="hypo-card risk fade-up">
-      <div class="hypo-status"><span class="badge badge-red">🔴 Критично</span></div>
-      <div class="hypo-body">
-        <div class="hypo-id">Г-4.1</div>
-        <div class="hypo-title">Клиентской базы нет — главная операционная дыра</div>
-        <div class="hypo-text">«клиентской базы у меня нет, я её пока даже не веду. Ни разу не делал напоминание»</div>
-        <div class="hypo-detail"><strong>🔴 Риск:</strong> При выходе в онлайн без базы и ремайндеров LTV = 0.<br>
-        <strong>Приоритет:</strong> Критический. База + ремайндер на 21–25 день = первый операционный приоритет.</div>
+    <div class="grid grid-2">
+      <div class="card">
+        <div class="card-title">Г-4.1 · Клиентской базы нет — главная операционная дыра <span class="badge badge-green">✅ ПОДТВЕРЖДЕНА</span></div>
+        <div class="card-description">Клиентская база не ведётся вообще. Ни одного ремайндера.<br><br><em>A: «клиентской базы у меня нет, я её пока даже не веду. Ни разу не делал напоминание»</em></div>
+        <p style="margin-top:.75rem;font-size:.875rem"><span class="badge badge-red">🔴 РИСК</span> При выходе в онлайн без базы и ремайндеров LTV = 0.</p>
+        <p style="font-size:.875rem"><strong style="color:var(--foreground)">Приоритет:</strong> Критический. База + ремайндер на 21–25 день = первый операционный приоритет.</p>
       </div>
-    </div>
 
-    <div class="hypo-card confirmed fade-up">
-      <div class="hypo-status"><span class="badge badge-green">✅ Подтверждена</span></div>
-      <div class="hypo-body">
-        <div class="hypo-id">Г-4.2</div>
-        <div class="hypo-title">Формат ремайндера — полуручной</div>
-        <div class="hypo-text">«система напоминает мне, я пишу клиенту» (29.03)</div>
-        <div class="hypo-detail"><strong>Вывод:</strong> TG-бот триггерит Кирилла на 21–25 день после покупки. Не автоматика клиенту — а напоминание Кириллу.</div>
+      <div class="card">
+        <div class="card-title">Г-4.2 · Формат ремайндера — полуручной <span class="badge badge-green">✅ ПОДТВЕРЖДЕНА</span></div>
+        <div class="card-description">Система напоминает Кириллу → он пишет клиенту сам.<br><br><em>A 29.03: «система напоминает мне, я пишу клиенту»</em></div>
+        <p style="margin-top:.75rem;font-size:.875rem"><strong style="color:var(--foreground)">Вывод:</strong> Нужен TG-бот или напоминалка, которая триггерит Кирилла на 21–25 день после покупки. Не автоматика клиенту — а напоминание Кириллу.</p>
       </div>
-    </div>
 
-    <div class="hypo-card confirmed fade-up">
-      <div class="hypo-status"><span class="badge badge-green">✅ Подтверждена</span></div>
-      <div class="hypo-body">
-        <div class="hypo-id">Г-4.3</div>
-        <div class="hypo-title">Делегирование — после стабилизации дохода</div>
-        <div class="hypo-text">«сам, до стабилизации дохода, потом делегирую»</div>
-        <div class="hypo-detail"><strong>Вывод для M3:</strong> Все процессы проектируем под одного человека.</div>
+      <div class="card">
+        <div class="card-title">Г-4.3 · Делегирование — после стабилизации дохода <span class="badge badge-green">✅ ПОДТВЕРЖДЕНА</span></div>
+        <div class="card-description">Сейчас Кирилл делает всё сам. Делегирует когда устоится доход.<br><br><em>A: «сам, до стабилизации дохода, потом делегирую»</em></div>
+        <p style="margin-top:.75rem;font-size:.875rem"><strong style="color:var(--foreground)">Вывод для M3:</strong> Все процессы сначала проектируем под одного человека.</p>
       </div>
     </div>
   </div>
 </section>
 
-<!-- РАЗДЕЛ 5. КАНАЛЫ -->
-<section class="section fade-up" id="channels">
+<!-- Раздел 5. Каналы и стратегия -->
+<section class="section" id="channels">
   <div class="container">
     <div class="section-header">
-      <div class="section-label">Раздел 5</div>
-      <h2 class="section-title">Каналы и стратегия</h2>
+      <span class="section-tag">Раздел 5</span>
+      <h2>Каналы и стратегия</h2>
     </div>
 
-    <div class="hypo-card risk fade-up">
-      <div class="hypo-status"><span class="badge badge-red">🔴 Критично</span></div>
-      <div class="hypo-body">
-        <div class="hypo-id">Г-5.1</div>
-        <div class="hypo-title">Telegram — двойная роль: привлечение + удержание</div>
-        <div class="hypo-text">«клиент с рынка переходит на платформу, далее повторные заказы. Но так же — место привлечения аудитории» (29.03)</div>
-        <div class="hypo-detail"><strong>Конверсия офлайн → TG:</strong> Кирилл оценивает в 50–75%.<br>
-        <strong>Ограничение:</strong> Ближайшие 90 дней — не более 2 каналов. TG = основной.<br>
-        <strong>Приоритет:</strong> Критический. TG запускается первым.</div>
+    <div class="grid grid-2">
+      <div class="card">
+        <div class="card-title">Г-5.1 · Telegram — двойная роль: привлечение + удержание <span class="badge badge-green">✅ ПОДТВЕРЖДЕНА</span></div>
+        <div class="card-description">Клиент с рынка переходит в TG → повторные покупки. И одновременно — TG как источник новой аудитории.<br><br><em>A 29.03: «клиент с рынка переходит на платформу, далее повторные заказы. Но так же — место привлечения аудитории»</em></div>
+        <p style="margin-top:.75rem;font-size:.875rem"><span class="badge badge-yellow">⚠️ Roundtable 21.04:</span> Конверсия Кирилла (50–75%) завышена в 3x. Реалистично: 15-25%. При 50 покупателях/мес → 8-12 подписчиков TG/мес.</p>
+        <p style="font-size:.875rem"><strong style="color:var(--foreground)">Ограничение:</strong> Ближайшие 90 дней — не более 2 каналов. TG = основной. <strong style="color:var(--foreground)">Приоритет:</strong> Критический.</p>
       </div>
-    </div>
 
-    <div class="hypo-card confirmed fade-up">
-      <div class="hypo-status"><span class="badge badge-green">✅ Подтверждена</span></div>
-      <div class="hypo-body">
-        <div class="hypo-id">Г-5.2</div>
-        <div class="hypo-title">Маркетплейсы — не сейчас</div>
-        <div class="hypo-text">«не рассматриваю из-за комиссий и мощности»</div>
+      <div class="card">
+        <div class="card-title">Г-5.2 · Маркетплейсы — не сейчас <span class="badge badge-green">✅ ПОДТВЕРЖДЕНА</span></div>
+        <div class="card-description">Комиссии + недостаточная мощность + риск размывания премиума.<br><br><em>A: «не рассматриваю из-за комиссий и мощности»</em></div>
       </div>
-    </div>
 
-    <div class="hypo-card confirmed fade-up">
-      <div class="hypo-status"><span class="badge badge-green">✅ Подтверждена</span></div>
-      <div class="hypo-body">
-        <div class="hypo-id">Г-5.3</div>
-        <div class="hypo-title">Офлайн точка — источник базы через QR</div>
-        <div class="hypo-text">«думаю 50–75% покупателей можно перевести в TG» (29.03)</div>
-        <div class="hypo-detail"><strong>Приоритет:</strong> Критический. QR на стол/упаковку = первый операционный шаг.<br>
-        <strong>Ключевое возражение:</strong> «Вернусь в следующий раз» / «Обойду рынок» → QR + напоминание закрывает этот слив.</div>
+      <div class="card">
+        <div class="card-title">Г-5.3 · Офлайн точка — источник базы через QR <span class="badge badge-green">✅ ПОДТВЕРЖДЕНА</span></div>
+        <div class="card-description">Каждая дегустация без QR = потерянный клиент.<br><br><em>A 29.03: «думаю 50–75% покупателей можно перевести в TG»</em></div>
+        <p style="margin-top:.75rem;font-size:.875rem"><span class="badge badge-yellow">⚠️ Roundtable 21.04:</span> Оценка Кирилла завышена в 3x. Реалистично: 15-25%.</p>
+        <p style="font-size:.875rem"><strong style="color:var(--foreground)">Приоритет:</strong> Критический. QR на стол/упаковку = первый операционный шаг. Ключевое возражение: «Вернусь в следующий раз». QR + напоминание закрывает этот слив.</p>
       </div>
-    </div>
 
-    <div class="hypo-card confirmed fade-up">
-      <div class="hypo-status"><span class="badge badge-green">✅ Подтверждена</span></div>
-      <div class="hypo-body">
-        <div class="hypo-id">Г-5.4</div>
-        <div class="hypo-title">География: Москва сейчас + СПб в горизонте</div>
-        <div class="hypo-text">«скорее всего рассматриваю СПб и Ленобласть»</div>
+      <div class="card">
+        <div class="card-title">Г-5.4 · География: Москва сейчас + СПб в горизонте <span class="badge badge-green">✅ ПОДТВЕРЖДЕНА</span></div>
+        <div class="card-description">Рассматривает СПб и Ленобласть.<br><br><em>A: «скорее всего рассматриваю СПб и Ленобласть»</em></div>
       </div>
     </div>
   </div>
 </section>
 
-<!-- ПРИОРИТЕТЫ -->
-<section class="section fade-up" id="priorities" style="background:#fff;">
+<!-- Итоговые приоритеты -->
+<section class="section" id="priorities">
   <div class="container">
     <div class="section-header">
-      <div class="section-label">Итог</div>
-      <h2 class="section-title">Итоговая расстановка приоритетов</h2>
-      <p class="section-sub">Последовательность реализации на основе верификации гипотез.</p>
+      <span class="section-tag">Итоговые приоритеты</span>
+      <h2>Расстановка приоритетов</h2>
     </div>
 
-    <div class="grid-2">
-
-      <div class="priority-block fade-up">
-        <div class="priority-header">
-          <div class="priority-dot dot-red"></div>
-          <div class="priority-title">🔴 Критические — реализуем первыми</div>
-        </div>
-        <div class="priority-item"><div class="priority-num" style="background:var(--error);">1</div> QR на точке → TG (закрывает слив «вернусь потом»)</div>
-        <div class="priority-item"><div class="priority-num" style="background:var(--error);">2</div> TG-канал как основной (привлечение + удержание)</div>
-        <div class="priority-item"><div class="priority-num" style="background:var(--error);">3</div> 2 набора: «Здоровье» + «Кухня» в формате 3×100 мл</div>
-        <div class="priority-item"><div class="priority-num" style="background:var(--error);">4</div> Полуручной ремайндер: бот триггерит Кирилла → он пишет клиенту</div>
-        <div class="priority-item"><div class="priority-num" style="background:var(--error);">5</div> Витрина доверия: тмин + расторопша + тыква (видео + дата партии)</div>
+    <div class="grid grid-2" style="margin-bottom:2rem;">
+      <div class="phase-badge">
+        <h3>🔴 Критические (реализуем первыми)</h3>
+        <ul class="list-styled" style="margin-top:.5rem;">
+          <li>QR на точке → TG (закрывает слив «вернусь потом»)</li>
+          <li>TG-канал запустить как основной канал (привлечение + удержание)</li>
+          <li>2 набора: «Здоровье» + «Кухня» в формате 3×100 мл</li>
+          <li>Полуручной ремайндер: бот триггерит Кирилла → он пишет клиенту</li>
+          <li>Витрина доверия: тмин + расторопша + тыква (видео + дата партии)</li>
+        </ul>
       </div>
 
-      <div class="priority-block fade-up">
-        <div class="priority-header">
-          <div class="priority-dot dot-orange"></div>
-          <div class="priority-title">🟠 Высокий приоритет — вторая очередь</div>
-        </div>
-        <div class="priority-item"><div class="priority-num" style="background:var(--warning);">6</div> Бюджет на привлечение клиентов (приоритет Кирилла №1)</div>
-        <div class="priority-item"><div class="priority-num" style="background:var(--warning);">7</div> Ответы клиентам — операционное слабое место</div>
-        <div class="priority-item"><div class="priority-num" style="background:var(--warning);">8</div> Доставка — запустить (сейчас нет вообще)</div>
-        <div class="priority-item"><div class="priority-num" style="background:var(--warning);">9</div> Ценовое обоснование: почему так дорого</div>
-        <div class="priority-item"><div class="priority-num" style="background:var(--warning);">10</div> Сертификаты сырья от поставщика</div>
+      <div class="phase-badge">
+        <h3>🟠 Высокий приоритет (вторая очередь)</h3>
+        <ul class="list-styled" style="margin-top:.5rem;">
+          <li>Бюджет на привлечение клиентов (приоритет Кирилла №1)</li>
+          <li>Ответы клиентам — операционное слабое место, решить</li>
+          <li>Доставка — запустить (сейчас нет вообще)</li>
+          <li>Ценовое обоснование под вопрос «почему так дорого»</li>
+          <li>Сертификаты сырья от поставщика</li>
+        </ul>
       </div>
 
-      <div class="priority-block fade-up">
-        <div class="priority-header">
-          <div class="priority-dot dot-yellow"></div>
-          <div class="priority-title">🟡 Средняя очередь</div>
-        </div>
-        <div class="priority-item"><div class="priority-num" style="background:#eab308;">11</div> Второй канал (не более 2 в 90 дней)</div>
-        <div class="priority-item"><div class="priority-num" style="background:#eab308;">12</div> Подарочные боксы руками</div>
-        <div class="priority-item"><div class="priority-num" style="background:#eab308;">13</div> Конопля + кунжут в линейку</div>
+      <div class="phase-badge">
+        <h3>🟡 Средняя очередь</h3>
+        <ul class="list-styled" style="margin-top:.5rem;">
+          <li>Второй канал (не более 2 в 90 дней)</li>
+          <li>Подарочные боксы руками</li>
+          <li>Конопля + кунжут в линейку (запускается)</li>
+        </ul>
       </div>
 
-      <div class="priority-block fade-up">
-        <div class="priority-header">
-          <div class="priority-dot dot-gray"></div>
-          <div class="priority-title">⚪ На потом</div>
-        </div>
-        <div class="priority-item"><div class="priority-num" style="background:var(--n300);">14</div> Лабораторные анализы партий</div>
-        <div class="priority-item"><div class="priority-num" style="background:var(--n300);">15</div> Делегирование (кому — не известно)</div>
-        <div class="priority-item"><div class="priority-num" style="background:var(--n300);">16</div> Расширение в СПб</div>
-        <div class="priority-item"><div class="priority-num" style="background:var(--n300);">17</div> Косметическая линейка</div>
+      <div class="phase-badge">
+        <h3>⚪ На потом</h3>
+        <ul class="list-styled" style="margin-top:.5rem;">
+          <li>Лабораторные анализы партий</li>
+          <li>Делегирование (кому — не известно)</li>
+          <li>Расширение в СПб</li>
+          <li>Косметическая линейка</li>
+        </ul>
       </div>
-
     </div>
+  </div>
+</section>
+
+<!-- Корректировки roundtable -->
+<section class="section" id="roundtable">
+  <div class="container">
+    <div class="section-header">
+      <span class="section-tag">Roundtable 21.04.2026</span>
+      <h2>Корректировки</h2>
+    </div>
+    <div class="table-wrapper">
+      <table>
+        <thead><tr><th>Гипотеза</th><th>Было</th><th>Скорректировано</th></tr></thead>
+        <tbody>
+          <tr><td class="table-accent">Г-3.1 Цена ниже рынка</td><td>Риск</td><td>Решение: +15-20% при ребрендинге</td></tr>
+          <tr><td class="table-accent">Г-5.1 / Г-5.3 QR→TG</td><td>50-75%</td><td>15-25% (рыночные данные)</td></tr>
+          <tr><td class="table-accent">Г-2.3 Наборы</td><td>2 вектора</td><td>4 вектора (+ Красота, Энергия)</td></tr>
+          <tr><td class="table-accent">Г-1.2 Бренд</td><td>Магия Масел → оставляем</td><td>BRODSKY OIL / Масла Бродского</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p style="font-size:.875rem;margin-top:1rem;">Источники: A = ответы Кирилла 27.03 + 29.03, B = мастер-синтез M2, C = roundtable 21.04</p>
   </div>
 </section>
 
 <footer class="footer">
   <div class="container">
-    <div class="footer-inner">
-      <div>
-        <img src="../assets/logo-horizontal-dark.png" alt="Магия Масел" style="height:48px; width:auto; border-radius:var(--r-lg);">
-        <div style="margin-top:8px; font-size:12px; color:var(--n600);">BrandOS · Фабрика Контента v5</div>
-      </div>
-      <div class="footer-meta">
-        <div class="footer-meta-item"><span class="footer-meta-label">Документ</span><span class="footer-meta-value">M3-05 — Гипотезы M3</span></div>
-        <div class="footer-meta-item"><span class="footer-meta-label">Модуль</span><span class="footer-meta-value">M3 · 5 из 7</span></div>
-        <div class="footer-meta-item"><span class="footer-meta-label">Версия</span><span class="footer-meta-value">2.0 · 29.03.2026</span></div>
-        <div class="footer-meta-item"><span class="footer-meta-label">Источники</span><span class="footer-meta-value">Ответы Кирилла 27.03 + 29.03 + мастер-синтез M2</span></div>
-      </div>
-    </div>
+    BrandOS · BRODSKY OIL · M3-05 Гипотезы M3 · v3.1 · 2026
   </div>
 </footer>
 
-<script>
-  const observer = new IntersectionObserver((entries) => {
-    entries.forEach(entry => { if (entry.isIntersecting) entry.target.classList.add('visible'); });
-  }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
-  document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
-</script>
 </body>
 </html>

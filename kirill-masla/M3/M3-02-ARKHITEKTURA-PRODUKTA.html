@@ -1,922 +1,399 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>M3-02 — Архитектура продукта · Магия Масел · Кирилл Бродский</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-    :root {
-      --brand: #2C5F2D;
-      --brand-dark: #1a4a1b;
-      --brand-light: #4a8f4b;
-      --brand-bg: #e8f5e9;
-      --accent: #D4AF37;
-      --accent-bg: #fdf8e8;
-      --black: #0f172a;
-      --n50: #f8fafc; --n100: #f1f5f9; --n200: #e2e8f0;
-      --n300: #cbd5e1; --n400: #94a3b8; --n500: #64748b;
-      --n600: #475569; --n700: #334155; --n800: #1e293b; --n900: #0f172a;
-      --success: #10b981; --warning: #f59e0b; --error: #ef4444; --info: #3b82f6;
-      --font: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-      --shadow-card: 0 1px 3px 0 rgba(0,0,0,.05), 0 1px 2px -1px rgba(0,0,0,.05);
-      --shadow-hover: 0 10px 25px -5px rgba(0,0,0,.08), 0 8px 10px -6px rgba(0,0,0,.04);
-      --shadow-btn: 0 4px 14px 0 rgba(44,95,45,.35);
-      --shadow-glow: 0 0 40px rgba(44,95,45,.15);
-      --r-sm:4px; --r-md:6px; --r-lg:8px; --r-xl:12px; --r-2xl:16px; --r-3xl:24px; --r-full:9999px;
-    }
-
-    body { font-family: var(--font); font-size: 16px; line-height: 1.6; color: var(--n600); background: var(--n100); }
-
-    @keyframes fade-up { 0%{opacity:0;transform:translateY(20px)} 100%{opacity:1;transform:translateY(0)} }
-    @keyframes pulse-glow { 0%,100%{box-shadow:0 0 20px rgba(44,95,45,.3)} 50%{box-shadow:0 0 40px rgba(44,95,45,.5)} }
-    @keyframes scale-in { 0%{opacity:0;transform:scale(.95)} 100%{opacity:1;transform:scale(1)} }
-
-    .fade-up { opacity:0; transform:translateY(20px); transition:opacity .6s ease-out, transform .6s ease-out; }
-    .fade-up.visible { opacity:1; transform:translateY(0); }
-
-    .container { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
-    .section { padding: 80px 0; }
-
-    /* Nav */
-    .nav-wrap {
-      position: fixed; top: 0; left: 0; right: 0; z-index: 300;
-      background: rgba(255,255,255,.93); backdrop-filter: blur(12px);
-      border-bottom: 1px solid var(--n200); height: 64px;
-    }
-    .nav-inner { height:100%; display:flex; align-items:center; justify-content:space-between; }
-    .nav-logo img { height:40px; width:auto; display:block; }
-    .nav-links { display:flex; gap:20px; flex-wrap:wrap; }
-    .nav-links a { font-size:13px; font-weight:500; color:var(--n600); text-decoration:none; transition:color .2s; }
-    .nav-links a:hover { color:var(--brand); }
-    .nav-badge {
-      font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:.05em;
-      color:var(--brand); background:var(--brand-bg);
-      padding:5px 12px; border-radius:var(--r-full); white-space:nowrap;
-    }
-
-    /* Section header */
-    .section-header { margin-bottom:40px; }
-    .section-label {
-      display:inline-block; font-size:11px; font-weight:700; text-transform:uppercase;
-      letter-spacing:.08em; color:var(--brand); background:var(--brand-bg);
-      padding:4px 12px; border-radius:var(--r-full); margin-bottom:12px;
-    }
-    .section-title { font-size:30px; font-weight:600; color:var(--n900); line-height:1.25; margin-bottom:8px; }
-    .section-sub { font-size:16px; color:var(--n500); }
-
-    /* Card */
-    .card {
-      background:#fff; border-radius:var(--r-2xl); border:1px solid var(--n200);
-      padding:28px; box-shadow:var(--shadow-card);
-      transition:transform .3s ease, box-shadow .3s ease;
-    }
-    .card:hover { transform:translateY(-3px); box-shadow:var(--shadow-hover); }
-
-    /* Grid */
-    .grid-2 { display:grid; grid-template-columns:repeat(auto-fit,minmax(340px,1fr)); gap:20px; }
-    .grid-3 { display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:20px; }
-    .grid-4 { display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:16px; }
-
-    /* Badge */
-    .badge { display:inline-flex; align-items:center; padding:3px 10px; border-radius:var(--r-full); font-size:12px; font-weight:600; }
-    .badge-green { background:#d1fae5; color:#065f46; }
-    .badge-yellow { background:#fef3c7; color:#92400e; }
-    .badge-red { background:#fee2e2; color:#991b1b; }
-    .badge-blue { background:#dbeafe; color:#1e40af; }
-    .badge-brand { background:var(--brand-bg); color:var(--brand-dark); }
-    .badge-accent { background:var(--accent-bg); color:#7a6000; }
-
-    /* Table */
-    .table-wrap { overflow-x:auto; border-radius:var(--r-2xl); border:1px solid var(--n200); margin:20px 0; }
-    table { width:100%; border-collapse:collapse; background:#fff; }
-    thead tr { background:var(--n50); border-bottom:2px solid var(--n200); }
-    th { padding:14px 18px; text-align:left; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.05em; color:var(--n500); }
-    td { padding:14px 18px; font-size:14px; color:var(--n600); border-bottom:1px solid var(--n200); }
-    tr:last-child td { border-bottom:none; }
-    tbody tr { transition:background .2s; }
-    tbody tr:hover { background:var(--n50); }
-
-    /* Alert */
-    .alert { display:flex; gap:14px; border-radius:var(--r-xl); padding:18px; margin:16px 0; }
-    .alert-warning { background:#fffbeb; border:1px solid #fde68a; border-left:4px solid var(--warning); }
-    .alert-error { background:#fff1f2; border:1px solid #fecdd3; border-left:4px solid var(--error); }
-    .alert-info { background:#eff6ff; border:1px solid #bfdbfe; border-left:4px solid var(--info); }
-    .alert-success { background:#f0fdf4; border:1px solid #bbf7d0; border-left:4px solid var(--success); }
-    .alert-brand { background:var(--brand-bg); border:1px solid #a5d6a7; border-left:4px solid var(--brand); }
-    .alert-icon { font-size:18px; flex-shrink:0; margin-top:1px; }
-
-    /* Card variants */
-    .card-brand {
-      background: linear-gradient(135deg, var(--brand-bg) 0%, #fff 100%);
-      border-radius:var(--r-2xl); border:1px solid #a5d6a7;
-      padding:28px; box-shadow:var(--shadow-card);
-    }
-    .card-accent {
-      background: var(--accent-bg);
-      border-radius:var(--r-2xl); border:1px solid #e8d87a;
-      padding:28px; box-shadow:var(--shadow-card);
-    }
-    .card-title { font-size:16px; font-weight:700; color:var(--n900); margin-bottom:16px; }
-    .card-icon { font-size:24px; margin-bottom:12px; }
-
-    /* List items */
-    .list-item {
-      display:flex; gap:10px; align-items:flex-start;
-      padding:10px 0; border-bottom:1px solid var(--n100);
-      font-size:14px; color:var(--n600);
-    }
-    .list-item:last-child { border-bottom:none; }
-    .list-dot { width:8px; height:8px; border-radius:50%; background:var(--brand); flex-shrink:0; margin-top:6px; }
-
-    /* Divider */
-    .divider { height:1px; background:var(--n200); margin:20px 0; }
-
-    /* Principle card */
-    .principle-card {
-      background:#fff; border-radius:var(--r-2xl); border:1px solid var(--n200);
-      padding:24px 28px; box-shadow:var(--shadow-card);
-      display:flex; gap:20px; align-items:flex-start;
-      transition:transform .3s ease, box-shadow .3s ease;
-    }
-    .principle-card:hover { transform:translateY(-3px); box-shadow:var(--shadow-hover); }
-    .principle-num {
-      flex-shrink:0; width:36px; height:36px; border-radius:50%;
-      background:var(--brand); color:#fff;
-      font-size:14px; font-weight:700;
-      display:flex; align-items:center; justify-content:center;
-      margin-top:2px;
-    }
-    .principle-title { font-size:15px; font-weight:700; color:var(--n900); margin-bottom:4px; }
-    .principle-text { font-size:14px; color:var(--n600); line-height:1.6; }
-
-    /* Track labels */
-    .track-label {
-      display:inline-block; font-size:12px; font-weight:700; text-transform:uppercase;
-      letter-spacing:.07em; padding:4px 14px; border-radius:var(--r-full); margin-bottom:16px;
-    }
-    .track-a { background:#d1fae5; color:#065f46; }
-    .track-b { background:#fef3c7; color:#92400e; }
-
-    .track-role {
-      font-size:13px; color:var(--n500); background:var(--n50);
-      border-radius:var(--r-lg); padding:10px 16px; margin-top:12px;
-      border-left:3px solid var(--brand);
-    }
-
-    /* Set meta */
-    .set-meta { font-size:13px; color:var(--n600); margin-bottom:4px; }
-
-    @media (max-width:768px) {
-      .nav-links { display:none; }
-      .section-title { font-size:24px; }
-      .grid-2, .grid-3, .grid-4 { grid-template-columns:1fr; }
-    }
-
-    /* Hero */
-    .hero {
-      background: linear-gradient(135deg, var(--brand-dark) 0%, var(--brand) 50%, var(--brand-light) 100%);
-      padding: 120px 0 80px; color:#fff; position:relative; overflow:hidden;
-    }
-    .hero::before {
-      content:''; position:absolute; inset:0;
-      background: radial-gradient(ellipse at 70% 50%, rgba(212,175,55,.15) 0%, transparent 60%);
-    }
-    .hero-inner { display:flex; align-items:center; gap:48px; flex-wrap:wrap; }
-    .hero-logo-wrap { flex-shrink:0; }
-    .hero-logo-wrap img { height:140px; width:auto; display:block; border-radius:var(--r-xl); }
-    .hero-content { flex:1; min-width:280px; }
-    .hero-badge {
-      display:inline-block; font-size:11px; font-weight:700; text-transform:uppercase;
-      letter-spacing:.1em; background:rgba(255,255,255,.15); color:#fff;
-      border:1px solid rgba(255,255,255,.3); padding:6px 16px;
-      border-radius:var(--r-full); margin-bottom:20px; backdrop-filter:blur(8px);
-    }
-    .hero-title { font-size:52px; font-weight:700; line-height:1.1; margin-bottom:16px; }
-    .hero-title span { color:var(--accent); }
-    .hero-sub { font-size:18px; opacity:.85; max-width:600px; margin-bottom:32px; line-height:1.6; }
-    .hero-meta { display:flex; gap:24px; flex-wrap:wrap; }
-    .hero-meta-item { display:flex; flex-direction:column; gap:3px; }
-    .hero-meta-label { font-size:10px; text-transform:uppercase; letter-spacing:.08em; opacity:.6; }
-    .hero-meta-value { font-size:14px; font-weight:600; }
-
-    @media (max-width:768px) {
-      .hero { padding: 100px 0 60px; }
-      .hero-title { font-size:34px; }
-      .hero-logo-wrap img { height:80px; }
-    }
-
-    /* Footer */
-    .footer {
-      background:var(--n900); color:var(--n400); padding:40px 0;
-      font-size:13px;
-    }
-    .footer-inner { display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:16px; }
-    .footer-meta { display:flex; gap:20px; flex-wrap:wrap; }
-    .footer-meta-item { display:flex; flex-direction:column; gap:2px; }
-    .footer-meta-label { font-size:10px; text-transform:uppercase; letter-spacing:.05em; color:var(--n600); }
-    .footer-meta-value { font-size:12px; color:var(--n400); }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>M3-02 · Архитектура продукта — BRODSKY OIL · BrandOS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --primary: #0ea5e9;
+  --primary-dark: #0284c7;
+  --primary-light: #7dd3fc;
+  --primary-bg: #e0f2fe;
+  --background: #ffffff;
+  --foreground: #0f172a;
+  --card-bg: hsl(0,0%,97%);
+  --border: #1C1C1E;
+  --muted: #64748b;
+  --radius: 4px;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: 'Inter', sans-serif; background: var(--background); color: var(--foreground); line-height: 1.75; font-size: 16px; }
+.container { max-width: 1200px; margin: 0 auto; padding: 0 1.5rem; }
+.nav { position: sticky; top: 0; background: white; border-bottom: 1px solid var(--border); z-index: 100; padding: 1rem 0; }
+.nav-container { display: flex; justify-content: space-between; align-items: center; gap: 2rem; }
+.nav-brand { font-size: 1rem; font-weight: 700; color: var(--foreground); white-space: nowrap; }
+.nav-brand span { color: var(--primary); }
+.nav-links { display: flex; gap: 1.5rem; list-style: none; overflow-x: auto; flex-wrap: wrap; }
+.nav-links a { color: var(--foreground); text-decoration: none; font-size: .875rem; font-weight: 500; white-space: nowrap; transition: color .2s; }
+.nav-links a:hover { color: var(--primary); }
+.hero { padding: 3.75rem 0; background: linear-gradient(135deg, rgba(255,255,255,.98) 0%, rgba(240,249,255,.95) 100%); }
+.hero-badge { display: inline-flex; align-items: center; gap: .5rem; padding: .5rem 1rem; background: var(--card-bg); border: 1px solid var(--border); border-radius: var(--radius); font-size: .875rem; font-weight: 600; margin-bottom: 1.5rem; color: var(--foreground); }
+.hero h1 { font-size: clamp(32px, 4vw, 51px); font-weight: 500; line-height: 1.2; letter-spacing: -.03em; margin-bottom: 1.5rem; }
+.hero-subtitle { font-size: 1.125rem; color: var(--muted); margin-bottom: 2rem; }
+.hero-meta { display: flex; gap: 2rem; flex-wrap: wrap; }
+.hero-meta-item { font-size: .875rem; color: var(--muted); }
+.hero-meta-item strong { color: var(--primary); font-weight: 600; }
+.section { padding: 2.5rem 0; }
+@media (min-width: 768px) { .section { padding: 3.75rem 0; } }
+.section-header { position: relative; margin-bottom: 32px; padding-top: 24px; }
+.section-header::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px; background: repeating-linear-gradient(to right, #9CA3AF 0, #9CA3AF 4px, transparent 4px, transparent 8px); }
+.section-tag { display: inline-block; font-size: .75rem; font-weight: 600; text-transform: uppercase; letter-spacing: .1em; color: var(--primary); margin-bottom: .5rem; }
+h2 { font-size: 32px; font-weight: 300; line-height: 1.2; letter-spacing: -.02em; margin-bottom: 1rem; }
+h3 { font-size: 20px; font-weight: 600; line-height: 1.3; margin-bottom: 1rem; }
+h4 { font-size: 17px; font-weight: 600; margin-bottom: .75rem; color: var(--foreground); }
+p { margin-bottom: 1rem; color: var(--muted); }
+p:last-child { margin-bottom: 0; }
+.card { border: 1px solid var(--border); border-radius: var(--radius); background: linear-gradient(135deg, rgba(255,255,255,.98) 0%, rgba(250,250,252,.95) 100%); padding: 1.5rem; position: relative; overflow: hidden; transition: all .4s cubic-bezier(.4, 0, .2, 1); }
+.card:hover { transform: translateY(-4px); box-shadow: 0 12px 32px rgba(0,0,0,.08), 0 0 0 1px rgba(14,165,233,.1); border-color: rgba(14,165,233,.3); }
+.card-title { font-size: 1.0625rem; font-weight: 600; margin-bottom: .75rem; color: var(--foreground); }
+.card-description { font-size: .9375rem; line-height: 1.75; color: var(--muted); }
+.grid { display: grid; gap: 1.5rem; }
+.grid-2 { grid-template-columns: 1fr; }
+.grid-3 { grid-template-columns: 1fr; }
+.grid-4 { grid-template-columns: 1fr; }
+@media (min-width: 768px) { .grid-2 { grid-template-columns: repeat(2, 1fr); } .grid-3 { grid-template-columns: repeat(3, 1fr); } .grid-4 { grid-template-columns: repeat(4, 1fr); } }
+.highlight-box { background: linear-gradient(135deg, rgba(14,165,233,.05) 0%, rgba(14,165,233,.02) 100%); border: 1px solid rgba(14,165,233,.2); border-left: 4px solid var(--primary); padding: 1.25rem 1.5rem; border-radius: var(--radius); margin: 1.5rem 0; }
+.highlight-box p { margin: 0; font-size: 1rem; }
+.highlight-box strong { color: var(--primary); }
+.warning-block { background: linear-gradient(135deg, rgba(239,68,68,.04) 0%, rgba(239,68,68,.01) 100%); border: 1px solid rgba(239,68,68,.18); border-left: 4px solid #ef4444; padding: 1.25rem 1.5rem; border-radius: var(--radius); margin: 1.5rem 0; }
+.warning-block p { margin: 0; font-size: .9375rem; color: var(--muted); }
+.warning-block strong { color: var(--foreground); }
+.phase-badge { background: linear-gradient(135deg, rgba(14,165,233,.07) 0%, rgba(14,165,233,.02) 100%); padding: 2rem; border-radius: var(--radius); border: 1px solid rgba(14,165,233,.22); margin-bottom: 2rem; }
+.phase-badge h3 { color: var(--primary); margin-bottom: .5rem; }
+.phase-badge p { font-size: 1.0625rem; margin: 0; }
+.list-styled { list-style: none; padding: 0; }
+.list-styled li { padding-left: 1.5rem; margin-bottom: .75rem; position: relative; color: var(--muted); font-size: .9375rem; }
+.list-styled li::before { content: ''; position: absolute; left: 0; top: .65rem; width: 6px; height: 6px; background: var(--primary); border-radius: 50%; }
+.table-wrapper { overflow-x: auto; margin: 1.5rem 0; border: 1px solid var(--border); border-radius: var(--radius); }
+table { width: 100%; border-collapse: collapse; background: white; }
+th, td { padding: 1rem; text-align: left; border-bottom: 1px solid var(--border); }
+th { background: var(--card-bg); font-weight: 600; font-size: .8125rem; text-transform: uppercase; letter-spacing: .05em; color: var(--foreground); }
+td { font-size: .9375rem; color: var(--muted); }
+tr:last-child td { border-bottom: none; }
+tr:hover td { background: var(--card-bg); }
+.table-accent { color: var(--primary); font-weight: 600; }
+.badge { display: inline-block; padding: .25rem .75rem; border-radius: 9999px; font-size: .75rem; font-weight: 600; }
+.badge-green { background: #d1fae5; color: #065f46; }
+.badge-yellow { background: #fef3c7; color: #92400e; }
+.badge-red { background: #fee2e2; color: #991b1b; }
+.badge-blue { background: var(--primary-bg); color: var(--primary-dark); }
+.formula-block { background: linear-gradient(135deg, rgba(14,165,233,.05) 0%, rgba(14,165,233,.02) 100%); border: 1px solid rgba(14,165,233,.22); border-left: 4px solid var(--primary); padding: 2rem 2.5rem; border-radius: var(--radius); font-size: 1.125rem; font-style: italic; line-height: 1.8; color: var(--foreground); margin: 2rem 0; }
+.footer { padding: 2rem 0; border-top: 1px solid var(--border); text-align: center; color: var(--muted); font-size: .875rem; }
+@media (max-width: 768px) { .container { padding: 0 1rem; } h2 { font-size: 24px; } h3 { font-size: 18px; } .nav-links { gap: .75rem; } .hero-meta { gap: 1rem; } .formula-block { padding: 1.5rem; font-size: 1rem; } }
+</style>
 </head>
 <body>
 
-<!-- NAV -->
-<nav class="nav-wrap">
-  <div class="container">
-    <div class="nav-inner">
-      <div class="nav-logo"><img src="../assets/logo-horizontal-light.png" alt="Магия Масел"></div>
-      <div class="nav-links">
-        <a href="#principles">Принципы</a>
-        <a href="#tracks">Треки</a>
-        <a href="#formats">Форматы</a>
-        <a href="#segments">Сегменты</a>
-        <a href="#sets">Наборы</a>
-        <a href="#exclusions">Исключения</a>
-      </div>
-      <div class="nav-badge">M3 · Документ 2/7</div>
-    </div>
+<nav class="nav">
+  <div class="container nav-container">
+    <div class="nav-brand">Brand<span>OS</span> · Документ</div>
+    <ul class="nav-links">
+      <li><a href="#principles">Принципы</a></li>
+      <li><a href="#tracks">Треки</a></li>
+      <li><a href="#formats">Форматы</a></li>
+      <li><a href="#segments">Сегменты</a></li>
+      <li><a href="#sets">Наборы</a></li>
+      <li><a href="#priority">Приоритизация</a></li>
+      <li><a href="#exclusions">Исключения</a></li>
+    </ul>
   </div>
 </nav>
 
-<!-- HERO -->
 <section class="hero">
   <div class="container">
-    <div class="hero-inner">
-      <div class="hero-logo-wrap">
-        <img src="../assets/logo-badge-dark.png" alt="Магия Масел — Кирилл Бродский">
-      </div>
-      <div class="hero-content">
-        <div class="hero-badge">M3 · Продуктовая стратегия · Документ 2 из 7</div>
-        <h1 class="hero-title">Архитектура <span>продукта</span></h1>
-        <p class="hero-sub">Принципы, треки, форматы и сегменты — полная карта продуктовой структуры Магии Масел.</p>
-        <div class="hero-meta">
-          <div class="hero-meta-item">
-            <span class="hero-meta-label">Клиент</span>
-            <span class="hero-meta-value">Кирилл Бродский</span>
-          </div>
-          <div class="hero-meta-item">
-            <span class="hero-meta-label">Дата</span>
-            <span class="hero-meta-value">27.03.2026</span>
-          </div>
-          <div class="hero-meta-item">
-            <span class="hero-meta-label">Версия</span>
-            <span class="hero-meta-value">2.0</span>
-          </div>
-          <div class="hero-meta-item">
-            <span class="hero-meta-label">Статус</span>
-            <span class="hero-meta-value">Пересобрана по ответам Кирилла</span>
-          </div>
-        </div>
-      </div>
+    <div class="hero-badge">M3-02 · Продукт · BrandOS</div>
+    <h1>Архитектура продукта<br><span style="color:var(--primary)">BRODSKY OIL</span></h1>
+    <p class="hero-subtitle">Кирилл Бродский · v3.1 · 21.04.2026</p>
+    <div class="hero-meta">
+      <span class="hero-meta-item"><strong>Клиент:</strong> Кирилл Бродский</span>
+      <span class="hero-meta-item"><strong>Модуль:</strong> M3 — Продуктовая стратегия</span>
+      <span class="hero-meta-item"><strong>Версия:</strong> 3.1 (roundtable)</span>
+      <span class="hero-meta-item"><strong>Оценка:</strong> 9.0/10</span>
     </div>
   </div>
 </section>
 
-<!-- 1. ПРИНЦИПЫ -->
-<section class="section fade-up" id="principles">
+<!-- 01. Принципы -->
+<section class="section" id="principles">
   <div class="container">
     <div class="section-header">
-      <div class="section-label">1. Принципы</div>
-      <h2 class="section-title">Принципы архитектуры</h2>
-      <p class="section-sub">7 базовых правил, определяющих всю продуктовую логику.</p>
+      <span class="section-tag">01 — Принципы архитектуры</span>
+      <h2>7 правил продуктовой системы</h2>
     </div>
-    <div class="grid-2">
-
-      <div class="principle-card fade-up">
-        <div class="principle-num">1</div>
-        <div>
-          <div class="principle-title">Моно-масла — основа</div>
-          <div class="principle-text">Никаких купажей. Каждое масло — отдельный самостоятельный продукт с чёткой позицией.</div>
-        </div>
-      </div>
-
-      <div class="principle-card fade-up">
-        <div class="principle-num">2</div>
-        <div>
-          <div class="principle-title">Наборы из моно</div>
-          <div class="principle-text">Наборы — это апсейл, а не отдельный продукт. Формируются из существующих моно-масел.</div>
-        </div>
-      </div>
-
-      <div class="principle-card fade-up">
-        <div class="principle-num">3</div>
-        <div>
-          <div class="principle-title">2 вектора наборов</div>
-          <div class="principle-text">Здоровье + Кухня — два подтверждённых направления (подтверждено Кириллом 29.03).</div>
-        </div>
-      </div>
-
-      <div class="principle-card fade-up">
-        <div class="principle-num">4</div>
-        <div>
-          <div class="principle-title">Форматы снизу вверх</div>
-          <div class="principle-text">100 мл → 250 мл → Набор → Подарочный бокс. Логика входа и апсейла.</div>
-        </div>
-      </div>
-
-      <div class="principle-card fade-up">
-        <div class="principle-num">5</div>
-        <div>
-          <div class="principle-title">Косметическая линейка — отдельный трек</div>
-          <div class="principle-text">Не смешивать в позиционировании с пищевыми маслами. Своя аудитория, свои форматы.</div>
-        </div>
-      </div>
-
-      <div class="principle-card fade-up">
-        <div class="principle-num">6</div>
-        <div>
-          <div class="principle-title">Без 500 мл для премиальных масел</div>
-          <div class="principle-text">500 мл только для льна и подсолнечника. Для остальных — нет смысла (слова Кирилла).</div>
-        </div>
-      </div>
-
-      <div class="principle-card fade-up">
-        <div class="principle-num">7</div>
-        <div>
-          <div class="principle-title">Подарочный бокс — ручная сборка</div>
-          <div class="principle-text">Собирается руками самостоятельно — без производственных ограничений (подтверждено 29.03).</div>
-        </div>
-      </div>
-
+    <div class="grid grid-2">
+      <div class="card"><div class="card-title">1. Моно-масла — основа</div><div class="card-description">Никаких купажей. Кирилл категорически против смесей.</div></div>
+      <div class="card"><div class="card-title">2. Наборы из моно</div><div class="card-description">Набор — это апсейл, не отдельный продукт. Три моно-масла под одну задачу.</div></div>
+      <div class="card"><div class="card-title">3. Четыре вектора наборов</div><div class="card-description">Здоровье + Кухня (Кирилл, 29.03) + Красота + Энергия (roundtable, 21.04).</div></div>
+      <div class="card"><div class="card-title">4. Форматы по лестнице</div><div class="card-description">890₽ → 2 490₽ → 4 990₽ → 8 990₽ → 19 900₽. Каждая ступень строго дороже.</div></div>
+      <div class="card"><div class="card-title">5. Косметика — отдельный трек</div><div class="card-description">Не смешивать с пищевой линейкой в позиционировании.</div></div>
+      <div class="card"><div class="card-title">6. Без 500 мл для премиальных</div><div class="card-description">Только лён и подсолнечник. Остальные — 100 и 250 мл.</div></div>
+      <div class="card"><div class="card-title">7. Подарочный = «Мастерский»</div><div class="card-description">Ступень 4 заменяет отдельную категорию подарков. Собирается руками.</div></div>
     </div>
   </div>
 </section>
 
-<!-- 2. ПРОДУКТОВЫЕ ТРЕКИ -->
-<section class="section fade-up" id="tracks" style="background:#fff;">
+<!-- 02. Продуктовые треки -->
+<section class="section" id="tracks">
   <div class="container">
     <div class="section-header">
-      <div class="section-label">2. Треки</div>
-      <h2 class="section-title">Продуктовые треки</h2>
-      <p class="section-sub">Трек А: пищевые масла (основной) — 4 группы. Трек Б: косметическая линейка (отдельный).</p>
+      <span class="section-tag">02 — Продуктовые треки</span>
+      <h2>Трек А: Пищевые масла</h2>
     </div>
 
-    <!-- А1 -->
-    <div class="fade-up" style="margin-bottom:40px;">
-      <div style="display:flex; align-items:center; gap:12px; margin-bottom:16px; flex-wrap:wrap;">
-        <span class="track-label track-a">Трек А · Пищевые масла</span>
-        <span style="font-size:13px; color:var(--n500);">А1 — Флагманы: Здоровье и профилактика</span>
-      </div>
-      <div class="table-wrap">
-        <table>
-          <thead>
-            <tr>
-              <th>Масло</th>
-              <th>Позиция</th>
-              <th>Форматы</th>
-              <th>Сезон</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td><strong>Чёрный тмин</strong></td>
-              <td>Иммунитет, иммуностимулятор</td>
-              <td>100 мл, 250 мл</td>
-              <td>Круглый год</td>
-            </tr>
-            <tr>
-              <td><strong>Расторопша</strong></td>
-              <td>Печень, детокс</td>
-              <td>100 мл, 250 мл</td>
-              <td>Круглый год</td>
-            </tr>
-            <tr>
-              <td><strong>Тыква</strong></td>
-              <td>Простата (м), ЖКТ</td>
-              <td>100 мл, 250 мл</td>
-              <td>Круглый год</td>
-            </tr>
-            <tr>
-              <td>
-                <strong>Конопля</strong>
-                <span class="badge badge-yellow" style="margin-left:6px;">запускается</span>
-              </td>
-              <td>Нервная система, Омега-3</td>
-              <td>100 мл, 250 мл</td>
-              <td>Круглый год</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-      <div class="track-role">
-        <strong>Роль в архитектуре:</strong> Якорная группа. Основа повторных покупок. Высокий LTV.<br>
-        <strong>Входной набор:</strong> 3×100 мл «Здоровье» — тмин + расторопша + тыква.
-      </div>
-    </div>
-
-    <!-- А2 -->
-    <div class="fade-up" style="margin-bottom:40px;">
-      <div style="display:flex; align-items:center; gap:12px; margin-bottom:8px; flex-wrap:wrap;">
-        <span class="track-label track-a">Трек А · А2</span>
-        <span style="font-size:13px; color:var(--n500);">Красота, тело, wellness</span>
-      </div>
-      <div class="alert alert-info">
-        <span class="alert-icon">ℹ️</span>
-        <div>
-          <strong style="color:#1e40af; display:block; margin-bottom:4px;">Не отдельный набор-вектор</strong>
-          <p style="font-size:14px; color:var(--n600);">Кирилл не выбрал «Красота» как отдельный вектор наборов. Эти масла продаются поштучно или входят в наборы «Здоровье» и «Кухня» как вторичные позиции.</p>
-        </div>
-      </div>
-      <div class="table-wrap">
-        <table>
-          <thead>
-            <tr>
-              <th>Масло</th>
-              <th>Позиция</th>
-              <th>Форматы</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td><strong>Миндаль</strong></td>
-              <td>Кожа, волосы, универсал</td>
-              <td>100 мл, 250 мл</td>
-            </tr>
-            <tr>
-              <td><strong>Кедр</strong></td>
-              <td>Иммунитет, кожа</td>
-              <td>100 мл, 250 мл</td>
-            </tr>
-            <tr>
-              <td>
-                <strong>Кунжут</strong>
-                <span class="badge badge-yellow" style="margin-left:6px;">запускается</span>
-              </td>
-              <td>Красота, кости, кухня</td>
-              <td>100 мл, 250 мл</td>
-            </tr>
-            <tr>
-              <td><strong>Лён</strong></td>
-              <td>Омега-3, кожа, сердце</td>
-              <td>100 мл, 250 мл, 500 мл</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-
-    <!-- А3 -->
-    <div class="fade-up" style="margin-bottom:40px;">
-      <div style="display:flex; align-items:center; gap:12px; margin-bottom:16px; flex-wrap:wrap;">
-        <span class="track-label track-a">Трек А · А3</span>
-        <span style="font-size:13px; color:var(--n500);">Кухня и вкус</span>
-      </div>
-      <div class="table-wrap">
-        <table>
-          <thead>
-            <tr>
-              <th>Масло</th>
-              <th>Позиция</th>
-              <th>Форматы</th>
-              <th>Сезон</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td><strong>Грецкий орех</strong></td>
-              <td>Вкус, заправки, мозг</td>
-              <td>100 мл, 250 мл</td>
-              <td>Круглый год</td>
-            </tr>
-            <tr>
-              <td>
-                <strong>Кунжут</strong>
-                <span class="badge badge-yellow" style="margin-left:6px;">запускается</span>
-              </td>
-              <td>Азиатская кухня, нутти</td>
-              <td>100 мл, 250 мл</td>
-              <td>Круглый год</td>
-            </tr>
-            <tr>
-              <td><strong>Подсолнечник</strong></td>
-              <td>Базовое, жарка</td>
-              <td>250 мл, 500 мл</td>
-              <td>Круглый год</td>
-            </tr>
-            <tr>
-              <td><strong>Кедр</strong></td>
-              <td>Салаты, грибной нотки</td>
-              <td>100 мл, 250 мл</td>
-              <td>Круглый год</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-      <div class="track-role">
-        <strong>Роль в архитектуре:</strong> Гастро-сегмент. Расширение аудитории. Средний чек выше через наборы.<br>
-        <strong>Входной набор:</strong> 3×100 мл «Кухня» — кедр + грецкий + кунжут.
-      </div>
-    </div>
-
-    <!-- А4 -->
-    <div class="fade-up" style="margin-bottom:48px;">
-      <div style="display:flex; align-items:center; gap:12px; margin-bottom:16px; flex-wrap:wrap;">
-        <span class="track-label track-a">Трек А · А4</span>
-        <span style="font-size:13px; color:var(--n500);">Универсальные — входят в несколько треков</span>
-      </div>
-      <div class="table-wrap">
-        <table>
-          <thead>
-            <tr>
-              <th>Масло</th>
-              <th>Треки</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td><strong>Миндаль</strong></td>
-              <td>
-                <span class="badge badge-blue">Красота</span>
-                <span class="badge badge-green" style="margin-left:4px;">Кухня</span>
-              </td>
-            </tr>
-            <tr>
-              <td><strong>Кедр</strong></td>
-              <td>
-                <span class="badge badge-brand">Здоровье</span>
-                <span class="badge badge-blue" style="margin-left:4px;">Красота</span>
-                <span class="badge badge-green" style="margin-left:4px;">Кухня</span>
-              </td>
-            </tr>
-            <tr>
-              <td><strong>Кунжут</strong></td>
-              <td>
-                <span class="badge badge-blue">Красота</span>
-                <span class="badge badge-green" style="margin-left:4px;">Кухня</span>
-              </td>
-            </tr>
-            <tr>
-              <td><strong>Конопля</strong></td>
-              <td>
-                <span class="badge badge-brand">Здоровье</span>
-                <span class="badge badge-blue" style="margin-left:4px;">Красота</span>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-
-    <!-- Трек Б -->
-    <div class="fade-up">
-      <div style="display:flex; align-items:center; gap:12px; margin-bottom:8px; flex-wrap:wrap;">
-        <span class="track-label track-b">Трек Б · Косметическая линейка</span>
-        <span style="font-size:13px; color:var(--n500);">Отдельный трек</span>
-      </div>
-      <div class="alert alert-warning">
-        <span class="alert-icon">⚠️</span>
-        <div>
-          <strong style="color:#92400e; display:block; margin-bottom:4px;">Отдельная ветка — не смешивать с пищевыми</strong>
-          <p style="font-size:14px; color:var(--n600);">Статус в M3: обозначен как отдельный трек. Детальная проработка — в отдельном этапе.<br>
-          <strong>Ограничение:</strong> Амарант и облепиха нереализуемы пока (нет пресса 100 т).</p>
-        </div>
-      </div>
-      <div class="table-wrap">
-        <table>
-          <thead>
-            <tr>
-              <th>Масло</th>
-              <th>Формат</th>
-              <th>Применение</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>
-                <strong>Амарант</strong>
-                <span class="badge badge-red" style="margin-left:6px;">нужен пресс 100 т</span>
-              </td>
-              <td>30 мл, пипетка</td>
-              <td>Омоложение, эластичность кожи</td>
-            </tr>
-            <tr>
-              <td>
-                <strong>Облепиха</strong>
-                <span class="badge badge-red" style="margin-left:6px;">нужен пресс 100 т</span>
-              </td>
-              <td>30 мл, пипетка</td>
-              <td>Регенерация, ожоги, кожа</td>
-            </tr>
-            <tr>
-              <td><strong>Масло шиповника</strong></td>
-              <td>30 мл, пипетка</td>
-              <td>Anti-age</td>
-            </tr>
-            <tr>
-              <td><strong>Масло граната</strong></td>
-              <td>30 мл, пипетка</td>
-              <td>Премиум anti-age (1 т семян = 1 л!)</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-
-  </div>
-</section>
-
-<!-- 3. ФОРМАТНЫЕ ЯЧЕЙКИ -->
-<section class="section fade-up" id="formats">
-  <div class="container">
-    <div class="section-header">
-      <div class="section-label">3. Форматы</div>
-      <h2 class="section-title">Форматные ячейки</h2>
-      <p class="section-sub">Каждый формат — своя роль в воронке: вход, ритуал, апсейл, подарок.</p>
-    </div>
-    <div class="table-wrap fade-up">
+    <h3>А1. Флагманы — Здоровье и профилактика</h3>
+    <div class="table-wrapper">
       <table>
-        <thead>
-          <tr>
-            <th>Формат</th>
-            <th>Применение</th>
-            <th>Кто покупает</th>
-            <th>Маржа</th>
-          </tr>
-        </thead>
+        <thead><tr><th>Масло</th><th>Позиция</th><th>Форматы</th><th>Сезон</th></tr></thead>
         <tbody>
-          <tr>
-            <td><strong>100 мл</strong></td>
-            <td>Первая покупка, набор, пробник</td>
-            <td>Все</td>
-            <td><span class="badge badge-green">Выше (подтверждено)</span></td>
-          </tr>
-          <tr>
-            <td><strong>250 мл</strong></td>
-            <td>Основной ритуал, 1–2 мес</td>
-            <td>Постоянные</td>
-            <td><span class="badge badge-blue">Стандарт</span></td>
-          </tr>
-          <tr>
-            <td><strong>500 мл</strong></td>
-            <td>Только лён и подсолнечник</td>
-            <td>Активные пользователи</td>
-            <td><span class="badge badge-yellow">Ниже</span></td>
-          </tr>
-          <tr>
-            <td><strong>3×100 мл набор</strong></td>
-            <td>Входной курс на месяц</td>
-            <td>Новые</td>
-            <td><span class="badge badge-green">Высокая (апсейл)</span></td>
-          </tr>
-          <tr>
-            <td><strong>Подарочный бокс</strong></td>
-            <td>Подарок</td>
-            <td>Дарители</td>
-            <td><span class="badge badge-accent">Максимальная</span></td>
-          </tr>
-          <tr>
-            <td><strong>30 мл пипетка</strong></td>
-            <td>Косметика</td>
-            <td>Beauty-аудитория</td>
-            <td><span class="badge badge-blue">Отдельный трек</span></td>
-          </tr>
+          <tr><td class="table-accent">Чёрный тмин</td><td>Иммунитет, иммуностимулятор</td><td>100 мл, 250 мл</td><td>Круглый год</td></tr>
+          <tr><td class="table-accent">Расторопша</td><td>Печень, детокс</td><td>100 мл, 250 мл</td><td>Круглый год</td></tr>
+          <tr><td class="table-accent">Тыква</td><td>Простата (м), ЖКТ</td><td>100 мл, 250 мл</td><td>Круглый год</td></tr>
+          <tr><td>Конопля <span class="badge badge-yellow">запускается</span></td><td>Нервная система, Омега-3</td><td>100 мл, 250 мл</td><td>Круглый год</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="highlight-box"><p><strong>Роль:</strong> Якорная группа. Основа повторных покупок. Высокий LTV.<br><strong>Входной набор:</strong> 3×100 мл «Здоровье» — тмин + расторопша + тыква (2 490₽)</p></div>
+
+    <h3 style="margin-top:2.5rem;">А2. Красота, тело, wellness</h3>
+    <div class="highlight-box"><p><strong>Новое (roundtable 21.04):</strong> Красота добавлена как набор-вектор: 3×100 мл «Красота» = миндаль + кедр + лён (2 490₽)</p></div>
+    <div class="table-wrapper">
+      <table>
+        <thead><tr><th>Масло</th><th>Позиция</th><th>Форматы</th></tr></thead>
+        <tbody>
+          <tr><td class="table-accent">Миндаль</td><td>Кожа, волосы, универсал</td><td>100 мл, 250 мл</td></tr>
+          <tr><td class="table-accent">Кедр</td><td>Иммунитет, кожа</td><td>100 мл, 250 мл</td></tr>
+          <tr><td>Кунжут <span class="badge badge-yellow">запускается</span></td><td>Красота, кости, кухня</td><td>100 мл, 250 мл</td></tr>
+          <tr><td>Лён</td><td>Омега-3, кожа, сердце</td><td>100 мл, 250 мл, 500 мл</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3 style="margin-top:2.5rem;">А3. Кухня и вкус</h3>
+    <div class="table-wrapper">
+      <table>
+        <thead><tr><th>Масло</th><th>Позиция</th><th>Форматы</th><th>Сезон</th></tr></thead>
+        <tbody>
+          <tr><td class="table-accent">Грецкий орех</td><td>Вкус, заправки, мозг</td><td>100 мл, 250 мл</td><td>Круглый год</td></tr>
+          <tr><td>Кунжут <span class="badge badge-yellow">запускается</span></td><td>Азиатская кухня</td><td>100 мл, 250 мл</td><td>Круглый год</td></tr>
+          <tr><td>Подсолнечник</td><td>Базовое, жарка</td><td>250 мл, 500 мл</td><td>Круглый год</td></tr>
+          <tr><td>Кедр</td><td>Салаты, грибной нотки</td><td>100 мл, 250 мл</td><td>Круглый год</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="highlight-box"><p><strong>Роль:</strong> Гастро-сегмент. Расширение аудитории.<br><strong>Входной набор:</strong> 3×100 мл «Кухня» — кедр + грецкий + миндаль (2 490₽)</p></div>
+
+    <h3 style="margin-top:2.5rem;">А4. Универсальные (несколько треков)</h3>
+    <div class="table-wrapper">
+      <table>
+        <thead><tr><th>Масло</th><th>Треки</th><th>Риск каннибализации</th></tr></thead>
+        <tbody>
+          <tr><td>Миндаль</td><td>Красота + Кухня</td><td><span class="badge badge-green">Низкий</span></td></tr>
+          <tr><td class="table-accent">Кедр</td><td>Здоровье + Красота + Кухня</td><td><span class="badge badge-yellow">Средний</span> — в 3 треках, позиция размыта</td></tr>
+          <tr><td>Кунжут</td><td>Красота + Кухня</td><td><span class="badge badge-green">Низкий</span></td></tr>
+          <tr><td>Конопля</td><td>Здоровье + Красота</td><td><span class="badge badge-green">Низкий</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="warning-block"><p><strong>B1-ревью:</strong> Кедр в 3 из 4 наборов размывает позиционирование. Решение: закрепить кедр как якорь «Кухня», в остальных — альтернативный компонент.</p></div>
+
+    <h3 style="margin-top:2.5rem;">Трек Б: Косметическая линейка</h3>
+    <div class="table-wrapper">
+      <table>
+        <thead><tr><th>Масло</th><th>Формат</th><th>Применение</th></tr></thead>
+        <tbody>
+          <tr><td>Амарант <span class="badge badge-red">нужен пресс 100 т</span></td><td>30 мл, пипетка</td><td>Омоложение, эластичность</td></tr>
+          <tr><td>Облепиха <span class="badge badge-red">нужен пресс 100 т</span></td><td>30 мл, пипетка</td><td>Регенерация, ожоги</td></tr>
+          <tr><td>Шиповник</td><td>30 мл, пипетка</td><td>Anti-age</td></tr>
+          <tr><td>Гранат</td><td>30 мл, пипетка</td><td>Премиум anti-age (1 т семян = 1 л!)</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="warning-block"><p><strong>B1-ревью 21.04:</strong> Трек Б — фантом. Нет оборудования, нет сроков. Не включать в финансовые прогнозы и контент до появления реальной возможности производства.</p></div>
+  </div>
+</section>
+
+<!-- 03. Форматы -->
+<section class="section" id="formats">
+  <div class="container">
+    <div class="section-header">
+      <span class="section-tag">03 — Форматные ячейки</span>
+      <h2>Форматы по ступеням лестницы</h2>
+    </div>
+    <div class="table-wrapper">
+      <table>
+        <thead><tr><th>Формат</th><th>Ступень</th><th>Цена</th><th>₽/литр</th><th>Маржа</th><th>Кто покупает</th></tr></thead>
+        <tbody>
+          <tr><td>1×100 мл</td><td class="table-accent">«Попробовать»</td><td>890₽</td><td>8 900₽</td><td>75-85%</td><td>Все новые</td></tr>
+          <tr><td>3×100 мл набор</td><td class="table-accent">«Дегустация»</td><td>2 490₽</td><td>8 300₽</td><td>68-75%</td><td>Вход по задаче</td></tr>
+          <tr><td>3×250 мл набор</td><td class="table-accent">«Семейный»</td><td>4 990₽</td><td>6 650₽</td><td>58-82%</td><td>Постоянные</td></tr>
+          <tr><td>5×250 мл набор</td><td class="table-accent">«Мастерский»</td><td>8 990₽</td><td>7 190₽</td><td>58-83%</td><td>Премиум</td></tr>
+          <tr><td>4×250 мл + консультация</td><td class="table-accent">«Персональный»</td><td>19 900₽</td><td>—</td><td>89-92%</td><td>3 слота/мес</td></tr>
+          <tr><td>500 мл</td><td>—</td><td>~1 000-1 500₽</td><td>4-5 000₽</td><td>50-70%</td><td>Лён, подсолнух</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="highlight-box"><p><strong>Вывод:</strong> 100 мл = <strong>8 300-8 900₽/литр</strong>, 250 мл = 6 650₽/литр. При дефиците мощности (60 л/мес) → фокус на 100 мл на старте.</p></div>
+  </div>
+</section>
+
+<!-- 04. Сегменты -->
+<section class="section" id="segments">
+  <div class="container">
+    <div class="section-header">
+      <span class="section-tag">04 — Сегменты</span>
+      <h2>Продукты по сегментам</h2>
+    </div>
+    <div class="table-wrapper">
+      <table>
+        <thead><tr><th>Сегмент</th><th>Ядро ЦА</th><th>Масла-якори</th><th>Входной продукт</th><th>Ступень</th><th>LTV</th></tr></thead>
+        <tbody>
+          <tr><td class="table-accent">Здоровье</td><td>М/Ж 30-60, ЗОЖ</td><td>Тмин, расторопша, тыква</td><td>«Здоровье» 2 490₽</td><td>2 → 3</td><td><span class="badge badge-green">Высокий</span></td></tr>
+          <tr><td class="table-accent">Кухня</td><td>Гастрономы</td><td>Грецкий, кунжут, кедр</td><td>«Кухня» 2 490₽</td><td>2 → 3</td><td><span class="badge badge-blue">Средний</span></td></tr>
+          <tr><td class="table-accent">Красота</td><td>Ж 30-50, уход</td><td>Миндаль, кедр, лён</td><td>«Красота» 2 490₽</td><td>2 → 3</td><td><span class="badge badge-blue">Средний</span></td></tr>
+          <tr><td class="table-accent">Энергия</td><td>М 25-45, спорт</td><td>Лён, тыква, подсолнечник</td><td>«Энергия» 2 490₽</td><td>2 → 3</td><td><span class="badge badge-blue">Средний</span></td></tr>
+          <tr><td class="table-accent">Премиум</td><td>Все, средний+</td><td>Флагманы</td><td>«Мастерский» 8 990₽</td><td>4</td><td><span class="badge badge-green">Высокий</span></td></tr>
+          <tr><td class="table-accent">Персональный</td><td>Высокая готовность</td><td>Подбор Кириллом</td><td>«Персональный» 19 900₽</td><td>5 (3/мес)</td><td><span class="badge badge-green">Макс</span></td></tr>
+          <tr><td>Первая покупка</td><td>Новые</td><td>Любое</td><td>1×100 мл 890₽</td><td>1</td><td>Потенциальный</td></tr>
         </tbody>
       </table>
     </div>
   </div>
 </section>
 
-<!-- 4. СЕГМЕНТЫ -->
-<section class="section fade-up" id="segments" style="background:#fff;">
+<!-- 05. Наборы -->
+<section class="section" id="sets">
   <div class="container">
     <div class="section-header">
-      <div class="section-label">4. Сегменты</div>
-      <h2 class="section-title">Сегменты и их продукты</h2>
-      <p class="section-sub">Связь между сегментом аудитории, якорными маслами и входным продуктом.</p>
+      <span class="section-tag">05 — Наборы</span>
+      <h2>Детализация продуктовых наборов</h2>
     </div>
-    <div class="table-wrap fade-up">
+
+    <div class="phase-badge">
+      <h3>Принцип набора</h3>
+      <p>3 масла под одну задачу × 100 мл = 1 месяц применения. Безопасный вход + понятная логика.</p>
+    </div>
+
+    <h3>Четыре набора «Дегустация» (ступень 2 = 2 490₽)</h3>
+    <div class="table-wrapper">
       <table>
-        <thead>
-          <tr>
-            <th>Сегмент</th>
-            <th>Ядро ЦА</th>
-            <th>Масла-якори</th>
-            <th>Входной продукт</th>
-            <th>LTV</th>
-          </tr>
-        </thead>
+        <thead><tr><th>Набор</th><th>Состав 3×100 мл</th><th>Себест.</th><th>Маржа</th><th>Для кого</th></tr></thead>
         <tbody>
-          <tr>
-            <td><strong>Здоровье / профилактика</strong></td>
-            <td>Женщины 35–55, ЗОЖ</td>
-            <td>Тмин, расторопша, тыква</td>
-            <td>3×100 «Здоровье»</td>
-            <td><span class="badge badge-green">Высокий</span></td>
-          </tr>
-          <tr>
-            <td><strong>Кухня и вкус</strong></td>
-            <td>Гастрономы, готовящие дома</td>
-            <td>Грецкий, кунжут, кедр</td>
-            <td>3×100 «Кухня»</td>
-            <td><span class="badge badge-blue">Средний</span></td>
-          </tr>
-          <tr>
-            <td><strong>Подарок</strong></td>
-            <td>Все, кто дарит ЗОЖ</td>
-            <td>Флагманы</td>
-            <td>Подарочный бокс (руками)</td>
-            <td><span class="badge badge-yellow">Разовый</span></td>
-          </tr>
-          <tr>
-            <td><strong>Первая покупка</strong></td>
-            <td>Новые</td>
-            <td>Любое</td>
-            <td>1×100 мл</td>
-            <td><span class="badge badge-brand">Потенциальный</span></td>
-          </tr>
+          <tr><td class="table-accent">«Здоровье»</td><td>Тмин + расторопша + тыква</td><td>780₽</td><td>69%</td><td>Профилактика, иммунитет</td></tr>
+          <tr><td class="table-accent">«Кухня»</td><td>Кедр + грецкий + миндаль</td><td>790₽</td><td>68%</td><td>Гастрономы</td></tr>
+          <tr><td class="table-accent">«Красота»</td><td>Миндаль + кедр + лён</td><td>710₽</td><td>71%</td><td>Кожа/волосы</td></tr>
+          <tr><td class="table-accent">«Энергия»</td><td>Лён + тыква + подсолнечник</td><td>620₽</td><td>75%</td><td>Спорт, восстановление</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3 style="margin-top:2.5rem;">«Мастерский» (ступень 4 = 8 990₽)</h3>
+    <div class="grid grid-2">
+      <div class="card">
+        <div class="card-title">Состав и формат</div>
+        <div class="card-description">5×250 мл (подбор Кириллом под комплексную задачу) + паспорт качества на каждое масло + премиум-упаковка. Также работает как подарочный бокс.</div>
+      </div>
+      <div class="card">
+        <div class="card-title">Экономика</div>
+        <div class="card-description">Себестоимость: 1 500-3 800₽. Маржа: 58-83%. Выручка/литр: 7 190₽. Триггер: «У вас 6 масел за 2 месяца — «Мастерский» выгоднее».</div>
+      </div>
+    </div>
+
+    <h3 style="margin-top:2.5rem;">«Персональный» (ступень 5 = 19 900₽, лимит 3/мес)</h3>
+    <div class="grid grid-2">
+      <div class="card">
+        <div class="card-title">Состав и формат</div>
+        <div class="card-description">4×250 мл + видеоконсультация Кирилла 30-45 мин + персональный протокол (PDF) + чат-поддержка 14 дней. Подбор под конкретную задачу/здоровье.</div>
+      </div>
+      <div class="card">
+        <div class="card-title">Экономика и роль</div>
+        <div class="card-description">Себестоимость: ~1 800₽. Маржа: 89-92%. Время Кирилла: 3-4 ч/клиент, 9-12 ч/мес. Стратегическая роль: якорь престижа + генератор кейсов.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 06. Приоритизация SKU -->
+<section class="section" id="priority">
+  <div class="container">
+    <div class="section-header">
+      <span class="section-tag">06 — Приоритизация</span>
+      <h2>SKU по маржинальности</h2>
+    </div>
+    <div class="table-wrapper">
+      <table>
+        <thead><tr><th>#</th><th>Масло</th><th>Себест. 100 мл</th><th>Розница</th><th>Маржа</th><th>Роль</th></tr></thead>
+        <tbody>
+          <tr><td>1</td><td class="table-accent">Расторопша</td><td>100₽</td><td>790₽</td><td><strong>87%</strong></td><td>Якорь «Здоровье», макс. маржа</td></tr>
+          <tr><td>2</td><td class="table-accent">Лён</td><td>70₽</td><td>590₽</td><td><strong>88%</strong></td><td>Вход, «Энергия»</td></tr>
+          <tr><td>3</td><td class="table-accent">Подсолнечник</td><td>70₽</td><td>590₽</td><td><strong>88%</strong></td><td>Вход, «Кухня», «Энергия»</td></tr>
+          <tr><td>4</td><td>Грецкий орех</td><td>150₽</td><td>890₽</td><td>83%</td><td>Якорь «Кухня»</td></tr>
+          <tr><td>5</td><td>Кедр</td><td>200₽</td><td>990₽</td><td>80%</td><td>Универсал (3 трека)</td></tr>
+          <tr><td>6</td><td>Тмин</td><td>200₽</td><td>990₽</td><td>80%</td><td>Флагман «Здоровье», топ спроса</td></tr>
+          <tr><td>7</td><td>Миндаль</td><td>240₽</td><td>990₽</td><td>76%</td><td>«Красота» + «Кухня»</td></tr>
+          <tr><td>8</td><td>Тыква</td><td>280₽</td><td>1 190₽</td><td>76%</td><td>Флагман, макс. себестоимость</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="highlight-box"><p><strong>Инсайт:</strong> Расторопша (87%) и лён/подсолнух (88%) — самые маржинальные. Тыква (76%) — минимальная маржа, но топ по спросу. Оптимальный набор для маржи: расторопша + лён + подсолнух. Оптимальный для продаж: тмин + расторопша + тыква.</p></div>
+  </div>
+</section>
+
+<!-- 07. Исключения -->
+<section class="section" id="exclusions">
+  <div class="container">
+    <div class="section-header">
+      <span class="section-tag">07 — Исключения</span>
+      <h2>Что не входит в архитектуру</h2>
+    </div>
+    <div class="table-wrapper">
+      <table>
+        <thead><tr><th>Что</th><th>Почему</th></tr></thead>
+        <tbody>
+          <tr><td>Купажи (смеси масел)</td><td>Кирилл категорически против. Нет технологических карт</td></tr>
+          <tr><td>Капсулы</td><td>Кирилл категорически против</td></tr>
+          <tr><td>500 мл для премиальных</td><td>Не имеет смысла (слова Кирилла)</td></tr>
+          <tr><td>50 мл</td><td>Тары нет</td></tr>
+          <tr><td>Маркетплейсы</td><td>Не рассматривает на данном этапе</td></tr>
+          <tr><td>Амарант, облепиха пищевые</td><td>Нужен пресс 100 т</td></tr>
         </tbody>
       </table>
     </div>
   </div>
 </section>
 
-<!-- 5. НАБОРЫ -->
-<section class="section fade-up" id="sets">
+<!-- 08. Changelog -->
+<section class="section">
   <div class="container">
     <div class="section-header">
-      <div class="section-label">5. Наборы</div>
-      <h2 class="section-title">Наборы — детализация</h2>
-      <p class="section-sub">3 масла под одну задачу × 100 мл = 1 месяц применения. Безопасный вход + понятная логика.</p>
+      <span class="section-tag">08 — Changelog</span>
+      <h2>Изменения v3.0</h2>
     </div>
-
-    <div class="grid-2" style="margin-bottom:24px;">
-
-      <div class="card-brand fade-up">
-        <div class="card-icon">🌿</div>
-        <div class="card-title">Набор «Здоровье»</div>
-        <div style="font-size:14px; color:var(--n700); padding:10px 0; border-bottom:1px solid rgba(44,95,45,.1);">
-          <strong>Чёрный тмин</strong> 100 мл + <strong>Расторопша</strong> 100 мл + <strong>Тыква</strong> 100 мл
-        </div>
-        <div style="margin-top:14px;">
-          <div class="set-meta"><strong>Для кого:</strong> Профилактика, иммунитет, печень</div>
-          <div class="set-meta"><strong>Позиционирование:</strong> «Ежедневный протокол поддержки иммунитета и пищеварения»</div>
-          <div style="height:1px; background:var(--n200); margin:16px 0;"></div>
-          <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
-            <div>
-              <div style="font-size:11px; color:var(--n500); margin-bottom:2px;">Себестоимость</div>
-              <div style="font-size:16px; font-weight:700; color:var(--n700);">~580 ₽</div>
-            </div>
-            <div>
-              <div style="font-size:11px; color:var(--n500); margin-bottom:2px;">Цена продажи</div>
-              <div style="font-size:16px; font-weight:700; color:var(--brand);">2 500 – 3 000 ₽</div>
-            </div>
-            <div>
-              <div style="font-size:11px; color:var(--n500); margin-bottom:2px;">Маржа</div>
-              <div style="font-size:16px; font-weight:700; color:#10b981;">~75–80%</div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="card-brand fade-up">
-        <div class="card-icon">🍳</div>
-        <div class="card-title">Набор «Кухня»</div>
-        <div style="font-size:14px; color:var(--n700); padding:10px 0; border-bottom:1px solid rgba(44,95,45,.1);">
-          <strong>Кедр</strong> 100 мл + <strong>Грецкий орех</strong> 100 мл + <strong>Кунжут</strong> 100 мл
-          <div style="font-size:12px; color:var(--n400); margin-top:3px;">До запуска кунжута: миндаль</div>
-        </div>
-        <div style="margin-top:14px;">
-          <div class="set-meta"><strong>Для кого:</strong> Гастрономы, те кто готовит дома</div>
-          <div class="set-meta"><strong>Позиционирование:</strong> «Три масла для живого вкуса в каждом блюде»</div>
-          <div style="height:1px; background:var(--n200); margin:16px 0;"></div>
-          <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
-            <div>
-              <div style="font-size:11px; color:var(--n500); margin-bottom:2px;">Себестоимость</div>
-              <div style="font-size:16px; font-weight:700; color:var(--n700);">~590 ₽</div>
-            </div>
-            <div>
-              <div style="font-size:11px; color:var(--n500); margin-bottom:2px;">Цена продажи</div>
-              <div style="font-size:16px; font-weight:700; color:var(--brand);">2 200 – 2 700 ₽</div>
-            </div>
-            <div>
-              <div style="font-size:11px; color:var(--n500); margin-bottom:2px;">Маржа</div>
-              <div style="font-size:16px; font-weight:700; color:#10b981;">~75%</div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-    </div>
-
-    <div class="card-accent fade-up">
-      <div class="card-icon">🎁</div>
-      <div class="card-title">Подарочный бокс</div>
-      <div style="display:flex; gap:32px; flex-wrap:wrap; align-items:flex-start;">
-        <div style="flex:1; min-width:220px;">
-          <div class="set-meta"><strong>Состав:</strong> 2–3 флагмана в 250 мл + упаковка + карточка применения</div>
-          <div class="set-meta" style="margin-top:8px;"><strong>Формат сборки:</strong> собирать руками самостоятельно ✅ <span style="font-size:12px; color:var(--n500);">(подтверждено 29.03)</span></div>
-        </div>
-        <div>
-          <div style="font-size:11px; color:var(--n500); margin-bottom:4px;">Цена</div>
-          <div style="font-size:22px; font-weight:700; color:var(--brand-dark);">4 000 – 7 000 ₽</div>
-          <div style="font-size:12px; color:var(--n500);">в зависимости от состава</div>
-        </div>
-      </div>
-    </div>
-
-  </div>
-</section>
-
-<!-- 6. ИСКЛЮЧЕНИЯ -->
-<section class="section fade-up" id="exclusions" style="background:#fff;">
-  <div class="container">
-    <div class="section-header">
-      <div class="section-label">6. Исключения</div>
-      <h2 class="section-title">Что не входит в архитектуру</h2>
-      <p class="section-sub">Чёткие границы продукта — важны для позиционирования и производства.</p>
-    </div>
-    <div class="table-wrap fade-up">
+    <div class="table-wrapper">
       <table>
-        <thead>
-          <tr>
-            <th>Что</th>
-            <th>Почему</th>
-          </tr>
-        </thead>
+        <thead><tr><th>Что</th><th>Было (v2.0)</th><th>Стало (v3.0)</th></tr></thead>
         <tbody>
-          <tr>
-            <td><strong>Купажи (смеси масел)</strong></td>
-            <td>Кирилл категорически против. Нет технологических карт</td>
-          </tr>
-          <tr>
-            <td><strong>Капсулы</strong></td>
-            <td>Кирилл категорически против</td>
-          </tr>
-          <tr>
-            <td><strong>500 мл для премиальных масел</strong></td>
-            <td>Не имеет смысла (слова Кирилла)</td>
-          </tr>
-          <tr>
-            <td><strong>50 мл</strong></td>
-            <td>Тары нет</td>
-          </tr>
-          <tr>
-            <td><strong>Маркетплейсы</strong></td>
-            <td>Не рассматривает на данном этапе</td>
-          </tr>
-          <tr>
-            <td><strong>Амарант, облепиха пищевые</strong></td>
-            <td>Нереально — нужен пресс 100 т</td>
-          </tr>
+          <tr><td>Векторы наборов</td><td>2 (Здоровье, Кухня)</td><td class="table-accent">4 (+ Красота, Энергия)</td></tr>
+          <tr><td>Форматы</td><td>100→250→Набор→Бокс</td><td class="table-accent">5-ступенчатая лестница с ценами</td></tr>
+          <tr><td>Сегменты</td><td>4 строки</td><td class="table-accent">7 строк, привязка к ступеням</td></tr>
+          <tr><td>«Мастерский»</td><td>Подарочный бокс 4-7К</td><td class="table-accent">5×250 мл 8 990₽ (ступень 4)</td></tr>
+          <tr><td>«Персональный»</td><td>Не было</td><td class="table-accent">19 900₽, 3/мес (ступень 5)</td></tr>
+          <tr><td>Трек Б (косметика)</td><td>«Позже»</td><td class="table-accent">Помечен как фантом (B1 ревью)</td></tr>
         </tbody>
       </table>
     </div>
-
-    <div class="alert alert-error fade-up">
-      <span class="alert-icon">🚫</span>
-      <div>
-        <strong style="color:#991b1b; display:block; margin-bottom:4px;">Жёсткие ограничения подтверждены Кириллом</strong>
-        <p style="font-size:14px; color:var(--n600);">Купажи и капсулы — категорическое «нет» от производителя. Не обсуждать как опции в контенте или коммуникации с клиентами.</p>
-      </div>
-    </div>
-
+    <p style="margin-top:1.5rem;font-size:.875rem">Источники: A = ответы Кирилла 27.03 + 29.03, B = мастер-синтез M2, C = roundtable 21.04.2026</p>
   </div>
 </section>
 
-<!-- FOOTER -->
 <footer class="footer">
   <div class="container">
-    <div class="footer-inner">
-      <div>
-        <img src="../assets/logo-horizontal-dark.png" alt="Магия Масел" style="height:48px; width:auto; border-radius:var(--r-lg);">
-        <div style="margin-top:8px; font-size:12px; color:var(--n600);">BrandOS · Фабрика Контента v5</div>
-      </div>
-      <div class="footer-meta">
-        <div class="footer-meta-item">
-          <span class="footer-meta-label">Документ</span>
-          <span class="footer-meta-value">M3-02 — Архитектура продукта</span>
-        </div>
-        <div class="footer-meta-item">
-          <span class="footer-meta-label">Модуль</span>
-          <span class="footer-meta-value">M3 · 2 из 7</span>
-        </div>
-        <div class="footer-meta-item">
-          <span class="footer-meta-label">Версия</span>
-          <span class="footer-meta-value">2.0 · 27.03.2026</span>
-        </div>
-        <div class="footer-meta-item">
-          <span class="footer-meta-label">Источники</span>
-          <span class="footer-meta-value">Ответы Кирилла 27.03 + 29.03 + мастер-синтез M2</span>
-        </div>
-      </div>
-    </div>
+    BrandOS · BRODSKY OIL · M3-02 Архитектура продукта · v3.1 · 2026
   </div>
 </footer>
 
-<script>
-  // IntersectionObserver для fade-up анимаций
-  const observer = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        entry.target.classList.add('visible');
-      }
-    });
-  }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
-
-  document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
-</script>
 </body>
 </html>
