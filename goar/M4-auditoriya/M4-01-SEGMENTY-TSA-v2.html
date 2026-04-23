@@ -1,0 +1,795 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>M4-01 · Сегменты ЦА v2 — Гоар Багдасарова · BrandOS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --primary: #0ea5e9;
+  --primary-dark: #0284c7;
+  --primary-light: #7dd3fc;
+  --primary-bg: #e0f2fe;
+  --background: #ffffff;
+  --foreground: #0f172a;
+  --card-bg: hsl(0,0%,97%);
+  --border: #1C1C1E;
+  --muted: #64748b;
+  --radius: 4px;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: 'Inter', sans-serif;
+  background: var(--background);
+  color: var(--foreground);
+  line-height: 1.75;
+  font-size: 16px;
+}
+
+.container { max-width: 1200px; margin: 0 auto; padding: 0 1.5rem; }
+
+.nav {
+  position: sticky;
+  top: 0;
+  background: white;
+  border-bottom: 1px solid var(--border);
+  z-index: 100;
+  padding: 1rem 0;
+}
+.nav-container { display: flex; justify-content: space-between; align-items: center; gap: 2rem; }
+.nav-brand { font-size: 1rem; font-weight: 700; color: var(--foreground); white-space: nowrap; }
+.nav-brand span { color: var(--primary); }
+.nav-links { display: flex; gap: 1.5rem; list-style: none; overflow-x: auto; flex-wrap: wrap; }
+.nav-links a {
+  color: var(--foreground);
+  text-decoration: none;
+  font-size: .875rem;
+  font-weight: 500;
+  white-space: nowrap;
+  transition: color .2s;
+}
+.nav-links a:hover { color: var(--primary); }
+
+.hero {
+  padding: 3.75rem 0;
+  background: linear-gradient(135deg, rgba(255,255,255,.98) 0%, rgba(240,249,255,.95) 100%);
+}
+.hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: .5rem;
+  padding: .5rem 1rem;
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  font-size: .875rem;
+  font-weight: 600;
+  margin-bottom: 1.5rem;
+  color: var(--foreground);
+}
+.hero h1 {
+  font-size: clamp(32px, 4vw, 51px);
+  font-weight: 500;
+  line-height: 1.2;
+  letter-spacing: -.03em;
+  margin-bottom: 1.5rem;
+}
+.hero-subtitle {
+  font-size: 1.125rem;
+  color: var(--muted);
+  margin-bottom: 2rem;
+}
+.hero-meta { display: flex; gap: 2rem; flex-wrap: wrap; }
+.hero-meta-item { font-size: .875rem; color: var(--muted); }
+.hero-meta-item strong { color: var(--primary); font-weight: 600; }
+
+.section { padding: 2.5rem 0; }
+.section-large { padding: 3.75rem 0; }
+@media (min-width: 768px) {
+  .section { padding: 3.75rem 0; }
+  .section-large { padding: 5rem 0; }
+}
+
+.section-header {
+  position: relative;
+  margin-bottom: 32px;
+  padding-top: 24px;
+}
+.section-header::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 1px;
+  background: repeating-linear-gradient(to right, #9CA3AF 0, #9CA3AF 4px, transparent 4px, transparent 8px);
+}
+
+.section-tag {
+  display: inline-block;
+  font-size: .75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: .1em;
+  color: var(--primary);
+  margin-bottom: .5rem;
+}
+
+h2 { font-size: 32px; font-weight: 300; line-height: 1.2; letter-spacing: -.02em; margin-bottom: 1rem; }
+h3 { font-size: 20px; font-weight: 600; line-height: 1.3; margin-bottom: 1rem; }
+
+p { margin-bottom: 1rem; color: var(--muted); }
+p:last-child { margin-bottom: 0; }
+
+.card {
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: linear-gradient(135deg, rgba(255,255,255,.98) 0%, rgba(250,250,252,.95) 100%);
+  padding: 1.5rem;
+  position: relative;
+  overflow: hidden;
+}
+.card-title { font-size: 1.0625rem; font-weight: 600; margin-bottom: .75rem; color: var(--foreground); }
+.card-description { font-size: .9375rem; line-height: 1.75; color: var(--muted); }
+.card-accent {
+  background: linear-gradient(135deg, rgba(14,165,233,.05) 0%, rgba(14,165,233,.02) 100%);
+  border-color: rgba(14,165,233,.25);
+}
+
+.grid { display: grid; gap: 1.5rem; }
+.grid-2 { grid-template-columns: 1fr; }
+.grid-3 { grid-template-columns: 1fr; }
+@media (min-width: 768px) {
+  .grid-2 { grid-template-columns: repeat(2, 1fr); }
+  .grid-3 { grid-template-columns: repeat(3, 1fr); }
+}
+
+.highlight-box {
+  background: linear-gradient(135deg, rgba(14,165,233,.05) 0%, rgba(14,165,233,.02) 100%);
+  border: 1px solid rgba(14,165,233,.2);
+  border-left: 4px solid var(--primary);
+  padding: 1.25rem 1.5rem;
+  border-radius: var(--radius);
+  margin: 1.5rem 0;
+}
+.highlight-box p { margin: 0; font-size: 1rem; }
+.highlight-box strong { color: var(--primary); }
+
+.warning-block {
+  background: linear-gradient(135deg, rgba(239,68,68,.04) 0%, rgba(239,68,68,.01) 100%);
+  border: 1px solid rgba(239,68,68,.18);
+  border-left: 4px solid #ef4444;
+  padding: 1.25rem 1.5rem;
+  border-radius: var(--radius);
+  margin: 1.5rem 0;
+}
+.warning-block p { margin: 0; font-size: .9375rem; color: var(--muted); }
+.warning-block strong { color: var(--foreground); }
+
+.list-styled { list-style: none; padding: 0; margin-bottom: 1rem; }
+.list-styled li { padding-left: 1.5rem; margin-bottom: .75rem; position: relative; color: var(--muted); font-size: .9375rem; }
+.list-styled li::before {
+  content: '';
+  position: absolute;
+  left: 0; top: .65rem;
+  width: 6px; height: 6px;
+  background: var(--primary);
+  border-radius: 50%;
+}
+
+.table-wrapper {
+  overflow-x: auto;
+  margin: 1.5rem 0;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+table { width: 100%; border-collapse: collapse; background: white; }
+th, td { padding: 1rem; text-align: left; border-bottom: 1px solid var(--border); }
+th {
+  background: var(--card-bg);
+  font-weight: 600;
+  font-size: .8125rem;
+  text-transform: uppercase;
+  letter-spacing: .05em;
+  color: var(--foreground);
+}
+td { font-size: .9375rem; color: var(--muted); }
+tr:last-child td { border-bottom: none; }
+tr:hover td { background: var(--card-bg); }
+.table-accent { color: var(--primary); font-weight: 600; }
+
+.footer {
+  padding: 2rem 0;
+  border-top: 1px solid var(--border);
+  text-align: center;
+  color: var(--muted);
+  font-size: .875rem;
+}
+
+@media (max-width: 768px) {
+  .container { padding: 0 1rem; }
+  h2 { font-size: 24px; }
+  h3 { font-size: 18px; }
+  .nav-links { gap: .75rem; }
+  .hero-meta { gap: 1rem; }
+}
+
+@media print {
+  @page { size: A4 landscape; margin: 1cm; }
+  .nav { display: none; }
+  .section { padding: 1.5rem 0; }
+  .hero { padding: 2rem 0; }
+}
+
+.card-detail { margin-top: .75rem; }
+.card-detail-label { font-size: .8125rem; font-weight: 600; color: var(--foreground); text-transform: uppercase; letter-spacing: .05em; margin-bottom: .25rem; }
+.card-detail-text { font-size: .9375rem; color: var(--muted); margin-bottom: .5rem; }
+.card-number { position: absolute; top: 1rem; right: 1.25rem; font-size: 2.5rem; font-weight: 700; color: rgba(14,165,233,.1); line-height: 1; }
+</style>
+</head>
+<body>
+
+<!-- Nav -->
+<nav class="nav">
+  <div class="container nav-container">
+    <div class="nav-brand">Brand<span>OS</span> &middot; Сегменты ЦА</div>
+    <ul class="nav-links">
+      <li><a href="#method">Методология</a></li>
+      <li><a href="#excluded">Исключения</a></li>
+      <li><a href="#s1">С1: Руководители</a></li>
+      <li><a href="#s2">С2: Женщины-предприниматели</a></li>
+      <li><a href="#s3">С3: Эксперты</a></li>
+      <li><a href="#s4">С4: Специалисты</a></li>
+      <li><a href="#summary">Сводная</a></li>
+      <li><a href="#conclusions">Выводы</a></li>
+    </ul>
+  </div>
+</nav>
+
+<!-- Hero -->
+<section class="hero">
+  <div class="container">
+    <div class="hero-badge">M4-01 &middot; Сегменты ЦА v2 &middot; BrandOS</div>
+    <h1>Финальная карта сегментов ЦА<br><span style="color: var(--primary); font-weight: 300;">Гоар Багдасарова</span></h1>
+    <p class="hero-subtitle">Четыре сегмента, прошедших пятиэтапный фильтр. Основа для аватаров (M4-02), JTBD (M4-03), Pain Map (M4-04) и кастдевов (M4-05)</p>
+    <div class="hero-meta">
+      <div class="hero-meta-item"><strong>Дата:</strong> 9 апреля 2026</div>
+      <div class="hero-meta-item"><strong>Версия:</strong> 2.0</div>
+      <div class="hero-meta-item"><strong>Входные данные:</strong> M3-01, M3-02, M3-04, M2-03</div>
+      <div class="hero-meta-item"><strong>Статус:</strong> Требует валидации клиентом</div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================== -->
+<!-- МЕТОДОЛОГИЯ -->
+<!-- ============================== -->
+<section class="section-large" id="method">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-tag">01 — Методология отбора</div>
+      <h2>Трёхэтапный фильтр + дополнительные</h2>
+    </div>
+
+    <p>Каждый сегмент из широкого исследования M2 прошёл три последовательных фильтра:</p>
+
+    <div class="grid grid-3">
+      <div class="card card-accent">
+        <div class="card-number">01</div>
+        <div class="card-title">Фильтр 1 — Исключение</div>
+        <div class="card-description">
+          <strong>M3-01, Блок 5.</strong> Семь критериев «Кто НЕ ЦА»: ищет мягкий поддерживающий формат; хочет посмотреть записи; ждёт лайфхаки и быстрые техники; не готов говорить вживую; ищет решение психологических проблем; новичок без базовой экспертизы; ожидает индивидуальное сопровождение в базовом тарифе.
+        </div>
+      </div>
+
+      <div class="card card-accent">
+        <div class="card-number">02</div>
+        <div class="card-title">Фильтр 2 — Требования к участнику</div>
+        <div class="card-description">
+          <strong>M3-01, Блок 5 + M3-02.</strong> Обязательное присутствие на живых эфирах, готовность говорить вслух и получать обратную связь, выполнение практики между модулями, обязательная диагностика перед стартом, психологическая готовность к тренировочному формату (не лекции).
+        </div>
+      </div>
+
+      <div class="card card-accent">
+        <div class="card-number">03</div>
+        <div class="card-title">Фильтр 3 — Платёжеспособность</div>
+        <div class="card-description">
+          <strong>M3-04.</strong> Чек 49 900-69 900 руб. Целевой доход покупателя: от 100 000 руб./мес (рассрочка Стандарт) до 200 000+ руб./мес (полная оплата или Персональный). Мотивация платить: конкретная финансовая цена проблемы (потерянные переговоры, сданные позиции, упущенная прибыль).
+        </div>
+      </div>
+    </div>
+
+    <div class="section-header" style="margin-top: 3rem;">
+      <h3>Дополнительные фильтры</h3>
+    </div>
+
+    <div class="grid grid-2">
+      <div class="card">
+        <div class="card-number">04</div>
+        <div class="card-title">Фильтр 4 — Острота боли</div>
+        <div class="card-description">Есть ли у сегмента реальная, конкретная, острая проблема в теме речевого влияния и переговоров? Не абстрактное «хочу говорить лучше», а ситуация с измеримой ценой (деньги, карьера, авторитет).</div>
+      </div>
+
+      <div class="card">
+        <div class="card-number">05</div>
+        <div class="card-title">Фильтр 5 — MECE</div>
+        <div class="card-description">Сегменты не пересекаются по ключевому признаку (контекст, в котором проявляется боль). Вместе покрывают всю целевую аудиторию продукта.</div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ============================== -->
+<!-- ИСКЛЮЧЁННЫЕ СЕГМЕНТЫ -->
+<!-- ============================== -->
+<section class="section-large" id="excluded">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-tag">02 — Исключённые сегменты</div>
+      <h2>Кто не прошёл фильтры</h2>
+    </div>
+
+    <div class="table-wrapper">
+      <table>
+        <thead>
+          <tr>
+            <th style="width: 22%;">Сегмент</th>
+            <th style="width: 50%;">Причина исключения</th>
+            <th style="width: 28%;">Источник фильтра</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="table-accent">Лайфстайл-аудитория (осознанные женщины 28-45)</td>
+            <td>Не проходит фильтры 1 и 4. Мотивация — «внутренний баланс», «спокойная сила», «звучать как взрослая женщина». Это про самоощущение, не про переговоры с конкретной ценой. Ищут мягкий формат. Не имеют базовой экспертизы. Избегают конфликтов и давления. Доход нестабилен: чек 49 900 непосилен или нерационален</td>
+            <td>M3-01 (п.1, п.5, п.6), M3-04</td>
+          </tr>
+          <tr>
+            <td class="table-accent">Психологи и терапевты</td>
+            <td>Частично проходят фильтры, но ядро профессии — слушание, а не влияние через речь. Их боль: «слишком осторожная речь», «привычка объяснять» — это не про удержание позиции в переговорах. Те психологи, которые одновременно являются экспертами с личным брендом, попадают в сегмент «Эксперты и наставники»</td>
+            <td>M3-01 (п.5 + Блок 1)</td>
+          </tr>
+          <tr>
+            <td class="table-accent">Офис-менеджеры, администраторы, координаторы низкого звена</td>
+            <td>Не проходит фильтр 3 (платёжеспособность). Доход 40 000-80 000 руб./мес — чек 49 900 руб. составляет 60-125% месячного дохода. Нет переговоров с высокими ставками, где потеря позиции имеет конкретную финансовую цену</td>
+            <td>M3-04 + M3-01 (Блок 1)</td>
+          </tr>
+          <tr>
+            <td class="table-accent">Коучи с фокусом на эмпатию и мягкое сопровождение</td>
+            <td>Не проходят фильтр 1 (п.1 — ищут мягкий поддерживающий формат). Их боль: «боятся давить и навязывать» — но курс тренирует именно давление. Формат поединков с нарастающей жёсткостью противоречит их установке «не навязывать». Те коучи, которые работают с бизнес-клиентами — попадают в сегмент «Эксперты и наставники»</td>
+            <td>M3-01 (п.1 + Блок 4)</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+  </div>
+</section>
+
+<!-- ============================== -->
+<!-- СЕГМЕНТ 1 -->
+<!-- ============================== -->
+<section class="section-large" id="s1">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-tag">Сегмент 1 — Приоритет 1</div>
+      <h2>Руководители и собственники бизнеса</h2>
+    </div>
+
+    <div class="grid grid-2">
+      <div class="card card-accent">
+        <div class="card-title">Краткий портрет</div>
+        <div class="card-description">Мужчины и женщины 30-50 лет. CEO, основатели бизнеса, топ-менеджеры, руководители отделов, C-level. Крупные и средние города (Москва, Санкт-Петербург, Екатеринбург, Новосибирск, Казань). Доход от 150 000 до 800 000+ руб./мес, у собственников — без потолка. 60-80% рабочего дня — коммуникации.</div>
+      </div>
+
+      <div class="card card-accent">
+        <div class="card-title">Платёжеспособность</div>
+        <div class="card-description">Доход 150 000-800 000+ руб./мес. Чек 49 900-69 900 руб. составляет 6-33% месячного дохода. Привыкли инвестировать в бизнес-образование (MBA, программы лидерства). Мотивация: одна уступка в переговорах обходится в сотни тысяч рублей. Рассрочка 16 633-17 475 руб./мес — психологически комфортно при доходе от 150 000.</div>
+      </div>
+    </div>
+
+    <div class="highlight-box">
+      <p><strong>Почему входит:</strong> Идеальное попадание в ядро продукта. M3-01 (Блок 1) описывает проблему на языке именно этого сегмента: «собственник называет цену и сразу начинает обосновывать», «перед советом директоров теряет структуру речи», «подчинённый нарушает границы — вместо чёткого нет размывание позиции». Все пять модулей курса решают их конкретные рабочие ситуации. Готовы к тренировочному формату. Имеют базовую экспертизу.</p>
+    </div>
+
+    <div class="section-header" style="margin-top: 2rem;">
+      <h3>Основная боль в теме речи/переговоров</h3>
+    </div>
+
+    <div class="grid grid-2">
+      <div class="card">
+        <div class="card-number">01</div>
+        <div class="card-title">Сдают цену при первом «дорого»</div>
+        <div class="card-description">Называют сумму — и сразу начинают перечислять бонусы, давать скидку, которую никто не просил. Каждое слово после цифры — потерянные деньги (M3-01, Блок 1 — «ценовые переговоры»).</div>
+      </div>
+      <div class="card">
+        <div class="card-number">02</div>
+        <div class="card-title">Теряют рамку под давлением жёсткого оппонента</div>
+        <div class="card-description">Когда перебивают, повышают тон, ставят ультиматум — уходят в агрессию или сдают позицию. Третий вариант (спокойное удержание) не включается (M3-01, Блок 1 — «жёсткие переговоры»).</div>
+      </div>
+      <div class="card">
+        <div class="card-number">03</div>
+        <div class="card-title">Команда не воспринимает как авторитет</div>
+        <div class="card-description">Голос выдаёт напряжение, речь становится резкой или плоской. «Если я звучу неуверенно — команда теряет чувство опоры» (source-data, файл 1).</div>
+      </div>
+      <div class="card">
+        <div class="card-number">04</div>
+        <div class="card-title">Не получают повышение/условия при наличии компетенций</div>
+        <div class="card-description">На C-level продвижение зависит от способности держать позицию, а не от знаний (M3-01, Блок 1 — «карьерная цена»).</div>
+      </div>
+    </div>
+
+    <div class="highlight-box" style="margin-top: 2rem;">
+      <p><strong>Размер сегмента:</strong> широкий. По данным Росстата (2024), в России ~2,7 млн руководителей на должностях от начальника отдела и выше. С учётом фильтров (возраст 30-50, доход 150 000+, крупные города, потребность в речевом влиянии) — адресуемый сегмент оценивается в 200-400 тыс. человек [гипотеза].</p>
+    </div>
+
+    <div class="highlight-box">
+      <p><strong>Канал:</strong> LinkedIn (для корпоративных), Telegram (деловые каналы, подкасты), YouTube (бизнес-контент), деловые конференции, рекомендации, корпоративные HR-отделы (B2B-путь через корпоративный лагерь за 390 000 руб./день — M3-04, Блок 3).</p>
+    </div>
+
+  </div>
+</section>
+
+<!-- ============================== -->
+<!-- СЕГМЕНТ 2 -->
+<!-- ============================== -->
+<section class="section-large" id="s2">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-tag">Сегмент 2 — Приоритет 1</div>
+      <h2>Женщины-предпринимательницы и руководительницы</h2>
+    </div>
+
+    <div class="grid grid-2">
+      <div class="card card-accent">
+        <div class="card-title">Краткий портрет</div>
+        <div class="card-description">Женщины 28-48 лет. Основательницы бизнеса, совладелицы, руководительницы направлений, self-employed с масштабом. Управляют командами от 2 до 30+ человек. Лицо бренда, главный продавец, главный коммуникатор. Доход от 150 000-200 000 руб./мес до 1-3+ млн руб./мес. Регулярно инвестируют в обучение, наставничество, masterminds.</div>
+      </div>
+
+      <div class="card card-accent">
+        <div class="card-title">Платёжеспособность</div>
+        <div class="card-description">Доход 150 000-3 000 000+ руб./мес. Привыкли регулярно вкладываться в обучение — «деньги на развитие — привычная и оправданная статья расходов» (source-data, файл 2). Чек 49 900-69 900 руб. воспринимается как стандартная инвестиция в навык. Мотивация: каждый разговор о деньгах напрямую влияет на выручку.</div>
+      </div>
+    </div>
+
+    <div class="highlight-box">
+      <p><strong>Почему входит (и почему отдельно от С1):</strong> Выделен по трём причинам: (1) специфическая боль — конфликт между «заботиться» и «быть требовательной», давление социальных ожиданий; (2) специфический контекст — они одновременно лицо бренда, продавец и руководитель, их речь = их бизнес напрямую; (3) специфический канал — Instagram, Telegram, подкасты, женские бизнес-сообщества. Проходит все фильтры M3.</p>
+    </div>
+
+    <div class="section-header" style="margin-top: 2rem;">
+      <h3>Основная боль в теме речи/переговоров</h3>
+    </div>
+
+    <div class="grid grid-2">
+      <div class="card">
+        <div class="card-number">01</div>
+        <div class="card-title">Не могут держать цену без оправданий</div>
+        <div class="card-description">«Трудности в денежных разговорах: повышение цен, отказ от скидок, обсуждение условий, жёсткое "так больше не работаем"» (source-data, файл 2). Модуль 4 курса — прямое решение.</div>
+      </div>
+      <div class="card">
+        <div class="card-number">02</div>
+        <div class="card-title">Масштаб не совпадает с тем, как звучат</div>
+        <div class="card-description">«Внутри — зрелый лидер, снаружи — мягкость, неуверенность, размытые формулировки» (source-data, файл 2). Это не проблема самооценки — это нейробиологический сбой между намерением и речью (M3-01, Блок 1).</div>
+      </div>
+      <div class="card">
+        <div class="card-number">03</div>
+        <div class="card-title">Не могут установить границы без чувства вины</div>
+        <div class="card-description">С клиентами, командой, партнёрами. Говорят «да» когда нужно «нет». Результат: перегрузка, выгорание, потеря ресурса и денег.</div>
+      </div>
+      <div class="card">
+        <div class="card-number">04</div>
+        <div class="card-title">Речевые паттерны рассыпаются под давлением</div>
+        <div class="card-description">«Прошлые негативные опыты проявления: хейт, обесценивание, "слишком громкая", "слишком жёсткая"» — из-за этого избегают прямой коммуникации, что стоит денег (source-data, файл 2).</div>
+      </div>
+    </div>
+
+    <div class="highlight-box" style="margin-top: 2rem;">
+      <p><strong>Размер сегмента:</strong> средний. Женское предпринимательство в России растёт: по данным ТПП (2024), ~40% новых ИП — женщины. С фильтрами (доход 150 000+, активная речевая практика, потребность в навыке влияния) — адресуемый сегмент 80-150 тыс. человек [гипотеза].</p>
+    </div>
+
+    <div class="highlight-box">
+      <p><strong>Канал:</strong> Instagram (основная среда, визуал + stories + reels), Telegram (авторские каналы, бизнес-клубы), женские предпринимательские сообщества (Like Lady Boss, «Бизнес и бабочки»), подкасты, вебинары, наставнические программы.</p>
+    </div>
+
+  </div>
+</section>
+
+<!-- ============================== -->
+<!-- СЕГМЕНТ 3 -->
+<!-- ============================== -->
+<section class="section-large" id="s3">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-tag">Сегмент 3 — Приоритет 2</div>
+      <h2>Эксперты и наставники с личным брендом</h2>
+    </div>
+
+    <div class="grid grid-2">
+      <div class="card card-accent">
+        <div class="card-title">Краткий портрет</div>
+        <div class="card-description">Мужчины и женщины 30-50 лет. Создатели экспертных продуктов: курсы, наставничества, консультации, методологии. Строят бизнес вокруг компетенций и личного бренда. Сюда же входят бизнес-коучи, менторы, фасилитаторы и коммьюнити-лидеры — те из них, кто работает с бизнес-клиентами. Доход: от 100 000 руб./мес до 1 000 000+ руб./мес. Их продукт = их речь. Их влияние = их подача.</div>
+      </div>
+
+      <div class="card card-accent">
+        <div class="card-title">Платёжеспособность</div>
+        <div class="card-description">Диапазон широкий. Нижняя граница (100 000-200 000 руб./мес) — чек 49 900 ощутим, но рационализируется как инвестиция в инструмент заработка. Верхняя граница (500 000-1 000 000+ руб./мес) — чек незначителен. Ключевая мотивация: «подача = конверсия». Привыкли инвестировать в обучение — это часть их бизнес-модели.</div>
+      </div>
+    </div>
+
+    <div class="highlight-box">
+      <p><strong>Почему входит:</strong> Проходит все фильтры M3. Имеют базовую экспертизу (обязательное условие). Готовы говорить вслух — это их профессия. Привыкли к обратной связи. Боль конкретна и имеет измеримую цену: качество подачи напрямую влияет на продажи и масштаб бизнеса. <strong>MECE-отличие от С1-С2:</strong> их проблема не в «переговорах с оппонентом», а в «удержании поля, когда ты один перед аудиторией» — презентации, эфиры, продающие выступления, групповые программы.</p>
+    </div>
+
+    <div class="section-header" style="margin-top: 2rem;">
+      <h3>Основная боль в теме речи/переговоров</h3>
+    </div>
+
+    <div class="grid grid-2">
+      <div class="card">
+        <div class="card-number">01</div>
+        <div class="card-title">Уверены в знаниях, но не в подаче</div>
+        <div class="card-description">«Перегружают речь фактами, логикой, деталями. Звучат сухо, академично, тяжело» (source-data, файл 3). Аудитория уходит не потому что продукт плохой — а потому что подача не держит внимание.</div>
+      </div>
+      <div class="card">
+        <div class="card-number">02</div>
+        <div class="card-title">Сложность говорить о деньгах за свои продукты</div>
+        <div class="card-description">Называют цену курса или наставничества — и сразу «а ещё бонус, а ещё рассрочка, а ещё...». Модуль 4 курса — прямое попадание.</div>
+      </div>
+      <div class="card">
+        <div class="card-number">03</div>
+        <div class="card-title">Теряют аудиторию на длинных форматах</div>
+        <div class="card-description">Не умеют структурировать речь так, чтобы удерживать DMN слушателя (M3-01, Модуль 2). Начинают сильно — заканчивают «потоком сознания».</div>
+      </div>
+      <div class="card">
+        <div class="card-number">04</div>
+        <div class="card-title">Синдром самозванца при масштабировании</div>
+        <div class="card-description">Перед новой аудиторией (конференция, большой эфир, партнёрский вебинар) «теряют себя» — голос, энергию, структуру.</div>
+      </div>
+    </div>
+
+    <div class="highlight-box" style="margin-top: 2rem;">
+      <p><strong>Размер сегмента:</strong> средний. Рынок онлайн-образования и экспертных услуг в России активно растёт. С фильтрами (доход от 100 000, речь как основной рабочий инструмент) — адресуемый сегмент 50-120 тыс. человек [гипотеза].</p>
+    </div>
+
+    <div class="highlight-box">
+      <p><strong>Канал:</strong> Telegram (авторские каналы, чаты наставничеств), Instagram (stories, reels, прямые эфиры), YouTube, подкасты, профильные конференции (Суровый питерский SMM, Найди свой Трафик и т.п.), мастермайнды и клубы для экспертов.</p>
+    </div>
+
+  </div>
+</section>
+
+<!-- ============================== -->
+<!-- СЕГМЕНТ 4 -->
+<!-- ============================== -->
+<section class="section-large" id="s4">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-tag">Сегмент 4 — Приоритет 3</div>
+      <h2>Специалисты на коммуникационных должностях (ср./ст. звено)</h2>
+    </div>
+
+    <div class="grid grid-2">
+      <div class="card card-accent">
+        <div class="card-title">Краткий портрет</div>
+        <div class="card-description">Преимущественно женщины 28-42 лет. Менеджеры по работе с ключевыми клиентами, старшие менеджеры по продажам, HR-бизнес-партнёры, руководители проектов, PR-менеджеры, senior-координаторы. Отличие от исключённых «офисных сотрудников»: доход от 100 000 руб./мес, переговоры с высокими ставками, карьерная амбиция перейти на управленческий уровень. 80% коммуникации, 20% операционные задачи.</div>
+      </div>
+
+      <div class="card card-accent">
+        <div class="card-title">Платёжеспособность</div>
+        <div class="card-description">Доход 100 000-250 000 руб./мес. Чек 49 900 руб. — ощутимая, но подъёмная сумма. Рассрочка 16 633 руб./мес (3 мес.) — основной формат оплаты. Мотивация: переход на управленческую позицию = рост дохода на 30-100%. Курс — инвестиция с ROI в первые месяцы после повышения [гипотеза].</div>
+      </div>
+    </div>
+
+    <div class="highlight-box">
+      <p><strong>Почему входит:</strong> Проходит фильтры M3 с оговорками. Готовы к тренировочному формату (не ищут «мягкое пространство» — ищут карьерный рост). Готовы говорить вслух (это их работа каждый день). <strong>MECE-отличие от С1-С3:</strong> они ещё не руководители и не эксперты с брендом — они на пороге перехода, и именно речевое влияние является недостающим элементом для этого перехода.</p>
+    </div>
+
+    <div class="section-header" style="margin-top: 2rem;">
+      <h3>Основная боль в теме речи/переговоров</h3>
+    </div>
+
+    <div class="grid grid-3">
+      <div class="card">
+        <div class="card-number">01</div>
+        <div class="card-title">Не могут отстоять позицию перед конфликтным клиентом</div>
+        <div class="card-description">«Страшно отказать, сказать что клиент неправ, отстоять свою позицию» (source-data, файл 4). Каждая уступка — потеря условий контракта, бюджета, времени.</div>
+      </div>
+      <div class="card">
+        <div class="card-number">02</div>
+        <div class="card-title">Не получают повышение из-за неспособности «звучать как руководитель»</div>
+        <div class="card-description">Компетенции есть, результаты есть — но на собеседовании/ассессменте теряются при давлении. «Расширить возможности карьерного роста» — ключевое ожидание (source-data, файл 4).</div>
+      </div>
+      <div class="card">
+        <div class="card-number">03</div>
+        <div class="card-title">Устали быть «буфером» без рамки</div>
+        <div class="card-description">Являются посредниками между руководством и клиентом/командой, но не владеют ситуацией полностью и вынуждены управлять ею только речью (source-data, файл 4).</div>
+      </div>
+    </div>
+
+    <div class="highlight-box" style="margin-top: 2rem;">
+      <p><strong>Размер сегмента:</strong> нишевый (с учётом фильтра по доходу и карьерной амбиции). Широкий сегмент «специалистов на коммуникационных должностях» — миллионы. После фильтра — адресуемый сегмент 30-70 тыс. человек [гипотеза].</p>
+    </div>
+
+    <div class="highlight-box">
+      <p><strong>Канал:</strong> Telegram (карьерные каналы, HR-сообщества), HeadHunter и карьерные платформы, Instagram (лайфстайл + карьера), рекомендации от HR-отделов компаний, корпоративные программы развития.</p>
+    </div>
+
+  </div>
+</section>
+
+<!-- ============================== -->
+<!-- СВОДНЫЕ ТАБЛИЦЫ -->
+<!-- ============================== -->
+<section class="section-large" id="summary">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-tag">03 — Сводные таблицы</div>
+      <h2>Сравнение сегментов</h2>
+    </div>
+
+    <h3>Сводная таблица сегментов</h3>
+
+    <div class="table-wrapper">
+      <table>
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Сегмент</th>
+            <th>Приоритет</th>
+            <th>Платёжеспособность</th>
+            <th>Острота боли</th>
+            <th>Размер</th>
+            <th>Готовность к формату</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="table-accent">1</td>
+            <td>Руководители и собственники бизнеса</td>
+            <td><strong>1</strong></td>
+            <td>Высокая (150-800K+/мес)</td>
+            <td>Максимальная — потери в переговорах измеряются в сотнях тысяч руб.</td>
+            <td>Широкий</td>
+            <td>Высокая — привыкли к бизнес-интенсивам</td>
+          </tr>
+          <tr>
+            <td class="table-accent">2</td>
+            <td>Женщины-предпринимательницы и руководительницы</td>
+            <td><strong>1</strong></td>
+            <td>Высокая (150K-3M+/мес)</td>
+            <td>Максимальная — речь = бизнес напрямую</td>
+            <td>Средний</td>
+            <td>Высокая — привыкли к наставничеству</td>
+          </tr>
+          <tr>
+            <td class="table-accent">3</td>
+            <td>Эксперты и наставники с личным брендом</td>
+            <td><strong>2</strong></td>
+            <td>Средняя-высокая (100K-1M+/мес)</td>
+            <td>Высокая — подача = конверсия и доход</td>
+            <td>Средний</td>
+            <td>Высокая — речь = профессия</td>
+          </tr>
+          <tr>
+            <td class="table-accent">4</td>
+            <td>Специалисты на коммуникационных должностях (ср./ст. звено)</td>
+            <td><strong>3</strong></td>
+            <td>Средняя (100-250K/мес)</td>
+            <td>Средняя-высокая — карьерный рост + условия контрактов</td>
+            <td>Нишевый</td>
+            <td>Средняя — требует прогрева</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3 style="margin-top: 2rem;">Сводная таблица исключений</h3>
+
+    <div class="table-wrapper">
+      <table>
+        <thead>
+          <tr>
+            <th>Сегмент</th>
+            <th>Фильтр</th>
+            <th>Причина</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="table-accent">Лайфстайл-аудитория (осознанные женщины 28-45)</td>
+            <td>M3-01 п.1, п.5, п.6 + M3-04</td>
+            <td>Мягкий формат, нет переговорной боли, доход ниже порога</td>
+          </tr>
+          <tr>
+            <td class="table-accent">Психологи и терапевты (как самост. сегмент)</td>
+            <td>M3-01 п.5 + Блок 1</td>
+            <td>Боль не привязана к переговорам, ядро профессии — слушание</td>
+          </tr>
+          <tr>
+            <td class="table-accent">Офис-менеджеры, администраторы, координаторы низкого звена</td>
+            <td>M3-04 + M3-01 Блок 1</td>
+            <td>Доход ниже 100K, нет переговоров с высокими ставками</td>
+          </tr>
+          <tr>
+            <td class="table-accent">Коучи с фокусом на эмпатию и мягкое сопровождение</td>
+            <td>M3-01 п.1 + Блок 4</td>
+            <td>Ищут мягкий формат, боятся давления — противоречит формату курса</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+  </div>
+</section>
+
+<!-- ============================== -->
+<!-- ВЫВОДЫ ДЛЯ M4-02 -->
+<!-- ============================== -->
+<section class="section-large" id="conclusions">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-tag">04 — Выводы для M4-02</div>
+      <h2>Что важно учесть при создании аватаров</h2>
+    </div>
+
+    <div class="grid grid-2">
+      <div class="card">
+        <div class="card-number">01</div>
+        <div class="card-title">Два ядровых сегмента — разный язык</div>
+        <div class="card-description">Сегмент 1 (руководители) говорит языком бизнес-метрик: «потерял контракт», «сдал условия». Сегмент 2 (женщины-предпринимательницы) говорит языком границ и самоощущения: «не могу сказать нет без вины», «оправдываюсь за цену». Аватары должны отражать эту разницу в формулировках, хотя нейробиологическая проблема одинаковая.</div>
+      </div>
+
+      <div class="card">
+        <div class="card-number">02</div>
+        <div class="card-title">Гендерный фактор</div>
+        <div class="card-description">Сегмент 1 — мужчины и женщины. Сегмент 2 — только женщины. Для M4-02 нужны минимум один мужской и один женский аватар в сегменте 1, и один-два женских аватара в сегменте 2.</div>
+      </div>
+
+      <div class="card">
+        <div class="card-number">03</div>
+        <div class="card-title">Различие в «триггерной ситуации»</div>
+        <div class="card-description">С1: переговоры с оппонентом (внешний давящий контекст). С2: граница с клиентом/командой + публичное проявление (внутренний конфликт). С3: публичное выступление / продающий эфир (один перед аудиторией). С4: карьерный переход / разговор с руководством (позиция «снизу вверх»). Каждый аватар должен иметь свою триггерную ситуацию.</div>
+      </div>
+
+      <div class="card">
+        <div class="card-number">04</div>
+        <div class="card-title">Мотивация к покупке</div>
+        <div class="card-description">С1-С2 покупают, потому что потеря позиции стоит конкретных денег (сотни тысяч — миллионы). С3 покупает, потому что подача = конверсия = доход. С4 покупает, потому что навык = карьерный переход = рост дохода на 30-100%. Аватары должны содержать «сцену осознания» — конкретный момент, когда человек понял, что теряет из-за речи.</div>
+      </div>
+
+      <div class="card">
+        <div class="card-number">05</div>
+        <div class="card-title">Путь к продукту</div>
+        <div class="card-description">С1-С2 могут прийти напрямую (увидели &#8594; купили). С3 с высокой вероятностью пройдёт через трипвайер (МК «Профайлинг» за 2 900 руб.) или челлендж «Твёрдое слово». С4 требует длительного прогрева (серия бесплатного контента &#8594; трипвайер &#8594; челлендж &#8594; решение). Важно для M4-05 (Кастдевы) и M5 (Позиционирование).</div>
+      </div>
+
+      <div class="card">
+        <div class="card-number">06</div>
+        <div class="card-title">B2B-мост</div>
+        <div class="card-description">Сегмент 1 имеет B2B-потенциал: HR-руководители могут направлять сотрудников на курс. Корпоративный лагерь за 390 000 руб./день — входная точка для корпоративных клиентов, которая конвертируется в B2C-покупки флагмана. В M4-02 стоит предусмотреть аватар «HR-директор, который ищет программу развития для управленцев».</div>
+      </div>
+
+      <div class="card">
+        <div class="card-number">07</div>
+        <div class="card-title">Периферийный сегмент 4 — потенциал роста</div>
+        <div class="card-description">Сейчас приоритет 3 (нишевый, доход на нижней границе). Но после первых потоков и появления кейсов «прошла курс &#8594; получила повышение» этот сегмент может вырасти до приоритета 2. В M4-02 достаточно одного аватара с детальной проработкой «сцены до/после».</div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- Footer -->
+<footer class="footer">
+  <div class="container">
+    <p>BrandOS &middot; M4-01 Сегменты ЦА v2 &middot; Гоар Багдасарова &middot; 9 апреля 2026</p>
+    <p style="margin-top: .5rem; font-size: .75rem;">Нейроупаковка &middot; Версия 2.0</p>
+  </div>
+</footer>
+
+</body>
+</html>

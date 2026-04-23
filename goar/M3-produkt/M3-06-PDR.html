@@ -1,0 +1,1138 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>M3-06 · PDR — Операционная спецификация первого потока · BrandOS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --primary: #0ea5e9;
+  --primary-dark: #0284c7;
+  --primary-light: #7dd3fc;
+  --primary-bg: #e0f2fe;
+  --background: #ffffff;
+  --foreground: #0f172a;
+  --card-bg: hsl(0,0%,97%);
+  --border: #1C1C1E;
+  --muted: #64748b;
+  --radius: 4px;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: 'Inter', sans-serif;
+  background: var(--background);
+  color: var(--foreground);
+  line-height: 1.75;
+  font-size: 16px;
+}
+
+.container { max-width: 1200px; margin: 0 auto; padding: 0 1.5rem; }
+
+.nav {
+  position: sticky;
+  top: 0;
+  background: white;
+  border-bottom: 1px solid var(--border);
+  z-index: 100;
+  padding: 1rem 0;
+}
+.nav-container { display: flex; justify-content: space-between; align-items: center; gap: 2rem; }
+.nav-brand { font-size: 1rem; font-weight: 700; color: var(--foreground); white-space: nowrap; }
+.nav-brand span { color: var(--primary); }
+.nav-links { display: flex; gap: 1.5rem; list-style: none; overflow-x: auto; flex-wrap: wrap; }
+.nav-links a {
+  color: var(--foreground);
+  text-decoration: none;
+  font-size: .875rem;
+  font-weight: 500;
+  white-space: nowrap;
+  transition: color .2s;
+}
+.nav-links a:hover { color: var(--primary); }
+
+.hero {
+  padding: 3.75rem 0;
+  background: linear-gradient(135deg, rgba(255,255,255,.98) 0%, rgba(240,249,255,.95) 100%);
+}
+.hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: .5rem;
+  padding: .5rem 1rem;
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  font-size: .875rem;
+  font-weight: 600;
+  margin-bottom: 1.5rem;
+  color: var(--foreground);
+}
+.hero h1 {
+  font-size: clamp(32px, 4vw, 51px);
+  font-weight: 500;
+  line-height: 1.2;
+  letter-spacing: -.03em;
+  margin-bottom: 1.5rem;
+}
+.hero-subtitle {
+  font-size: 1.125rem;
+  color: var(--muted);
+  margin-bottom: 2rem;
+}
+.hero-meta { display: flex; gap: 2rem; flex-wrap: wrap; }
+.hero-meta-item { font-size: .875rem; color: var(--muted); }
+.hero-meta-item strong { color: var(--primary); font-weight: 600; }
+
+.section { padding: 2.5rem 0; }
+.section-large { padding: 3.75rem 0; }
+@media (min-width: 768px) {
+  .section { padding: 3.75rem 0; }
+  .section-large { padding: 5rem 0; }
+}
+
+.section-header {
+  position: relative;
+  margin-bottom: 32px;
+  padding-top: 24px;
+}
+.section-header::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 1px;
+  background: repeating-linear-gradient(to right, #9CA3AF 0, #9CA3AF 4px, transparent 4px, transparent 8px);
+}
+
+.section-tag {
+  display: inline-block;
+  font-size: .75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: .1em;
+  color: var(--primary);
+  margin-bottom: .5rem;
+}
+
+h2 { font-size: 32px; font-weight: 300; line-height: 1.2; letter-spacing: -.02em; margin-bottom: 1rem; }
+h3 { font-size: 20px; font-weight: 600; line-height: 1.3; margin-bottom: 1rem; }
+h4 { font-size: 17px; font-weight: 600; line-height: 1.3; margin-bottom: .75rem; color: var(--foreground); }
+
+p { margin-bottom: 1rem; color: var(--muted); }
+p:last-child { margin-bottom: 0; }
+
+.card {
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: linear-gradient(135deg, rgba(255,255,255,.98) 0%, rgba(250,250,252,.95) 100%);
+  padding: 1.5rem;
+  position: relative;
+  overflow: hidden;
+}
+.card-title { font-size: 1.0625rem; font-weight: 600; margin-bottom: .75rem; color: var(--foreground); }
+.card-description { font-size: .9375rem; line-height: 1.75; color: var(--muted); }
+.card-accent {
+  background: linear-gradient(135deg, rgba(14,165,233,.05) 0%, rgba(14,165,233,.02) 100%);
+  border-color: rgba(14,165,233,.25);
+}
+
+.grid { display: grid; gap: 1.5rem; }
+.grid-2 { grid-template-columns: 1fr; }
+.grid-3 { grid-template-columns: 1fr; }
+@media (min-width: 768px) {
+  .grid-2 { grid-template-columns: repeat(2, 1fr); }
+  .grid-3 { grid-template-columns: repeat(3, 1fr); }
+}
+
+.highlight-box {
+  background: linear-gradient(135deg, rgba(14,165,233,.05) 0%, rgba(14,165,233,.02) 100%);
+  border: 1px solid rgba(14,165,233,.2);
+  border-left: 4px solid var(--primary);
+  padding: 1.25rem 1.5rem;
+  border-radius: var(--radius);
+  margin: 1.5rem 0;
+}
+.highlight-box p { margin: 0; font-size: 1rem; }
+.highlight-box strong { color: var(--primary); }
+
+.warning-block {
+  background: linear-gradient(135deg, rgba(239,68,68,.04) 0%, rgba(239,68,68,.01) 100%);
+  border: 1px solid rgba(239,68,68,.18);
+  border-left: 4px solid #ef4444;
+  padding: 1.25rem 1.5rem;
+  border-radius: var(--radius);
+  margin: 1.5rem 0;
+}
+.warning-block p { margin: 0; font-size: .9375rem; color: var(--muted); }
+.warning-block strong { color: var(--foreground); }
+
+.list-styled { list-style: none; padding: 0; margin-bottom: 1rem; }
+.list-styled li { padding-left: 1.5rem; margin-bottom: .75rem; position: relative; color: var(--muted); font-size: .9375rem; }
+.list-styled li::before {
+  content: '';
+  position: absolute;
+  left: 0; top: .65rem;
+  width: 6px; height: 6px;
+  background: var(--primary);
+  border-radius: 50%;
+}
+
+.table-wrapper {
+  overflow-x: auto;
+  margin: 1.5rem 0;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+table { width: 100%; border-collapse: collapse; background: white; }
+th, td { padding: 1rem; text-align: left; border-bottom: 1px solid var(--border); }
+th {
+  background: var(--card-bg);
+  font-weight: 600;
+  font-size: .8125rem;
+  text-transform: uppercase;
+  letter-spacing: .05em;
+  color: var(--foreground);
+}
+td { font-size: .9375rem; color: var(--muted); }
+tr:last-child td { border-bottom: none; }
+tr:hover td { background: var(--card-bg); }
+.table-accent { color: var(--primary); font-weight: 600; }
+
+.footer {
+  padding: 2rem 0;
+  border-top: 1px solid var(--border);
+  text-align: center;
+  color: var(--muted);
+  font-size: .875rem;
+}
+
+@media (max-width: 768px) {
+  .container { padding: 0 1rem; }
+  h2 { font-size: 24px; }
+  h3 { font-size: 18px; }
+  .nav-links { gap: .75rem; }
+  .hero-meta { gap: 1rem; }
+}
+
+@media print {
+  @page { size: A4 landscape; margin: 1cm; }
+  .nav { display: none; }
+  .section { padding: 1.5rem 0; }
+  .hero { padding: 2rem 0; }
+}
+
+.card-detail { margin-top: .75rem; }
+.card-detail-label { font-size: .8125rem; font-weight: 600; color: var(--foreground); text-transform: uppercase; letter-spacing: .05em; margin-bottom: .25rem; }
+.card-detail-text { font-size: .9375rem; color: var(--muted); margin-bottom: .5rem; }
+.card-number { position: absolute; top: 1rem; right: 1.25rem; font-size: 2.5rem; font-weight: 700; color: rgba(14,165,233,.1); line-height: 1; }
+
+.flow-block {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.5rem;
+  margin: 1.5rem 0;
+  font-family: 'Inter', monospace;
+  font-size: .875rem;
+  line-height: 2;
+  color: var(--muted);
+  white-space: pre-line;
+}
+
+.checklist { list-style: none; padding: 0; margin-bottom: 1.5rem; }
+.checklist li {
+  padding: .75rem 1rem .75rem 2.5rem;
+  margin-bottom: .5rem;
+  position: relative;
+  color: var(--muted);
+  font-size: .9375rem;
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  line-height: 1.6;
+}
+.checklist li::before {
+  content: '';
+  position: absolute;
+  left: .875rem;
+  top: .95rem;
+  width: 14px;
+  height: 14px;
+  border: 2px solid var(--primary);
+  border-radius: 3px;
+  background: white;
+}
+</style>
+</head>
+<body>
+
+<!-- Nav -->
+<nav class="nav">
+  <div class="container nav-container">
+    <div class="nav-brand">Brand<span>OS</span> &middot; PDR</div>
+    <ul class="nav-links">
+      <li><a href="#b1">Техтребования</a></li>
+      <li><a href="#b2">Операционные стандарты</a></li>
+      <li><a href="#b3">Контент</a></li>
+      <li><a href="#b4">Команда</a></li>
+      <li><a href="#b5">Клиентский путь</a></li>
+      <li><a href="#b6">Чеклист запуска</a></li>
+      <li><a href="#b7">Уточнения</a></li>
+    </ul>
+  </div>
+</nav>
+
+<!-- Hero -->
+<section class="hero">
+  <div class="container">
+    <div class="hero-badge">M3-06 &middot; PDR &mdash; Операционная спецификация первого потока &middot; BrandOS</div>
+    <h1>PDR: Product Design Requirements<br><span style="color: var(--primary); font-weight: 300;">&laquo;Слово за тобой&raquo; v2.0</span></h1>
+    <p class="hero-subtitle">Единый документ, по которому организатор готовит и проводит первый поток. Самодостаточен &mdash; содержит все требования, протоколы и чеклисты.</p>
+    <div class="hero-meta">
+      <div class="hero-meta-item"><strong>Дата:</strong> 9 апреля 2026</div>
+      <div class="hero-meta-item"><strong>Статус:</strong> Первая версия, требует валидации клиентом</div>
+      <div class="hero-meta-item"><strong>Источники:</strong> M3-01, M3-02, M3-03, M3-04, M3-05, goar-voice-rules.md</div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================== -->
+<!-- БЛОК 1: ТЕХНИЧЕСКИЕ ТРЕБОВАНИЯ -->
+<!-- ============================== -->
+<section class="section-large" id="b1">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-tag">Блок 1 — Технические требования</div>
+      <h2>Технический стек и интеграции</h2>
+    </div>
+
+    <h3>1.1. Минимальные технические требования к участнику</h3>
+    <div class="table-wrapper">
+      <table>
+        <thead>
+          <tr>
+            <th>Параметр</th>
+            <th>Требование</th>
+            <th>Почему критично</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td class="table-accent">Интернет</td><td>Стабильное соединение для Zoom-звонка с видео (рекомендация: от 5 Мбит/с)</td><td>Breakout rooms требуют устойчивого соединения; AI-платформа транскрибирует речь в реальном времени</td></tr>
+          <tr><td class="table-accent">Камера</td><td>Обязательна, включена на протяжении всего эфира</td><td>Экспертный разбор Гоар опирается на невербалику: плечи, руки, взгляд, мимика</td></tr>
+          <tr><td class="table-accent">Микрофон</td><td>Обязательен, качество достаточное для распознавания речи</td><td>AI-платформа строит скоринг на транскрипции; плохой микрофон = некорректный отчёт</td></tr>
+          <tr><td class="table-accent">Помещение</td><td>Тихое, без фонового шума</td><td>Фоновый шум снижает точность транскрипции и мешает оппоненту в поединке</td></tr>
+          <tr><td class="table-accent">Устройство</td><td>Компьютер или планшет (телефон &mdash; крайне нежелательно)</td><td>Breakout rooms на телефоне работают нестабильно; экран слишком мал для полноценного контакта</td></tr>
+          <tr><td class="table-accent">ПО</td><td>Zoom-клиент последней версии (не браузерная версия)</td><td>Breakout rooms и broadcast-сообщения работают корректно только в десктопном клиенте</td></tr>
+          <tr><td class="table-accent">Email</td><td>Действующий адрес, указанный при регистрации</td><td>AI-скоринг доставляется на email после каждого эфира</td></tr>
+          <tr><td class="table-accent">Telegram</td><td>Аккаунт с возможностью вступить в закрытый канал</td><td>Все коммуникации, разборы и материалы &mdash; в канале</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="highlight-box">
+      <p><strong>Формат доведения до участника:</strong> Чеклист технической готовности отправляется в онбординг-письме. Участник подтверждает готовность до первого эфира.</p>
+    </div>
+
+    <h3>1.2. Технический стек организатора</h3>
+    <div class="table-wrapper">
+      <table>
+        <thead>
+          <tr>
+            <th>Задача</th>
+            <th>Тип инструмента</th>
+            <th>Конкретные требования</th>
+            <th>Статус</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td class="table-accent">Живые эфиры</td><td>Zoom (план с поддержкой breakout rooms)</td><td>Минимум 50 breakout rooms, broadcast-сообщения внутри комнат, запись эфира (для тарифа Персональный)</td><td>[требует уточнения: какой план Zoom &mdash; Business/Enterprise]</td></tr>
+          <tr><td class="table-accent">Видео-теория</td><td>Платформа для хостинга видео</td><td>Открытие по расписанию (Пн каждой недели), доступ по ссылке или логину, 5 видео по 20 мин</td><td>[требует уточнения: GetCourse / Kinescope / Telegram / другое]</td></tr>
+          <tr><td class="table-accent">Канал участников</td><td>Telegram (закрытый канал)</td><td>Приглашение по ссылке, публикация текстов + голосовых, модерация</td><td>Готов к использованию</td></tr>
+          <tr><td class="table-accent">AI-скоринг</td><td>AI-платформа транскрипции и анализа</td><td>Запись речи в breakout rooms, транскрипция, анализ по параметрам модуля, генерация отчётов, отправка на email</td><td>[требует уточнения: статус готовности, название платформы]</td></tr>
+          <tr><td class="table-accent">Доставка скоринга</td><td>Email-сервис</td><td>Автоматическая или полуавтоматическая отправка отчётов после эфира, шаблон письма</td><td>[требует уточнения: интеграция с AI-платформой или ручная отправка]</td></tr>
+          <tr><td class="table-accent">CRM</td><td>Система управления клиентами</td><td>Учёт оплат, тарифов, рассрочек, статусов участников</td><td>[требует уточнения: какая CRM]</td></tr>
+          <tr><td class="table-accent">Платёжный шлюз</td><td>Приём оплат + рассрочка</td><td>Полная оплата, рассрочка 3/4 мес., беспроцентная</td><td>[требует уточнения: тип рассрочки &mdash; банковская или собственная]</td></tr>
+          <tr><td class="table-accent">Лендинг</td><td>Страница продукта</td><td>Описание курса, два тарифа, кнопка оплаты</td><td>[требует уточнения: Tilda / GetCourse / другое]</td></tr>
+          <tr><td class="table-accent">Анкетирование</td><td>Формы обратной связи</td><td>NPS (промежуточный + финальный), финальная анкета, форма отзыва</td><td>Google Forms или аналог</td></tr>
+          <tr><td class="table-accent">Запись эфиров</td><td>Zoom (функция записи)</td><td>Запись каждого эфира для тарифа Персональный, хранение 5 записей</td><td>Облако / платформа курса</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>1.3. Интеграции между системами</h3>
+    <div class="flow-block">Участник оплачивает &rarr; Платёжный шлюз &rarr; CRM (статус: оплачено, тариф)
+                                              |
+                                              &darr;
+                              Организатор вручную добавляет в:
+                              &mdash; Telegram-канал (инвайт-ссылка)
+                              &mdash; Платформу видео-теории (доступ)
+                              &mdash; Zoom (список участников)
+
+День эфира:
+Zoom (breakout rooms) &rarr; AI-платформа (транскрипция в реальном времени)
+                              |
+                              &darr;
+                         AI-платформа (анализ после эфира)
+                              |
+                              &darr;
+                         Email (отчёт участнику)
+                         &mdash; Стандарт: базовый скоринг
+                         &mdash; Персональный: расширенный скоринг + динамика
+
+После модуля 5 (только Персональный):
+AI-платформа &rarr; Переговорный профиль (PDF) &rarr; Email участнику</div>
+
+    <div class="warning-block">
+      <p><strong>Критические точки интеграции:</strong></p>
+      <p>1. AI-платформа + Zoom breakout rooms &mdash; AI должна записывать речь внутри breakout rooms, а не только в основном зале</p>
+      <p>2. AI-платформа + Email &mdash; отчёт должен уходить автоматически или полуавтоматически в течение 24 часов после эфира</p>
+      <p>3. CRM + Платёжный шлюз &mdash; автоматическое обновление статуса при оплате/рассрочке</p>
+    </div>
+
+    <h3>1.4. Требования к AI-скорингу</h3>
+
+    <h4>Что фиксирует AI-платформа</h4>
+    <div class="table-wrapper">
+      <table>
+        <thead>
+          <tr>
+            <th>Модуль</th>
+            <th>Параметры скоринга</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td class="table-accent">1 (Опора)</td><td>Чёткость позиции, оправдательные конструкции, реакция на прямые вопросы, структура захода</td></tr>
+          <tr><td class="table-accent">2 (Структура)</td><td>Наличие/отсутствие структуры Монро (5 шагов), количество аргументов, реакция на возражения, конкретность призыва</td></tr>
+          <tr><td class="table-accent">3 (Давление)</td><td>Количество оправдательных конструкций, возвраты к фактам, моменты сдачи позиции, использование ППП (повтор-пауза-перевод)</td></tr>
+          <tr><td class="table-accent">4 (Деньги)</td><td>Удержание/сдача цены (финальная vs стартовая), оправдательные фразы после суммы, аргументы ценности, реакция на блеф</td></tr>
+          <tr><td class="table-accent">5 (Интеграция)</td><td>Полный скоринг: Influence / Trust / Team, сравнение с модулем 1, интегральная оценка по всем параметрам</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h4>Разница базового и расширенного скоринга</h4>
+    <div class="table-wrapper">
+      <table>
+        <thead>
+          <tr>
+            <th>Элемент отчёта</th>
+            <th>Стандарт (базовый)</th>
+            <th>Персональный (расширенный)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>Ключевые метрики модуля</td><td>Да</td><td>Да</td></tr>
+          <tr><td>Конкретные фразы (цитаты из транскрипции)</td><td>Да</td><td>Да</td></tr>
+          <tr><td>Оправдательные конструкции (список)</td><td>Да</td><td>Да</td></tr>
+          <tr><td>Детальная аналитика по каждому критерию</td><td>Нет</td><td class="table-accent">Да</td></tr>
+          <tr><td>Сравнение с предыдущими модулями (динамика)</td><td>Нет</td><td class="table-accent">Да</td></tr>
+          <tr><td>Итоговый переговорный профиль (PDF, модуль 5)</td><td>Нет</td><td class="table-accent">Да (Influence / Trust / Team)</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="warning-block">
+      <p><strong>[требует уточнения у клиента]</strong> Конкретная разница между базовым и расширенным скорингом не описана детально. Необходимо согласовать с командой разработки AI-платформы: какие именно метрики скрыты в базовом, какие добавлены в расширенном.</p>
+    </div>
+
+    <h4>Формат отчёта участника</h4>
+    <ul class="list-styled">
+      <li>Формат: email с HTML-вёрсткой или PDF-вложение</li>
+      <li>Содержание: оценки по параметрам модуля + конкретные цитаты из транскрипции + рекомендации</li>
+      <li>Язык: русский</li>
+      <li>Объём: 1-2 страницы (достаточно для самостоятельного анализа, не перегружать)</li>
+    </ul>
+
+    <h4>Сроки готовности отчёта</h4>
+    <div class="table-wrapper">
+      <table>
+        <thead>
+          <tr>
+            <th>Этап</th>
+            <th>Срок</th>
+            <th>Ответственный</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>Транскрипция завершена</td><td>В течение 1 часа после эфира</td><td>AI-платформа (автоматически)</td></tr>
+          <tr><td>Анализ и генерация отчёта</td><td>В течение 2-4 часов после эфира</td><td>AI-платформа (автоматически)</td></tr>
+          <tr><td>Проверка качества (выборочная, 20% отчётов)</td><td>В течение 12 часов после эфира</td><td>Технический специалист</td></tr>
+          <tr><td class="table-accent">Отправка отчёта участнику</td><td class="table-accent">Не позднее 24 часов после эфира</td><td>Автоматическая отправка / организатор</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>1.5. Резервные решения при технических сбоях</h3>
+    <p>Три критических сценария из M3-05 (риски 1, 4, 9):</p>
+
+    <h4>Сценарий А: AI-скоринг не работает во время эфира</h4>
+    <div class="table-wrapper">
+      <table>
+        <thead>
+          <tr><th>Этап</th><th>Действие</th><th>Ответственный</th></tr>
+        </thead>
+        <tbody>
+          <tr><td class="table-accent">Обнаружение</td><td>Технический специалист видит, что транскрипция не идёт (проверка в первые 2 минуты breakout)</td><td>Тех. специалист</td></tr>
+          <tr><td class="table-accent">Немедленная реакция</td><td>Эфир продолжается по регламенту &mdash; поединки проводятся без AI-скоринга</td><td>Гоар + организатор</td></tr>
+          <tr><td class="table-accent">Компенсация</td><td>Гоар усиливает экспертный разбор: вместо 2 пар разбирает 3-4, акцентирует невербальные маркеры</td><td>Гоар</td></tr>
+          <tr><td class="table-accent">Коммуникация участникам</td><td>&laquo;AI-скоринг за этот модуль придёт позже / в другом формате. Экспертный разбор &mdash; основной источник обратной связи&raquo;</td><td>Организатор (в канале, в тот же день)</td></tr>
+          <tr><td class="table-accent">Восстановление</td><td>Если запись Zoom сохранилась &mdash; прогнать транскрипцию и скоринг постфактум. Отправить отчёт с задержкой (до 48 часов)</td><td>Тех. специалист</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h4>Сценарий Б: Zoom-сбой (breakout rooms не работают)</h4>
+    <div class="table-wrapper">
+      <table>
+        <thead>
+          <tr><th>Этап</th><th>Действие</th><th>Ответственный</th></tr>
+        </thead>
+        <tbody>
+          <tr><td class="table-accent">Обнаружение</td><td>Breakout rooms не создаются или участники не попадают в комнаты</td><td>Организатор</td></tr>
+          <tr><td class="table-accent">До 5 минут</td><td>Попытка перезапустить breakout rooms. Параллельно &mdash; предупредить Гоар</td><td>Организатор</td></tr>
+          <tr><td class="table-accent">Если не починилось за 5 минут</td><td>Переход на резервную платформу (Google Meet: ручное распределение по ссылкам на комнаты)</td><td>Организатор</td></tr>
+          <tr><td class="table-accent">Если резервная платформа не работает</td><td>Перенос эфира на резервный день (должен быть согласован заранее)</td><td>Организатор</td></tr>
+          <tr><td class="table-accent">Коммуникация</td><td>Сообщение в Telegram-канал в течение 5 минут: &laquo;Технический сбой, переходим на [резервную платформу] / переносим на [дата]&raquo;</td><td>Организатор</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="highlight-box">
+      <p><strong>Подготовка:</strong> Перед каждым потоком подготовить 25 ссылок на Google Meet комнаты (по числу пар) &mdash; как резерв. Ссылки хранятся в таблице, рассылаются за 2 минуты в случае сбоя.</p>
+    </div>
+
+    <h4>Сценарий В: Перегруз Гоар (нагрузка выходит за 12-15 часов)</h4>
+    <div class="table-wrapper">
+      <table>
+        <thead>
+          <tr><th>Признак</th><th>Действие</th><th>Ответственный</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Гоар сообщает об усталости после 2-го эфира</td><td>Делегировать текстовые триггеры в канале организатору</td><td>Организатор</td></tr>
+          <tr><td>Голосовые разборы занимают больше 14 мин/нед</td><td>Сократить с 2 голосовых/нед до 1</td><td>Организатор (согласовать с Гоар)</td></tr>
+          <tr><td>Аудио-разборы Персональных откладываются</td><td>Перенести на конец курса пакетом (не по мере запроса)</td><td>Организатор</td></tr>
+          <tr><td>Суммарная нагрузка приближается к 12 ч за 3 недели</td><td>Перераспределить: всё, что не требует экспертизы Гоар &mdash; на организатора</td><td>Организатор</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+  </div>
+</section>
+
+<!-- ============================== -->
+<!-- БЛОК 2: ОПЕРАЦИОННЫЕ СТАНДАРТЫ -->
+<!-- ============================== -->
+<section class="section-large" id="b2">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-tag">Блок 2 — Операционные стандарты</div>
+      <h2>Протоколы и регламенты</h2>
+    </div>
+
+    <h3>2.1. Протокол подготовки к каждому эфиру</h3>
+
+    <h4>За 48 часов до эфира</h4>
+    <div class="table-wrapper">
+      <table>
+        <thead><tr><th>Действие</th><th>Ответственный</th><th>Критерий готовности</th></tr></thead>
+        <tbody>
+          <tr><td>Проверить Zoom-комнату: вход, breakout rooms, broadcast</td><td>Организатор</td><td>Тестовый вход с 2 устройств, создание breakout room, отправка broadcast-сообщения</td></tr>
+          <tr><td>Проверить AI-платформу: подключение к Zoom, начало транскрипции</td><td>Тех. специалист</td><td>Тестовая транскрипция в breakout room (хотя бы 30 секунд речи &rarr; текст)</td></tr>
+          <tr><td>Подготовить список пар для breakout rooms</td><td>Организатор</td><td>Таблица: Пара 1 (Участник A + Участник B), ..., Пара N. При нечётном числе &mdash; тройка</td></tr>
+          <tr><td>Проверить наличие резервных ссылок Google Meet</td><td>Организатор</td><td>25 ссылок в таблице, рабочие</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h4>За 24 часа до эфира</h4>
+    <div class="table-wrapper">
+      <table>
+        <thead><tr><th>Действие</th><th>Ответственный</th><th>Критерий готовности</th></tr></thead>
+        <tbody>
+          <tr><td>Опубликовать напоминание в Telegram-канале</td><td>Организатор</td><td>Текст: время эфира, ссылка на Zoom, напоминание о сценарии</td></tr>
+          <tr><td>Убедиться, что видео-теория модуля открыта</td><td>Организатор</td><td>Проверить доступ с тестового аккаунта</td></tr>
+          <tr><td>Получить подтверждение от Гоар</td><td>Организатор</td><td>Гоар подтвердила время и готовность</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h4>За 10 минут до эфира</h4>
+    <div class="table-wrapper">
+      <table>
+        <thead><tr><th>Действие</th><th>Ответственный</th></tr></thead>
+        <tbody>
+          <tr><td>Открыть Zoom-комнату</td><td>Организатор</td></tr>
+          <tr><td>Запустить запись (для тарифа Персональный)</td><td>Организатор</td></tr>
+          <tr><td>Подключить AI-платформу к Zoom</td><td>Тех. специалист</td></tr>
+          <tr><td>Подготовить breakout rooms (распределение по парам)</td><td>Организатор</td></tr>
+          <tr><td>Проверить, что Гоар подключилась</td><td>Организатор</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>2.2. Поминутный регламент эфира (60 минут)</h3>
+    <p>Единый шаблон для всех 5 модулей. Конкретное содержание (вопросы, сценарии, кодовые слова) &mdash; специфично для каждого модуля (см. M3-02, Блок 2).</p>
+
+    <div class="table-wrapper">
+      <table>
+        <thead>
+          <tr>
+            <th style="width:8%;">Время</th>
+            <th style="width:10%;">Блок</th>
+            <th style="width:30%;">Содержание</th>
+            <th style="width:12%;">Кто ведёт</th>
+            <th style="width:30%;">Действия организатора</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>-10:00 - 0:00</td><td>Предэфир</td><td>Участники заходят, проверяют камеру и микрофон</td><td>&mdash;</td><td>Организатор встречает, помогает с техникой, проверяет готовность AI-платформы</td></tr>
+          <tr><td>0:00 - 0:05</td><td>Вход</td><td>Вовлекающий вопрос Гоар, рамка модуля</td><td>Гоар</td><td>Организатор наблюдает за чатом, фиксирует ответы</td></tr>
+          <tr><td>0:05 - 0:07</td><td>Инструктаж</td><td>Напоминание ролей А и Б, правил поединка, длительности (5+5 мин)</td><td>Гоар</td><td>Организатор готовит запуск breakout rooms</td></tr>
+          <tr><td class="table-accent">0:07</td><td class="table-accent">Старт поединков</td><td>&laquo;Поехали!&raquo; &mdash; участники уходят в breakout rooms</td><td>Гоар даёт сигнал</td><td>Организатор запускает breakout rooms, проверяет, что все попали в комнаты</td></tr>
+          <tr><td>0:07 - 0:12</td><td>Раунд 1 (Роль А ведёт)</td><td>Поединок в breakout rooms, AI-платформа транскрибирует</td><td>Участники</td><td>Организатор мониторит: все ли в комнатах, нет ли технических проблем</td></tr>
+          <tr><td class="table-accent">0:12</td><td class="table-accent">Сигнал &laquo;СМЕНА!&raquo;</td><td>Broadcast-сообщение в breakout rooms: &laquo;СМЕНА! Теперь ведёт Роль Б&raquo;</td><td>&mdash;</td><td>Организатор отправляет broadcast</td></tr>
+          <tr><td>0:12 - 0:17</td><td>Раунд 2 (Роль Б ведёт)</td><td>Поединок продолжается, роли меняются</td><td>Участники</td><td>Организатор мониторит</td></tr>
+          <tr><td class="table-accent">0:17</td><td class="table-accent">Сигнал &laquo;Возвращаемся&raquo;</td><td>Broadcast: &laquo;Возвращаемся в зал. 30 секунд&raquo;</td><td>&mdash;</td><td>Организатор отправляет broadcast, закрывает breakout rooms через 30 сек</td></tr>
+          <tr><td>0:17 - 0:22</td><td>Возврат и рефлексия</td><td>Вопросы-триггеры в чат (2-3 вопроса по теме модуля)</td><td>Гоар</td><td>Организатор читает чат, выделяет интересные ответы для Гоар</td></tr>
+          <tr><td>0:22 - 0:37</td><td>Разбор пары 1</td><td>Публичный разбор одной пары: AI-скоринг (если доступен в реальном времени) + экспертный слой Гоар</td><td>Гоар</td><td>Организатор выводит данные AI-скоринга (если доступны)</td></tr>
+          <tr><td>0:37 - 0:52</td><td>Разбор пары 2</td><td>Разбор второй пары, сравнение подходов</td><td>Гоар</td><td>Аналогично</td></tr>
+          <tr><td>0:52 - 1:00</td><td>Итог</td><td>Паттерн недели, мостик к каналу (разборы Чт-Пт), мостик к следующему модулю</td><td>Гоар</td><td>Организатор готовит пост-резюме для канала</td></tr>
+          <tr><td>После эфира</td><td>Завершение</td><td>Остановить запись, запустить генерацию AI-скоринга</td><td>&mdash;</td><td>Организатор останавливает запись, тех. специалист запускает скоринг</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="highlight-box">
+      <p><strong>Хронометраж:</strong> Теория/вход: 7 мин. Поединки: 10 мин. Рефлексия: 5 мин. Разборы: 30 мин (главная часть &mdash; максимальная ценность от Гоар). Итог: 8 мин.</p>
+    </div>
+
+    <h3>2.3. Протокол формирования пар для поединков</h3>
+    <div class="table-wrapper">
+      <table>
+        <thead><tr><th>Параметр</th><th>Правило</th></tr></thead>
+        <tbody>
+          <tr><td class="table-accent">Когда формируются</td><td>За 24-48 часов до эфира, после подтверждения списка присутствующих</td></tr>
+          <tr><td class="table-accent">Кто формирует</td><td>Организатор</td></tr>
+          <tr><td class="table-accent">Критерии</td><td>Модули 1-2: случайное распределение (участники ещё не знакомы). Модули 3-5: ротация &mdash; каждый эфир новый оппонент (не повторять пары)</td></tr>
+          <tr><td class="table-accent">Размер пары</td><td>2 человека. При нечётном числе &mdash; одна тройка</td></tr>
+          <tr><td class="table-accent">Инструмент</td><td>Таблица (Excel/Sheets): столбцы &mdash; имя, модуль, предыдущие пары, текущий партнёр</td></tr>
+          <tr><td class="table-accent">Когда распределяются в Zoom</td><td>За 10 минут до эфира организатор заранее настраивает breakout rooms (Assign participants)</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>2.4. Протокол при нечётном числе участников</h3>
+    <p><strong>Формат: тройка с ротацией ролей</strong></p>
+    <div class="table-wrapper">
+      <table>
+        <thead>
+          <tr><th>Раунд</th><th>Участник 1</th><th>Участник 2</th><th>Участник 3</th><th>Длительность</th></tr>
+        </thead>
+        <tbody>
+          <tr><td class="table-accent">1</td><td>Роль А (ведёт)</td><td>Роль Б (оппонент)</td><td>Наблюдатель (молчит, фиксирует)</td><td>5 мин</td></tr>
+          <tr><td class="table-accent">2</td><td>Наблюдатель</td><td>Роль А (ведёт)</td><td>Роль Б (оппонент)</td><td>5 мин</td></tr>
+          <tr><td class="table-accent">3</td><td>Роль Б (оппонент)</td><td>Наблюдатель</td><td>Роль А (ведёт)</td><td>5 мин</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <ul class="list-styled">
+      <li>Общая длительность тройки: 15 мин (вместо 10 для пары)</li>
+      <li>Broadcast-сообщения для тройки: &laquo;СМЕНА 1!&raquo; (через 5 мин), &laquo;СМЕНА 2!&raquo; (через 10 мин), &laquo;Возвращаемся&raquo; (через 15 мин)</li>
+      <li>Наблюдатель даёт краткую обратную связь (30 сек) после каждого раунда &mdash; что увидел</li>
+      <li>AI-платформа транскрибирует речь всех трёх участников</li>
+    </ul>
+
+    <div class="warning-block">
+      <p><strong>[требует уточнения у клиента]</strong> Предпочтительный вариант: тройка с ротацией или организатор в паре? Рекомендация: тройка, так как роль наблюдателя развивает аналитический навык.</p>
+    </div>
+
+    <h3>2.5. Стандарты разборов Гоар в канале (голосовые, Чт-Пт)</h3>
+    <div class="table-wrapper">
+      <table>
+        <thead><tr><th>Параметр</th><th>Стандарт</th></tr></thead>
+        <tbody>
+          <tr><td class="table-accent">Количество</td><td>2 голосовых в неделю (Чт и Пт)</td></tr>
+          <tr><td class="table-accent">Длительность</td><td>5-7 минут каждое</td></tr>
+          <tr><td class="table-accent">Содержание</td><td>Разбор 1-2 поединков из базы AI-скоринга. Акцент на том, что AI не видит: энергия, тело, паттерны поведения</td></tr>
+          <tr><td class="table-accent">Формат</td><td>Голосовое сообщение в Telegram-канале</td></tr>
+          <tr><td class="table-accent">Подготовка</td><td>Организатор выбирает 2-4 поединка для разбора (интересные кейсы), отправляет Гоар транскрипции/данные скоринга. Гоар записывает голосовое без подготовки (реакция на конкретный кейс &mdash; формат, который ей подходит, см. goar-voice-rules)</td></tr>
+          <tr><td class="table-accent">Нагрузка на Гоар</td><td>~14 минут в неделю (2 x 7 мин)</td></tr>
+          <tr><td class="table-accent">Публикация</td><td>Организатор публикует в канале, добавляет текстовое описание контекста поединка (без имён участников)</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>2.6. Стандарты аудио-разборов для тарифа Персональный</h3>
+    <div class="table-wrapper">
+      <table>
+        <thead><tr><th>Параметр</th><th>Стандарт</th></tr></thead>
+        <tbody>
+          <tr><td class="table-accent">Количество</td><td>1 аудио-разбор на участника за весь курс</td></tr>
+          <tr><td class="table-accent">Длительность</td><td>5-7 минут</td></tr>
+          <tr><td class="table-accent">Содержание</td><td>Персональный разбор поединка выбранного участником модуля: что сделал хорошо, что тренировать дальше</td></tr>
+          <tr><td class="table-accent">Когда участник выбирает модуль</td><td>После модуля 3 (когда пройдена половина курса) &mdash; дедлайн выбора: воскресенье 4-й недели</td></tr>
+          <tr><td class="table-accent">Когда Гоар записывает</td><td>Пакетом после завершения всех 5 модулей. Не по мере поступления запросов &mdash; это экономит время и позволяет записать серию за один подход</td></tr>
+          <tr><td class="table-accent">Доставка участнику</td><td>Email или Telegram (личное сообщение) &mdash; в течение 7 дней после финального эфира</td></tr>
+          <tr><td class="table-accent">Нагрузка на Гоар</td><td>При 30 участниках Персональный (оптимистичный): ~30 x 7 мин = 3.5 часа. При 15 (консервативный): ~1.75 часа</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="warning-block">
+      <p><strong>[требует уточнения у клиента]</strong> Механика выбора модуля: через бот, в канале, через менеджера? Что делать, если участник не выбрал до дедлайна &mdash; назначать модуль 5 по умолчанию?</p>
+    </div>
+
+    <h3>2.7. Протокол при техническом сбое (во время эфира)</h3>
+
+    <div class="highlight-box">
+      <p><strong>Правило 5 минут:</strong> если проблему не удалось решить за 5 минут &mdash; переходить к резервному решению. Не тратить время эфира на отладку.</p>
+    </div>
+
+    <div class="table-wrapper">
+      <table>
+        <thead>
+          <tr><th>Тип сбоя</th><th>Немедленное действие</th><th>Резерв</th><th>Коммуникация</th></tr>
+        </thead>
+        <tbody>
+          <tr><td class="table-accent">Breakout rooms не работают</td><td>Перезагрузить Zoom, попробовать создать rooms заново</td><td>Google Meet: разослать ссылки на комнаты из подготовленной таблицы</td><td>&laquo;Переходим на резервную платформу. Ссылку на вашу комнату отправлю в личные сообщения Zoom/Telegram&raquo;</td></tr>
+          <tr><td class="table-accent">AI-платформа не транскрибирует</td><td>Эфир продолжается. Гоар усиливает экспертный разбор</td><td>Запись Zoom &rarr; транскрипция постфактум &rarr; скоринг с задержкой</td><td>&laquo;AI-отчёт придёт позже обычного. Сегодня &mdash; усиленный экспертный разбор&raquo;</td></tr>
+          <tr><td class="table-accent">Zoom полностью упал</td><td>Организатор пишет в Telegram-канал в течение 3 минут</td><td>Перенос на резервный день (определён заранее)</td><td>&laquo;Zoom-сбой. Переносим эфир на [резервный день, время]. Приносим извинения&raquo;</td></tr>
+          <tr><td class="table-accent">У Гоар пропал интернет</td><td>Организатор ведёт &laquo;заморозку&raquo;: даёт задание в чат на 5-10 мин</td><td>Если Гоар не возвращается 10 мин &mdash; перенос</td><td>&laquo;Технический сбой у ведущей. Пока она восстанавливает соединение &mdash; задание в чат: [мини-рефлексия]&raquo;</td></tr>
+          <tr><td class="table-accent">Участник не попал в breakout room</td><td>Организатор вручную перемещает участника</td><td>Если невозможно &mdash; участник наблюдает из основного зала</td><td>&laquo;[Имя], переместим вас в комнату вручную. Одну секунду&raquo;</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+  </div>
+</section>
+
+<!-- ============================== -->
+<!-- БЛОК 3: ТРЕБОВАНИЯ К КОНТЕНТУ -->
+<!-- ============================== -->
+<section class="section-large" id="b3">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-tag">Блок 3 — Требования к контенту</div>
+      <h2>Учебные материалы и каналы</h2>
+    </div>
+
+    <h3>3.1. Структура учебного материала каждого модуля</h3>
+    <div class="table-wrapper">
+      <table>
+        <thead><tr><th>Элемент</th><th>Формат</th><th>Объём</th><th>Когда открывается</th><th>Кто создаёт</th></tr></thead>
+        <tbody>
+          <tr><td class="table-accent">Видео-теория</td><td>Предзаписанное видео</td><td>20 мин</td><td>Понедельник недели модуля</td><td>Гоар + продакшн (одноразово, повторно используется)</td></tr>
+          <tr><td class="table-accent">Сценарий поединка</td><td>Текстовый документ</td><td>1-2 страницы</td><td>Понедельник (вместе с видео-теорией)</td><td>Одноразово (5 сценариев на курс)</td></tr>
+          <tr><td class="table-accent">Мини-задание до эфира</td><td>Текст (1-3 предложения)</td><td>1 абзац</td><td>Понедельник (в канале)</td><td>Одноразово</td></tr>
+          <tr><td class="table-accent">Параметры AI-скоринга модуля</td><td>Настройки AI-платформы</td><td>&mdash;</td><td>До начала потока</td><td>Тех. специалист + Гоар (валидация)</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>3.2. Формат и объём видео-теории</h3>
+    <div class="table-wrapper">
+      <table>
+        <thead><tr><th>Модуль</th><th>Тема видео</th><th>Ключевые элементы</th><th>Длительность</th></tr></thead>
+        <tbody>
+          <tr><td class="table-accent">1</td><td>Амигдала, квадратное дыхание, просодия, режимы звучания, пауза</td><td>Страх &rarr; энергия, 3 режима звучания, пауза как инструмент</td><td>20 мин</td></tr>
+          <tr><td class="table-accent">2</td><td>Модель Монро, правило трёх, крючки внимания, DMN</td><td>5 шагов убеждения, как удерживать внимание</td><td>20 мин</td></tr>
+          <tr><td class="table-accent">3</td><td>Три типа сбивок, формула ППП, рамка vs реакция</td><td>Повтор-пауза-перевод, удержание рамки при давлении</td><td>20 мин</td></tr>
+          <tr><td class="table-accent">4</td><td>Нейроадаптация к сумме, &laquo;назови и замолчи&raquo;, формула ценности</td><td>Тренировка произнесения суммы, удержание при &laquo;дорого&raquo;</td><td>20 мин</td></tr>
+          <tr><td class="table-accent">5</td><td>Эмоциональное заражение, три режима энергии, интеграция</td><td>Сборка всех элементов в систему</td><td>20 мин</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="highlight-box">
+      <p><strong>Формат видео:</strong> Гоар в кадре (не слайды с озвучкой). Минимум визуальных материалов &mdash; максимум живого объяснения. Формат соответствует её стилю: реакция на конкретные ситуации, не абстрактная лекция.</p>
+    </div>
+
+    <ul class="list-styled">
+      <li>Качество: FullHD, хороший звук, нейтральный фон</li>
+      <li>Монтаж: минимальный (не разбивать на &laquo;красивые нарезки&raquo; &mdash; это кастрирует экспертизу, см. goar-voice-rules)</li>
+      <li>Субтитры: рекомендованы (для просмотра без звука)</li>
+      <li>Срок создания: 5 видео записываются за 1-2 съёмочных дня (пакетная запись)</li>
+      <li>Повторное использование: видео одинаковы для всех потоков, перезаписываются только при значительных изменениях методологии</li>
+    </ul>
+
+    <h3>3.3. Сценарии поединков (5 модулей)</h3>
+    <div class="table-wrapper">
+      <table>
+        <thead><tr><th>Модуль</th><th>Сложность</th><th>Ситуация</th><th>Роль А</th><th>Роль Б</th></tr></thead>
+        <tbody>
+          <tr><td class="table-accent">1</td><td>Мягкий</td><td>Первая встреча с крупным клиентом</td><td>Представляет компанию/услугу, обозначает позицию</td><td>Сдержанный клиент, прямые вопросы, не агрессивный</td></tr>
+          <tr><td class="table-accent">2</td><td>Средний</td><td>Презентация проекта совету директоров</td><td>Руководитель, запрашивает бюджет 2 млн, модель Монро</td><td>Скептичный директор, вопросы &laquo;Зачем?&raquo;, &laquo;Какие риски?&raquo;</td></tr>
+          <tr><td class="table-accent">3</td><td>Жёсткий</td><td>Совещание: руководство давит при коллегах</td><td>Руководитель отдела, удержать позицию</td><td>Перебивает, обесценивает, подменяет тему</td></tr>
+          <tr><td class="table-accent">4</td><td>Боевой</td><td>Клиент требует скидку 40%</td><td>Продаёт услугу за 500 000, удержать цену</td><td>Давит &laquo;дорого&raquo;, блефует, торгуется</td></tr>
+          <tr><td class="table-accent">5</td><td>Максимум</td><td>Переговоры о крупном контракте (партнёрство/инвестиция)</td><td>Финальный бой: убедить + выдержать + назвать цену</td><td>Комбинирует всё: вопросы + давление + торг</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>3.4. Структура переговорного профиля (PDF, только тариф Персональный)</h3>
+    <div class="table-wrapper">
+      <table>
+        <thead><tr><th>Раздел профиля</th><th>Содержание</th><th>Источник данных</th></tr></thead>
+        <tbody>
+          <tr><td class="table-accent">Общая информация</td><td>Имя, даты потока, тариф</td><td>CRM</td></tr>
+          <tr><td class="table-accent">Динамика по модулям</td><td>Графики/таблица: показатели модулей 1-5 по каждому параметру</td><td>AI-платформа</td></tr>
+          <tr><td class="table-accent">Сильные стороны</td><td>Параметры, по которым участник стабильно показывает высокие результаты</td><td>AI-платформа</td></tr>
+          <tr><td class="table-accent">Зоны роста</td><td>Параметры, по которым динамика слабая или отрицательная</td><td>AI-платформа</td></tr>
+          <tr><td class="table-accent">Интегральная оценка (модуль 5)</td><td>Influence / Trust / Team &mdash; итоговые баллы</td><td>AI-платформа</td></tr>
+          <tr><td class="table-accent">Сравнение: модуль 1 vs модуль 5</td><td>Конкретные показатели: было &rarr; стало</td><td>AI-платформа</td></tr>
+          <tr><td class="table-accent">Рекомендации</td><td>Что тренировать дальше, какой продукт экосистемы подходит (клуб / &laquo;Переговоры без потерь&raquo; / наставничество)</td><td>Автоматическая генерация + ручная корректировка</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <ul class="list-styled">
+      <li><strong>Формат:</strong> PDF, 3-5 страниц, брендированный дизайн</li>
+      <li><strong>Срок выдачи:</strong> В течение 7-10 дней после финального эфира</li>
+      <li><strong>Кто создаёт:</strong> AI-платформа генерирует данные &rarr; организатор/дизайнер оформляет в PDF</li>
+    </ul>
+
+    <h3>3.5. Контент Telegram-канала между эфирами</h3>
+    <div class="table-wrapper">
+      <table>
+        <thead><tr><th>День</th><th>Тип поста</th><th>Кто готовит</th><th>Кто публикует</th><th>Формат</th></tr></thead>
+        <tbody>
+          <tr><td class="table-accent">Пн</td><td>Открытие модуля: видео-теория доступна, сценарий, мини-задание</td><td>Одноразово (шаблон)</td><td>Организатор</td><td>Текст + ссылка на видео</td></tr>
+          <tr><td class="table-accent">За 1 день до эфира</td><td>Напоминание об эфире</td><td>Одноразово (шаблон)</td><td>Организатор</td><td>Текст + ссылка на Zoom</td></tr>
+          <tr><td class="table-accent">День эфира (вечер)</td><td>Пост-резюме: ключевой паттерн, статистика чата</td><td>Организатор после эфира</td><td>Организатор</td><td>Текст</td></tr>
+          <tr><td class="table-accent">Чт</td><td>Разбор поединка #1</td><td>Гоар (голосовое)</td><td>Организатор</td><td>Голосовое 5-7 мин + текстовый контекст</td></tr>
+          <tr><td class="table-accent">Пт</td><td>Разбор поединка #2</td><td>Гоар (голосовое)</td><td>Организатор</td><td>Голосовое 5-7 мин + текстовый контекст</td></tr>
+          <tr><td>Между эфирами</td><td>Триггер: статистика / цитата / мини-задание</td><td>Организатор</td><td>Организатор</td><td>Текст (1-2 раза в неделю)</td></tr>
+          <tr><td class="table-accent">Вс</td><td>Мостик к следующему модулю</td><td>Одноразово (шаблон)</td><td>Организатор</td><td>Текст: &laquo;На следующей неделе &mdash; [тема]. Почему это важно после [предыдущая тема]&raquo;</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>3.6. Welcome-материалы (после оплаты)</h3>
+    <div class="table-wrapper">
+      <table>
+        <thead><tr><th>Материал</th><th>Формат</th><th>Канал доставки</th><th>Кто готовит</th></tr></thead>
+        <tbody>
+          <tr><td>Приветственное письмо</td><td>Email</td><td>Автоматическое из CRM</td><td>Организатор (шаблон, одноразово)</td></tr>
+          <tr><td>Расписание потока</td><td>PDF или текст</td><td>Email + Telegram-канал</td><td>Организатор</td></tr>
+          <tr><td>Технический чеклист</td><td>Текст / PDF</td><td>Email</td><td>Организатор</td></tr>
+          <tr><td>Инструкция по Zoom (breakout rooms)</td><td>Текст / короткое видео</td><td>Email</td><td>Организатор (одноразово)</td></tr>
+          <tr><td>Ссылка на Telegram-канал</td><td>Инвайт-ссылка</td><td>Email</td><td>Организатор</td></tr>
+          <tr><td>Доступ к платформе видео-теории</td><td>Логин/ссылка</td><td>Email</td><td>Организатор</td></tr>
+          <tr><td>Правила участия</td><td>Текст</td><td>Email + закреплённый пост в канале</td><td>Организатор</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+  </div>
+</section>
+
+<!-- ============================== -->
+<!-- БЛОК 4: ТРЕБОВАНИЯ К КОМАНДЕ -->
+<!-- ============================== -->
+<section class="section-large" id="b4">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-tag">Блок 4 — Требования к команде</div>
+      <h2>Состав, RACI и бюджет времени</h2>
+    </div>
+
+    <h3>4.1. Минимальный состав команды</h3>
+    <div class="table-wrapper">
+      <table>
+        <thead><tr><th>Роль</th><th>Функции</th><th>Тип занятости</th><th>Обязательность</th></tr></thead>
+        <tbody>
+          <tr><td class="table-accent">Гоар Багдасарова (эксперт)</td><td>Ведение эфиров, голосовые разборы, аудио-разборы Персональных, валидация AI-скоринга</td><td>Частичная (12-15 ч за поток)</td><td>Обязательно</td></tr>
+          <tr><td class="table-accent">Организатор / продюсер</td><td>Всё остальное: подготовка, Zoom, канал, email, пары, коммуникации, контроль AI, сбор метрик, обработка возвратов</td><td>Полная занятость в период потока</td><td>Обязательно</td></tr>
+          <tr><td class="table-accent">Технический специалист</td><td>Настройка AI-платформы, тестирование, мониторинг скоринга, резервные решения</td><td>Частичная (пиковая нагрузка до/во время эфиров)</td><td>Обязательно</td></tr>
+          <tr><td>Менеджер продаж</td><td>Обработка заявок, консультации по тарифам, рассрочки</td><td>Частичная (период набора)</td><td>Рекомендовано (можно совместить с организатором на первом потоке)</td></tr>
+          <tr><td>Дизайнер</td><td>Переговорный профиль (PDF), визуал канала</td><td>По задачам</td><td>Рекомендовано</td></tr>
+          <tr><td>Продакшн (видео)</td><td>Запись 5 видео-теорий</td><td>Разовая задача до старта</td><td>Обязательно (до первого потока)</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>4.2. Матрица RACI</h3>
+    <p><strong>R</strong> &mdash; Responsible (делает), <strong>A</strong> &mdash; Accountable (отвечает за результат), <strong>C</strong> &mdash; Consulted (консультирует), <strong>I</strong> &mdash; Informed (информирован)</p>
+
+    <h4>Фаза 1: Подготовка (за 6+ недель до старта)</h4>
+    <div class="table-wrapper">
+      <table>
+        <thead><tr><th>Задача</th><th>Гоар</th><th>Организатор</th><th>Тех. спец.</th><th>Менеджер</th></tr></thead>
+        <tbody>
+          <tr><td>Запись 5 видео-теорий</td><td class="table-accent">R</td><td>A, C</td><td>&mdash;</td><td>&mdash;</td></tr>
+          <tr><td>Настройка AI-платформы</td><td>C</td><td class="table-accent">A</td><td class="table-accent">R</td><td>&mdash;</td></tr>
+          <tr><td>Тестирование AI-скоринга (2 прогона)</td><td>C</td><td class="table-accent">A</td><td class="table-accent">R</td><td>&mdash;</td></tr>
+          <tr><td>Создание Telegram-канала</td><td>I</td><td class="table-accent">R, A</td><td>&mdash;</td><td>&mdash;</td></tr>
+          <tr><td>Подготовка лендинга</td><td>C</td><td class="table-accent">A</td><td>&mdash;</td><td>C</td></tr>
+          <tr><td>Настройка CRM + платёжного шлюза</td><td>I</td><td class="table-accent">A</td><td class="table-accent">R</td><td>C</td></tr>
+          <tr><td>Настройка email-цепочек</td><td>I</td><td class="table-accent">A</td><td class="table-accent">R</td><td>&mdash;</td></tr>
+          <tr><td>Подготовка welcome-материалов</td><td>C</td><td class="table-accent">R, A</td><td>&mdash;</td><td>&mdash;</td></tr>
+          <tr><td>Подготовка резервных ссылок Google Meet</td><td>&mdash;</td><td class="table-accent">R, A</td><td>&mdash;</td><td>&mdash;</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h4>Фаза 3: Проведение потока (5 недель)</h4>
+    <div class="table-wrapper">
+      <table>
+        <thead><tr><th>Задача</th><th>Гоар</th><th>Организатор</th><th>Тех. спец.</th><th>Менеджер</th></tr></thead>
+        <tbody>
+          <tr><td>Ведение живого эфира</td><td class="table-accent">R, A</td><td>C</td><td>&mdash;</td><td>&mdash;</td></tr>
+          <tr><td>Управление Zoom (breakout, broadcast)</td><td>&mdash;</td><td class="table-accent">R, A</td><td>C</td><td>&mdash;</td></tr>
+          <tr><td>Мониторинг AI-платформы во время эфира</td><td>&mdash;</td><td>C</td><td class="table-accent">R, A</td><td>&mdash;</td></tr>
+          <tr><td>Генерация и отправка AI-скоринга</td><td>&mdash;</td><td class="table-accent">A</td><td class="table-accent">R</td><td>&mdash;</td></tr>
+          <tr><td>Голосовые разборы в канале (2/нед)</td><td class="table-accent">R</td><td class="table-accent">A</td><td>&mdash;</td><td>&mdash;</td></tr>
+          <tr><td>Публикация контента в канале</td><td>C</td><td class="table-accent">R, A</td><td>&mdash;</td><td>&mdash;</td></tr>
+          <tr><td>Формирование пар для поединков</td><td>&mdash;</td><td class="table-accent">R, A</td><td>&mdash;</td><td>&mdash;</td></tr>
+          <tr><td>Отслеживание посещаемости</td><td>&mdash;</td><td class="table-accent">R, A</td><td>&mdash;</td><td>&mdash;</td></tr>
+          <tr><td>Хронометраж нагрузки Гоар</td><td>&mdash;</td><td class="table-accent">R, A</td><td>&mdash;</td><td>&mdash;</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>4.3. Бюджет времени Гоар: 12-15 часов за поток</h3>
+    <div class="table-wrapper">
+      <table>
+        <thead><tr><th>Активность</th><th>Время (за поток)</th><th>Можно делегировать?</th></tr></thead>
+        <tbody>
+          <tr><td>Проведение 5 эфиров (60 мин каждый)</td><td>5.0 ч</td><td>Нет &mdash; только Гоар</td></tr>
+          <tr><td>Голосовые разборы (2/нед x 5 нед x 7 мин)</td><td>1.2 ч</td><td>Нет &mdash; экспертный слой</td></tr>
+          <tr><td>Аудио-разборы Персональных (до 30 шт. x 7 мин)</td><td>3.5 ч (макс.)</td><td>Нет &mdash; персональная работа</td></tr>
+          <tr><td>Подготовка к эфиру (просмотр данных скоринга)</td><td>0.5-1.0 ч</td><td>Частично: организатор готовит сводку, Гоар только просматривает</td></tr>
+          <tr><td>Непредвиденное (вопросы, сбои)</td><td>1.0-2.0 ч</td><td>&mdash;</td></tr>
+          <tr><td class="table-accent"><strong>Итого</strong></td><td class="table-accent"><strong>11.2-12.7 ч</strong></td><td>&mdash;</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="highlight-box">
+      <p><strong>Что НЕ делает Гоар (делегировано организатору):</strong> Не формирует пары для поединков. Не публикует посты в канале (кроме голосовых). Не обрабатывает технические вопросы участников. Не занимается CRM, оплатами, рассрочками. Не ставит задачи команде и не &laquo;думает&raquo; над структурой &mdash; ей дают чёткие ТЗ (goar-voice-rules). Не готовит сценарии &mdash; использует готовые. Не генерирует темы для разборов &mdash; организатор выбирает кейсы, Гоар реагирует.</p>
+    </div>
+
+  </div>
+</section>
+
+<!-- ============================== -->
+<!-- БЛОК 5: КЛИЕНТСКИЙ ПУТЬ -->
+<!-- ============================== -->
+<section class="section-large" id="b5">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-tag">Блок 5 — Клиентский путь</div>
+      <h2>Touchpoints, коммуникации, офбординг</h2>
+    </div>
+
+    <h3>5.1. Карта touchpoints</h3>
+    <div class="table-wrapper">
+      <table>
+        <thead><tr><th style="width:3%;">#</th><th style="width:22%;">Touchpoint</th><th style="width:15%;">Канал</th><th style="width:15%;">Тип</th><th style="width:15%;">Ответственный</th><th style="width:15%;">Триггер</th></tr></thead>
+        <tbody>
+          <tr><td class="table-accent">1</td><td>Первое касание (контент / реклама / рекомендация)</td><td>Telegram / соцсети / реклама</td><td>Автоматический или органический</td><td>Маркетолог</td><td>&mdash;</td></tr>
+          <tr><td class="table-accent">2</td><td>Подписка на канал / бот</td><td>Telegram</td><td>Автоматический</td><td>Бот</td><td>Интерес</td></tr>
+          <tr><td class="table-accent">3</td><td>Прохождение мини-диагностики / лид-магнит</td><td>Бот</td><td>Автоматический</td><td>Бот</td><td>Подписка</td></tr>
+          <tr><td class="table-accent">4</td><td>Серия МК &laquo;Нейроречь&raquo; / запись МК</td><td>Telegram / бот</td><td>Гоар (эфир) + автоматический (запись)</td><td>Организатор</td><td>По расписанию</td></tr>
+          <tr><td class="table-accent">5</td><td>МК &laquo;Профайлинг&raquo; с диагностикой (трипвайер, 2 900 руб.)</td><td>Эфир + бот</td><td>Гоар (эфир) + автоматический (бот)</td><td>Организатор</td><td>После МК / из воронки</td></tr>
+          <tr><td class="table-accent">6</td><td>Челлендж &laquo;Твёрдое слово&raquo; (3 дня)</td><td>Видео + бот + эфир</td><td>Автоматический + Гоар (день 3)</td><td>Организатор</td><td>Перед открытием продаж</td></tr>
+          <tr><td>7</td><td>Лендинг курса</td><td>Сайт</td><td>Автоматический</td><td>&mdash;</td><td>Из челленджа / напрямую</td></tr>
+          <tr><td>8</td><td>Заявка / консультация</td><td>CRM / Telegram</td><td>Ручной</td><td>Менеджер продаж</td><td>Оставил заявку</td></tr>
+          <tr><td class="table-accent">9</td><td>Оплата</td><td>Платёжный шлюз</td><td>Автоматический</td><td>&mdash;</td><td>Решение о покупке</td></tr>
+          <tr><td class="table-accent">10</td><td>Welcome-письмо + доступы</td><td>Email</td><td>Автоматический</td><td>CRM / организатор</td><td>Оплата подтверждена</td></tr>
+          <tr><td>11-15</td><td>Вход в канал, доступ к платформе, видео-теория, мини-задание, напоминание</td><td>Telegram + Email</td><td>Полуавтоматический</td><td>Организатор</td><td>Еженедельно</td></tr>
+          <tr><td class="table-accent">16</td><td>Живой эфир с поединками</td><td>Zoom</td><td>Гоар</td><td>Гоар + организатор</td><td>День эфира</td></tr>
+          <tr><td class="table-accent">17</td><td>AI-скоринг на email</td><td>Email</td><td>Автоматический</td><td>AI-платформа</td><td>После эфира (до 24 ч)</td></tr>
+          <tr><td class="table-accent">18</td><td>Голосовые разборы Гоар</td><td>Telegram</td><td>Гоар</td><td>Организатор (публикация)</td><td>Чт + Пт</td></tr>
+          <tr><td>19-22</td><td>Триггеры, промежуточный NPS, финальный эфир, финальный скоринг</td><td>Telegram + Zoom + Email</td><td>Смешанный</td><td>Организатор + AI-платформа</td><td>По расписанию</td></tr>
+          <tr><td class="table-accent">23-24</td><td>Переговорный профиль PDF + Аудио-разбор от Гоар (Персональный)</td><td>Email / Telegram (ЛС)</td><td>Полуавтоматический</td><td>Тех. специалист + организатор</td><td>7-10 дней после финала</td></tr>
+          <tr><td>25-26</td><td>Финальный NPS + анкета, запрос отзыва</td><td>Google Forms + Telegram ЛС</td><td>Ручной / автоматический</td><td>Организатор</td><td>1-2 недели после финала</td></tr>
+          <tr><td class="table-accent">27-28</td><td>Предложение клуба + предложение &laquo;Переговоры без потерь&raquo;</td><td>Telegram + Email</td><td>Ручной</td><td>Организатор / менеджер</td><td>3-28 дней после финала</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>5.3. Онбординг после оплаты (первые 24-48 часов)</h3>
+    <div class="table-wrapper">
+      <table>
+        <thead><tr><th>Час</th><th>Действие</th><th>Канал</th><th>Кто</th></tr></thead>
+        <tbody>
+          <tr><td class="table-accent">0-1</td><td>Автоматическое welcome-письмо: расписание, доступы, чеклист</td><td>Email</td><td>CRM (автоматически)</td></tr>
+          <tr><td class="table-accent">0-2</td><td>Выдача инвайт-ссылки на Telegram-канал</td><td>Email / ЛС</td><td>Организатор</td></tr>
+          <tr><td class="table-accent">0-4</td><td>Выдача доступа к платформе видео-теории</td><td>Email</td><td>Организатор</td></tr>
+          <tr><td>0-24</td><td>Первый пост в канале для нового участника: &laquo;Добро пожаловать, [имя]! Расписание, правила &mdash; в закрепе&raquo;</td><td>Telegram</td><td>Организатор</td></tr>
+          <tr><td>24-48</td><td>Проверка: участник зашёл в канал? Есть доступ к платформе? Если нет &mdash; личное сообщение</td><td>Telegram ЛС</td><td>Организатор</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>5.4. Офбординг после курса</h3>
+
+    <h4>Мостик в клуб (3 900 руб./мес)</h4>
+    <ul class="list-styled">
+      <li><strong>Когда предлагается:</strong> В финальном эфире (блок &laquo;Итог&raquo;, 0:52-1:00) + email через 3-7 дней + пост в канале</li>
+      <li><strong>Аргумент:</strong> &laquo;Навык без регулярной практики угасает за 2-3 месяца. Клуб = среда, где навык не просто сохраняется, а углубляется: AI-симуляции, разборы, практика&raquo;</li>
+      <li><strong>Формат предложения:</strong> Не агрессивная продажа. Одно упоминание на эфире + одно письмо + один пост. Без повторных напоминаний</li>
+      <li><strong>Целевая конверсия:</strong> 20% выпускников за 30 дней (гипотеза 9, M3-05)</li>
+    </ul>
+
+    <h4>Мостик в &laquo;Переговоры без потерь&raquo; (от 75 000 руб.)</h4>
+    <ul class="list-styled">
+      <li><strong>Когда предлагается:</strong> Через 2-4 недели после финала (когда участник уже применил навыки в жизни)</li>
+      <li><strong>Аргумент:</strong> &laquo;У вас есть система КАК говорить. &laquo;Переговоры без потерь&raquo; &mdash; это КОГДА принимать решение и ЧТО выбирать. Шаг по цене: +5 100 руб. от Персонального тарифа&raquo;</li>
+      <li><strong>Формат предложения:</strong> Персонализированное письмо / сообщение, не массовая рассылка</li>
+      <li><strong>Целевая конверсия:</strong> 10% выпускников за 90 дней (гипотеза 10, M3-05)</li>
+    </ul>
+
+    <h3>5.5. Политика возвратов</h3>
+    <div class="table-wrapper">
+      <table>
+        <thead><tr><th>Параметр</th><th>Условие</th></tr></thead>
+        <tbody>
+          <tr><td class="table-accent">Срок возврата</td><td>[требует уточнения: до первого эфира / в течение первых 7 дней / после модуля 1]</td></tr>
+          <tr><td class="table-accent">Условия полного возврата</td><td>[требует уточнения]</td></tr>
+          <tr><td class="table-accent">Условия частичного возврата</td><td>[требует уточнения]</td></tr>
+          <tr><td>Кто обрабатывает</td><td>Организатор (первичный контакт) &rarr; менеджер продаж (финальное решение)</td></tr>
+          <tr><td>Срок обработки</td><td>Не более 5 рабочих дней с момента запроса</td></tr>
+          <tr><td>Возврат при рассрочке</td><td>[требует уточнения: возврат оплаченной части или прекращение последующих платежей]</td></tr>
+          <tr><td>Доступ после возврата</td><td>Закрывается: Telegram-канал, платформа видео-теории, AI-скоринг</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="warning-block">
+      <p><strong>[требует уточнения у клиента]</strong> Политика возвратов не описана в источниках. Рекомендация: возврат 100% до первого эфира, возврат 50% до модуля 3, без возврата после модуля 3. Формулировка для лендинга: &laquo;Если после первого эфира вы поняли, что формат не ваш &mdash; вернём деньги полностью&raquo;.</p>
+    </div>
+
+  </div>
+</section>
+
+<!-- ============================== -->
+<!-- БЛОК 6: ЧЕКЛИСТ ГОТОВНОСТИ -->
+<!-- ============================== -->
+<section class="section-large" id="b6">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-tag">Блок 6 — Чеклист готовности к запуску</div>
+      <h2>Три этапа проверки</h2>
+    </div>
+
+    <h3>За 6+ недель до старта &mdash; стратегическая готовность</h3>
+    <ul class="checklist">
+      <li>AI-платформа скоринга протестирована на реальной речи (2 полных прогона с тестовыми участниками). Корректность транскрипции &gt;90% на тестовых данных. Отчёт формируется в течение 4 часов</li>
+      <li>5 видео-теорий записаны и смонтированы. 5 видео по 20 мин, FullHD, хороший звук</li>
+      <li>5 сценариев поединков написаны и валидированы Гоар. Текстовые документы с описанием ролей А и Б</li>
+      <li>Платформа видео-теории настроена (хостинг, доступ по расписанию). Тестовый доступ работает</li>
+      <li>Zoom-аккаунт с поддержкой breakout rooms активирован. Тестовое создание 25 breakout rooms</li>
+      <li>CRM настроена: тарифы, статусы, интеграция с платёжным шлюзом. Тестовая оплата проходит</li>
+      <li>Платёжный шлюз настроен: полная оплата + рассрочка 3/4 мес. Тестовый платёж + тестовая рассрочка</li>
+      <li>Лендинг курса создан: два тарифа, кнопки оплаты, описание формата. Вся информация на месте, кнопки работают</li>
+      <li>Команда сформирована: организатор + тех. специалист (минимум). Все роли закрыты</li>
+      <li>Встреча-установка команды проведена. Все прочитали M3-01, M3-02, M3-06</li>
+      <li>Резервный день для переноса эфира определён и согласован с Гоар. Дата зафиксирована</li>
+      <li>Day-and-time для эфиров определён и согласован с Гоар. [требует уточнения]</li>
+    </ul>
+
+    <h3>За 2-4 недели до старта &mdash; операционная готовность</h3>
+    <ul class="checklist">
+      <li>Email-шаблоны подготовлены: welcome, напоминания, скоринг, NPS, отзыв. Все шаблоны написаны и загружены в email-сервис</li>
+      <li>Welcome-материалы готовы: чеклист, расписание, инструкция Zoom. PDF / текст</li>
+      <li>Telegram-канал потока создан, правила закреплены. Канал закрытый, закреплённый пост с правилами и расписанием</li>
+      <li>Контент-шаблоны для канала подготовлены: мини-задания (5 шт.), мостики (4 шт.), триггеры (10 шт.). Готовые тексты, запланированы по датам</li>
+      <li>Google Forms для NPS (промежуточный + финальный) и финальной анкеты созданы. Ссылки работают, анонимность настроена</li>
+      <li>Таблица метрик первого потока создана (20 метрик из M3-05, Блок 6). Google Sheets с колонками: метрика, значение, порог, факт</li>
+      <li>Резервные ссылки Google Meet (25 комнат) подготовлены. Все ссылки рабочие, в таблице</li>
+      <li>Технический прогон #1 проведён (Zoom + AI-платформа, без участников). Breakout rooms работают, AI транскрибирует</li>
+      <li>Прогрев запущен (челлендж / МК / трипвайер). Регистрации идут</li>
+      <li>Минимум 20 оплат получено (go/no-go порог для запуска). CRM: не менее 20 участников оплатили</li>
+    </ul>
+
+    <h3>За 3-7 дней до старта &mdash; финальная проверка</h3>
+    <ul class="checklist">
+      <li>Технический прогон #2 проведён: полная симуляция эфира с 3-5 тестовыми участниками. Весь цикл: breakout &rarr; поединок &rarr; AI-скоринг &rarr; отчёт на email</li>
+      <li>AI-скоринг: корректность на прогоне не менее 80% (hard criterion M3-05). Отчёты сформированы для всех тестовых участников</li>
+      <li>Все оплатившие участники получили welcome-письмо. CRM: статус &laquo;онбординг завершён&raquo; у всех</li>
+      <li>Все участники в Telegram-канале. Число участников в канале = число оплативших</li>
+      <li>Все участники имеют доступ к платформе видео-теории. Проверка по списку</li>
+      <li>Видео-теория модуля 1 готова к открытию в понедельник. Проверка доступа</li>
+      <li>Список пар для модуля 1 составлен. Таблица пар</li>
+      <li>Гоар подтвердила время первого эфира и готовность. Подтверждение получено</li>
+      <li>Резервные решения проверены: Google Meet ссылки работают, AI-fallback протокол распечатан. Всё работает</li>
+      <li>Go/no-go критерии из M3-05 проверены. Минимум 20 участников, AI-скоринг &gt;80% на прогоне, команда готова</li>
+    </ul>
+
+  </div>
+</section>
+
+<!-- ============================== -->
+<!-- БЛОК 7: ТРЕБУЕТ УТОЧНЕНИЯ -->
+<!-- ============================== -->
+<section class="section-large" id="b7">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-tag">Требует уточнения у клиента</div>
+      <h2>Открытые вопросы</h2>
+    </div>
+
+    <h3>Технические вопросы</h3>
+    <div class="table-wrapper">
+      <table>
+        <thead><tr><th style="width:3%;">#</th><th style="width:35%;">Вопрос</th><th style="width:35%;">Зачем нужен ответ</th><th style="width:17%;">Блокирует</th></tr></thead>
+        <tbody>
+          <tr><td class="table-accent">1</td><td>Статус готовности AI-платформы скоринга: разработана и протестирована? Есть бета? В процессе создания?</td><td>Определяет, возможен ли запуск с AI-скорингом или нужен fallback (экспертный разбор без AI)</td><td>Блок 1, Блок 6</td></tr>
+          <tr><td class="table-accent">2</td><td>Платформа для хостинга видео-теории: GetCourse / Kinescope / Telegram / другое?</td><td>Настройка доступов, загрузка видео, открытие по расписанию</td><td>Блок 3</td></tr>
+          <tr><td class="table-accent">3</td><td>CRM и платёжный шлюз: какая система? Тильда + ЮKassa / GetCourse / другое?</td><td>Настройка оплат, рассрочек, автоматических писем</td><td>Блок 1, Блок 5</td></tr>
+          <tr><td class="table-accent">4</td><td>Тип рассрочки: банковская (Тинькофф, Сбер) или собственная?</td><td>При банковской &mdash; комиссия 3-8%, но деньги сразу. При собственной &mdash; нет комиссии, но риск невыплат</td><td>Блок 5</td></tr>
+          <tr><td class="table-accent">5</td><td>Конкретная разница базового и расширенного AI-скоринга</td><td>Определяет аргументацию при продаже Персонального тарифа и техническое ТЗ для AI-платформы</td><td>Блок 1</td></tr>
+          <tr><td class="table-accent">6</td><td>Zoom: какой план (Business / Enterprise)? Есть ли аккаунт?</td><td>Business поддерживает до 50 breakout rooms. Enterprise &mdash; больше возможностей</td><td>Блок 1</td></tr>
+          <tr><td class="table-accent">7</td><td>Платформа для записей эфиров (тариф Персональный): облако / платформа курса / Telegram?</td><td>Где и как участники Персонального получают доступ к записям</td><td>Блок 2</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>Организационные вопросы</h3>
+    <div class="table-wrapper">
+      <table>
+        <thead><tr><th style="width:3%;">#</th><th style="width:35%;">Вопрос</th><th style="width:35%;">Зачем нужен ответ</th><th style="width:17%;">Блокирует</th></tr></thead>
+        <tbody>
+          <tr><td class="table-accent">8</td><td>День и время эфиров (МСК)</td><td>Расписание потока, формирование ожиданий участников</td><td>Блок 2, Блок 3, welcome-материалы</td></tr>
+          <tr><td class="table-accent">9</td><td>Планируемая дата первого потока</td><td>Обратный отсчёт для всех подготовительных задач</td><td>Блок 6 (все чеклисты)</td></tr>
+          <tr><td class="table-accent">10</td><td>Максимальный размер потока: 50 &mdash; жёсткий лимит или ориентир?</td><td>Ограничение на лендинге, количество breakout rooms, нагрузка на AI</td><td>Блок 1, Блок 2</td></tr>
+          <tr><td class="table-accent">11</td><td>Минимальное количество участников для запуска (go/no-go)</td><td>Порог, ниже которого поток переносится. Рекомендация: 20</td><td>Блок 6</td></tr>
+          <tr><td class="table-accent">12</td><td>Протокол при нечётном числе: тройка с ротацией или организатор в паре?</td><td>Подготовка организатора, инструкции для участников</td><td>Блок 2</td></tr>
+          <tr><td class="table-accent">13</td><td>Механика выбора модуля для аудио-разбора (Персональный): через бот / канал / менеджера?</td><td>Логистика процесса, дедлайн выбора</td><td>Блок 2</td></tr>
+          <tr><td class="table-accent">14</td><td>Формат диагностики перед стартом: AI-бот / живой созвон / анкета?</td><td>Определяет стартовую точку для измерения прогресса</td><td>Блок 5</td></tr>
+          <tr><td class="table-accent">15</td><td>Пропуск эфира участником Стандарт (у которого нет записей): компенсация или потеря?</td><td>Коммуникация участникам, политика курса</td><td>Блок 5</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>Финансовые вопросы</h3>
+    <div class="table-wrapper">
+      <table>
+        <thead><tr><th style="width:3%;">#</th><th style="width:35%;">Вопрос</th><th style="width:35%;">Зачем нужен ответ</th><th style="width:17%;">Блокирует</th></tr></thead>
+        <tbody>
+          <tr><td class="table-accent">16</td><td>Политика возвратов: сроки, условия, % возврата</td><td>Информация на лендинге, скрипт менеджера, юридические документы</td><td>Блок 5</td></tr>
+          <tr><td class="table-accent">17</td><td>Механика ранних птиц: будет ли скидка? Размер? Количество мест?</td><td>Стратегия продаж, лендинг</td><td>Блок 6 (фаза продаж)</td></tr>
+          <tr><td class="table-accent">18</td><td>OTO-цены: апгрейд Стандарт&rarr;Персональный, спец.цена &laquo;ПбП&raquo;, первый месяц клуба</td><td>Настройка воронки после покупки</td><td>Блок 5</td></tr>
+          <tr><td class="table-accent">19</td><td>Повышение цены после первого потока: планируется или нет?</td><td>Маркетинговый аргумент для первого потока</td><td>Блок 5</td></tr>
+          <tr><td class="table-accent">20</td><td>Себестоимость AI-скоринга на одного участника</td><td>Расчёт маржинальности потока</td><td>Финансовая модель</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+  </div>
+</section>
+
+<!-- Footer -->
+<footer class="footer">
+  <div class="container">
+    <p>BrandOS &middot; M3-06 PDR &middot; Гоар Багдасарова &middot; 9 апреля 2026</p>
+    <p style="margin-top: .5rem; font-size: .75rem;">Нейроупаковка v5 &middot; Источники: M3-01, M3-02, M3-03, M3-04, M3-05, goar-voice-rules.md</p>
+  </div>
+</footer>
+
+</body>
+</html>

@@ -1,0 +1,1279 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>M3-05 · Гипотезы продукта — План валидации первого потока · BrandOS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --primary: #0ea5e9;
+  --primary-dark: #0284c7;
+  --primary-light: #7dd3fc;
+  --primary-bg: #e0f2fe;
+  --background: #ffffff;
+  --foreground: #0f172a;
+  --card-bg: hsl(0,0%,97%);
+  --border: #1C1C1E;
+  --muted: #64748b;
+  --radius: 4px;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: 'Inter', sans-serif;
+  background: var(--background);
+  color: var(--foreground);
+  line-height: 1.75;
+  font-size: 16px;
+}
+
+.container { max-width: 1200px; margin: 0 auto; padding: 0 1.5rem; }
+
+.nav {
+  position: sticky;
+  top: 0;
+  background: white;
+  border-bottom: 1px solid var(--border);
+  z-index: 100;
+  padding: 1rem 0;
+}
+.nav-container { display: flex; justify-content: space-between; align-items: center; gap: 2rem; }
+.nav-brand { font-size: 1rem; font-weight: 700; color: var(--foreground); white-space: nowrap; }
+.nav-brand span { color: var(--primary); }
+.nav-links { display: flex; gap: 1.5rem; list-style: none; overflow-x: auto; flex-wrap: wrap; }
+.nav-links a {
+  color: var(--foreground);
+  text-decoration: none;
+  font-size: .875rem;
+  font-weight: 500;
+  white-space: nowrap;
+  transition: color .2s;
+}
+.nav-links a:hover { color: var(--primary); }
+
+.hero {
+  padding: 3.75rem 0;
+  background: linear-gradient(135deg, rgba(255,255,255,.98) 0%, rgba(240,249,255,.95) 100%);
+}
+.hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: .5rem;
+  padding: .5rem 1rem;
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  font-size: .875rem;
+  font-weight: 600;
+  margin-bottom: 1.5rem;
+  color: var(--foreground);
+}
+.hero h1 {
+  font-size: clamp(32px, 4vw, 51px);
+  font-weight: 500;
+  line-height: 1.2;
+  letter-spacing: -.03em;
+  margin-bottom: 1.5rem;
+}
+.hero-subtitle {
+  font-size: 1.125rem;
+  color: var(--muted);
+  margin-bottom: 2rem;
+}
+.hero-meta { display: flex; gap: 2rem; flex-wrap: wrap; }
+.hero-meta-item { font-size: .875rem; color: var(--muted); }
+.hero-meta-item strong { color: var(--primary); font-weight: 600; }
+
+.section { padding: 2.5rem 0; }
+.section-large { padding: 3.75rem 0; }
+@media (min-width: 768px) {
+  .section { padding: 3.75rem 0; }
+  .section-large { padding: 5rem 0; }
+}
+
+.section-header {
+  position: relative;
+  margin-bottom: 32px;
+  padding-top: 24px;
+}
+.section-header::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 1px;
+  background: repeating-linear-gradient(to right, #9CA3AF 0, #9CA3AF 4px, transparent 4px, transparent 8px);
+}
+
+.section-tag {
+  display: inline-block;
+  font-size: .75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: .1em;
+  color: var(--primary);
+  margin-bottom: .5rem;
+}
+
+h2 { font-size: 32px; font-weight: 300; line-height: 1.2; letter-spacing: -.02em; margin-bottom: 1rem; }
+h3 { font-size: 20px; font-weight: 600; line-height: 1.3; margin-bottom: 1rem; }
+
+p { margin-bottom: 1rem; color: var(--muted); }
+p:last-child { margin-bottom: 0; }
+
+.card {
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: linear-gradient(135deg, rgba(255,255,255,.98) 0%, rgba(250,250,252,.95) 100%);
+  padding: 1.5rem;
+  position: relative;
+  overflow: hidden;
+}
+.card-title { font-size: 1.0625rem; font-weight: 600; margin-bottom: .75rem; color: var(--foreground); }
+.card-description { font-size: .9375rem; line-height: 1.75; color: var(--muted); }
+.card-accent {
+  background: linear-gradient(135deg, rgba(14,165,233,.05) 0%, rgba(14,165,233,.02) 100%);
+  border-color: rgba(14,165,233,.25);
+}
+
+.grid { display: grid; gap: 1.5rem; }
+.grid-2 { grid-template-columns: 1fr; }
+.grid-3 { grid-template-columns: 1fr; }
+@media (min-width: 768px) {
+  .grid-2 { grid-template-columns: repeat(2, 1fr); }
+  .grid-3 { grid-template-columns: repeat(3, 1fr); }
+}
+
+.highlight-box {
+  background: linear-gradient(135deg, rgba(14,165,233,.05) 0%, rgba(14,165,233,.02) 100%);
+  border: 1px solid rgba(14,165,233,.2);
+  border-left: 4px solid var(--primary);
+  padding: 1.25rem 1.5rem;
+  border-radius: var(--radius);
+  margin: 1.5rem 0;
+}
+.highlight-box p { margin: 0; font-size: 1rem; }
+.highlight-box strong { color: var(--primary); }
+
+.warning-block {
+  background: linear-gradient(135deg, rgba(239,68,68,.04) 0%, rgba(239,68,68,.01) 100%);
+  border: 1px solid rgba(239,68,68,.18);
+  border-left: 4px solid #ef4444;
+  padding: 1.25rem 1.5rem;
+  border-radius: var(--radius);
+  margin: 1.5rem 0;
+}
+.warning-block p { margin: 0; font-size: .9375rem; color: var(--muted); }
+.warning-block strong { color: var(--foreground); }
+
+.list-styled { list-style: none; padding: 0; margin-bottom: 1rem; }
+.list-styled li { padding-left: 1.5rem; margin-bottom: .75rem; position: relative; color: var(--muted); font-size: .9375rem; }
+.list-styled li::before {
+  content: '';
+  position: absolute;
+  left: 0; top: .65rem;
+  width: 6px; height: 6px;
+  background: var(--primary);
+  border-radius: 50%;
+}
+
+.table-wrapper {
+  overflow-x: auto;
+  margin: 1.5rem 0;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+table { width: 100%; border-collapse: collapse; background: white; }
+th, td { padding: 1rem; text-align: left; border-bottom: 1px solid var(--border); }
+th {
+  background: var(--card-bg);
+  font-weight: 600;
+  font-size: .8125rem;
+  text-transform: uppercase;
+  letter-spacing: .05em;
+  color: var(--foreground);
+}
+td { font-size: .9375rem; color: var(--muted); }
+tr:last-child td { border-bottom: none; }
+tr:hover td { background: var(--card-bg); }
+.table-accent { color: var(--primary); font-weight: 600; }
+
+.footer {
+  padding: 2rem 0;
+  border-top: 1px solid var(--border);
+  text-align: center;
+  color: var(--muted);
+  font-size: .875rem;
+}
+
+@media (max-width: 768px) {
+  .container { padding: 0 1rem; }
+  h2 { font-size: 24px; }
+  h3 { font-size: 18px; }
+  .nav-links { gap: .75rem; }
+  .hero-meta { gap: 1rem; }
+}
+
+@media print {
+  @page { size: A4 landscape; margin: 1cm; }
+  .nav { display: none; }
+  .section { padding: 1.5rem 0; }
+  .hero { padding: 2rem 0; }
+}
+
+.card-detail { margin-top: .75rem; }
+.card-detail-label { font-size: .8125rem; font-weight: 600; color: var(--foreground); text-transform: uppercase; letter-spacing: .05em; margin-bottom: .25rem; }
+.card-detail-text { font-size: .9375rem; color: var(--muted); margin-bottom: .5rem; }
+.card-number { position: absolute; top: 1rem; right: 1.25rem; font-size: 2.5rem; font-weight: 700; color: rgba(14,165,233,.1); line-height: 1; }
+
+.hypo-card {
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: linear-gradient(135deg, rgba(255,255,255,.98) 0%, rgba(250,250,252,.95) 100%);
+  padding: 1.75rem;
+  position: relative;
+  overflow: hidden;
+  margin-bottom: 1.5rem;
+}
+.hypo-card .card-number { position: absolute; top: 1rem; right: 1.25rem; font-size: 3rem; font-weight: 700; color: rgba(14,165,233,.08); line-height: 1; }
+.hypo-card-title { font-size: 1.125rem; font-weight: 600; margin-bottom: .5rem; color: var(--foreground); padding-right: 3rem; }
+.hypo-card-statement { font-size: .9375rem; line-height: 1.75; color: var(--muted); margin-bottom: 1rem; }
+.hypo-card-detail { margin-bottom: .75rem; }
+.hypo-card-detail-label { font-size: .8125rem; font-weight: 600; color: var(--foreground); text-transform: uppercase; letter-spacing: .05em; margin-bottom: .25rem; }
+.hypo-card-detail-text { font-size: .9375rem; color: var(--muted); line-height: 1.7; }
+.hypo-threshold { background: var(--card-bg); border-radius: var(--radius); padding: 1rem 1.25rem; margin-top: 1rem; }
+.hypo-threshold p { margin: .25rem 0; font-size: .875rem; }
+
+.funnel-block {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.5rem;
+  margin: 1.5rem 0;
+  font-family: 'Inter', monospace;
+  font-size: .875rem;
+  line-height: 2;
+  color: var(--muted);
+  white-space: pre-line;
+}
+</style>
+</head>
+<body>
+
+<!-- Nav -->
+<nav class="nav">
+  <div class="container nav-container">
+    <div class="nav-brand">Brand<span>OS</span> &middot; Гипотезы</div>
+    <ul class="nav-links">
+      <li><a href="#b1">Ключевые гипотезы</a></li>
+      <li><a href="#b2">Unit Economics</a></li>
+      <li><a href="#b3">Конверсии</a></li>
+      <li><a href="#b4">Риски</a></li>
+      <li><a href="#b5">Go/No-Go</a></li>
+      <li><a href="#b6">Метрики</a></li>
+      <li><a href="#b7">Уточнения</a></li>
+    </ul>
+  </div>
+</nav>
+
+<!-- Hero -->
+<section class="hero">
+  <div class="container">
+    <div class="hero-badge">M3-05 &middot; Гипотезы продукта &mdash; План валидации первого потока &middot; BrandOS</div>
+    <h1>Гипотезы продукта<br><span style="color: var(--primary); font-weight: 300;">&laquo;Слово за тобой&raquo; v2.0</span></h1>
+    <p class="hero-subtitle">14 проверяемых гипотез, покрывающих шесть критических зон: доходимость, результативность, апсейл, повторная покупка, операционная нагрузка Гоар, работоспособность AI-скоринга</p>
+    <div class="hero-meta">
+      <div class="hero-meta-item"><strong>Дата:</strong> 9 апреля 2026</div>
+      <div class="hero-meta-item"><strong>Статус:</strong> Первая версия, требует валидации клиентом</div>
+      <div class="hero-meta-item"><strong>Источники:</strong> M3-01, M3-02, M3-03, M3-04, Ценовая архитектура 2026 v2.1</div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================== -->
+<!-- БЛОК 1: КЛЮЧЕВЫЕ ГИПОТЕЗЫ -->
+<!-- ============================== -->
+<section class="section-large" id="b1">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-tag">Блок 1 — Ключевые гипотезы продукта</div>
+      <h2>14 проверяемых гипотез первого потока</h2>
+    </div>
+
+    <p>Первый поток &laquo;Слово за тобой&raquo; &mdash; управляемый эксперимент. Ниже &mdash; 14 проверяемых гипотез, покрывающих шесть критических зон: доходимость, результативность, апсейл, повторная покупка, операционная нагрузка Гоар, работоспособность AI-скоринга.</p>
+
+    <!-- Гипотеза 1 -->
+    <div class="hypo-card">
+      <div class="card-number">01</div>
+      <div class="hypo-card-title">Гипотеза 1: Доходимость до модуля 5</div>
+      <div class="hypo-card-statement"><strong>Утверждение:</strong> Не менее 75% участников, начавших курс, дойдут до финального эфира (модуль 5).</div>
+      <div class="hypo-card-detail">
+        <div class="hypo-card-detail-label">Основание</div>
+        <div class="hypo-card-detail-text">Формат обязательного живого участия + еженедельные поединки создают эффект &laquo;вовлечения через действие&raquo;. Отсутствие записей в тарифе Стандарт мотивирует присутствовать на каждом эфире (M3-02, Блок 1). Закрытый Telegram-канал с разборами Гоар между эфирами поддерживает вовлечённость.</div>
+      </div>
+      <div class="hypo-card-detail">
+        <div class="hypo-card-detail-label">Как проверяем</div>
+        <div class="hypo-card-detail-text">Отслеживаем присутствие каждого участника на каждом из 5 эфиров через логи Zoom (подключение к breakout rooms).</div>
+      </div>
+      <div class="hypo-card-detail">
+        <div class="hypo-card-detail-label">Метрика</div>
+        <div class="hypo-card-detail-text">Процент участников, присутствовавших на эфире модуля 5, от общего числа оплативших.</div>
+      </div>
+      <div class="hypo-threshold">
+        <p><strong style="color: var(--primary);">75% и выше</strong> &mdash; гипотеза подтверждена.</p>
+        <p><strong>60-74%</strong> &mdash; частично подтверждена, требуется анализ причин отсева.</p>
+        <p><strong style="color: #ef4444;">Ниже 60%</strong> &mdash; гипотеза опровергнута, формат требует переработки перед вторым потоком.</p>
+      </div>
+    </div>
+
+    <!-- Гипотеза 2 -->
+    <div class="hypo-card">
+      <div class="card-number">02</div>
+      <div class="hypo-card-title">Гипотеза 2: Динамика доходимости по модулям</div>
+      <div class="hypo-card-statement"><strong>Утверждение:</strong> Основной отсев происходит между модулями 1 и 3. После модуля 3 доходимость стабилизируется (отсев менее 5% за модуль).</div>
+      <div class="hypo-card-detail">
+        <div class="hypo-card-detail-label">Основание</div>
+        <div class="hypo-card-detail-text">Модули 1-3 &mdash; нарастающая сложность от мягкого до жёсткого. Модуль 3 (давление и рамка) &mdash; психологически самый тяжёлый. Те, кто его прошёл, уже вовлечены в систему и видят первые результаты в AI-скоринге (M3-01, Блок 4).</div>
+      </div>
+      <div class="hypo-card-detail">
+        <div class="hypo-card-detail-label">Как проверяем</div>
+        <div class="hypo-card-detail-text">Посещаемость каждого эфира (абсолютные числа и процент от стартового состава).</div>
+      </div>
+      <div class="hypo-card-detail">
+        <div class="hypo-card-detail-label">Метрика</div>
+        <div class="hypo-card-detail-text">Процент отсева между каждыми двумя последовательными модулями.</div>
+      </div>
+      <div class="hypo-threshold">
+        <p><strong style="color: var(--primary);">Отсев модули 3-5 суммарно менее 10%</strong> от состава на модуле 3 &mdash; гипотеза подтверждена.</p>
+        <p><strong style="color: #ef4444;">Отсев после модуля 3 выше 15%</strong> &mdash; проблема не в &laquo;тяжёлом начале&raquo;, а в системном недовольстве.</p>
+      </div>
+    </div>
+
+    <!-- Гипотеза 3 -->
+    <div class="hypo-card">
+      <div class="card-number">03</div>
+      <div class="hypo-card-title">Гипотеза 3: Результативность &mdash; рост AI-скоринга</div>
+      <div class="hypo-card-statement"><strong>Утверждение:</strong> Не менее 70% участников, дошедших до модуля 5, покажут измеримый рост в AI-скоринге (улучшение хотя бы по 3 из 5 ключевых параметров) по сравнению с модулем 1.</div>
+      <div class="hypo-card-detail">
+        <div class="hypo-card-detail-label">Основание</div>
+        <div class="hypo-card-detail-text">Прогрессивная нагрузка (мягкий - средний - жёсткий - боевой - максимум) формирует нейронные связки через повторение под давлением. AI-скоринг фиксирует конкретные параметры: оправдательные конструкции, удержание позиции, структура аргументации, реакция на давление, удержание цены (M3-02, Блок 5).</div>
+      </div>
+      <div class="hypo-card-detail">
+        <div class="hypo-card-detail-label">Как проверяем</div>
+        <div class="hypo-card-detail-text">Сравнение AI-скоринга модуля 1 и модуля 5 по каждому участнику. Параметры: чёткость позиции, оправдательные конструкции, структура аргументации, реакция на давление, удержание цены.</div>
+      </div>
+      <div class="hypo-card-detail">
+        <div class="hypo-card-detail-label">Метрика</div>
+        <div class="hypo-card-detail-text">Процент участников с положительной динамикой по 3+ параметрам.</div>
+      </div>
+      <div class="hypo-threshold">
+        <p><strong style="color: var(--primary);">70% и выше</strong> &mdash; гипотеза подтверждена (продукт работает).</p>
+        <p><strong>50-69%</strong> &mdash; частично подтверждена (работает для части аудитории).</p>
+        <p><strong style="color: #ef4444;">Ниже 50%</strong> &mdash; гипотеза опровергнута (методика или измерение не работают).</p>
+      </div>
+    </div>
+
+    <!-- Гипотеза 4 -->
+    <div class="hypo-card">
+      <div class="card-number">04</div>
+      <div class="hypo-card-title">Гипотеза 4: AI-скоринг работает в реальных условиях</div>
+      <div class="hypo-card-statement"><strong>Утверждение:</strong> AI-скоринг корректно транскрибирует и анализирует поединки в breakout rooms Zoom для не менее 90% участников на каждом эфире.</div>
+      <div class="hypo-card-detail">
+        <div class="hypo-card-detail-label">Основание</div>
+        <div class="hypo-card-detail-text">AI-платформа записывает транскрипцию в реальном времени в breakout rooms (M3-02, Блок 3). Технические требования к участникам включают стабильный интернет, камеру, микрофон, тихое помещение. Однако реальные условия могут отличаться: фоновый шум, нестабильный интернет, акценты.</div>
+      </div>
+      <div class="hypo-card-detail">
+        <div class="hypo-card-detail-label">Как проверяем</div>
+        <div class="hypo-card-detail-text">После каждого эфира &mdash; проверка количества успешно сформированных отчётов AI-скоринга vs количества участников на эфире. Ручная проверка 20% отчётов на адекватность транскрипции.</div>
+      </div>
+      <div class="hypo-card-detail">
+        <div class="hypo-card-detail-label">Метрика</div>
+        <div class="hypo-card-detail-text">(Количество корректных отчётов / Количество участников на эфире) x 100%.</div>
+      </div>
+      <div class="hypo-threshold">
+        <p><strong style="color: var(--primary);">90% и выше</strong> &mdash; система работает.</p>
+        <p><strong>80-89%</strong> &mdash; допустимо с доработками.</p>
+        <p><strong style="color: #ef4444;">Ниже 80%</strong> &mdash; система ненадёжна, необходим ручной fallback.</p>
+      </div>
+    </div>
+
+    <!-- Гипотеза 5 -->
+    <div class="hypo-card">
+      <div class="card-number">05</div>
+      <div class="hypo-card-title">Гипотеза 5: Апсейл &mdash; доля тарифа Персональный</div>
+      <div class="hypo-card-statement"><strong>Утверждение:</strong> Не менее 50% покупателей флагмана выберут тариф Персональный (69 900 руб.).</div>
+      <div class="hypo-card-detail">
+        <div class="hypo-card-detail-label">Основание</div>
+        <div class="hypo-card-detail-text">В M3-04 базовый сценарий предполагает распределение 40/60 (Стандарт/Персональный). Персональный даёт аудио-разбор от Гоар, записи эфиров и переговорный профиль &mdash; ключевые дифференциаторы, которые невозможно масштабировать (M3-04, Блок 2). Целевая аудитория &mdash; руководители и собственники, для которых 20 000 руб. разницы не является барьером.</div>
+      </div>
+      <div class="hypo-card-detail">
+        <div class="hypo-card-detail-label">Как проверяем</div>
+        <div class="hypo-card-detail-text">Фактическое распределение продаж по тарифам.</div>
+      </div>
+      <div class="hypo-card-detail">
+        <div class="hypo-card-detail-label">Метрика</div>
+        <div class="hypo-card-detail-text">Доля тарифа Персональный в общем числе покупок флагмана.</div>
+      </div>
+      <div class="hypo-threshold">
+        <p><strong style="color: var(--primary);">50% и выше</strong> &mdash; гипотеза подтверждена (позиционирование Персонального работает).</p>
+        <p><strong>35-49%</strong> &mdash; допустимо, но нужно усилить аргументацию.</p>
+        <p><strong style="color: #ef4444;">Ниже 35%</strong> &mdash; аргумент &laquo;аудио-разбор + профиль&raquo; не убеждает, требуется переработка дифференциации тарифов.</p>
+      </div>
+    </div>
+
+    <!-- Гипотеза 6 -->
+    <div class="hypo-card">
+      <div class="card-number">06</div>
+      <div class="hypo-card-title">Гипотеза 6: Средний чек потока</div>
+      <div class="hypo-card-statement"><strong>Утверждение:</strong> Средний чек первого потока составит не менее 59 900 руб. (соответствует распределению 50/50 из M3-04).</div>
+      <div class="hypo-card-detail">
+        <div class="hypo-card-detail-label">Основание</div>
+        <div class="hypo-card-detail-text">Цена Стандарт &mdash; 49 900 руб., Персональный &mdash; 69 900 руб. При распределении 50/50 средний чек = 59 900. При 40/60 &mdash; 61 900 (M3-04, Блок 2).</div>
+      </div>
+      <div class="hypo-card-detail">
+        <div class="hypo-card-detail-label">Как проверяем</div>
+        <div class="hypo-card-detail-text">Общая выручка флагмана / количество участников.</div>
+      </div>
+      <div class="hypo-card-detail">
+        <div class="hypo-card-detail-label">Метрика</div>
+        <div class="hypo-card-detail-text">Средний чек в рублях.</div>
+      </div>
+      <div class="hypo-threshold">
+        <p><strong style="color: var(--primary);">59 900 руб. и выше</strong> &mdash; гипотеза подтверждена.</p>
+        <p><strong>55 000-59 899</strong> &mdash; сдвиг к Стандарту, требуется усиление аргументации Персонального.</p>
+        <p><strong style="color: #ef4444;">Ниже 55 000</strong> &mdash; тарифная матрица не работает.</p>
+      </div>
+    </div>
+
+    <!-- Гипотеза 7 -->
+    <div class="hypo-card">
+      <div class="card-number">07</div>
+      <div class="hypo-card-title">Гипотеза 7: Конверсия трипвайера в флагман</div>
+      <div class="hypo-card-statement"><strong>Утверждение:</strong> 15-25% покупателей трипвайера (МК &laquo;Профайлинг&raquo;, 2 900 руб.) купят &laquo;Слово за тобой&raquo;.</div>
+      <div class="hypo-card-detail">
+        <div class="hypo-card-detail-label">Основание</div>
+        <div class="hypo-card-detail-text">Данные из Ценовой архитектуры 2026 v2.1: клиент, заплативший 2 900 руб., в 3-4 раза чаще покупает основной курс. Стандартная конверсия трипвайера 5-10%, но для уже платящего клиента &mdash; 15-25%. Мост в конце МК &laquo;Профайлинг&raquo; связывает профиль участника с конкретными модулями курса.</div>
+      </div>
+      <div class="hypo-card-detail">
+        <div class="hypo-card-detail-label">Как проверяем</div>
+        <div class="hypo-card-detail-text">Количество покупателей флагмана из числа купивших трипвайер / Общее число покупателей трипвайера.</div>
+      </div>
+      <div class="hypo-card-detail">
+        <div class="hypo-card-detail-label">Метрика</div>
+        <div class="hypo-card-detail-text">Конверсия трипвайер-в-флагман (%).</div>
+      </div>
+      <div class="hypo-threshold">
+        <p><strong style="color: var(--primary);">15% и выше</strong> &mdash; гипотеза подтверждена.</p>
+        <p><strong>10-14%</strong> &mdash; частично (трипвайер работает, но мост слабый).</p>
+        <p><strong style="color: #ef4444;">Ниже 10%</strong> &mdash; трипвайер не прогревает к флагману, требуется доработка.</p>
+      </div>
+    </div>
+
+    <!-- Гипотеза 8 -->
+    <div class="hypo-card">
+      <div class="card-number">08</div>
+      <div class="hypo-card-title">Гипотеза 8: Операционная нагрузка Гоар &mdash; укладывается в бюджет</div>
+      <div class="hypo-card-statement"><strong>Утверждение:</strong> Суммарная нагрузка Гоар на первый поток не превысит 12 часов за 5 недель.</div>
+      <div class="hypo-card-detail">
+        <div class="hypo-card-detail-label">Основание</div>
+        <div class="hypo-card-detail-text">Расчёт из M3-02 (Блок 6): 5 эфиров по 60 мин = 5 ч; 10 голосовых разборов (2/нед x 5 нед x 7 мин) = ~1.2 ч; аудио-разборы Персональных = до 3.5 ч (при 30 чел). Итого ~10 ч. Буфер +2 ч на непредвиденное.</div>
+      </div>
+      <div class="hypo-card-detail">
+        <div class="hypo-card-detail-label">Как проверяем</div>
+        <div class="hypo-card-detail-text">Хронометраж всех активностей Гоар, связанных с потоком: эфиры, записи голосовых, аудио-разборы, непредвиденные задачи.</div>
+      </div>
+      <div class="hypo-card-detail">
+        <div class="hypo-card-detail-label">Метрика</div>
+        <div class="hypo-card-detail-text">Суммарные часы Гоар за поток.</div>
+      </div>
+      <div class="hypo-threshold">
+        <p><strong style="color: var(--primary);">До 12 часов</strong> &mdash; гипотеза подтверждена (нагрузка управляема).</p>
+        <p><strong>12-15 часов</strong> &mdash; допустимо, но требуется оптимизация перед масштабированием.</p>
+        <p><strong style="color: #ef4444;">Более 15 часов</strong> &mdash; формат перегружает эксперта, масштабирование невозможно без делегирования.</p>
+      </div>
+    </div>
+
+    <!-- Гипотеза 9 -->
+    <div class="hypo-card">
+      <div class="card-number">09</div>
+      <div class="hypo-card-title">Гипотеза 9: Повторная покупка &mdash; переход в клуб</div>
+      <div class="hypo-card-statement"><strong>Утверждение:</strong> Не менее 20% выпускников первого потока вступят в клуб (3 900 руб./мес) в течение 30 дней после окончания курса.</div>
+      <div class="hypo-card-detail">
+        <div class="hypo-card-detail-label">Основание</div>
+        <div class="hypo-card-detail-text">В конце курса (шаг 8 пути участника, M3-02 Блок 4) предлагается вступление в клуб для поддержания навыка. Участники, увидевшие рост в AI-скоринге, мотивированы продолжать. Низкий барьер входа (3 900 руб./мес) снижает трение.</div>
+      </div>
+      <div class="hypo-card-detail">
+        <div class="hypo-card-detail-label">Как проверяем</div>
+        <div class="hypo-card-detail-text">Количество подписчиков клуба из числа выпускников потока / Общее число выпускников.</div>
+      </div>
+      <div class="hypo-card-detail">
+        <div class="hypo-card-detail-label">Метрика</div>
+        <div class="hypo-card-detail-text">Конверсия выпускник-в-клуб (%) за первые 30 дней.</div>
+      </div>
+      <div class="hypo-threshold">
+        <p><strong style="color: var(--primary);">20% и выше</strong> &mdash; гипотеза подтверждена.</p>
+        <p><strong>10-19%</strong> &mdash; частично (мостик работает, но слабо).</p>
+        <p><strong style="color: #ef4444;">Ниже 10%</strong> &mdash; мостик к клубу не работает, требуется переработка оффера или тайминга предложения.</p>
+      </div>
+    </div>
+
+    <!-- Гипотеза 10 -->
+    <div class="hypo-card">
+      <div class="card-number">10</div>
+      <div class="hypo-card-title">Гипотеза 10: Повторная покупка &mdash; переход в &laquo;Переговоры без потерь&raquo;</div>
+      <div class="hypo-card-statement"><strong>Утверждение:</strong> Не менее 10% выпускников первого потока &laquo;Слово за тобой&raquo; купят &laquo;Переговоры без потерь&raquo; (от 75 000 руб.) в течение 3 месяцев после окончания курса.</div>
+      <div class="hypo-card-detail">
+        <div class="hypo-card-detail-label">Основание</div>
+        <div class="hypo-card-detail-text">Шаг между Флагманом (Персональный, 69 900) и &laquo;ПбП&raquo; Старт (75 000) составляет всего +7% (M3-04, Блок 5) &mdash; парадоксально маленький скачок. Мостик в конце курса: &laquo;У вас есть система КАК говорить. &laquo;Переговоры без потерь&raquo; &mdash; это КОГДА решать и ЧТО выбирать&raquo;.</div>
+      </div>
+      <div class="hypo-card-detail">
+        <div class="hypo-card-detail-label">Как проверяем</div>
+        <div class="hypo-card-detail-text">Количество покупок &laquo;ПбП&raquo; из числа выпускников / Общее число выпускников.</div>
+      </div>
+      <div class="hypo-card-detail">
+        <div class="hypo-card-detail-label">Метрика</div>
+        <div class="hypo-card-detail-text">Конверсия выпускник-в-ПбП (%).</div>
+      </div>
+      <div class="hypo-threshold">
+        <p><strong style="color: var(--primary);">10% и выше</strong> &mdash; гипотеза подтверждена.</p>
+        <p><strong>5-9%</strong> &mdash; частично.</p>
+        <p><strong style="color: #ef4444;">Ниже 5%</strong> &mdash; мостик не работает или продукт-лестница требует переосмысления.</p>
+      </div>
+    </div>
+
+    <!-- Гипотеза 11 -->
+    <div class="hypo-card">
+      <div class="card-number">11</div>
+      <div class="hypo-card-title">Гипотеза 11: NPS первого потока</div>
+      <div class="hypo-card-statement"><strong>Утверждение:</strong> NPS (Net Promoter Score) первого потока составит не менее 50.</div>
+      <div class="hypo-card-detail">
+        <div class="hypo-card-detail-label">Основание</div>
+        <div class="hypo-card-detail-text">Продукт строится на уникальном сочетании живых поединков + AI-скоринга + экспертного разбора (M3-01, Блок 3). Ни один конкурент в русскоязычном пространстве не предлагает аналогичного формата. Высокая вовлечённость формата (обязательное участие, нарастающая сложность) создаёт эмоциональную привязку к продукту.</div>
+      </div>
+      <div class="hypo-card-detail">
+        <div class="hypo-card-detail-label">Как проверяем</div>
+        <div class="hypo-card-detail-text">Анкета NPS после модуля 5 (вопрос: &laquo;Насколько вероятно, что вы порекомендуете курс знакомым?&raquo; шкала 0-10).</div>
+      </div>
+      <div class="hypo-card-detail">
+        <div class="hypo-card-detail-label">Метрика</div>
+        <div class="hypo-card-detail-text">NPS = % промоутеров (9-10) - % критиков (0-6).</div>
+      </div>
+      <div class="hypo-threshold">
+        <p><strong style="color: var(--primary);">50 и выше</strong> &mdash; гипотеза подтверждена (продукт рекомендуют).</p>
+        <p><strong>30-49</strong> &mdash; допустимо для первого потока, но нужно работать над слабыми местами.</p>
+        <p><strong style="color: #ef4444;">Ниже 30</strong> &mdash; серьёзные проблемы с удовлетворённостью.</p>
+      </div>
+    </div>
+
+    <!-- Гипотеза 12 -->
+    <div class="hypo-card">
+      <div class="card-number">12</div>
+      <div class="hypo-card-title">Гипотеза 12: Самый ценный модуль &mdash; Модуль 4 (Деньги и позиция)</div>
+      <div class="hypo-card-statement"><strong>Утверждение:</strong> Модуль 4 будет назван участниками как самый полезный/ценный в более чем 40% анкет обратной связи.</div>
+      <div class="hypo-card-detail">
+        <div class="hypo-card-detail-label">Основание</div>
+        <div class="hypo-card-detail-text">Модуль 4 тренирует &laquo;самую монетизируемую точку в переговорах&raquo; &mdash; момент называния цифры (M3-01, Блок 4). Техника &laquo;назови и замолчи&raquo; напрямую конвертируется в деньги. Целевая аудитория &mdash; руководители и собственники, для которых ценовые переговоры &mdash; ежедневная реальность.</div>
+      </div>
+      <div class="hypo-card-detail">
+        <div class="hypo-card-detail-label">Как проверяем</div>
+        <div class="hypo-card-detail-text">Вопрос в финальной анкете: &laquo;Какой модуль принёс вам наибольшую пользу?&raquo;</div>
+      </div>
+      <div class="hypo-card-detail">
+        <div class="hypo-card-detail-label">Метрика</div>
+        <div class="hypo-card-detail-text">Доля ответов &laquo;Модуль 4&raquo; от общего числа ответов.</div>
+      </div>
+      <div class="hypo-threshold">
+        <p><strong style="color: var(--primary);">40% и выше</strong> &mdash; гипотеза подтверждена (модуль 4 &mdash; якорь ценности).</p>
+        <p><strong>25-39%</strong> &mdash; модуль 4 ценен, но не доминирует (что тоже нормально).</p>
+        <p><strong style="color: #ef4444;">Ниже 25%</strong> &mdash; позиционирование &laquo;слова = деньги&raquo; не резонирует, требуется пересмотр маркетинговых акцентов.</p>
+      </div>
+    </div>
+
+    <!-- Гипотеза 13 -->
+    <div class="hypo-card">
+      <div class="card-number">13</div>
+      <div class="hypo-card-title">Гипотеза 13: Формат поединков создаёт воспринимаемую уникальность</div>
+      <div class="hypo-card-statement"><strong>Утверждение:</strong> Не менее 80% участников в финальной анкете отметят &laquo;поединки с живым оппонентом&raquo; как ключевое отличие курса от других обучающих программ.</div>
+      <div class="hypo-card-detail">
+        <div class="hypo-card-detail-label">Основание</div>
+        <div class="hypo-card-detail-text">Поединки &mdash; ядро формата (M3-02, Блок 5). Ни один конкурент не предлагает еженедельные переговорные поединки с AI-скорингом. Таблица дифференциации в M3-01 (Блок 3) показывает: рынок предлагает лекции + домашку, а &laquo;Слово за тобой&raquo; &mdash; поединки с живым оппонентом.</div>
+      </div>
+      <div class="hypo-card-detail">
+        <div class="hypo-card-detail-label">Как проверяем</div>
+        <div class="hypo-card-detail-text">Вопрос в финальной анкете: &laquo;Что отличает этот курс от других программ, которые вы проходили?&raquo; (открытый + закрытый с вариантами).</div>
+      </div>
+      <div class="hypo-card-detail">
+        <div class="hypo-card-detail-label">Метрика</div>
+        <div class="hypo-card-detail-text">Доля ответов, упоминающих поединки/живой формат.</div>
+      </div>
+      <div class="hypo-threshold">
+        <p><strong style="color: var(--primary);">80% и выше</strong> &mdash; формат воспринимается как уникальный.</p>
+        <p><strong>60-79%</strong> &mdash; частично.</p>
+        <p><strong style="color: #ef4444;">Ниже 60%</strong> &mdash; участники не считают формат уникальным, что подрывает основу дифференциации.</p>
+      </div>
+    </div>
+
+    <!-- Гипотеза 14 -->
+    <div class="hypo-card">
+      <div class="card-number">14</div>
+      <div class="hypo-card-title">Гипотеза 14: Диагностика (трипвайер) повышает конверсию в Персональный</div>
+      <div class="hypo-card-statement"><strong>Утверждение:</strong> Участники, прошедшие МК &laquo;Профайлинг&raquo; перед покупкой флагмана, выбирают тариф Персональный чаще на 15+ п.п. по сравнению с теми, кто купил флагман без трипвайера.</div>
+      <div class="hypo-card-detail">
+        <div class="hypo-card-detail-label">Основание</div>
+        <div class="hypo-card-detail-text">МК &laquo;Профайлинг&raquo; даёт карточку переговорного профиля (PDF). Участник видит свои слабые зоны. Персональный тариф даёт итоговый переговорный профиль &mdash; логическое продолжение диагностики. Связка: &laquo;Вот ваш стартовый профиль &rarr; Персональный тариф покажет динамику&raquo; (M3-04, Блок 5).</div>
+      </div>
+      <div class="hypo-card-detail">
+        <div class="hypo-card-detail-label">Как проверяем</div>
+        <div class="hypo-card-detail-text">Сравнение доли Персональных среди покупателей, прошедших трипвайер, vs покупателей, пришедших напрямую.</div>
+      </div>
+      <div class="hypo-card-detail">
+        <div class="hypo-card-detail-label">Метрика</div>
+        <div class="hypo-card-detail-text">Разница в доле Персональных (п.п.) между двумя группами.</div>
+      </div>
+      <div class="hypo-threshold">
+        <p><strong style="color: var(--primary);">Разница 15 п.п. и более</strong> &mdash; гипотеза подтверждена.</p>
+        <p><strong>5-14 п.п.</strong> &mdash; влияние есть, но слабое.</p>
+        <p><strong style="color: #ef4444;">Менее 5 п.п.</strong> &mdash; трипвайер не влияет на выбор тарифа.</p>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ============================== -->
+<!-- БЛОК 2: UNIT ECONOMICS -->
+<!-- ============================== -->
+<section class="section-large" id="b2">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-tag">Блок 2 — Unit Economics</div>
+      <h2>Доходная и затратная части</h2>
+    </div>
+
+    <h3>Доходная часть</h3>
+
+    <h3>Средний чек (из M3-04)</h3>
+    <div class="table-wrapper">
+      <table>
+        <thead>
+          <tr>
+            <th>Сценарий распределения</th>
+            <th style="text-align:center;">Средний чек</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>50/50 (Стандарт/Персональный)</td>
+            <td style="text-align:center;">59 900 руб.</td>
+          </tr>
+          <tr>
+            <td>40/60 (Стандарт/Персональный) &mdash; базовый</td>
+            <td style="text-align:center;">61 900 руб.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="highlight-box">
+      <p>Для расчётов принимаем средний чек <strong>59 900 руб.</strong> (консервативная оценка для первого потока).</p>
+    </div>
+
+    <h3>LTV при переходе в клуб</h3>
+    <div class="table-wrapper">
+      <table>
+        <thead>
+          <tr>
+            <th>Параметр</th>
+            <th style="text-align:center;">Значение</th>
+            <th>Источник</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Стоимость клуба</td>
+            <td style="text-align:center;">3 900 руб./мес</td>
+            <td>Ценовая архитектура 2026</td>
+          </tr>
+          <tr>
+            <td>Средний срок удержания в клубе</td>
+            <td style="text-align:center;">[гипотеза: 6 месяцев, требует данных]</td>
+            <td>&mdash;</td>
+          </tr>
+          <tr>
+            <td>LTV клуба</td>
+            <td style="text-align:center;">3 900 x 6 = 23 400 руб.</td>
+            <td>Расчёт</td>
+          </tr>
+          <tr>
+            <td class="table-accent">LTV участника (флагман + клуб)</td>
+            <td style="text-align:center;" class="table-accent">59 900 + 23 400 = 83 300 руб.</td>
+            <td>Расчёт</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>LTV при переходе в &laquo;Переговоры без потерь&raquo;</h3>
+    <div class="table-wrapper">
+      <table>
+        <thead>
+          <tr>
+            <th>Параметр</th>
+            <th style="text-align:center;">Значение</th>
+            <th>Источник</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Средний чек &laquo;ПбП&raquo;</td>
+            <td style="text-align:center;">~105 500 руб. (средневзвешенный по пакетам)</td>
+            <td>Ценовая архитектура 2026</td>
+          </tr>
+          <tr>
+            <td>LTV участника (флагман + ПбП)</td>
+            <td style="text-align:center;" class="table-accent">59 900 + 105 500 = 165 400 руб.</td>
+            <td>Расчёт</td>
+          </tr>
+          <tr>
+            <td>LTV участника (флагман + ПбП + клуб 6 мес)</td>
+            <td style="text-align:center;" class="table-accent">59 900 + 105 500 + 23 400 = 188 800 руб.</td>
+            <td>Расчёт</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>Максимальный LTV (полная цепочка)</h3>
+    <div class="table-wrapper">
+      <table>
+        <thead>
+          <tr>
+            <th>Путь участника</th>
+            <th style="text-align:center;">LTV</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>Только флагман</td><td style="text-align:center;">59 900 руб.</td></tr>
+          <tr><td>Флагман + клуб 6 мес</td><td style="text-align:center;">83 300 руб.</td></tr>
+          <tr><td>Флагман + ПбП Старт</td><td style="text-align:center;">134 900 руб.</td></tr>
+          <tr><td>Флагман + ПбП Рост + клуб 6 мес</td><td style="text-align:center;">188 800 руб.</td></tr>
+          <tr><td class="table-accent">Флагман + ПбП Прорыв + клуб 12 мес</td><td style="text-align:center;" class="table-accent">59 900 + 145 000 + 46 800 = 251 700 руб.</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Затратная часть -->
+    <div class="section-header" style="margin-top: 3rem;">
+      <h3>Затратная часть</h3>
+    </div>
+
+    <h3>CAC (стоимость привлечения участника)</h3>
+    <div class="table-wrapper">
+      <table>
+        <thead>
+          <tr>
+            <th>Канал</th>
+            <th style="text-align:center;">CAC</th>
+            <th>Источник</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>Органический трафик (Telegram-канал)</td><td style="text-align:center;">[гипотеза: 0-500 руб., требует данных]</td><td>&mdash;</td></tr>
+          <tr><td>Через челлендж (платный трафик)</td><td style="text-align:center;">[гипотеза: стоимость регистрации 50-150 руб. x конверсия, требует данных]</td><td>Ценовая архитектура 2026</td></tr>
+          <tr><td>Через трипвайер (платный трафик)</td><td style="text-align:center;">[гипотеза, требует данных]</td><td>&mdash;</td></tr>
+          <tr><td class="table-accent">Средневзвешенный CAC (оценка)</td><td style="text-align:center;">[гипотеза: 3 000-8 000 руб., требует данных первого потока]</td><td>&mdash;</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="highlight-box">
+      <p><strong>Расчёт CAC через челлендж:</strong></p>
+      <p>Стоимость регистрации на челлендж: 50-150 руб. (Ценовая архитектура). Доходимость до дня 3: 35-45%. Конверсия в &laquo;Слово за тобой&raquo;: 5-8% от дошедших до дня 3.</p>
+      <p>CAC = стоимость регистрации / (доходимость x конверсия)</p>
+      <p>Оптимистичный: 50 / (0.45 x 0.08) = <strong>1 389 руб.</strong></p>
+      <p>Консервативный: 150 / (0.35 x 0.05) = <strong>8 571 руб.</strong></p>
+    </div>
+
+    <h3>Себестоимость одного участника</h3>
+    <div class="table-wrapper">
+      <table>
+        <thead>
+          <tr>
+            <th>Статья расходов</th>
+            <th>Расчёт</th>
+            <th style="text-align:center;">Сумма</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>Время Гоар на поток (10 ч)</td><td>10 ч / 30-50 участников</td><td style="text-align:center;">0.2-0.33 ч на участника</td></tr>
+          <tr><td>Ставка часа Гоар</td><td>[гипотеза: требует уточнения]</td><td style="text-align:center;">[требует уточнения]</td></tr>
+          <tr><td>Операционные расходы (Zoom, платформа, email)</td><td>[гипотеза, требует данных]</td><td style="text-align:center;">[требует уточнения]</td></tr>
+          <tr><td>Стоимость AI-скоринга на участника</td><td>[гипотеза, требует данных]</td><td style="text-align:center;">[требует уточнения]</td></tr>
+          <tr><td class="table-accent">Себестоимость участника (приблизительно)</td><td>[гипотеза: 3 000-7 000 руб.]</td><td style="text-align:center;">[требует уточнения]</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>Комиссия платформы / эквайринга</h3>
+    <div class="table-wrapper">
+      <table>
+        <thead>
+          <tr>
+            <th>Тип рассрочки</th>
+            <th style="text-align:center;">Комиссия</th>
+            <th>Источник</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>Банковская (Тинькофф, Сбер и т.д.)</td><td style="text-align:center;">3-8% от суммы</td><td>M3-04, Блок 4</td></tr>
+          <tr><td>Собственная</td><td style="text-align:center;">0% (но риск невыплат ~1%)</td><td>M3-04, Блок 4</td></tr>
+          <tr><td>Эквайринг (прямая оплата)</td><td style="text-align:center;">~2-3%</td><td>Стандартные ставки</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>Ключевые соотношения</h3>
+    <div class="table-wrapper">
+      <table>
+        <thead>
+          <tr>
+            <th>Показатель</th>
+            <th>Формула</th>
+            <th style="text-align:center;">Оценка (первый поток)</th>
+            <th style="text-align:center;">Цель</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>LTV/CAC (только флагман)</td><td>59 900 / CAC</td><td style="text-align:center;">При CAC 5 000: <strong>12.0</strong></td><td style="text-align:center;">&gt;3</td></tr>
+          <tr><td>LTV/CAC (с клубом 6 мес)</td><td>83 300 / CAC</td><td style="text-align:center;">При CAC 5 000: <strong>16.7</strong></td><td style="text-align:center;">&gt;3</td></tr>
+          <tr><td>LTV/CAC (с ПбП)</td><td>165 400 / CAC</td><td style="text-align:center;">При CAC 5 000: <strong>33.1</strong></td><td style="text-align:center;">&gt;3</td></tr>
+          <tr><td>Маржинальность потока</td><td>(Выручка - Все расходы) / Выручка</td><td style="text-align:center;">[требует данных по расходам]</td><td style="text-align:center;">&gt;60%</td></tr>
+          <tr><td>Период окупаемости CAC</td><td>CAC / средний чек</td><td style="text-align:center;">При CAC 5 000: 0.08 потока (~первый платёж)</td><td style="text-align:center;">&lt;1 поток</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>Оценка маржинальности потока (базовый сценарий, 40 участников)</h3>
+    <div class="table-wrapper">
+      <table>
+        <thead>
+          <tr>
+            <th>Статья</th>
+            <th style="text-align:center;">Сумма</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>Выручка (полная)</td><td style="text-align:center;">2 476 000 руб.</td></tr>
+          <tr><td>CAC (40 x 5 000)</td><td style="text-align:center;">-200 000 руб. [гипотеза]</td></tr>
+          <tr><td>Операционные + AI-скоринг (40 x 5 000)</td><td style="text-align:center;">-200 000 руб. [гипотеза]</td></tr>
+          <tr><td>Эквайринг 3%</td><td style="text-align:center;">-74 280 руб.</td></tr>
+          <tr><td>Время Гоар (10 ч)</td><td style="text-align:center;">[требует уточнения]</td></tr>
+          <tr><td class="table-accent">Оценочная маржа</td><td style="text-align:center;" class="table-accent">~2 001 720 руб.</td></tr>
+          <tr><td class="table-accent">Маржинальность</td><td style="text-align:center;" class="table-accent">~81% [гипотеза, требует уточнения затрат]</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="warning-block">
+      <p>Реальная маржинальность зависит от типа рассрочки, стоимости AI-скоринга и операционных расходов. Все цифры затрат &mdash; гипотезы, требующие данных первого потока.</p>
+    </div>
+
+  </div>
+</section>
+
+<!-- ============================== -->
+<!-- БЛОК 3: ГИПОТЕЗЫ ПО КОНВЕРСИИ -->
+<!-- ============================== -->
+<section class="section-large" id="b3">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-tag">Блок 3 — Гипотезы по конверсии</div>
+      <h2>Воронка от трафика до клуба</h2>
+    </div>
+
+    <p>Для каждого перехода &mdash; гипотеза конверсии, основание, факторы влияния и способ измерения.</p>
+
+    <h3>Полная воронка</h3>
+    <div class="funnel-block">Трафик (охват)
+    &darr; [конверсия в регистрацию]
+Регистрация на бесплатное (челлендж / МК / лид-магнит)
+    &darr; [конверсия в трипвайер]
+Покупка трипвайера (МК &laquo;Профайлинг&raquo;, 2 900 руб.)
+    &darr; [конверсия в флагман]
+Участник флагмана &laquo;Слово за тобой&raquo;
+    &darr; [конверсия внутри тарифов]
+Стандарт &rarr; Апсейл в Персональный
+    &darr; [конверсия после курса]
+Участник &rarr; Клуб / &laquo;Переговоры без потерь&raquo;</div>
+
+    <h3>Гипотезы по каждому переходу</h3>
+    <div class="table-wrapper">
+      <table>
+        <thead>
+          <tr>
+            <th>Переход</th>
+            <th style="text-align:center;">Гипотеза конверсии</th>
+            <th>Основание</th>
+            <th>Что влияет</th>
+            <th>Как измеряем</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>Трафик &rarr; Регистрация на челлендж</td><td style="text-align:center;">[гипотеза, требует данных &mdash; зависит от канала трафика]</td><td>&mdash;</td><td>Креативы, таргетинг, оффер челленджа</td><td>UTM-метки + CRM</td></tr>
+          <tr><td>Регистрация &rarr; Доходимость до дня 3 (челлендж)</td><td style="text-align:center;">35-45%</td><td>Ценовая архитектура 2026: целевые показатели челленджа</td><td>Качество контента дней 1-2, напоминания бота</td><td>Логи бота + присутствие на эфире дня 3</td></tr>
+          <tr><td>Дошедшие до дня 3 &rarr; Покупка флагмана</td><td style="text-align:center;">5-8%</td><td>Ценовая архитектура 2026: конверсия от дошедших до финального эфира</td><td>Сила продажи в день 3, разборы кейсов, оффер</td><td>Оплаты из числа дошедших</td></tr>
+          <tr><td>Регистрация &rarr; Покупка трипвайера</td><td style="text-align:center;">[гипотеза, требует данных]</td><td>&mdash;</td><td>Качество МК, мостик к трипвайеру</td><td>CRM</td></tr>
+          <tr><td>Трипвайер (2 900) &rarr; Участник флагмана</td><td style="text-align:center;">15-25%</td><td>Ценовая архитектура 2026: уже платящий клиент конвертируется в 3-4 раза лучше</td><td>Мост в конце МК &laquo;Профайлинг&raquo;, связка профиля с модулями курса</td><td>CRM: покупатели трипвайера &rarr; покупатели флагмана</td></tr>
+          <tr><td>Заявка на флагман &rarr; Оплата</td><td style="text-align:center;">[гипотеза, требует данных &mdash; зависит от модели продаж: через менеджера или self-service]</td><td>&mdash;</td><td>Скорость обработки заявки, наличие рассрочки</td><td>CRM</td></tr>
+          <tr><td>Покупатель флагмана &rarr; выбор Персонального</td><td style="text-align:center;">50-60%</td><td>M3-04: базовый сценарий 40/60</td><td>Аргументация &laquo;аудио-разбор + профиль&raquo;, наличие диагностики (трипвайер)</td><td>Распределение оплат по тарифам</td></tr>
+          <tr><td>Участник &rarr; Клуб (после курса)</td><td style="text-align:center;">20%</td><td>Гипотеза 9 (см. Блок 1)</td><td>Мостик в финальном эфире, NPS, видимость результата в скоринге</td><td>Подписки на клуб за 30 дней после окончания</td></tr>
+          <tr><td>Участник &rarr; &laquo;ПбП&raquo; (в течение 3 мес)</td><td style="text-align:center;">10%</td><td>Гипотеза 10 (см. Блок 1)</td><td>Маленький шаг по цене (+7%), тайминг запуска &laquo;ПбП&raquo;</td><td>Покупки &laquo;ПбП&raquo; из числа выпускников</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>OTO-конверсии (внутри воронки продаж)</h3>
+    <div class="table-wrapper">
+      <table>
+        <thead>
+          <tr>
+            <th>OTO</th>
+            <th>Момент</th>
+            <th style="text-align:center;">Гипотеза конверсии</th>
+            <th>Основание</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>Апгрейд Стандарт &rarr; Персональный</td><td>Сразу после покупки Стандарта</td><td style="text-align:center;">[гипотеза: 10-15%, требует данных]</td><td>Импульсная покупка, пока мотивация высока</td></tr>
+          <tr><td>&laquo;ПбП&raquo; по спец. цене</td><td>Сразу после покупки флагмана</td><td style="text-align:center;">[гипотеза: 3-5%, требует данных]</td><td>Горизонтальный шаг по цене, но высокий абсолют</td></tr>
+          <tr><td>Клуб: первый месяц</td><td>После завершения курса</td><td style="text-align:center;">[гипотеза: 25-35%, требует данных]</td><td>Низкий барьер, эмоциональный пик после финала</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+  </div>
+</section>
+
+<!-- ============================== -->
+<!-- БЛОК 4: РИСКИ И МИТИГАЦИИ -->
+<!-- ============================== -->
+<section class="section-large" id="b4">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-tag">Блок 4 — Риски и митигации</div>
+      <h2>Матрица рисков</h2>
+    </div>
+
+    <div class="table-wrapper">
+      <table>
+        <thead>
+          <tr>
+            <th style="width:3%;">#</th>
+            <th style="width:15%;">Риск</th>
+            <th style="width:8%;">Вероятность</th>
+            <th style="width:8%;">Влияние</th>
+            <th style="width:18%;">Признак раннего обнаружения</th>
+            <th style="width:22%;">Митигация (заранее)</th>
+            <th style="width:26%;">Fallback (если случилось)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="table-accent">1</td>
+            <td><strong>AI-скоринг не готов к дате запуска</strong></td>
+            <td>Средняя</td>
+            <td>Критическое</td>
+            <td>Тестирование за 3 недели до старта показывает сбои в транскрипции &gt;20%</td>
+            <td>Начать тестирование за 6 недель. Выделить отдельного технического специалиста. Провести 2 полных прогона с тестовыми участниками</td>
+            <td>Первый поток без AI-скоринга. Экспертный разбор Гоар как единственная обратная связь. Увеличить время разбора на эфире. Честная коммуникация: &laquo;AI-скоринг запустим со второго потока, первый поток получает усиленный экспертный разбор&raquo;</td>
+          </tr>
+          <tr>
+            <td class="table-accent">2</td>
+            <td><strong>Низкая доходимость (менее 60% на модуле 5)</strong></td>
+            <td>Средняя</td>
+            <td>Высокое</td>
+            <td>Посещаемость модуля 2 ниже 85%. Более 3 участников не присутствовали на двух эфирах подряд</td>
+            <td>Сильный онбординг: объяснить формат и ожидания ДО оплаты. Напоминания через Telegram-канал. Разборы Гоар между эфирами как &laquo;крючок&raquo;</td>
+            <td>Личное сообщение от организатора каждому &laquo;отвалившемуся&raquo; после пропуска. Предложить пересмотреть записи (если Персональный). Для второго потока: ужесточить отбор или добавить депозит за участие</td>
+          </tr>
+          <tr>
+            <td class="table-accent">3</td>
+            <td><strong>Нечётное число участников на поединках</strong></td>
+            <td>Высокая</td>
+            <td>Среднее</td>
+            <td>Нечётное число регистраций за 3 дня до эфира. Кто-то не подключился к эфиру</td>
+            <td>Заранее определить протокол: тройка (наблюдатель + двое) или организатор встаёт в пару. Подготовить резервного партнёра (куратор/ассистент)</td>
+            <td>Тройка с ротацией ролей: А-Б играют, С наблюдает и даёт обратную связь, затем ротация. Время раунда увеличивается до 15 мин (3 x 5 мин)</td>
+          </tr>
+          <tr>
+            <td class="table-accent">4</td>
+            <td><strong>Перегруз Гоар (операционная нагрузка выше плана)</strong></td>
+            <td>Низкая-Средняя</td>
+            <td>Высокое</td>
+            <td>Гоар жалуется на усталость после 2-го эфира. Время на голосовые разборы растёт. Аудио-разборы Персональных откладываются</td>
+            <td>Чёткий регламент: максимум 12 часов на поток. Все задачи, не требующие Гоар, &mdash; на организаторе. Гоар не ставит задачи и не &laquo;думает&raquo; (goar-voice-rules)</td>
+            <td>Сократить голосовые разборы с 2/нед до 1/нед. Делегировать текстовые триггеры в канале организатору. Аудио-разборы Персональных &mdash; в конце курса пакетом, а не по мере запроса</td>
+          </tr>
+          <tr>
+            <td class="table-accent">5</td>
+            <td><strong>Плохие отзывы первого потока</strong></td>
+            <td>Низкая</td>
+            <td>Критическое</td>
+            <td>NPS ниже 30 по промежуточному замеру (после модуля 3). Негативные сообщения в канале. Запросы на возврат</td>
+            <td>Промежуточный замер NPS после модуля 3. Открытый канал обратной связи (анонимная форма). Быстрая реакция на жалобы</td>
+            <td>Личный разговор с каждым недовольным участником (организатор). Предложить компенсацию (доп. аудио-разбор). Зафиксировать все жалобы для анализа. НЕ удалять негатив &mdash; работать с ним</td>
+          </tr>
+          <tr>
+            <td class="table-accent">6</td>
+            <td><strong>Конкурент запускает аналог</strong></td>
+            <td>Низкая</td>
+            <td>Среднее</td>
+            <td>Появление курса с поединками + AI-скорингом в русскоязычном пространстве</td>
+            <td>AI-скоринг &mdash; собственная разработка, требует времени на копирование. Экспертный слой Гоар (20 лет практики) &mdash; некопируемый. Быстрый запуск первого потока для создания прецедента</td>
+            <td>Усилить позиционирование уникальности: &laquo;первый и единственный курс с AI-скорингом поединков&raquo;. Собрать кейсы и отзывы первого потока. Не вступать в прямую конкуренцию &mdash; углублять экспертный слой</td>
+          </tr>
+          <tr>
+            <td class="table-accent">7</td>
+            <td><strong>Низкий набор на первый поток (менее 30 человек)</strong></td>
+            <td>Средняя</td>
+            <td>Высокое</td>
+            <td>Менее 15 оплат за 2 недели до старта. Низкая конверсия челленджа / трипвайера</td>
+            <td>Запустить прогрев заранее: челлендж за 2-3 недели до продаж. Трипвайер как промежуточный шаг. Личные продажи через Telegram-канал</td>
+            <td>Перенести старт на 2-4 недели. Усилить прогрев. Снизить порог входа (ранняя цена / бонусы первым). Минимальная группа для запуска &mdash; 20 человек</td>
+          </tr>
+          <tr>
+            <td class="table-accent">8</td>
+            <td><strong>AI-скоринг даёт некорректные результаты</strong></td>
+            <td>Средняя</td>
+            <td>Высокое</td>
+            <td>Участники жалуются на несоответствие скоринга реальности. Ручная проверка 20% отчётов выявляет ошибки &gt;15%</td>
+            <td>Ручная калибровка AI-скоринга на тестовых данных. Экспертная сверка результатов AI с оценкой Гоар на первых 2 эфирах</td>
+            <td>Перевести AI-скоринг из &laquo;оценки&raquo; в &laquo;наблюдение&raquo;: вместо баллов &mdash; выделение конкретных фраз и паттернов. Экспертный слой Гоар становится основным источником оценки</td>
+          </tr>
+          <tr>
+            <td class="table-accent">9</td>
+            <td><strong>Zoom-сбой во время эфира</strong></td>
+            <td>Низкая</td>
+            <td>Высокое</td>
+            <td>Breakout rooms не работают, участники не могут подключиться</td>
+            <td>Тестировать Zoom-комнату за день до эфира. Иметь запасной аккаунт Zoom. Проверить breakout rooms с 2-3 тестовыми участниками</td>
+            <td>Переход на Google Meet (ручное распределение по комнатам). Если невозможно &mdash; перенос эфира на резервный день. Коммуникация в Telegram-канале в течение 5 мин</td>
+          </tr>
+          <tr>
+            <td class="table-accent">10</td>
+            <td><strong>Рассрочки: высокий процент невыплат</strong></td>
+            <td>Низкая-Средняя</td>
+            <td>Среднее</td>
+            <td>Первый неоплаченный платёж по рассрочке (месяц 2)</td>
+            <td>Выбрать банковскую рассрочку (банк берёт риск). Если собственная &mdash; автоматические напоминания + политика: доступ к записям закрывается при просрочке &gt;14 дней</td>
+            <td>Передать долг на взыскание (если банковская). Если собственная &mdash; личное сообщение + предложение реструктуризации. Заложить 1-3% невыплат в финансовую модель</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+  </div>
+</section>
+
+<!-- ============================== -->
+<!-- БЛОК 5: КРИТЕРИИ УСПЕХА -->
+<!-- ============================== -->
+<section class="section-large" id="b5">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-tag">Блок 5 — Критерии успеха первого потока (go/no-go)</div>
+      <h2>Hard и Soft критерии</h2>
+    </div>
+
+    <h3>Hard criteria (обязательные для запуска второго потока)</h3>
+    <p>Если хотя бы один hard criterion не выполнен &mdash; второй поток не запускается без серьёзной переработки продукта.</p>
+    <div class="table-wrapper">
+      <table>
+        <thead>
+          <tr>
+            <th style="width:4%;">#</th>
+            <th style="width:30%;">Критерий</th>
+            <th style="width:20%;">Порог</th>
+            <th style="width:22%;">Источник</th>
+            <th style="width:24%;">Как измерить</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td class="table-accent">1</td><td>Минимальная выручка первого потока</td><td>1 797 000 руб. (консервативный сценарий M3-04: 30 участников)</td><td>M3-04, Блок 3</td><td>CRM: сумма оплат</td></tr>
+          <tr><td class="table-accent">2</td><td>Минимальная доходимость до модуля 5</td><td>60%</td><td>Гипотеза 1 (нижний порог)</td><td>Логи Zoom</td></tr>
+          <tr><td class="table-accent">3</td><td>Минимальный NPS</td><td>30</td><td>Гипотеза 11 (нижний порог)</td><td>Анкета после модуля 5</td></tr>
+          <tr><td class="table-accent">4</td><td>AI-скоринг: корректная работа</td><td>80% успешных отчётов на каждом эфире</td><td>Гипотеза 4 (нижний порог)</td><td>Логи AI-платформы</td></tr>
+          <tr><td class="table-accent">5</td><td>Нагрузка Гоар</td><td>Не более 15 часов за поток</td><td>Гипотеза 8 (верхний порог)</td><td>Хронометраж</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>Soft criteria (желательные)</h3>
+    <p>Невыполнение soft criteria не блокирует второй поток, но указывает на зоны доработки.</p>
+    <div class="table-wrapper">
+      <table>
+        <thead>
+          <tr>
+            <th style="width:4%;">#</th>
+            <th style="width:30%;">Критерий</th>
+            <th style="width:16%;">Порог</th>
+            <th style="width:50%;">Что делать, если не выполнено</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td class="table-accent">1</td><td>Доля Персональных</td><td>50% от всех покупателей</td><td>Усилить аргументацию: аудио-разбор + профиль. Добавить OTO после покупки Стандарта</td></tr>
+          <tr><td class="table-accent">2</td><td>Конверсия трипвайер &rarr; флагман</td><td>15%</td><td>Переработать мост в конце МК &laquo;Профайлинг&raquo;. Усилить связку профиля с модулями курса</td></tr>
+          <tr><td class="table-accent">3</td><td>Не менее 5 развёрнутых отзывов с конкретными результатами</td><td>5 штук (текст или видео)</td><td>Попросить отзывы лично. Предложить бонус (доп. аудио-разбор) за развёрнутый отзыв</td></tr>
+          <tr><td class="table-accent">4</td><td>AI-скоринг без сбоев на всех 5 эфирах</td><td>90% успешных отчётов</td><td>Доработать техническую часть. Расширить тестирование перед вторым потоком</td></tr>
+          <tr><td class="table-accent">5</td><td>Не менее 70% участников показывают рост в AI-скоринге</td><td>70% с положительной динамикой по 3+ параметрам</td><td>Проанализировать, какие модули не дают прироста. Усилить теоретическую/практическую часть</td></tr>
+          <tr><td class="table-accent">6</td><td>Конверсия в клуб</td><td>20% за 30 дней</td><td>Переработать мостик к клубу. Предложить пробный месяц бесплатно / со скидкой</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Что делать между потоками -->
+    <div class="section-header" style="margin-top: 3rem;">
+      <h3>Что делать между первым и вторым потоком</h3>
+    </div>
+
+    <h3>Что исправить (по результатам данных первого потока)</h3>
+    <ul class="list-styled">
+      <li><strong>Слабые модули.</strong> Если AI-скоринг показывает, что по какому-то модулю нет прироста &mdash; переработать видео-теорию и/или сценарий поединка.</li>
+      <li><strong>Проблемы AI-скоринга.</strong> Если корректность ниже 90% &mdash; доработать алгоритмы, улучшить обработку шума, акцентов, перебиваний.</li>
+      <li><strong>Доходимость.</strong> Если отсев выше плана &mdash; добавить промежуточные &laquo;крючки&raquo; (мини-задания, геймификация, персональные напоминания).</li>
+      <li><strong>Тарифная матрица.</strong> Если доля Персональных ниже 35% &mdash; пересмотреть дифференциацию или добавить элементы в Персональный.</li>
+      <li><strong>Операционка.</strong> Если нагрузка на Гоар выше 12 часов &mdash; делегировать всё, что можно, организатору/куратору.</li>
+    </ul>
+
+    <h3>Что масштабировать</h3>
+    <ul class="list-styled">
+      <li><strong>Кейсы и отзывы.</strong> Собрать все успешные истории. Оформить как социальное доказательство для второго потока.</li>
+      <li><strong>AI-скоринг: данные для калибровки.</strong> Использовать данные первого потока для улучшения алгоритмов и создания бенчмарков.</li>
+      <li><strong>Воронка.</strong> Если конверсия трипвайера работает &mdash; масштабировать трафик на трипвайер.</li>
+      <li><strong>Контент из поединков.</strong> Разборы поединков (с согласия участников) &mdash; контент для Telegram-канала и прогрева следующего потока.</li>
+    </ul>
+
+    <h3>Что убрать</h3>
+    <ul class="list-styled">
+      <li><strong>Неработающие элементы воронки.</strong> Если челлендж даёт конверсию ниже 3% &mdash; пересмотреть формат или убрать.</li>
+      <li><strong>Избыточные операции.</strong> Если какие-то элементы (триггеры в канале, мини-задания) не влияют на вовлечённость &mdash; убрать для снижения операционной нагрузки.</li>
+      <li><strong>Метрики, которые не дают инсайтов.</strong> Если какие-то показатели AI-скоринга не информативны &mdash; убрать из отчёта, чтобы не перегружать участника.</li>
+    </ul>
+
+  </div>
+</section>
+
+<!-- ============================== -->
+<!-- БЛОК 6: МЕТРИКИ И ИНСТРУМЕНТЫ -->
+<!-- ============================== -->
+<section class="section-large" id="b6">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-tag">Блок 6 — Метрики и инструменты сбора</div>
+      <h2>Сводная таблица метрик</h2>
+    </div>
+
+    <div class="table-wrapper">
+      <table>
+        <thead>
+          <tr>
+            <th style="width:3%;">#</th>
+            <th style="width:22%;">Метрика</th>
+            <th style="width:16%;">Когда собирать</th>
+            <th style="width:12%;">Кто отвечает</th>
+            <th style="width:20%;">Инструмент</th>
+            <th style="width:17%;">Формат данных</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td class="table-accent">1</td><td>Регистрации на челлендж</td><td>Ежедневно в период набора</td><td>Маркетолог</td><td>Бот / CRM</td><td>Число, UTM-источник</td></tr>
+          <tr><td class="table-accent">2</td><td>Доходимость челленджа (по дням)</td><td>Дни 1, 2, 3</td><td>Маркетолог</td><td>Логи бота + Zoom</td><td>% от зарегистрированных</td></tr>
+          <tr><td class="table-accent">3</td><td>Покупки трипвайера</td><td>После каждого МК &laquo;Профайлинг&raquo;</td><td>Организатор</td><td>CRM / платёжная система</td><td>Число, сумма</td></tr>
+          <tr><td class="table-accent">4</td><td>Конверсия трипвайер &rarr; флагман</td><td>После закрытия продаж потока</td><td>Организатор</td><td>CRM</td><td>% от покупателей трипвайера</td></tr>
+          <tr><td class="table-accent">5</td><td>Распределение по тарифам (Стандарт/Персональный)</td><td>При оплате</td><td>Организатор</td><td>CRM / платёжная система</td><td>Число по каждому тарифу, %</td></tr>
+          <tr><td class="table-accent">6</td><td>Средний чек</td><td>После закрытия продаж потока</td><td>Организатор</td><td>CRM</td><td>Руб.</td></tr>
+          <tr><td class="table-accent">7</td><td>Посещаемость каждого эфира</td><td>После каждого эфира (5 раз)</td><td>Организатор</td><td>Логи Zoom (участники breakout rooms)</td><td>Число присутствовавших, % от оплативших</td></tr>
+          <tr><td class="table-accent">8</td><td>Доходимость до модуля 5</td><td>После 5-го эфира</td><td>Организатор</td><td>Логи Zoom</td><td>% от оплативших</td></tr>
+          <tr><td class="table-accent">9</td><td>AI-скоринг: корректность отчётов</td><td>После каждого эфира</td><td>Тех. специалист</td><td>Логи AI-платформы + ручная проверка 20%</td><td>% успешных отчётов</td></tr>
+          <tr><td class="table-accent">10</td><td>AI-скоринг: динамика участника (М1 vs М5)</td><td>После модуля 5</td><td>Тех. специалист</td><td>AI-платформа</td><td>Баллы по параметрам, дельта</td></tr>
+          <tr><td class="table-accent">11</td><td>NPS (промежуточный)</td><td>После модуля 3</td><td>Организатор</td><td>Google Forms (анонимно)</td><td>Шкала 0-10, NPS-балл</td></tr>
+          <tr><td class="table-accent">12</td><td>NPS (финальный)</td><td>После модуля 5 (в течение 48 ч)</td><td>Организатор</td><td>Google Forms (анонимно)</td><td>Шкала 0-10, NPS-балл</td></tr>
+          <tr><td class="table-accent">13</td><td>Финальная анкета (самый ценный модуль, уникальность формата, открытые вопросы)</td><td>После модуля 5 (вместе с NPS)</td><td>Организатор</td><td>Google Forms</td><td>Выбор модуля, текст</td></tr>
+          <tr><td class="table-accent">14</td><td>Отзывы с результатами</td><td>В течение 2 недель после окончания</td><td>Организатор</td><td>Личные сообщения + форма</td><td>Текст / видео</td></tr>
+          <tr><td class="table-accent">15</td><td>Конверсия в клуб</td><td>30 дней после окончания потока</td><td>Организатор</td><td>CRM / платёжная система</td><td>Число подписчиков, % от выпускников</td></tr>
+          <tr><td class="table-accent">16</td><td>Конверсия в &laquo;ПбП&raquo;</td><td>90 дней после окончания потока</td><td>Организатор</td><td>CRM</td><td>Число покупок, % от выпускников</td></tr>
+          <tr><td class="table-accent">17</td><td>Нагрузка Гоар (часы)</td><td>Еженедельно в течение потока</td><td>Организатор</td><td>Ручной трекинг (таблица)</td><td>Часы по активностям</td></tr>
+          <tr><td class="table-accent">18</td><td>Запросы на возврат</td><td>В течение потока и 14 дней после</td><td>Организатор</td><td>CRM</td><td>Число, причины</td></tr>
+          <tr><td class="table-accent">19</td><td>Выручка потока (факт)</td><td>После закрытия продаж + после полного сбора рассрочек</td><td>Организатор</td><td>CRM / платёжная система</td><td>Руб. (помесячно)</td></tr>
+          <tr><td class="table-accent">20</td><td>OTO-конверсии (апгрейд Стандарт&rarr;Персональный)</td><td>После закрытия продаж</td><td>Организатор</td><td>CRM</td><td>Число, % от покупателей Стандарта</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>План сбора данных: таймлайн</h3>
+    <div class="table-wrapper">
+      <table>
+        <thead>
+          <tr>
+            <th style="width:25%;">Период</th>
+            <th style="width:50%;">Что собираем</th>
+            <th style="width:25%;">Ответственный</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>За 4-6 нед до старта</td><td>Тестирование AI-скоринга (корректность на тестовых данных)</td><td>Тех. специалист</td></tr>
+          <tr><td>Период набора (2-4 нед)</td><td>Регистрации, покупки трипвайера, конверсии, распределение тарифов</td><td>Маркетолог + Организатор</td></tr>
+          <tr><td>Неделя 1-5 (каждый эфир)</td><td>Посещаемость, корректность AI-скоринга, нагрузка Гоар</td><td>Организатор + Тех. специалист</td></tr>
+          <tr><td>После модуля 3</td><td>Промежуточный NPS</td><td>Организатор</td></tr>
+          <tr><td>После модуля 5 (48 ч)</td><td>Финальный NPS + анкета + AI-скоринг динамика</td><td>Организатор + Тех. специалист</td></tr>
+          <tr><td>2 нед после окончания</td><td>Сбор отзывов</td><td>Организатор</td></tr>
+          <tr><td>30 дней после окончания</td><td>Конверсия в клуб</td><td>Организатор</td></tr>
+          <tr><td>60-90 дней после окончания</td><td>Конверсия в &laquo;ПбП&raquo;, полный сбор рассрочек</td><td>Организатор</td></tr>
+          <tr><td class="table-accent">90 дней после окончания</td><td class="table-accent"><strong>Итоговый отчёт первого потока</strong> &mdash; все метрики, все гипотезы, решение go/no-go</td><td>Организатор</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+  </div>
+</section>
+
+<!-- ============================== -->
+<!-- БЛОК 7: ТРЕБУЕТ УТОЧНЕНИЯ -->
+<!-- ============================== -->
+<section class="section-large" id="b7">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-tag">Требует уточнения у клиента</div>
+      <h2>Открытые вопросы</h2>
+    </div>
+
+    <ul class="list-styled">
+      <li><strong>1. CAC (стоимость привлечения).</strong> Какой бюджет на трафик планируется для первого потока? Какие каналы? Это критически влияет на Unit Economics.</li>
+      <li><strong>2. Себестоимость AI-скоринга на одного участника.</strong> Сколько стоит транскрипция и анализ одного поединка? Это определяет себестоимость участника.</li>
+      <li><strong>3. Ставка часа Гоар (для расчёта себестоимости).</strong> Как оценивается время эксперта? Это влияет на маржинальность.</li>
+      <li><strong>4. Тип рассрочки (банковская или собственная).</strong> Влияет на cash flow, маржу и риски невыплат.</li>
+      <li><strong>5. Минимальное количество участников для запуска потока.</strong> Ниже какого числа поток не запускается? Это определяет hard go/no-go на этапе набора.</li>
+      <li><strong>6. Протокол при нечётном числе участников.</strong> Тройка с наблюдателем? Организатор в пару? AI-бот как партнёр?</li>
+      <li><strong>7. Инструмент диагностики перед курсом.</strong> AI-бот, живой созвон, анкета? Это влияет на гипотезу 14 (влияние диагностики на выбор тарифа).</li>
+      <li><strong>8. Планируемая дата запуска первого потока.</strong> Определяет дедлайн готовности AI-скоринга и прогревающей воронки.</li>
+      <li><strong>9. Средний срок удержания в клубе.</strong> Нет данных &mdash; заложена гипотеза 6 месяцев. Реальные данные появятся только после запуска клуба.</li>
+      <li><strong>10. OTO-механики и цены.</strong> Конкретные цены апгрейда Стандарт &rarr; Персональный и спец. предложения после покупки флагмана (влияет на конверсионные гипотезы).</li>
+      <li><strong>11. Целевой показатель выручки для go/no-go.</strong> В документе принят консервативный сценарий M3-04 (1 797 000 руб. / 30 участников). Если клиент считает иначе &mdash; скорректировать.</li>
+    </ul>
+
+  </div>
+</section>
+
+<!-- Footer -->
+<footer class="footer">
+  <div class="container">
+    <p>BrandOS &middot; M3-05 Гипотезы продукта &middot; Гоар Багдасарова &middot; 9 апреля 2026</p>
+    <p style="margin-top: .5rem; font-size: .75rem;">Нейроупаковка v5 &middot; Источники: M3-01, M3-02, M3-03, M3-04, Ценовая архитектура 2026 v2.1</p>
+  </div>
+</footer>
+
+</body>
+</html>

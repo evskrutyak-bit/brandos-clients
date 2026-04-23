@@ -1,0 +1,851 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>M2-03 · Синтез исследования ЦА — Гоар Багдасарова · BrandOS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --primary: #0ea5e9;
+  --primary-dark: #0284c7;
+  --primary-light: #7dd3fc;
+  --primary-bg: #e0f2fe;
+  --background: #ffffff;
+  --foreground: #0f172a;
+  --card-bg: hsl(0,0%,97%);
+  --border: #1C1C1E;
+  --muted: #64748b;
+  --radius: 4px;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: 'Inter', sans-serif;
+  background: var(--background);
+  color: var(--foreground);
+  line-height: 1.75;
+  font-size: 16px;
+}
+
+.container { max-width: 1200px; margin: 0 auto; padding: 0 1.5rem; }
+
+.nav {
+  position: sticky;
+  top: 0;
+  background: white;
+  border-bottom: 1px solid var(--border);
+  z-index: 100;
+  padding: 1rem 0;
+}
+.nav-container { display: flex; justify-content: space-between; align-items: center; gap: 2rem; }
+.nav-brand { font-size: 1rem; font-weight: 700; color: var(--foreground); white-space: nowrap; }
+.nav-brand span { color: var(--primary); }
+.nav-links { display: flex; gap: 1.5rem; list-style: none; overflow-x: auto; flex-wrap: wrap; }
+.nav-links a {
+  color: var(--foreground);
+  text-decoration: none;
+  font-size: .875rem;
+  font-weight: 500;
+  white-space: nowrap;
+  transition: color .2s;
+}
+.nav-links a:hover { color: var(--primary); }
+
+.hero {
+  padding: 3.75rem 0;
+  background: linear-gradient(135deg, rgba(255,255,255,.98) 0%, rgba(240,249,255,.95) 100%);
+}
+.hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: .5rem;
+  padding: .5rem 1rem;
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  font-size: .875rem;
+  font-weight: 600;
+  margin-bottom: 1.5rem;
+  color: var(--foreground);
+}
+.hero h1 {
+  font-size: clamp(32px, 4vw, 51px);
+  font-weight: 500;
+  line-height: 1.2;
+  letter-spacing: -.03em;
+  margin-bottom: 1.5rem;
+}
+.hero-subtitle {
+  font-size: 1.125rem;
+  color: var(--muted);
+  margin-bottom: 2rem;
+}
+.hero-meta { display: flex; gap: 2rem; flex-wrap: wrap; }
+.hero-meta-item { font-size: .875rem; color: var(--muted); }
+.hero-meta-item strong { color: var(--primary); font-weight: 600; }
+
+.section { padding: 2.5rem 0; }
+.section-large { padding: 3.75rem 0; }
+@media (min-width: 768px) {
+  .section { padding: 3.75rem 0; }
+  .section-large { padding: 5rem 0; }
+}
+
+.section-header {
+  position: relative;
+  margin-bottom: 32px;
+  padding-top: 24px;
+}
+.section-header::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 1px;
+  background: repeating-linear-gradient(to right, #9CA3AF 0, #9CA3AF 4px, transparent 4px, transparent 8px);
+}
+
+.section-tag {
+  display: inline-block;
+  font-size: .75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: .1em;
+  color: var(--primary);
+  margin-bottom: .5rem;
+}
+
+h2 { font-size: 32px; font-weight: 300; line-height: 1.2; letter-spacing: -.02em; margin-bottom: 1rem; }
+h3 { font-size: 20px; font-weight: 600; line-height: 1.3; margin-bottom: 1rem; }
+
+p { margin-bottom: 1rem; color: var(--muted); }
+p:last-child { margin-bottom: 0; }
+
+.card {
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: linear-gradient(135deg, rgba(255,255,255,.98) 0%, rgba(250,250,252,.95) 100%);
+  padding: 1.5rem;
+  position: relative;
+  overflow: hidden;
+}
+.card-title { font-size: 1.0625rem; font-weight: 600; margin-bottom: .75rem; color: var(--foreground); }
+.card-description { font-size: .9375rem; line-height: 1.75; color: var(--muted); }
+.card-accent {
+  background: linear-gradient(135deg, rgba(14,165,233,.05) 0%, rgba(14,165,233,.02) 100%);
+  border-color: rgba(14,165,233,.25);
+}
+
+.grid { display: grid; gap: 1.5rem; }
+.grid-2 { grid-template-columns: 1fr; }
+.grid-3 { grid-template-columns: 1fr; }
+@media (min-width: 768px) {
+  .grid-2 { grid-template-columns: repeat(2, 1fr); }
+  .grid-3 { grid-template-columns: repeat(3, 1fr); }
+}
+
+.highlight-box {
+  background: linear-gradient(135deg, rgba(14,165,233,.05) 0%, rgba(14,165,233,.02) 100%);
+  border: 1px solid rgba(14,165,233,.2);
+  border-left: 4px solid var(--primary);
+  padding: 1.25rem 1.5rem;
+  border-radius: var(--radius);
+  margin: 1.5rem 0;
+}
+.highlight-box p { margin: 0; font-size: 1rem; }
+.highlight-box strong { color: var(--primary); }
+
+.warning-block {
+  background: linear-gradient(135deg, rgba(239,68,68,.04) 0%, rgba(239,68,68,.01) 100%);
+  border: 1px solid rgba(239,68,68,.18);
+  border-left: 4px solid #ef4444;
+  padding: 1.25rem 1.5rem;
+  border-radius: var(--radius);
+  margin: 1.5rem 0;
+}
+.warning-block p { margin: 0; font-size: .9375rem; color: var(--muted); }
+.warning-block strong { color: var(--foreground); }
+
+.list-styled { list-style: none; padding: 0; margin-bottom: 1rem; }
+.list-styled li { padding-left: 1.5rem; margin-bottom: .75rem; position: relative; color: var(--muted); font-size: .9375rem; }
+.list-styled li::before {
+  content: '';
+  position: absolute;
+  left: 0; top: .65rem;
+  width: 6px; height: 6px;
+  background: var(--primary);
+  border-radius: 50%;
+}
+
+.table-wrapper {
+  overflow-x: auto;
+  margin: 1.5rem 0;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+table { width: 100%; border-collapse: collapse; background: white; }
+th, td { padding: 1rem; text-align: left; border-bottom: 1px solid var(--border); }
+th {
+  background: var(--card-bg);
+  font-weight: 600;
+  font-size: .8125rem;
+  text-transform: uppercase;
+  letter-spacing: .05em;
+  color: var(--foreground);
+}
+td { font-size: .9375rem; color: var(--muted); }
+tr:last-child td { border-bottom: none; }
+tr:hover td { background: var(--card-bg); }
+.table-accent { color: var(--primary); font-weight: 600; }
+
+.green-block {
+  background: linear-gradient(135deg, rgba(34,197,94,.05) 0%, rgba(34,197,94,.02) 100%);
+  border: 1px solid rgba(34,197,94,.2);
+  border-left: 4px solid #22c55e;
+  padding: 1.25rem 1.5rem;
+  border-radius: var(--radius);
+  margin: 1.5rem 0;
+}
+.green-block p { margin: 0; font-size: .9375rem; color: var(--muted); }
+.green-block strong { color: #16a34a; }
+
+.orange-block {
+  background: linear-gradient(135deg, rgba(249,115,22,.05) 0%, rgba(249,115,22,.02) 100%);
+  border: 1px solid rgba(249,115,22,.2);
+  border-left: 4px solid #f97316;
+  padding: 1.25rem 1.5rem;
+  border-radius: var(--radius);
+  margin: 1.5rem 0;
+}
+.orange-block p { margin: 0; font-size: .9375rem; color: var(--muted); }
+.orange-block strong { color: #ea580c; }
+
+.hypothesis-card {
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  background: linear-gradient(135deg, rgba(255,255,255,.98) 0%, rgba(250,250,252,.95) 100%);
+}
+.hypothesis-card h4 {
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: .75rem;
+  color: var(--foreground);
+}
+.hypothesis-card .h-label {
+  display: inline-block;
+  font-size: .75rem;
+  font-weight: 600;
+  padding: .25rem .5rem;
+  background: var(--primary-bg);
+  color: var(--primary-dark);
+  border-radius: var(--radius);
+  margin-bottom: .75rem;
+}
+.hypothesis-card .h-row {
+  display: flex;
+  gap: .5rem;
+  margin-bottom: .5rem;
+  font-size: .9375rem;
+}
+.hypothesis-card .h-row strong {
+  color: var(--foreground);
+  min-width: 120px;
+  flex-shrink: 0;
+}
+.hypothesis-card .h-row span {
+  color: var(--muted);
+}
+
+.number-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--primary);
+  color: white;
+  font-size: .8125rem;
+  font-weight: 700;
+  margin-right: .5rem;
+  flex-shrink: 0;
+}
+
+.footer {
+  padding: 2rem 0;
+  border-top: 1px solid var(--border);
+  text-align: center;
+  color: var(--muted);
+  font-size: .875rem;
+}
+
+@media (max-width: 768px) {
+  .container { padding: 0 1rem; }
+  h2 { font-size: 24px; }
+  h3 { font-size: 18px; }
+  .nav-links { gap: .75rem; }
+  .hero-meta { gap: 1rem; }
+}
+
+@media print {
+  @page { size: A4 landscape; margin: 1cm; }
+  .nav { display: none; }
+  .section { padding: 1.5rem 0; }
+  .hero { padding: 2rem 0; }
+}
+</style>
+</head>
+<body>
+
+<!-- Nav -->
+<nav class="nav">
+  <div class="container nav-container">
+    <div class="nav-brand">Brand<span>OS</span> &middot; Документ</div>
+    <ul class="nav-links">
+      <li><a href="#sintez">Синтез</a></li>
+      <li><a href="#gipotezy">Гипотезы</a></li>
+      <li><a href="#voprosy">Вопросы</a></li>
+      <li><a href="#reaktsiya">Реакция</a></li>
+      <li><a href="#next">Далее</a></li>
+    </ul>
+  </div>
+</nav>
+
+<!-- Hero -->
+<section class="hero">
+  <div class="container">
+    <div class="hero-badge">M2-03 &middot; Синтез исследования ЦА &middot; BrandOS</div>
+    <h1>Синтез: Целевая аудитория<br><span style="color:var(--primary)">Гоар Багдасарова</span></h1>
+    <p class="hero-subtitle">Нейроупаковка v5 &middot; 2026-04-05</p>
+    <div class="hero-meta">
+      <span class="hero-meta-item"><strong>Клиент:</strong> Гоар Багдасарова</span>
+      <span class="hero-meta-item"><strong>Модуль:</strong> M2 — Исследование ЦА</span>
+      <span class="hero-meta-item"><strong>Артефакт:</strong> SINTEZ-03</span>
+      <span class="hero-meta-item"><strong>Источник:</strong> M2-03-TSA (5 сегментов, 8 разделов)</span>
+    </div>
+  </div>
+</section>
+
+<!-- ================================================ -->
+<!-- ЧАСТЬ 1. СИНТЕЗ ИССЛЕДОВАНИЯ -->
+<!-- ================================================ -->
+<section class="section-large" id="sintez">
+  <div class="container">
+    <div class="section-header">
+      <span class="section-tag">Часть 1</span>
+      <h2>Синтез исследования</h2>
+    </div>
+
+    <!-- 1.1 Главное, что мы теперь понимаем -->
+    <h3>1.1. Главное, что мы теперь понимаем</h3>
+
+    <div class="card" style="margin-bottom:1.5rem;">
+      <div class="card-title"><span class="number-badge">1</span> Аудитория Гоар -- не один человек, а пять непохожих миров</div>
+      <div class="card-description">
+        Исследование выявило пять сегментов, которые отличаются друг от друга по языку, мотивации, каналам потребления и платежеспособности настолько сильно, что один и тот же лендинг или рекламный креатив не способен зацепить даже два из них одновременно. Малый ритейлер Иван и коуч Елена живут в параллельных вселенных: он мыслит в категориях &laquo;аренда, поставщик, маржа&raquo;, она -- &laquo;энергия, потоки, вибрации&raquo;. Попытка обращаться ко всем сразу приведет к тому, что ни один не узнает себя.
+      </div>
+    </div>
+
+    <div class="card" style="margin-bottom:1.5rem;">
+      <div class="card-title"><span class="number-badge">2</span> Женщины 30+ -- ядро бренда, но не единственный источник дохода</div>
+      <div class="card-description">
+        Сегмент &laquo;мамы-предпринимательницы&raquo; -- самый эмоционально резонирующий с личностью Гоар. Они ищут именно то, что она может дать: переговоры &laquo;без агрессии&raquo;, поддерживающую среду, баланс семья/бизнес. Однако их платежеспособность ограничена (средний чек до 20 000 руб.), а масштабирование через этот сегмент требует большого потока. Основной денежный поток, вероятно, пойдет от корпоративных клиентов (чеки 150 000-800 000 руб.), а женщины 30+ -- это лицо бренда, community и воронка.
+      </div>
+    </div>
+
+    <div class="card" style="margin-bottom:1.5rem;">
+      <div class="card-title"><span class="number-badge">3</span> Корпоративный сегмент -- золотая жила, но входить нужно через доказательства</div>
+      <div class="card-description">
+        84% российских компаний инвестируют в обучение, однако HR-директора кровью и потом обосновывают каждую копейку перед акционерами. Их главная боль -- &laquo;типовые тренинги подрядчиков не подходят под нашу специфику&raquo;. Их wow-эффект -- когда тренер адаптирует симуляцию под реальные переговоры компании и показывает ROI в цифрах. Без кейсов, замеров и пилотных запусков этот сегмент не откроет дверь. Meta Arena как платформа корпоративных симуляций -- точное попадание в тренд геймификации, если удастся упаковать ее с измеримыми результатами.
+      </div>
+    </div>
+
+    <div class="card" style="margin-bottom:1.5rem;">
+      <div class="card-title"><span class="number-badge">4</span> Эзотерический сегмент -- вход с черного хода в массовую аудиторию</div>
+      <div class="card-description">
+        24% МСП в России считают советы тарологов полезными для бизнеса. Это не маргинальный сегмент -- это скрытый запрос на снижение тревожности и обретение уверенности перед лицом неопределенности. Клуб &laquo;Negotiation & Energy Leaders&raquo; мог бы стать мостом между рациональными техниками переговоров и практиками управления состоянием. Однако позиционирование на стыке эзотерики и бизнеса -- это рискованное решение: корпоративный HR-директор, увидев слово &laquo;энергия&raquo; на сайте, может развернуться и уйти.
+      </div>
+    </div>
+
+    <div class="card" style="margin-bottom:1.5rem;">
+      <div class="card-title"><span class="number-badge">5</span> Фрилансеры -- массовый, но бедный сегмент с острой болью</div>
+      <div class="card-description">
+        12 млн самозанятых в России (рост на 43% за 2024 год), и каждый из них ведет переговоры с клиентами лично, без менеджеров и юристов. Их боль конкретна и измерима: &laquo;созвоны по 3-4 часа, переписки часами каждый день&raquo;, страх назвать высокую цену, отсутствие шаблонов. Но средний чек сегмента снизился на 18%, бюджет на обучение -- до 15 000 руб. Это идеальная аудитория для лид-магнита и недорогого мини-продукта, но не для VIP-программы.
+      </div>
+    </div>
+
+    <div class="card" style="margin-bottom:1.5rem;">
+      <div class="card-title"><span class="number-badge">6</span> Переговоры -- это не то, что люди ищут. Они ищут уверенность</div>
+      <div class="card-description">
+        Ни один из пяти сегментов не формулирует свой запрос как &laquo;хочу научиться вести переговоры&raquo;. Малый бизнес хочет &laquo;не прогореть и договориться об аренде&raquo;. Женщины хотят &laquo;реализоваться и не чувствовать вину&raquo;. Корпораты хотят &laquo;повысить KPI и показать ROI&raquo;. Эзотерички хотят &laquo;уверенность и гармонию&raquo;. Фрилансеры хотят &laquo;получать достойную оплату&raquo;. Навык переговоров -- это инструмент для достижения чего-то большего. Коммуникация продукта должна начинаться с результата, а не с процесса.
+      </div>
+    </div>
+
+    <div class="card" style="margin-bottom:1.5rem;">
+      <div class="card-title"><span class="number-badge">7</span> Офлайн возвращается, и это шанс для камерных форматов</div>
+      <div class="card-description">
+        После пандемийной усталости от Zoom наблюдается устойчивый запрос на живые встречи. Бизнес-завтраки, женские клубы в кафе, ретриты -- все это снова набирает популярность. Для Гоар это означает, что формат клуба с офлайн-встречами может стать мощным инструментом удержания и лояльности. 95% участниц женских клубов остаются с месячным продлением -- это говорит о том, что community-формат с живым контактом работает.
+      </div>
+    </div>
+
+    <!-- 1.2 Ключевые наблюдения -->
+    <h3 style="margin-top:2.5rem;">1.2. Ключевые наблюдения</h3>
+
+    <ul class="list-styled">
+      <li>Женщины-предпринимательницы -- самый быстрорастущий сегмент: 900k+ владелиц бизнеса, 1,8 млн ИП, 2 млн самозанятых. 54% планируют учиться в ближайший год. Это теплая аудитория.</li>
+      <li>88% женщин-предпринимателей признают нехватку бизнес-знаний -- есть прямой запрос на обучение, но не абстрактное, а адаптированное &laquo;под женщину&raquo; (без агрессивных методик).</li>
+      <li>70% женщин-предпринимателей ставят семью на первое место -- это значит, что формат обучения обязан быть гибким: записи, модули, возможность учиться ночью.</li>
+      <li>Средний чек фрилансеров снизился на 18% за 2024 -- растущая конкуренция толкает их учиться продавать себя дороже. Боль острая и осознанная.</li>
+      <li>84% компаний инвестируют в обучение, но главная проблема -- низкая вовлеченность сотрудников и типовые продукты подрядчиков. Кастомизация -- главное конкурентное преимущество.</li>
+      <li>Геймификация и симуляции -- восходящий тренд корпоративного обучения. Meta Arena попадает точно в этот запрос, если доказать ROI.</li>
+      <li>Эзотерика в бизнесе -- не фрик-шоу: 24% МСП рассматривают советы эзотериков как полезные. За этим стоит тревожность в условиях неопределенности.</li>
+      <li>Малый ритейл (островки в ТЦ) -- самый скептичный к обучению сегмент. Готовы потратить максимум 5-15 тыс. руб. только на то, что окупится &laquo;завтра&raquo;.</li>
+      <li>Корпоративные клиенты выбирают гибридный формат: 92% компаний комбинируют онлайн и офлайн. Чисто онлайн-продукт не пройдет.</li>
+      <li>Фрилансеры отмечают: переговоры -- самая стрессовая часть их работы, при этом вся бесплатная информация &laquo;абстрактная&raquo; и не учитывает специфику фриланса.</li>
+      <li>Женские клубы демонстрируют retention 95% при месячной подписке 2-5 тыс. руб. Это устойчивая бизнес-модель с предсказуемым доходом.</li>
+      <li>Возврат к офлайну -- слабый сигнал, который усиливается: форум &laquo;Мой бизнес 2025&raquo; в СПб собрал 500+ предпринимателей очно.</li>
+      <li>AI-ассистенты в переговорах -- пока слабый сигнал, но первопроходцы получат конкурентное преимущество. Интеграция ИИ в симуляции Meta Arena -- возможная точка дифференциации.</li>
+      <li>Все пять сегментов сходятся в одном: им нужны не теории, а шаблоны, скрипты и немедленно применимые инструменты. &laquo;Дайте кейсы&raquo; -- сквозной запрос.</li>
+    </ul>
+
+    <!-- 1.3 Сквозные паттерны -->
+    <h3 style="margin-top:2.5rem;">1.3. Сквозные паттерны</h3>
+
+    <div class="grid grid-2">
+      <div class="card card-accent">
+        <div class="card-title">Паттерн 1: &laquo;Переговоры = уверенность&raquo;</div>
+        <div class="card-description">
+          Все сегменты, от фрилансера до HR-директора, хотят не техник переговоров, а состояния уверенности. Мама боится быть &laquo;плохой матерью&raquo;, фрилансер боится назвать цену, малый бизнес боится прогореть, эзотеричка ищет &laquo;внутреннюю опору&raquo;. Техника переговоров -- это средство для достижения внутренней уверенности. Продукт должен продаваться через состояние, а не через навык.
+        </div>
+      </div>
+      <div class="card card-accent">
+        <div class="card-title">Паттерн 2: &laquo;Скептицизм к обучению + острая потребность&raquo;</div>
+        <div class="card-description">
+          Парадокс: все сегменты испытывают острую нехватку переговорных навыков, но при этом скептически относятся к обучению. Малый бизнес считает это &laquo;разводиловом&raquo;, фрилансеры прочитали &laquo;всё бесплатно&raquo;, HR устал от типовых подрядчиков. Входной барьер высок -- нужно сначала доказать компетентность через бесплатный контент, кейсы и мини-результат.
+        </div>
+      </div>
+      <div class="card card-accent">
+        <div class="card-title">Паттерн 3: &laquo;Community важнее контента&raquo;</div>
+        <div class="card-description">
+          Для трех из пяти сегментов (женщины 30+, эзотерика, фрилансеры) принадлежность к сообществу -- ключевой мотиватор покупки и удержания. Wow-момент для них -- не урок, а &laquo;нашла своих&raquo;. 95% retention в женских клубах -- это не про контент, а про ощущение принадлежности. Клубная модель у Гоар может стать основой рекуррентного дохода.
+        </div>
+      </div>
+      <div class="card card-accent">
+        <div class="card-title">Паттерн 4: &laquo;Практичность до крайности&raquo;</div>
+        <div class="card-description">
+          Сквозной запрос всех сегментов -- &laquo;дайте мне скрипт, который я применю сегодня&raquo;. Теория без практики отсеивает 80% аудитории. Фрилансеры хотят шаблон письма о повышении цены, малый бизнес -- скрипт разговора с арендодателем, женщины -- технику &laquo;как сказать нет клиенту, не потеряв его&raquo;. Продукт должен давать артефакт на каждом занятии.
+        </div>
+      </div>
+      <div class="card card-accent">
+        <div class="card-title">Паттерн 5: &laquo;Два языка, две воронки&raquo;</div>
+        <div class="card-description">
+          Рациональные сегменты (корпораты, малый бизнес, фрилансеры) говорят на языке цифр, KPI, ROI. Эмоциональные сегменты (женщины 30+, эзотерика) говорят на языке состояний, энергии, поддержки. Попытка смешать эти языки в одной коммуникации отпугнет обе группы. Нужны минимум две параллельные воронки и два стиля подачи.
+        </div>
+      </div>
+    </div>
+
+    <!-- 1.4 Противоречия и неожиданные находки -->
+    <h3 style="margin-top:2.5rem;">1.4. Противоречия и неожиданные находки</h3>
+
+    <div class="warning-block">
+      <p><strong>Противоречие 1: Личный бренд Гоар vs ширина аудитории.</strong> Гоар как женщина-эксперт по переговорам максимально резонирует с женской аудиторией. Но корпоративный сегмент (самый прибыльный) -- это часто мужчины-HR и мужчины-руководители, которым нужен &laquo;серьезный&raquo; тренер. Вопрос: как совместить женскую мягкость бренда с корпоративной солидностью? Два отдельных позиционирования? Или &laquo;мягкая сила&raquo; как USP даже для корпоратов?</p>
+    </div>
+
+    <div class="warning-block">
+      <p><strong>Противоречие 2: Эзотерика привлекает и отталкивает одновременно.</strong> Клуб &laquo;Negotiation & Energy Leaders&raquo; -- уникальная ниша (пионерская позиция). Но слово &laquo;энергия&raquo; в названии немедленно отсекает рациональную аудиторию. Если убрать эзотерическую составляющую -- теряется уникальность. Если оставить -- теряется корпоративный сегмент. Это принципиальный выбор позиционирования.</p>
+    </div>
+
+    <div class="warning-block">
+      <p><strong>Неожиданная находка: Малый ритейл -- не целевая аудитория.</strong> Сегмент &laquo;владельцы островков в ТЦ&raquo; -- самый бедный, самый скептичный и наименее масштабируемый. Их чек (5-15 тыс. руб.) не покроет даже стоимость привлечения. При этом они не воспринимают себя как людей, которым нужны &laquo;переговоры&raquo; -- у них проблема с арендой, кадрами и спросом. Рекомендация -- исключить этот сегмент из приоритетной ЦА.</p>
+    </div>
+
+    <div class="orange-block">
+      <p><strong>Неожиданная находка: Фрилансеры -- идеальный &laquo;рупор&raquo;.</strong> Фрилансеры мало платят, но они -- самый вирусный сегмент. Они активны на Хабре, VC.ru, в Telegram-чатах. Один кейс &laquo;фрилансер поднял цену после курса Гоар&raquo; может разойтись органически по десяткам тысяч потенциальных клиентов. Это не основной источник дохода, а маркетинговый канал.</p>
+    </div>
+
+    <!-- 1.5 Что не потерять -->
+    <h3 style="margin-top:2.5rem;">1.5. Что не потерять</h3>
+
+    <div class="green-block">
+      <p><strong>1. Цитаты из R5.</strong> Прямые формулировки боли от реальных людей -- бесценный материал для лендингов, рекламных креативов и скриптов продаж. &laquo;Созвоны по 3-4 часа, переписки часами каждый день&raquo; -- это готовый хук для рекламы на фрилансеров. &laquo;Хочу большего, но деть будет в углу пылиться&raquo; -- готовый хук для мам.</p>
+    </div>
+    <div class="green-block">
+      <p><strong>2. Wow-моменты из R4.</strong> Конкретные сценарии, которые превращают клиента в адвоката бренда: &laquo;пришел на тренинг, применил технику, сэкономил 30 тыс. руб. на переговорах&raquo;. Эти сценарии нужно закладывать в продуктовый дизайн как обязательные элементы, а не надеяться на случай.</p>
+    </div>
+    <div class="green-block">
+      <p><strong>3. Визуальные коды из R7.</strong> Пастельная гамма для женщин 30+, корпоративный минимализм для HR, мем-культура для фрилансеров -- это не абстрактные рекомендации, а конкретные стилевые рамки для креативов в таргетированной рекламе. Один визуал не подойдет для всех.</p>
+    </div>
+    <div class="green-block">
+      <p><strong>4. Тренд &laquo;внутреннее обучение&raquo; для корпоратов.</strong> 86% компаний предпочитают создавать обучение своими силами. Это значит, что Гоар нужно позиционировать себя не как &laquo;внешнего тренера&raquo;, а как &laquo;партнера, который помогает создать внутреннюю программу&raquo;. Meta Arena -- платформа, которую компания &laquo;забирает себе&raquo;.</p>
+    </div>
+    <div class="green-block">
+      <p><strong>5. Retention 95% в женских клубах.</strong> Эта цифра -- главный аргумент в пользу клубной модели. Если Гоар запустит клуб с подпиской 3-5 тыс. руб./мес и привлечет 200 участниц -- это 600 000-1 000 000 руб./мес рекуррентного дохода с минимальными операционными затратами.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ================================================ -->
+<!-- ЧАСТЬ 2. ГИПОТЕЗЫ -->
+<!-- ================================================ -->
+<section class="section-large" id="gipotezy">
+  <div class="container">
+    <div class="section-header">
+      <span class="section-tag">Часть 2</span>
+      <h2>Гипотезы</h2>
+    </div>
+
+    <h3>2.1. Основные гипотезы</h3>
+
+    <!-- H1 -->
+    <div class="hypothesis-card">
+      <div class="h-label">H1</div>
+      <h4>Женщины-предпринимательницы 30-45 -- самый горячий сегмент для курса &laquo;Слово за тобой&raquo;</h4>
+      <div class="h-row"><strong>Суть:</strong> <span>Основной курс &laquo;Слово за тобой&raquo; (15 000-60 000 руб.) найдет максимальный отклик у женщин 30-45, которые ведут свой бизнес и хотят научиться договариваться &laquo;без агрессии&raquo;, сохраняя женственность.</span></div>
+      <div class="h-row"><strong>Основание:</strong> <span>54% женщин-предпринимателей планируют учиться. 88% признают нехватку знаний. Ценовой коридор продукта совпадает с их готовностью платить (до 20 000 руб. разово, до 60 000 в рассрочку).</span></div>
+      <div class="h-row"><strong>Почему важно:</strong> <span>Определяет главный ToV бренда, визуальную упаковку, выбор площадок (Instagram, Telegram) и формат курса (модульный, с записями, с community).</span></div>
+      <div class="h-row"><strong>Подтверждение:</strong> <span>Рост женского бизнеса, цитаты из R5 (&laquo;хочу большего&raquo;, &laquo;мне важно расти, но не ценой семьи&raquo;), retention 95% в женских клубах.</span></div>
+      <div class="h-row"><strong>Неясно:</strong> <span>Насколько широко можно масштабировать именно этот сегмент через платную рекламу? Какова стоимость привлечения (CAC)?</span></div>
+      <div class="h-row"><strong>Проверка:</strong> <span>Запуск таргетированной рекламы на женщин 30-45 с малым бизнесом. A/B-тест двух креативов: &laquo;переговоры для бизнеса&raquo; vs &laquo;уверенность в переговорах&raquo;. Измерить конверсию в регистрацию на бесплатный вебинар.</span></div>
+    </div>
+
+    <!-- H2 -->
+    <div class="hypothesis-card">
+      <div class="h-label">H2</div>
+      <h4>Корпоративный сегмент -- основной источник выручки, но требует proof-of-concept</h4>
+      <div class="h-row"><strong>Суть:</strong> <span>Корпоративные тренинги (150 000-800 000 руб.) принесут основную выручку, но продажи начнутся только после создания 2-3 измеримых кейсов и пилотного проекта.</span></div>
+      <div class="h-row"><strong>Основание:</strong> <span>84% компаний инвестируют в обучение. Средний чек корпоративного тренинга 100-500 тыс. руб. HR-директора ищут кастомные решения и измеримый ROI.</span></div>
+      <div class="h-row"><strong>Почему важно:</strong> <span>Определяет приоритет ресурсов: стоит ли инвестировать в Meta Arena и корпоративный маркетинг сейчас или сначала насытить B2C-сегмент.</span></div>
+      <div class="h-row"><strong>Подтверждение:</strong> <span>Тренд на гибридное обучение (92% компаний), геймификация растет, дефицит кадров (86%) толкает компании учить сотрудников.</span></div>
+      <div class="h-row"><strong>Неясно:</strong> <span>Есть ли у Гоар корпоративный опыт, который можно упаковать в кейс? Насколько готова платформа Meta Arena?</span></div>
+      <div class="h-row"><strong>Проверка:</strong> <span>Провести 1-2 бесплатных пилотных тренинга для компаний. Замерить до/после (навыки переговоров через тест). Собрать отзывы HR. Оценить готовность платить.</span></div>
+    </div>
+
+    <!-- H3 -->
+    <div class="hypothesis-card">
+      <div class="h-label">H3</div>
+      <h4>Клубная модель с подпиской -- самая устойчивая бизнес-модель для Гоар</h4>
+      <div class="h-row"><strong>Суть:</strong> <span>Женский клуб с подпиской 3-5 тыс. руб./мес (переговоры + поддержка + офлайн-встречи) даст предсказуемый рекуррентный доход и станет основой community вокруг бренда.</span></div>
+      <div class="h-row"><strong>Основание:</strong> <span>Retention 95% в женских клубах. Три из пяти сегментов (женщины, эзотерика, фрилансеры) ценят community выше контента. Тренд возврата к офлайну усиливает ценность живых встреч.</span></div>
+      <div class="h-row"><strong>Почему важно:</strong> <span>Рекуррентный доход снижает зависимость от запусков и сезонности. 200 участниц x 4 000 руб. = 800 000 руб./мес.</span></div>
+      <div class="h-row"><strong>Подтверждение:</strong> <span>Существующие женские клубы (&laquo;Внутри себя&raquo;, бизнес-клубы в Instagram) показывают устойчивость модели. Аудитория готова платить за принадлежность.</span></div>
+      <div class="h-row"><strong>Неясно:</strong> <span>Какой контент наполнения клуба обеспечит такой retention? Как часто нужны офлайн-встречи? Достаточно ли одного города или нужен онлайн-формат?</span></div>
+      <div class="h-row"><strong>Проверка:</strong> <span>MVP: закрытый Telegram-чат + 1 онлайн-встреча в неделю + 1 офлайн-встреча в месяц. 30 первых участниц по приглашению. Измерить retention через 3 месяца.</span></div>
+    </div>
+
+    <!-- H4 -->
+    <div class="hypothesis-card">
+      <div class="h-label">H4</div>
+      <h4>Фрилансеры -- лучший сегмент для лид-магнита и вирусного распространения</h4>
+      <div class="h-row"><strong>Суть:</strong> <span>Бесплатный мини-курс &laquo;Переговоры для фрилансера: 5 скриптов, которые повысят ваш чек&raquo; станет основным лид-магнитом, привлекающим трафик. Часть фрилансеров конвертируется в платный курс, остальные распространят бренд.</span></div>
+      <div class="h-row"><strong>Основание:</strong> <span>12 млн самозанятых (рост 43%), конкретная боль (&laquo;не могу назвать цену&raquo;), активность на Хабре и VC.ru (вирусный потенциал), запрос на шаблоны и скрипты.</span></div>
+      <div class="h-row"><strong>Почему важно:</strong> <span>Решает проблему трафика на ранних этапах без больших рекламных бюджетов.</span></div>
+      <div class="h-row"><strong>Подтверждение:</strong> <span>Цитаты из R5: фрилансеры хвалят &laquo;шаблоны и скрипты&raquo; как главный плюс курсов. Статьи на VC.ru набирают десятки тысяч просмотров.</span></div>
+      <div class="h-row"><strong>Неясно:</strong> <span>Какова конверсия из бесплатного в платное у этого сегмента? Не &laquo;разбавит&raquo; ли это аудиторию бренда (много фрилансеров, мало платящих)?</span></div>
+      <div class="h-row"><strong>Проверка:</strong> <span>Опубликовать статью на VC.ru &laquo;Как фрилансеру вести переговоры о цене: 5 работающих скриптов&raquo; от имени Гоар. Измерить охват, подписки на Telegram-канал, запросы на курс.</span></div>
+    </div>
+
+    <!-- H5 -->
+    <div class="hypothesis-card">
+      <div class="h-label">H5</div>
+      <h4>&laquo;Мягкая сила&raquo; -- уникальное позиционирование, которое отстроит Гоар от конкурентов-мужчин</h4>
+      <div class="h-row"><strong>Суть:</strong> <span>Концепция &laquo;переговоры без давления&raquo; / &laquo;мягкая сила в переговорах&raquo; -- это не просто маркетинговый ход, а реальный запрос рынка. Женская аудитория хочет именно этого, а корпораты устали от агрессивных тренеров.</span></div>
+      <div class="h-row"><strong>Основание:</strong> <span>Женщины 30+ ожидают &laquo;инструментов переговоров, адаптированных под женщину, без агрессивной жесткости&raquo;. Корпоративный тренд -- переход от hard negotiation к collaborative negotiation.</span></div>
+      <div class="h-row"><strong>Почему важно:</strong> <span>Это потенциальный USP, который делает Гоар незаменимой в своей нише. Конкуренты-мужчины не могут убедительно занять эту позицию.</span></div>
+      <div class="h-row"><strong>Подтверждение:</strong> <span>&laquo;Да, мы осторожнее и меньше рискуем, зато наши бизнесы устойчивее&raquo; -- голос аудитории.</span></div>
+      <div class="h-row"><strong>Неясно:</strong> <span>Не ограничит ли это позиционирование доступ к мужской аудитории и крупным корпоратам?</span></div>
+      <div class="h-row"><strong>Проверка:</strong> <span>Глубинные интервью с 5-7 HR-директорами: &laquo;Что для вас значит &ldquo;мягкая сила в переговорах&rdquo;? Купили бы вы такой тренинг для команды?&raquo;</span></div>
+    </div>
+
+    <!-- H6 -->
+    <div class="hypothesis-card">
+      <div class="h-label">H6</div>
+      <h4>Эзотерический сегмент нужно обслуживать отдельным суббрендом</h4>
+      <div class="h-row"><strong>Суть:</strong> <span>Клуб &laquo;Negotiation & Energy Leaders&raquo; стоит позиционировать как отдельный суббренд, не смешивая с основным брендом Гоар, чтобы не отпугнуть корпоративную и рациональную аудиторию.</span></div>
+      <div class="h-row"><strong>Основание:</strong> <span>Визуальные коды и TOV эзотерического сегмента (фиолетовый, мистика, &laquo;вибрации&raquo;) диаметрально противоположны корпоративному минимализму. HR-директор, увидев &laquo;энергия&raquo; рядом с &laquo;переговоры&raquo;, не воспримет продукт серьезно.</span></div>
+      <div class="h-row"><strong>Почему важно:</strong> <span>Спасает основной бренд от размытия и позволяет монетизировать оба направления параллельно.</span></div>
+      <div class="h-row"><strong>Подтверждение:</strong> <span>Контраст TOV сегментов из R7. Практика рынка: успешные эксперты разделяют &laquo;рациональный&raquo; и &laquo;духовный&raquo; бренды.</span></div>
+      <div class="h-row"><strong>Неясно:</strong> <span>Хватит ли ресурсов у Гоар на два бренда? Не создаст ли это путаницу?</span></div>
+      <div class="h-row"><strong>Проверка:</strong> <span>Провести 2 тестовых вебинара -- один в &laquo;рациональном&raquo; стиле, другой в &laquo;энергетическом&raquo;. Сравнить аудитории и конверсии.</span></div>
+    </div>
+
+    <!-- H7 -->
+    <div class="hypothesis-card">
+      <div class="h-label">H7</div>
+      <h4>VIP-программа &laquo;Влияние без давления&raquo; найдет клиентов среди успешных предпринимательниц, а не среди начинающих</h4>
+      <div class="h-row"><strong>Суть:</strong> <span>VIP 1:1 за 120 000-300 000 руб. -- продукт не для мам с оборотом до 5 млн, а для предпринимательниц с выручкой 10+ млн, которые уже добились успеха, но хотят перейти на следующий уровень (крупные сделки, партнерства).</span></div>
+      <div class="h-row"><strong>Основание:</strong> <span>58% женщин-предпринимателей имеют оборот до 5 млн -- они не потянут VIP. Но оставшиеся 42% -- это несколько сотен тысяч бизнесвумен с более высокой платежеспособностью.</span></div>
+      <div class="h-row"><strong>Почему важно:</strong> <span>Определяет позиционирование VIP-продукта и канал привлечения (не Instagram-марафоны, а бизнес-клубы, конференции, рекомендации).</span></div>
+      <div class="h-row"><strong>Подтверждение:</strong> <span>Часть аудитории участвует в коучингах за 100k+ &laquo;в рассрочку&raquo; -- значит, спрос есть, но нужна правильная упаковка.</span></div>
+      <div class="h-row"><strong>Неясно:</strong> <span>Где именно &laquo;обитают&raquo; эти успешные предпринимательницы? Какие площадки, клубы, мероприятия?</span></div>
+      <div class="h-row"><strong>Проверка:</strong> <span>Выступление Гоар на 2-3 бизнес-мероприятиях для предпринимательниц (типа &laquo;Деловые женщины России&raquo;). Сбор заявок на VIP. Анализ профиля заявителей.</span></div>
+    </div>
+
+    <!-- Альтернативные -->
+    <h3 style="margin-top:2.5rem;">2.2. Альтернативные гипотезы</h3>
+
+    <div class="card" style="margin-bottom:1rem;">
+      <div class="card-title">A1: Малый ритейл стоит полностью исключить из ЦА</div>
+      <div class="card-description">Возможно, что этот сегмент не принесет ни объемов, ни маржи. Их скептицизм к обучению, низкий чек и отсутствие привычки покупать курсы делают стоимость привлечения неоправданно высокой. Ресурсы лучше направить на женщин 30+ и корпоратов.</div>
+    </div>
+
+    <div class="card" style="margin-bottom:1rem;">
+      <div class="card-title">A2: &laquo;Переговоры&raquo; -- неправильное ключевое слово для продукта</div>
+      <div class="card-description">Возможно, продукт нужно переименовать из &laquo;курс переговоров&raquo; в &laquo;курс уверенных коммуникаций&raquo; или &laquo;курс влияния&raquo;. Слово &laquo;переговоры&raquo; ассоциируется с агрессией и корпоративным контекстом, что отпугивает женскую и фриланс-аудиторию.</div>
+    </div>
+
+    <div class="card" style="margin-bottom:1rem;">
+      <div class="card-title">A3: Meta Arena -- не корпоративный продукт, а образовательная платформа</div>
+      <div class="card-description">Вместо продажи Meta Arena как корпоративного тренинга, можно позиционировать ее как открытую онлайн-платформу с симуляциями переговоров (по подписке, 990-2990 руб./мес). Это расширит аудиторию до всех пяти сегментов и снизит порог входа.</div>
+    </div>
+
+    <div class="card" style="margin-bottom:1rem;">
+      <div class="card-title">A4: Запуск стоит начинать с корпоратов, а не с B2C</div>
+      <div class="card-description">Альтернативная стратегия: сначала провести 3-5 корпоративных тренингов, заработать кейсы и кэш, а потом использовать этот авторитет для запуска B2C-продуктов. Корпоративный опыт = социальное доказательство для всех остальных сегментов.</div>
+    </div>
+
+    <div class="card" style="margin-bottom:1rem;">
+      <div class="card-title">A5: Объединить женщин 30+ и эзотерику в один сегмент &laquo;осознанные предпринимательницы&raquo;</div>
+      <div class="card-description">Пересечение между этими сегментами значительно: женщины после декрета (15-20% обращений к нумерологам), интерес к саморазвитию, стремление к балансу. Вместо двух отдельных воронок -- одна, с акцентом на &laquo;осознанность&raquo; (не эзотерику).</div>
+    </div>
+
+    <!-- Что рано -->
+    <h3 style="margin-top:2.5rem;">2.3. Что пока рано обсуждать</h3>
+
+    <div class="orange-block">
+      <p><strong>1. Масштабирование Meta Arena на международный рынок.</strong> Пока нет даже локальных кейсов использования платформы. Обсуждать выход на англоязычный рынок преждевременно -- сначала нужно доказать работоспособность в одной компании.</p>
+    </div>
+    <div class="orange-block">
+      <p><strong>2. AI-интеграция в продукты.</strong> Тренд на AI-ассистентов в переговорах -- слабый сигнал. У Гоар пока нет технической команды для разработки AI-функциональности. Это горизонт 12-18 месяцев, не ближайший квартал.</p>
+    </div>
+    <div class="orange-block">
+      <p><strong>3. Франшиза клуба.</strong> Модель женского клуба может масштабироваться через региональных лидеров, но это обсуждение имеет смысл только после того, как будет доказан retention и юнит-экономика одного клуба в одном городе.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ================================================ -->
+<!-- ЧАСТЬ 3. ВОПРОСЫ КЛИЕНТУ -->
+<!-- ================================================ -->
+<section class="section-large" id="voprosy">
+  <div class="container">
+    <div class="section-header">
+      <span class="section-tag">Часть 3</span>
+      <h2>Вопросы клиенту</h2>
+    </div>
+
+    <p style="margin-bottom:2rem;">Эти вопросы необходимо задать Гоар до перехода к следующим этапам. Ответы определят выбор приоритетных сегментов, продуктовую линейку и позиционирование.</p>
+
+    <div class="card" style="margin-bottom:1rem;">
+      <div class="card-title"><span class="number-badge">1</span> Кто ваш идеальный клиент прямо сейчас?</div>
+      <div class="card-description">Если бы вы могли выбрать только один сегмент из пяти (женщины-предпринимательницы, корпораты, фрилансеры, малый ритейл, эзо-аудитория) -- кого бы выбрали? С кем вам самой комфортнее работать? У кого вы уже получали лучшие результаты?</div>
+    </div>
+
+    <div class="card" style="margin-bottom:1rem;">
+      <div class="card-title"><span class="number-badge">2</span> Насколько для вас важна эзотерическая/энергетическая составляющая?</div>
+      <div class="card-description">Клуб &laquo;Negotiation & Energy Leaders&raquo; -- это принципиальная часть вашего видения или гибкая идея? Готовы ли вы отделить &laquo;энергетику&raquo; в суббренд, если это поможет корпоративным продажам? Или &laquo;энергия + переговоры&raquo; -- это ваша нерушимая философия?</div>
+    </div>
+
+    <div class="card" style="margin-bottom:1rem;">
+      <div class="card-title"><span class="number-badge">3</span> Есть ли у вас корпоративный опыт, который можно упаковать в кейс?</div>
+      <div class="card-description">Проводили ли вы тренинги для компаний ранее? Есть ли хоть один результат, который можно измерить (&laquo;после тренинга конверсия отдела продаж выросла на X%&raquo;)? Есть ли контакты HR-директоров, готовых провести пилотный проект?</div>
+    </div>
+
+    <div class="card" style="margin-bottom:1rem;">
+      <div class="card-title"><span class="number-badge">4</span> В каком состоянии платформа Meta Arena?</div>
+      <div class="card-description">Это работающий продукт или концепция? Можно ли провести демо для потенциального корпоративного клиента в ближайший месяц? Кто её разрабатывает и сколько ресурсов нужно до MVP?</div>
+    </div>
+
+    <div class="card" style="margin-bottom:1rem;">
+      <div class="card-title"><span class="number-badge">5</span> Готовы ли вы к клубной модели с регулярными встречами?</div>
+      <div class="card-description">Клуб с подпиской -- это минимум 4 онлайн-встречи и 1 офлайн в месяц. Это большая операционная нагрузка. Есть ли у вас команда (хотя бы ассистент)? Готовы ли вы к формату &laquo;постоянного присутствия&raquo; для участниц?</div>
+    </div>
+
+    <div class="card" style="margin-bottom:1rem;">
+      <div class="card-title"><span class="number-badge">6</span> Как вы себя позиционируете: &laquo;тренер по переговорам&raquo; или шире?</div>
+      <div class="card-description">Исследование показало, что аудитория не ищет &laquo;переговоры&raquo; -- она ищет &laquo;уверенность&raquo;, &laquo;влияние&raquo;, &laquo;силу слова&raquo;. Готовы ли вы к более широкому позиционированию (&laquo;эксперт по коммуникативному влиянию&raquo;)? Или &laquo;переговоры&raquo; -- это осознанный выбор?</div>
+    </div>
+
+    <div class="card" style="margin-bottom:1rem;">
+      <div class="card-title"><span class="number-badge">7</span> Какой город (или формат) для офлайна?</div>
+      <div class="card-description">Если запускать клуб и офлайн-встречи -- где? Москва, Петербург, другой город? Или чисто онлайн на старте? Есть ли у вас база контактов в конкретном городе?</div>
+    </div>
+
+    <div class="card" style="margin-bottom:1rem;">
+      <div class="card-title"><span class="number-badge">8</span> Малый ритейл -- ваш осознанный выбор или инерция?</div>
+      <div class="card-description">Сегмент &laquo;владельцы островков в ТЦ&raquo; попал в исследование из распаковки. Но данные показывают, что это самый сложный и наименее прибыльный сегмент. Есть ли у вас личная связь с этой аудиторией (опыт, знакомые, страсть)? Или его можно безболезненно убрать из приоритетов?</div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ================================================ -->
+<!-- ЧАСТЬ 4. ТАБЛИЦА РЕАКЦИИ КЛИЕНТА -->
+<!-- ================================================ -->
+<section class="section-large" id="reaktsiya">
+  <div class="container">
+    <div class="section-header">
+      <span class="section-tag">Часть 4</span>
+      <h2>Таблица реакции клиента</h2>
+    </div>
+
+    <p style="margin-bottom:1.5rem;">Заполняется вместе с Гоар во время обсуждения синтеза. Фиксируем реакцию на каждый ключевой тезис.</p>
+
+    <div class="table-wrapper">
+      <table>
+        <thead>
+          <tr>
+            <th style="width:5%;">#</th>
+            <th style="width:35%;">Тезис / гипотеза</th>
+            <th style="width:15%;">Реакция</th>
+            <th style="width:25%;">Комментарий клиента</th>
+            <th style="width:20%;">Решение / действие</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="table-accent">1</td>
+            <td>Женщины 30+ -- самый горячий сегмент для &laquo;Слово за тобой&raquo;</td>
+            <td></td>
+            <td></td>
+            <td></td>
+          </tr>
+          <tr>
+            <td class="table-accent">2</td>
+            <td>Корпораты -- основной источник выручки (но нужен proof-of-concept)</td>
+            <td></td>
+            <td></td>
+            <td></td>
+          </tr>
+          <tr>
+            <td class="table-accent">3</td>
+            <td>Клубная модель с подпиской -- самая устойчивая бизнес-модель</td>
+            <td></td>
+            <td></td>
+            <td></td>
+          </tr>
+          <tr>
+            <td class="table-accent">4</td>
+            <td>Фрилансеры -- маркетинговый канал, а не источник дохода</td>
+            <td></td>
+            <td></td>
+            <td></td>
+          </tr>
+          <tr>
+            <td class="table-accent">5</td>
+            <td>&laquo;Мягкая сила&raquo; -- USP бренда Гоар</td>
+            <td></td>
+            <td></td>
+            <td></td>
+          </tr>
+          <tr>
+            <td class="table-accent">6</td>
+            <td>Эзотерика -- в отдельный суббренд</td>
+            <td></td>
+            <td></td>
+            <td></td>
+          </tr>
+          <tr>
+            <td class="table-accent">7</td>
+            <td>VIP -- для успешных предпринимательниц (10+ млн оборот)</td>
+            <td></td>
+            <td></td>
+            <td></td>
+          </tr>
+          <tr>
+            <td class="table-accent">8</td>
+            <td>Малый ритейл -- исключить из приоритетной ЦА</td>
+            <td></td>
+            <td></td>
+            <td></td>
+          </tr>
+          <tr>
+            <td class="table-accent">9</td>
+            <td>&laquo;Переговоры&raquo; -- возможно, неправильное ключевое слово</td>
+            <td></td>
+            <td></td>
+            <td></td>
+          </tr>
+          <tr>
+            <td class="table-accent">10</td>
+            <td>Нужны две параллельные воронки (рациональная + эмоциональная)</td>
+            <td></td>
+            <td></td>
+            <td></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="highlight-box">
+      <p><strong>Шкала реакций:</strong> &laquo;Да, точно!&raquo; / &laquo;Скорее да&raquo; / &laquo;Не уверена&raquo; / &laquo;Нет, не так&raquo; / &laquo;Нужно обсудить&raquo;</p>
+    </div>
+
+  </div>
+</section>
+
+<!-- ================================================ -->
+<!-- ЧАСТЬ 5. ЧТО БЕРЁМ В СЛЕДУЮЩИЕ ЭТАПЫ -->
+<!-- ================================================ -->
+<section class="section-large" id="next">
+  <div class="container">
+    <div class="section-header">
+      <span class="section-tag">Часть 5</span>
+      <h2>Что берем в следующие этапы</h2>
+    </div>
+
+    <h3>В M3 (Позиционирование и бренд-платформа)</h3>
+    <ul class="list-styled">
+      <li><strong>Приоритетные сегменты:</strong> женщины-предпринимательницы 30-45 (ядро) + корпоративные клиенты (доход). Фрилансеры -- как маркетинговый канал. Эзотерика -- отдельный суббренд (если клиент подтвердит).</li>
+      <li><strong>USP-кандидат:</strong> &laquo;Мягкая сила в переговорах&raquo; / &laquo;Влияние без давления&raquo; -- позиционирование на стыке женского лидерства и переговорных навыков.</li>
+      <li><strong>Архетип бренда:</strong> исследовать &laquo;Мудрец + Заботливый&raquo; (для женской аудитории) и &laquo;Герой + Правитель&raquo; (для корпоратов). Возможно, два лица одного бренда.</li>
+      <li><strong>Языковая карта:</strong> две системы TOV -- рациональная (цифры, KPI, ROI, кейсы) и эмоциональная (уверенность, поддержка, баланс, сила). Из R7 -- готовые примеры для каждого сегмента.</li>
+    </ul>
+
+    <h3 style="margin-top:2rem;">В M4 (Продуктовая линейка)</h3>
+    <ul class="list-styled">
+      <li><strong>Лид-магнит:</strong> мини-курс для фрилансеров (&laquo;5 скриптов для повышения чека&raquo;) -- бесплатный, вирусный, на VC.ru/Хабр.</li>
+      <li><strong>Основной курс:</strong> &laquo;Слово за тобой&raquo; для женщин 30+ (15 000-60 000 руб.) -- модульный, с записями, с community-элементом (закрытый чат).</li>
+      <li><strong>Клуб:</strong> подписка 3-5 тыс. руб./мес для выпускниц курса + прямые заходы. Еженедельные онлайн-встречи + ежемесячный офлайн.</li>
+      <li><strong>VIP:</strong> &laquo;Влияние без давления 1:1&raquo; (120 000-300 000 руб.) -- для предпринимательниц 10+ млн оборота. Продажа через рекомендации и бизнес-мероприятия.</li>
+      <li><strong>Корпоратив:</strong> Meta Arena + кастомный тренинг (150 000-800 000 руб.) -- запуск после 2-3 пилотных проектов. Продажа через кейсы и ROI.</li>
+    </ul>
+
+    <h3 style="margin-top:2rem;">В M5 (Контент-стратегия)</h3>
+    <ul class="list-styled">
+      <li><strong>Цитаты из R5</strong> -- готовый материал для хуков и рекламных креативов. Нужно адаптировать под каждый сегмент.</li>
+      <li><strong>Визуальные коды из R7</strong> -- основа для дизайн-системы: пастель для женщин, минимализм для корпоратов, мемы для фрилансеров.</li>
+      <li><strong>Wow-сценарии из R4</strong> -- закладываются в продуктовый дизайн как обязательные элементы (каждое занятие = артефакт + конкретный результат).</li>
+      <li><strong>Две воронки</strong> -- рациональная (Telegram-канал + VC.ru + LinkedIn) и эмоциональная (Instagram + женские клубы + Telegram). Разный контент, разный визуал, один бренд.</li>
+    </ul>
+
+    <h3 style="margin-top:2rem;">Что требует решения ДО перехода к M3</h3>
+    <div class="warning-block">
+      <p><strong>1.</strong> Позиция Гоар по эзотерике: суббренд или интеграция?</p>
+    </div>
+    <div class="warning-block">
+      <p><strong>2.</strong> Статус Meta Arena: MVP или концепция?</p>
+    </div>
+    <div class="warning-block">
+      <p><strong>3.</strong> Наличие корпоративных кейсов (хотя бы одного).</p>
+    </div>
+    <div class="warning-block">
+      <p><strong>4.</strong> Подтверждение или снятие малого ритейла как сегмента.</p>
+    </div>
+
+  </div>
+</section>
+
+<!-- Footer -->
+<footer class="footer">
+  <div class="container">
+    <p>BrandOS &middot; SINTEZ-03-TSA &middot; Гоар Багдасарова &middot; Нейроупаковка v5 &middot; 2026-04-05</p>
+  </div>
+</footer>
+
+</body>
+</html>

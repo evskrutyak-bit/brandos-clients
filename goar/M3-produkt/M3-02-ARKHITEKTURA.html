@@ -1,0 +1,1363 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>M3-02 · Архитектура продукта — «Слово за тобой» v2.0 · BrandOS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --primary: #0ea5e9;
+  --primary-dark: #0284c7;
+  --primary-light: #7dd3fc;
+  --primary-bg: #e0f2fe;
+  --background: #ffffff;
+  --foreground: #0f172a;
+  --card-bg: hsl(0,0%,97%);
+  --border: #1C1C1E;
+  --muted: #64748b;
+  --radius: 4px;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: 'Inter', sans-serif;
+  background: var(--background);
+  color: var(--foreground);
+  line-height: 1.75;
+  font-size: 16px;
+}
+
+.container { max-width: 1200px; margin: 0 auto; padding: 0 1.5rem; }
+
+.nav {
+  position: sticky;
+  top: 0;
+  background: white;
+  border-bottom: 1px solid var(--border);
+  z-index: 100;
+  padding: 1rem 0;
+}
+.nav-container { display: flex; justify-content: space-between; align-items: center; gap: 2rem; }
+.nav-brand { font-size: 1rem; font-weight: 700; color: var(--foreground); white-space: nowrap; }
+.nav-brand span { color: var(--primary); }
+.nav-links { display: flex; gap: 1.5rem; list-style: none; overflow-x: auto; flex-wrap: wrap; }
+.nav-links a {
+  color: var(--foreground);
+  text-decoration: none;
+  font-size: .875rem;
+  font-weight: 500;
+  white-space: nowrap;
+  transition: color .2s;
+}
+.nav-links a:hover { color: var(--primary); }
+
+.hero {
+  padding: 3.75rem 0;
+  background: linear-gradient(135deg, rgba(255,255,255,.98) 0%, rgba(240,249,255,.95) 100%);
+}
+.hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: .5rem;
+  padding: .5rem 1rem;
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  font-size: .875rem;
+  font-weight: 600;
+  margin-bottom: 1.5rem;
+  color: var(--foreground);
+}
+.hero h1 {
+  font-size: clamp(32px, 4vw, 51px);
+  font-weight: 500;
+  line-height: 1.2;
+  letter-spacing: -.03em;
+  margin-bottom: 1.5rem;
+}
+.hero-subtitle {
+  font-size: 1.125rem;
+  color: var(--muted);
+  margin-bottom: 2rem;
+}
+.hero-meta { display: flex; gap: 2rem; flex-wrap: wrap; }
+.hero-meta-item { font-size: .875rem; color: var(--muted); }
+.hero-meta-item strong { color: var(--primary); font-weight: 600; }
+
+.section { padding: 2.5rem 0; }
+.section-large { padding: 3.75rem 0; }
+@media (min-width: 768px) {
+  .section { padding: 3.75rem 0; }
+  .section-large { padding: 5rem 0; }
+}
+
+.section-header {
+  position: relative;
+  margin-bottom: 32px;
+  padding-top: 24px;
+}
+.section-header::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 1px;
+  background: repeating-linear-gradient(to right, #9CA3AF 0, #9CA3AF 4px, transparent 4px, transparent 8px);
+}
+
+.section-tag {
+  display: inline-block;
+  font-size: .75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: .1em;
+  color: var(--primary);
+  margin-bottom: .5rem;
+}
+
+h2 { font-size: 32px; font-weight: 300; line-height: 1.2; letter-spacing: -.02em; margin-bottom: 1rem; }
+h3 { font-size: 20px; font-weight: 600; line-height: 1.3; margin-bottom: 1rem; }
+
+p { margin-bottom: 1rem; color: var(--muted); }
+p:last-child { margin-bottom: 0; }
+
+.card {
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: linear-gradient(135deg, rgba(255,255,255,.98) 0%, rgba(250,250,252,.95) 100%);
+  padding: 1.5rem;
+  position: relative;
+  overflow: hidden;
+}
+.card-title { font-size: 1.0625rem; font-weight: 600; margin-bottom: .75rem; color: var(--foreground); }
+.card-description { font-size: .9375rem; line-height: 1.75; color: var(--muted); }
+.card-accent {
+  background: linear-gradient(135deg, rgba(14,165,233,.05) 0%, rgba(14,165,233,.02) 100%);
+  border-color: rgba(14,165,233,.25);
+}
+
+.grid { display: grid; gap: 1.5rem; }
+.grid-2 { grid-template-columns: 1fr; }
+.grid-3 { grid-template-columns: 1fr; }
+@media (min-width: 768px) {
+  .grid-2 { grid-template-columns: repeat(2, 1fr); }
+  .grid-3 { grid-template-columns: repeat(3, 1fr); }
+}
+
+.highlight-box {
+  background: linear-gradient(135deg, rgba(14,165,233,.05) 0%, rgba(14,165,233,.02) 100%);
+  border: 1px solid rgba(14,165,233,.2);
+  border-left: 4px solid var(--primary);
+  padding: 1.25rem 1.5rem;
+  border-radius: var(--radius);
+  margin: 1.5rem 0;
+}
+.highlight-box p { margin: 0; font-size: 1rem; }
+.highlight-box strong { color: var(--primary); }
+
+.warning-block {
+  background: linear-gradient(135deg, rgba(239,68,68,.04) 0%, rgba(239,68,68,.01) 100%);
+  border: 1px solid rgba(239,68,68,.18);
+  border-left: 4px solid #ef4444;
+  padding: 1.25rem 1.5rem;
+  border-radius: var(--radius);
+  margin: 1.5rem 0;
+}
+.warning-block p { margin: 0; font-size: .9375rem; color: var(--muted); }
+.warning-block strong { color: var(--foreground); }
+
+.list-styled { list-style: none; padding: 0; margin-bottom: 1rem; }
+.list-styled li { padding-left: 1.5rem; margin-bottom: .75rem; position: relative; color: var(--muted); font-size: .9375rem; }
+.list-styled li::before {
+  content: '';
+  position: absolute;
+  left: 0; top: .65rem;
+  width: 6px; height: 6px;
+  background: var(--primary);
+  border-radius: 50%;
+}
+
+.table-wrapper {
+  overflow-x: auto;
+  margin: 1.5rem 0;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+table { width: 100%; border-collapse: collapse; background: white; }
+th, td { padding: 1rem; text-align: left; border-bottom: 1px solid var(--border); }
+th {
+  background: var(--card-bg);
+  font-weight: 600;
+  font-size: .8125rem;
+  text-transform: uppercase;
+  letter-spacing: .05em;
+  color: var(--foreground);
+}
+td { font-size: .9375rem; color: var(--muted); }
+tr:last-child td { border-bottom: none; }
+tr:hover td { background: var(--card-bg); }
+.table-accent { color: var(--primary); font-weight: 600; }
+
+.footer {
+  padding: 2rem 0;
+  border-top: 1px solid var(--border);
+  text-align: center;
+  color: var(--muted);
+  font-size: .875rem;
+}
+
+@media (max-width: 768px) {
+  .container { padding: 0 1rem; }
+  h2 { font-size: 24px; }
+  h3 { font-size: 18px; }
+  .nav-links { gap: .75rem; }
+  .hero-meta { gap: 1rem; }
+}
+
+@media print {
+  @page { size: A4 landscape; margin: 1cm; }
+  .nav { display: none; }
+  .section { padding: 1.5rem 0; }
+  .hero { padding: 2rem 0; }
+}
+
+.card-detail { margin-top: .75rem; }
+.card-detail-label { font-size: .8125rem; font-weight: 600; color: var(--foreground); text-transform: uppercase; letter-spacing: .05em; margin-bottom: .25rem; }
+.card-detail-text { font-size: .9375rem; color: var(--muted); margin-bottom: .5rem; }
+.card-number { position: absolute; top: 1rem; right: 1.25rem; font-size: 2.5rem; font-weight: 700; color: rgba(14,165,233,.1); line-height: 1; }
+</style>
+</head>
+<body>
+
+<!-- Nav -->
+<nav class="nav">
+  <div class="container nav-container">
+    <div class="nav-brand">Brand<span>OS</span> &middot; M3 &middot; Архитектура</div>
+    <ul class="nav-links">
+      <li><a href="#b1">Формат</a></li>
+      <li><a href="#b2">Неделя за неделей</a></li>
+      <li><a href="#b3">Тех. стек</a></li>
+      <li><a href="#b4">Customer Journey</a></li>
+      <li><a href="#b5">Поединки</a></li>
+      <li><a href="#b6">Операции</a></li>
+      <li><a href="#questions">Уточнения</a></li>
+    </ul>
+  </div>
+</nav>
+
+<!-- Hero -->
+<section class="hero">
+  <div class="container">
+    <div class="hero-badge">M3-02 &middot; Архитектура продукта &mdash; &laquo;Слово за тобой&raquo; v2.0 &middot; BrandOS</div>
+    <h1>Архитектура продукта<br><span style="color: var(--primary); font-weight: 300;">&laquo;Слово за тобой&raquo; v2.0</span></h1>
+    <p class="hero-subtitle">Операционный слой: формат доставки, недельный ритм, технологический стек, путь участника, механика поединков и логика для организатора</p>
+    <div class="hero-meta">
+      <div class="hero-meta-item"><strong>Проект:</strong> Гоар Багдасарова | Нейроупаковка</div>
+      <div class="hero-meta-item"><strong>Артефакт:</strong> M3-02 | Архитектура продукта</div>
+      <div class="hero-meta-item"><strong>Дата:</strong> 9 апреля 2026</div>
+      <div class="hero-meta-item"><strong>Основа:</strong> M3-01 (Ядро продукта)</div>
+      <div class="hero-meta-item"><strong>Статус:</strong> Первая версия, требует валидации клиентом</div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================== -->
+<!-- БЛОК 1: ФОРМАТ ДОСТАВКИ -->
+<!-- ============================== -->
+<section class="section-large" id="b1">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-tag">Блок 1 &mdash; Формат доставки</div>
+      <h2>Тип продукта</h2>
+    </div>
+
+    <p>Живой онлайн-курс в формате тренировочного лагеря. Не записи, не самостоятельное обучение. Каждую неделю &mdash; живой эфир с поединками, участие обязательно.</p>
+
+    <!-- Длительность и ритм -->
+    <div class="section-header" style="margin-top: 3rem;">
+      <h3>Длительность и ритм</h3>
+    </div>
+
+    <ul class="list-styled">
+      <li><strong>Общая длительность:</strong> 5 недель</li>
+      <li><strong>Нагрузка на участника:</strong> 2-3 часа в неделю</li>
+      <li>Видео-теория: 20 минут (предзапись, открывается в начале недели)</li>
+      <li>Живой эфир с поединками: 60 минут (1 раз в неделю)</li>
+      <li>Применение в реальной жизни: 30-60 минут (между эфирами)</li>
+    </ul>
+
+    <!-- Режим работы участника -->
+    <div class="section-header" style="margin-top: 3rem;">
+      <h3>Режим работы участника между эфирами</h3>
+    </div>
+
+    <ol style="padding-left: 1.5rem; color: var(--muted); font-size: .9375rem;">
+      <li style="margin-bottom: .5rem;">Посмотреть видео-теорию модуля (20 мин)</li>
+      <li style="margin-bottom: .5rem;">Прочитать сценарий предстоящего поединка и подготовиться к ролям А и Б</li>
+      <li style="margin-bottom: .5rem;">Выполнить мини-задание перед эфиром (написать в чат &mdash; формат зависит от модуля)</li>
+      <li style="margin-bottom: .5rem;">После эфира &mdash; изучить свой AI-скоринг (приходит на почту)</li>
+      <li style="margin-bottom: .5rem;">Применить инструменты модуля в реальных ситуациях на работе и в жизни</li>
+      <li style="margin-bottom: .5rem;">Послушать разборы Гоар в канале (Чт-Пт, голосовые 5-7 мин)</li>
+    </ol>
+
+    <!-- Обязательные элементы -->
+    <div class="section-header" style="margin-top: 3rem;">
+      <h3>Обязательные элементы</h3>
+    </div>
+
+    <div class="table-wrapper">
+      <table>
+        <thead>
+          <tr>
+            <th>Элемент</th>
+            <th>Обязательность</th>
+            <th>Примечание</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td class="table-accent">Видео-теория</td><td>Обязательно</td><td>Без неё поединок теряет смысл</td></tr>
+          <tr><td class="table-accent">Живой эфир</td><td>Обязательно</td><td>Поединки требуют живого участия</td></tr>
+          <tr><td class="table-accent">Мини-задание до эфира</td><td>Рекомендовано</td><td>Пишется в чат, настраивает на тему</td></tr>
+          <tr><td class="table-accent">Просмотр AI-скоринга</td><td>Рекомендовано</td><td>Приходит на почту после эфира</td></tr>
+          <tr><td class="table-accent">Разборы в канале</td><td>Рекомендовано</td><td>Голосовые Гоар Чт-Пт</td></tr>
+          <tr><td class="table-accent">Практика в жизни</td><td>Рекомендовано</td><td>Без неё результат ограничен</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Опциональные элементы -->
+    <div class="section-header" style="margin-top: 3rem;">
+      <h3>Опциональные элементы (только тариф &laquo;Персональный&raquo;)</h3>
+    </div>
+
+    <div class="table-wrapper">
+      <table>
+        <thead>
+          <tr>
+            <th>Элемент</th>
+            <th>Описание</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td class="table-accent">Записи эфиров</td><td>Доступ ко всем 5 записям для повторного просмотра</td></tr>
+          <tr><td class="table-accent">Персональный аудио-разбор от Гоар</td><td>1 разбор за весь курс, 5-7 минут, участник выбирает модуль</td></tr>
+          <tr><td class="table-accent">Итоговый переговорный профиль (PDF)</td><td>Персональные метрики: динамика по модулям, сильные стороны, зоны роста</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+  </div>
+</section>
+
+<!-- ============================== -->
+<!-- БЛОК 2: НЕДЕЛЯ ЗА НЕДЕЛЕЙ -->
+<!-- ============================== -->
+<section class="section-large" id="b2">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-tag">Блок 2 &mdash; Неделя за неделей</div>
+      <h2>Единый шаблон недели</h2>
+    </div>
+
+    <div class="card card-accent">
+      <div class="card-description">
+        <p style="font-family: monospace; font-size: .9375rem; line-height: 2; color: var(--foreground);">
+          Понедельник: открывается видео-теория (20 мин) + сценарий поединка<br>
+          Вт-Ср: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;участник изучает теорию, готовится к ролям<br>
+          [День эфира]: живой эфир с поединками (60 мин)<br>
+          Чт-Пт: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;разборы Гоар в канале (голосовые 5-7 мин) + триггеры<br>
+          Выходные: &nbsp;&nbsp;&nbsp;&nbsp;практика инструментов в жизни
+        </p>
+      </div>
+    </div>
+
+    <div class="warning-block">
+      <p><strong>Требует уточнения:</strong> конкретный день недели для эфира не зафиксирован в источниках. В документе используется условное расписание.</p>
+    </div>
+
+    <!-- ========== НЕДЕЛЯ 1 ========== -->
+    <div class="section-header" style="margin-top: 3rem;">
+      <h3>Неделя 1: Опора и звучание</h3>
+    </div>
+
+    <p><strong>Тема:</strong> Перенастройка стрессовой реакции. Страх как энергия. Режимы звучания. Пауза.</p>
+
+    <p><strong>Задача недели:</strong> Участник перестаёт терять себя при волнении. Находит опору в теле, осваивает три режима звучания (кухня / зал / стадион), начинает использовать паузу как инструмент.</p>
+
+    <p><strong>Расписание:</strong></p>
+
+    <div class="table-wrapper">
+      <table>
+        <thead>
+          <tr><th>Когда</th><th>Что</th><th>Длительность</th><th>Формат</th></tr>
+        </thead>
+        <tbody>
+          <tr><td class="table-accent">Пн</td><td>Видео-теория: амигдала, квадратное дыхание, просодия, режимы звучания, пауза</td><td>20 мин</td><td>Предзапись, открывается в личном кабинете</td></tr>
+          <tr><td class="table-accent">Пн</td><td>Участник получает сценарий: &laquo;Первая встреча с крупным клиентом&raquo;</td><td>&mdash;</td><td>Текст в канале / платформе</td></tr>
+          <tr><td class="table-accent">Вт-Ср</td><td>Подготовка: изучить роли А и Б, выполнить мини-задание</td><td>15-20 мин</td><td>Самостоятельно</td></tr>
+          <tr><td class="table-accent">[День эфира]</td><td>Живой эфир с поединками</td><td>60 мин</td><td>Zoom</td></tr>
+          <tr><td class="table-accent">Чт-Пт</td><td>Разборы Гоар в канале</td><td>2 голосовых по 5-7 мин</td><td>Telegram</td></tr>
+          <tr><td class="table-accent">Вс</td><td>Дедлайн: применить паузу и опору в реальной ситуации</td><td>&mdash;</td><td>Самостоятельно</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p><strong>Мини-задание до эфира:</strong> &laquo;Напишите в чат одним предложением: как вы обычно начинаете разговор с новым клиентом/партнёром. Не думайте долго &mdash; первое, что приходит в голову.&raquo;</p>
+
+    <p><strong>Что происходит на эфире (60 мин):</strong></p>
+
+    <div class="table-wrapper">
+      <table>
+        <thead>
+          <tr><th>Время</th><th>Блок</th><th>Содержание</th></tr>
+        </thead>
+        <tbody>
+          <tr><td class="table-accent">0:00-0:05</td><td>Вход</td><td>Вовлекающий вопрос: &laquo;Что вы чувствовали в теле, когда теряли себя?&raquo; Рамка курса: 5 элементов системы</td></tr>
+          <tr><td class="table-accent">0:05-0:07</td><td>Инструктаж</td><td>Роль А представляет себя клиенту. Роль Б &mdash; проверяет, задаёт прямые вопросы. 5 мин на сторону</td></tr>
+          <tr><td class="table-accent">0:07-0:17</td><td>Арена</td><td>Breakout rooms в Zoom. Ведётся AI-транскрипция. Через 5 мин &mdash; сигнал &laquo;СМЕНА!&raquo;</td></tr>
+          <tr><td class="table-accent">0:17-0:22</td><td>Возврат</td><td>Вопросы-триггеры в чат: &laquo;Кому было сложнее &mdash; А или Б?&raquo;, &laquo;Кто оправдывался?&raquo;</td></tr>
+          <tr><td class="table-accent">0:22-0:37</td><td>Разбор 1</td><td>Публичный разбор пары. Кодовое слово &laquo;АРЕНА&raquo; &mdash; кто готов выйти. Направление А-Б</td></tr>
+          <tr><td class="table-accent">0:37-0:52</td><td>Разбор 2</td><td>Другая пара, направление Б-А. Сравнение подходов</td></tr>
+          <tr><td class="table-accent">0:52-1:00</td><td>Итог</td><td>Паттерн недели + мостик к каналу + мостик к модулю 2</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p><strong>Сценарий поединка:</strong></p>
+    <ul class="list-styled">
+      <li><strong>Сложность:</strong> мягкий</li>
+      <li><strong>Ситуация:</strong> первая встреча с крупным клиентом</li>
+      <li><strong>Роль А:</strong> представляет свою компанию/услугу &mdash; обозначить позицию, не &laquo;продавать&raquo;</li>
+      <li><strong>Роль Б:</strong> клиент &mdash; сдержанный, прямые вопросы (&laquo;Чем вы лучше?&raquo;, &laquo;Зачем мне это?&raquo;), не агрессивный</li>
+      <li><strong>Длительность:</strong> 5 мин в каждую сторону (10 мин всего)</li>
+    </ul>
+
+    <p><strong>AI-скоринг &mdash; что измеряется:</strong></p>
+    <ul class="list-styled">
+      <li>Чёткость позиции: заявление или размытие</li>
+      <li>Оправдательные конструкции (&laquo;ну, мы просто...&raquo;, &laquo;может быть...&raquo;)</li>
+      <li>Реакция на прямые вопросы: ответ по существу или уход</li>
+      <li>Структура захода: логика или поток сознания</li>
+    </ul>
+
+    <p><strong>Экспертный разбор Гоар (что видит она, чего не видит AI):</strong></p>
+    <ul class="list-styled">
+      <li>Стабильность vs дрожание в первые 30 секунд</li>
+      <li>Темп: тараторит или держит ритм</li>
+      <li>Паузы: заполняет тишину или выдерживает</li>
+      <li>Режим звучания: кухня (робко) / зал (деловито) / стадион (избыточно)</li>
+      <li>Тело на камере: плечи, руки, взгляд</li>
+    </ul>
+
+    <p><strong>Контент в канале между эфирами (Чт-Пт):</strong></p>
+    <ul class="list-styled">
+      <li>Формат: голосовое сообщение 5-7 мин</li>
+      <li>Содержание: разбор 1-2 поединков из базы AI-скоринга</li>
+      <li>Акцент: &laquo;На второй минуте тело уже в защите, хотя слова ещё держат. Вот этот разрыв между словами и звуком &mdash; именно его мы тренируем&raquo;</li>
+    </ul>
+
+    <p><strong>Промежуточный результат:</strong> участник звучит спокойно и уверенно в ситуации &laquo;первая встреча&raquo;. Умеет выдерживать паузу без тревоги.</p>
+
+    <!-- ========== НЕДЕЛЯ 2 ========== -->
+    <div class="section-header" style="margin-top: 3rem;">
+      <h3>Неделя 2: Структура и убеждение</h3>
+    </div>
+
+    <p><strong>Тема:</strong> Модель Монро. Правило трёх. Крючки внимания. DMN слушателя.</p>
+
+    <p><strong>Задача недели:</strong> Участник строит аргументацию, которую невозможно перебить. Выступает перед группой, удерживая внимание.</p>
+
+    <p><strong>Расписание:</strong></p>
+
+    <div class="table-wrapper">
+      <table>
+        <thead>
+          <tr><th>Когда</th><th>Что</th><th>Длительность</th><th>Формат</th></tr>
+        </thead>
+        <tbody>
+          <tr><td class="table-accent">Пн</td><td>Видео-теория: модель Монро, правило трёх, крючки, DMN</td><td>20 мин</td><td>Предзапись</td></tr>
+          <tr><td class="table-accent">Пн</td><td>Сценарий: &laquo;Убеди совет директоров&raquo;</td><td>&mdash;</td><td>Текст</td></tr>
+          <tr><td class="table-accent">Вт-Ср</td><td>Подготовка + мини-задание</td><td>15-20 мин</td><td>Самостоятельно</td></tr>
+          <tr><td class="table-accent">[День эфира]</td><td>Живой эфир</td><td>60 мин</td><td>Zoom</td></tr>
+          <tr><td class="table-accent">Чт-Пт</td><td>Разборы в канале</td><td>2 x 5-7 мин</td><td>Telegram</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p><strong>Мини-задание до эфира:</strong> &laquo;Вспомните ситуацию, когда нужно было убедить &mdash; и не получилось. Одно предложение: что пошло не так?&raquo;</p>
+
+    <p><strong>Что происходит на эфире (60 мин):</strong></p>
+
+    <div class="table-wrapper">
+      <table>
+        <thead>
+          <tr><th>Время</th><th>Блок</th><th>Содержание</th></tr>
+        </thead>
+        <tbody>
+          <tr><td class="table-accent">0:00-0:05</td><td>Вход</td><td>&laquo;Что важнее &mdash; факты или история?&raquo; Ловушка: правильный ответ &mdash; и то, и другое в правильном порядке</td></tr>
+          <tr><td class="table-accent">0:05-0:07</td><td>Инструктаж</td><td>Роль А убеждает совет директоров вложить 2 млн. Роль Б &mdash; скептичный директор</td></tr>
+          <tr><td class="table-accent">0:07-0:17</td><td>Арена</td><td>Breakout rooms. Смена через 5 мин</td></tr>
+          <tr><td class="table-accent">0:17-0:22</td><td>Возврат</td><td>&laquo;Кто использовал все 5 шагов Монро?&raquo; &laquo;На каком шаге застряли?&raquo;</td></tr>
+          <tr><td class="table-accent">0:22-0:37</td><td>Разбор 1</td><td>Кодовое слово: &laquo;МОНРО&raquo; (получилось) / &laquo;ХАОС&raquo; (развалилось). Из &laquo;ХАОС&raquo; выбрать</td></tr>
+          <tr><td class="table-accent">0:37-0:52</td><td>Разбор 2</td><td>Другая пара. Сравнение стратегий</td></tr>
+          <tr><td class="table-accent">0:52-1:00</td><td>Итог</td><td>&laquo;Все начинают с решения, пропуская проблему&raquo; + мостик к давлению</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p><strong>Сценарий поединка:</strong></p>
+    <ul class="list-styled">
+      <li><strong>Сложность:</strong> средний</li>
+      <li><strong>Ситуация:</strong> презентация проекта совету директоров</li>
+      <li><strong>Роль А:</strong> руководитель подразделения, запрашивает бюджет 2 млн, использует модель Монро</li>
+      <li><strong>Роль Б:</strong> директор &mdash; скептичный, но открытый. Вопросы: &laquo;Зачем?&raquo;, &laquo;Какие риски?&raquo;, &laquo;У нас похожий проект провалился&raquo;</li>
+      <li><strong>Длительность:</strong> 5 мин в каждую сторону</li>
+    </ul>
+
+    <p><strong>AI-скоринг:</strong></p>
+    <ul class="list-styled">
+      <li>Наличие/отсутствие структуры Монро (5 шагов)</li>
+      <li>Количество аргументов (3 = норма, &gt;5 = перегруз)</li>
+      <li>Реакция на возражения: конструктивная / оправдательная / агрессивная</li>
+      <li>Конкретность призыва: &laquo;давайте попробуем&raquo; vs &laquo;прошу утвердить 2 млн на квартал&raquo;</li>
+    </ul>
+
+    <p><strong>Экспертный разбор Гоар:</strong></p>
+    <ul class="list-styled">
+      <li>Подача ключевых тезисов: усиливается или проваливается</li>
+      <li>Ритм: торопится или управляет временем</li>
+      <li>Контакт глазами с камерой при назывании суммы</li>
+      <li>Реакция тела на возражение</li>
+    </ul>
+
+    <p><strong>Контент в канале (Чт-Пт):</strong></p>
+    <ul class="list-styled">
+      <li>Разбор двух поединков: один с чёткой структурой, один с развалившейся</li>
+      <li>Акцент: &laquo;Решение на 15-й секунде &mdash; до того, как директор понял проблему. Порядок решает&raquo;</li>
+    </ul>
+
+    <p><strong>Промежуточный результат:</strong> участник строит аргументацию, которую невозможно перебить. Речь имеет начало, развитие и завершение.</p>
+
+    <!-- ========== НЕДЕЛЯ 3 ========== -->
+    <div class="section-header" style="margin-top: 3rem;">
+      <h3>Неделя 3: Давление и рамка</h3>
+    </div>
+
+    <p><strong>Тема:</strong> Стрессовая реакция. Формула &laquo;повтор &mdash; пауза &mdash; перевод&raquo; (ППП). Отказ без оправданий.</p>
+
+    <p><strong>Задача недели:</strong> Участник выдерживает давление, не сдавая позицию. Когда перебивают &mdash; не теряет нить. Когда давят &mdash; не уходит в оправдание.</p>
+
+    <p><strong>Расписание:</strong></p>
+
+    <div class="table-wrapper">
+      <table>
+        <thead>
+          <tr><th>Когда</th><th>Что</th><th>Длительность</th><th>Формат</th></tr>
+        </thead>
+        <tbody>
+          <tr><td class="table-accent">Пн</td><td>Видео-теория: три типа сбивок, формула ППП, рамка vs реакция</td><td>20 мин</td><td>Предзапись</td></tr>
+          <tr><td class="table-accent">Пн</td><td>Сценарий: &laquo;Совещание: директор давит при всех&raquo;</td><td>&mdash;</td><td>Текст</td></tr>
+          <tr><td class="table-accent">Вт-Ср</td><td>Подготовка + мини-задание</td><td>15-20 мин</td><td>Самостоятельно</td></tr>
+          <tr><td class="table-accent">[День эфира]</td><td>Живой эфир</td><td>60 мин</td><td>Zoom</td></tr>
+          <tr><td class="table-accent">Чт-Пт</td><td>Разборы в канале</td><td>2 x 5-7 мин</td><td>Telegram</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p><strong>Мини-задание до эфира:</strong> &laquo;Ваша типичная реакция, когда на вас давят публично. Одно слово: замираю / объясняю / злюсь / молчу / другое&raquo;</p>
+
+    <p><strong>Что происходит на эфире (60 мин):</strong></p>
+
+    <div class="table-wrapper">
+      <table>
+        <thead>
+          <tr><th>Время</th><th>Блок</th><th>Содержание</th></tr>
+        </thead>
+        <tbody>
+          <tr><td class="table-accent">0:00-0:05</td><td>Вход</td><td>&laquo;Когда на вас давили &mdash; вы использовали ППП? ДА или НЕТ&raquo; (90% &mdash; НЕТ)</td></tr>
+          <tr><td class="table-accent">0:05-0:07</td><td>Инструктаж</td><td>Роль Б давит всерьёз. Роль А &mdash; держит рамку, не оправдывается</td></tr>
+          <tr><td class="table-accent">0:07-0:17</td><td>Арена</td><td>Breakout rooms. Смена через 5 мин</td></tr>
+          <tr><td class="table-accent">0:17-0:22</td><td>Возврат</td><td>&laquo;Кто начал оправдываться?&raquo; &laquo;Кто применил ППП хотя бы раз?&raquo;</td></tr>
+          <tr><td class="table-accent">0:22-0:37</td><td>Разбор 1</td><td>Ротация: группа 3. Чеклист: первая реакция, использование ППП, реакция на &laquo;это отговорки&raquo;</td></tr>
+          <tr><td class="table-accent">0:37-0:52</td><td>Разбор 2</td><td>Другая пара. Сравнение: кто защищался, кто перехватывал</td></tr>
+          <tr><td class="table-accent">0:52-1:00</td><td>Итог</td><td>&laquo;80% ломаются на второй волне давления&raquo; + мостик к деньгам</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p><strong>Сценарий поединка:</strong></p>
+    <ul class="list-styled">
+      <li><strong>Сложность:</strong> жёсткий</li>
+      <li><strong>Ситуация:</strong> совещание, директор давит при коллегах</li>
+      <li><strong>Роль А:</strong> руководитель отдела &mdash; удержать позицию, вернуть к фактам</li>
+      <li><strong>Роль Б:</strong> директор &mdash; перебивает, обесценивает, подменяет тему. Фразы: &laquo;Это отговорки&raquo;, &laquo;Мне нужен результат, а не объяснения&raquo;, &laquo;Может, поставить кого-то другого?&raquo;</li>
+      <li><strong>Длительность:</strong> 5 мин в каждую сторону</li>
+    </ul>
+
+    <p><strong>AI-скоринг:</strong></p>
+    <ul class="list-styled">
+      <li>Количество оправдательных конструкций (фразы с &laquo;но&raquo;, &laquo;просто&raquo;, &laquo;мы старались&raquo;)</li>
+      <li>Возвраты к фактам: сколько раз вернул к конкретике</li>
+      <li>Моменты сдачи позиции: конкретные фразы</li>
+      <li>Использование ППП: повтор, пауза, перевод</li>
+    </ul>
+
+    <p><strong>Экспертный разбор Гоар:</strong></p>
+    <ul class="list-styled">
+      <li>На какой фразе оппонента стал выше / тише / быстрее</li>
+      <li>Скорость ответа: 0.5 сек (реакция тела) vs 2-3 сек (осознанная рамка)</li>
+      <li>Дыхание: поверхностное на камере?</li>
+      <li>Плечи поднялись? Перешёл в защиту?</li>
+    </ul>
+
+    <p><strong>Контент в канале (Чт-Пт):</strong></p>
+    <ul class="list-styled">
+      <li>Разбор двух поединков: один со сломом на второй волне, один с удержанием</li>
+      <li>Акцент: &laquo;На 1:47 тело в защите. У второго участника &mdash; пауза 3 сек, ответ короткий. Одна пауза меняет расклад&raquo;</li>
+    </ul>
+
+    <p><strong>Промежуточный результат:</strong> участник выдерживает давление. Рамка держится. Формула ППП начинает включаться.</p>
+
+    <!-- ========== НЕДЕЛЯ 4 ========== -->
+    <div class="section-header" style="margin-top: 3rem;">
+      <h3>Неделя 4: Деньги и позиция</h3>
+    </div>
+
+    <p><strong>Тема:</strong> Нейроадаптация к сумме. Техника &laquo;назови и замолчи&raquo;. Удержание позиции при &laquo;дорого&raquo;.</p>
+
+    <p><strong>Задача недели:</strong> Участник произносит сумму спокойно, без пояснений. Выдерживает паузу после цифры. Не отступает при первом возражении.</p>
+
+    <p><strong>Расписание:</strong></p>
+
+    <div class="table-wrapper">
+      <table>
+        <thead>
+          <tr><th>Когда</th><th>Что</th><th>Длительность</th><th>Формат</th></tr>
+        </thead>
+        <tbody>
+          <tr><td class="table-accent">Пн</td><td>Видео-теория: нейроадаптация, &laquo;назови и замолчи&raquo;, формула ценности</td><td>20 мин</td><td>Предзапись</td></tr>
+          <tr><td class="table-accent">Пн</td><td>Сценарий: &laquo;Клиент требует скидку 40%&raquo;</td><td>&mdash;</td><td>Текст</td></tr>
+          <tr><td class="table-accent">Вт-Ср</td><td>Подготовка + мини-задание</td><td>15-20 мин</td><td>Самостоятельно</td></tr>
+          <tr><td class="table-accent">[День эфира]</td><td>Живой эфир</td><td>60 мин</td><td>Zoom</td></tr>
+          <tr><td class="table-accent">Чт-Пт</td><td>Разборы в канале</td><td>2 x 5-7 мин</td><td>Telegram</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p><strong>Мини-задание до эфира:</strong> &laquo;Напишите сумму, которую вам сложно произнести вслух. Произнесите вслух 5 раз прямо сейчас. Что изменилось к пятому разу? Одно слово в чат&raquo;</p>
+
+    <p><strong>Что происходит на эфире (60 мин):</strong></p>
+
+    <div class="table-wrapper">
+      <table>
+        <thead>
+          <tr><th>Время</th><th>Блок</th><th>Содержание</th></tr>
+        </thead>
+        <tbody>
+          <tr><td class="table-accent">0:00-0:05</td><td>Вход</td><td>&laquo;Когда называли цену &mdash; добавили "ну, примерно..."? ДА/НЕТ&raquo; (80%+ &mdash; ДА)</td></tr>
+          <tr><td class="table-accent">0:05-0:07</td><td>Инструктаж</td><td>Роль А: продаёт за 500 тыс. Называет &mdash; и молчит. Роль Б: давит &laquo;дорого&raquo;</td></tr>
+          <tr><td class="table-accent">0:07-0:17</td><td>Арена</td><td>Breakout rooms. Смена через 5 мин</td></tr>
+          <tr><td class="table-accent">0:17-0:22</td><td>Возврат</td><td>&laquo;Кто выдержал тишину 3 секунды?&raquo; &laquo;Кто сдал цену?&raquo;</td></tr>
+          <tr><td class="table-accent">0:22-0:37</td><td>Разбор 1</td><td>Ротация: группа 4. Чеклист: момент цены, реакция на &laquo;дорого&raquo;, финал</td></tr>
+          <tr><td class="table-accent">0:37-0:52</td><td>Разбор 2</td><td>Другая пара. Сравнение стратегий: молчание / ценность / встречный вопрос</td></tr>
+          <tr><td class="table-accent">0:52-1:00</td><td>Итог</td><td>&laquo;Слово после цифры убивает цену&raquo; + мостик к финалу</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p><strong>Сценарий поединка:</strong></p>
+    <ul class="list-styled">
+      <li><strong>Сложность:</strong> боевой</li>
+      <li><strong>Ситуация:</strong> клиент требует скидку 40%</li>
+      <li><strong>Роль А:</strong> продаёт услугу за 500 000 руб. Цена обоснована. Задача: удержать</li>
+      <li><strong>Роль Б:</strong> клиент &mdash; давит: &laquo;Дорого&raquo;, &laquo;У конкурентов дешевле&raquo;, &laquo;Мы давно работаем &mdash; пойдите навстречу&raquo;, &laquo;Тогда мы подумаем&raquo; (блеф)</li>
+      <li><strong>Длительность:</strong> 5 мин в каждую сторону</li>
+    </ul>
+
+    <p><strong>AI-скоринг:</strong></p>
+    <ul class="list-styled">
+      <li>Удержание / сдача цены (финальная цена vs стартовая)</li>
+      <li>Оправдательные фразы после называния суммы</li>
+      <li>Качество аргументов ценности (конкретика vs &laquo;мы хорошие&raquo;)</li>
+      <li>Реакция на блеф &laquo;тогда мы подумаем&raquo;</li>
+    </ul>
+
+    <p><strong>Экспертный разбор Гоар:</strong></p>
+    <ul class="list-styled">
+      <li>Стабильность на цифре: дрогнул? Стал тише?</li>
+      <li>Пауза: реальная тишина или &laquo;ну...&raquo;?</li>
+      <li>Извиняющаяся улыбка? Отвёл взгляд?</li>
+      <li>Темп после &laquo;дорого&raquo;: ускорился (паника) или остался</li>
+    </ul>
+
+    <p><strong>Контент в канале (Чт-Пт):</strong></p>
+    <ul class="list-styled">
+      <li>Разбор двух поединков: один с удержанием (тишина), один со сдачей</li>
+      <li>Акцент: &laquo;Первый: "Стоимость &mdash; 500 тысяч. [тишина 4 сек]". Второй: "Стоимость... ну, около 500, но можем обсудить". Первый уже продал. Второй уже дал скидку&raquo;</li>
+    </ul>
+
+    <p><strong>Промежуточный результат:</strong> участник называет цену один раз, спокойно. Выдерживает паузу. Тело не реагирует на цифру стрессом.</p>
+
+    <!-- ========== НЕДЕЛЯ 5 ========== -->
+    <div class="section-header" style="margin-top: 3rem;">
+      <h3>Неделя 5: Харизма и интеграция</h3>
+    </div>
+
+    <p><strong>Тема:</strong> Эмоциональное заражение. Три режима энергии. Интеграция всех элементов.</p>
+
+    <p><strong>Задача недели:</strong> Собрать все четыре элемента (опора, структура, рамка, позиция) в единую систему. Финальный поединок на максимуме. Увидеть рост в цифрах: скоринг модуля 1 vs модуля 5.</p>
+
+    <p><strong>Расписание:</strong></p>
+
+    <div class="table-wrapper">
+      <table>
+        <thead>
+          <tr><th>Когда</th><th>Что</th><th>Длительность</th><th>Формат</th></tr>
+        </thead>
+        <tbody>
+          <tr><td class="table-accent">Пн</td><td>Видео-теория: эмоциональное заражение, три режима энергии, интеграция</td><td>20 мин</td><td>Предзапись</td></tr>
+          <tr><td class="table-accent">Пн</td><td>Сценарий: &laquo;Высокие ставки: всё вместе&raquo;</td><td>&mdash;</td><td>Текст</td></tr>
+          <tr><td class="table-accent">Вт-Ср</td><td>Подготовка + пересмотреть скоринг модуля 1</td><td>15-20 мин</td><td>Самостоятельно</td></tr>
+          <tr><td class="table-accent">[День эфира]</td><td>Живой эфир &mdash; финальный</td><td>60 мин</td><td>Zoom</td></tr>
+          <tr><td class="table-accent">Чт-Пт</td><td>Финальные разборы + статистика группы + рекомендации</td><td>2 x 5-7 мин</td><td>Telegram</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p><strong>Мини-задание до эфира:</strong> &laquo;Пересмотрите скоринг из модуля 1. Напишите: что изменилось за 4 недели? Одно предложение&raquo;</p>
+
+    <p><strong>Что происходит на эфире (60 мин):</strong></p>
+
+    <div class="table-wrapper">
+      <table>
+        <thead>
+          <tr><th>Время</th><th>Блок</th><th>Содержание</th></tr>
+        </thead>
+        <tbody>
+          <tr><td class="table-accent">0:00-0:05</td><td>Вход</td><td>&laquo;Что за эти 4 недели стало главным открытием? Одно предложение&raquo;</td></tr>
+          <tr><td class="table-accent">0:05-0:07</td><td>Инструктаж</td><td>Финальный бой. Оппонент комбинирует всё: вопросы, давление, торг. Используйте всё</td></tr>
+          <tr><td class="table-accent">0:07-0:17</td><td>Арена</td><td>Breakout rooms. Смена через 5 мин</td></tr>
+          <tr><td class="table-accent">0:17-0:22</td><td>Возврат</td><td>&laquo;Как вы себя чувствуете?&raquo; &laquo;Сравните с модулем 1 &mdash; другое? ДА/НЕТ&raquo;</td></tr>
+          <tr><td class="table-accent">0:22-0:37</td><td>Разбор 1</td><td>Добровольцы. Полный чеклист всех 5 модулей: вход, структура, давление, цена, энергия</td></tr>
+          <tr><td class="table-accent">0:37-0:52</td><td>Разбор 2</td><td>Другая пара. Два стиля: &laquo;от силы&raquo; и &laquo;от мудрости&raquo; &mdash; оба рабочих</td></tr>
+          <tr><td class="table-accent">0:52-1:00</td><td>Итог</td><td>Статистика группы: модуль 1 vs 5. Мостик к ILLM. &laquo;Слово &mdash; за вами&raquo;</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p><strong>Сценарий поединка:</strong></p>
+    <ul class="list-styled">
+      <li><strong>Сложность:</strong> максимум</li>
+      <li><strong>Ситуация:</strong> переговоры о крупном контракте (партнёрство / позиция / инвестиция)</li>
+      <li><strong>Роль А:</strong> финальный бой &mdash; убедить (структура), выдержать давление (рамка), назвать цену (позиция), быть тем, за кем хочется пойти (энергия)</li>
+      <li><strong>Роль Б:</strong> жёсткий оппонент &mdash; комбинирует ВСЁ: неудобные вопросы, давление, перебивание, торг по цене. Финальный босс</li>
+      <li><strong>Длительность:</strong> 5 мин в каждую сторону</li>
+    </ul>
+
+    <p><strong>AI-скоринг:</strong></p>
+    <ul class="list-styled">
+      <li>Полный скоринг: Influence / Trust / Team</li>
+      <li>Сравнение с модулем 1: динамика роста по каждому критерию</li>
+      <li>Интегральная оценка: рамка + аргументация + позиция + цена</li>
+      <li>Финальный переговорный профиль участника</li>
+    </ul>
+
+    <p><strong>Экспертный разбор Гоар:</strong></p>
+    <ul class="list-styled">
+      <li>Целостность: верит ли сам в то, что говорит</li>
+      <li>Стабильность на протяжении всех 5 минут</li>
+      <li>Энергетика: заражает или отталкивает</li>
+      <li>Интеграция навыков: все 5 модулей видны в одном поединке</li>
+      <li>Главный критерий: хочется ли за этим человеком пойти</li>
+    </ul>
+
+    <p><strong>Контент в канале (Чт-Пт):</strong></p>
+    <ul class="list-styled">
+      <li>Финальные разборы + статистика группы за 5 недель + индивидуальные рекомендации</li>
+      <li>Акцент: &laquo;Модуль 1: 73% начинали с оправдания. Модуль 5: 18%. Время тишины после цифры: 0.8 сек &rarr; 3.2 сек. Ваши данные&raquo;</li>
+    </ul>
+
+    <p><strong>Финальный результат:</strong> система речевого влияния собрана. Участник знает свой переговорный профиль, сильные стороны и зоны роста. Имеет инструментарий, который работает под давлением.</p>
+
+  </div>
+</section>
+
+<!-- ============================== -->
+<!-- БЛОК 3: ТЕХНОЛОГИЧЕСКИЙ СТЕК -->
+<!-- ============================== -->
+<section class="section-large" id="b3">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-tag">Блок 3 &mdash; Технологический стек</div>
+      <h2>Платформы</h2>
+    </div>
+
+    <div class="table-wrapper">
+      <table>
+        <thead>
+          <tr><th>Задача</th><th>Платформа</th><th>Роль</th></tr>
+        </thead>
+        <tbody>
+          <tr><td class="table-accent">Живые эфиры</td><td><strong>Zoom</strong></td><td>Breakout rooms для поединков, broadcast для сигналов смены ролей</td></tr>
+          <tr><td class="table-accent">Видео-теория</td><td>Требует уточнения</td><td>Предзаписанные видео 20 мин, открываются по расписанию</td></tr>
+          <tr><td class="table-accent">Канал участников</td><td><strong>Telegram</strong> (закрытый канал)</td><td>Разборы, триггеры, мини-задания, объявления</td></tr>
+          <tr><td class="table-accent">AI-скоринг</td><td>AI-платформа скоринга</td><td>Транскрипция поединков, скоринг, переговорный профиль</td></tr>
+          <tr><td class="table-accent">Доставка скоринга</td><td><strong>Email</strong></td><td>Участник получает результаты на почту после эфира</td></tr>
+          <tr><td class="table-accent">CRM / оплата</td><td>Требует уточнения</td><td>Приём платежей, рассрочка</td></tr>
+          <tr><td class="table-accent">Рассрочка</td><td>Требует уточнения</td><td>3 мес (Стандарт) / 4 мес (Персональный)</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Telegram-канал -->
+    <div class="section-header" style="margin-top: 3rem;">
+      <h3>Telegram-канал: структура</h3>
+    </div>
+
+    <p><strong>Тип:</strong> закрытый канал, доступ после оплаты.</p>
+
+    <p><strong>Типы контента:</strong></p>
+
+    <div class="table-wrapper">
+      <table>
+        <thead>
+          <tr><th>Тип поста</th><th>Когда</th><th>Кто</th><th>Формат</th></tr>
+        </thead>
+        <tbody>
+          <tr><td class="table-accent">Объявление</td><td>Пн</td><td>Организатор</td><td>Текст: новый модуль открыт, сценарий, мини-задание</td></tr>
+          <tr><td class="table-accent">Напоминание об эфире</td><td>За день до</td><td>Организатор</td><td>Текст + ссылка на Zoom</td></tr>
+          <tr><td class="table-accent">Разбор поединка</td><td>Чт</td><td>Гоар</td><td>Голосовое 5-7 мин</td></tr>
+          <tr><td class="table-accent">Разбор поединка</td><td>Пт</td><td>Гоар</td><td>Голосовое 5-7 мин</td></tr>
+          <tr><td class="table-accent">Триггер</td><td>Между эфирами</td><td>Организатор</td><td>Текст: статистика, цитата, мини-задание</td></tr>
+          <tr><td class="table-accent">Мостик к следующему модулю</td><td>Вс</td><td>Организатор</td><td>Текст: что дальше, зачем, какой элемент</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- AI-скоринг: как работает -->
+    <div class="section-header" style="margin-top: 3rem;">
+      <h3>AI-скоринг: как работает система</h3>
+    </div>
+
+    <p><strong>Процесс:</strong></p>
+    <ol style="padding-left: 1.5rem; color: var(--muted); font-size: .9375rem;">
+      <li style="margin-bottom: .5rem;">Участники уходят в breakout rooms в Zoom</li>
+      <li style="margin-bottom: .5rem;">AI-платформа записывает и транскрибирует разговор в реальном времени</li>
+      <li style="margin-bottom: .5rem;">После эфира AI анализирует транскрипцию</li>
+      <li style="margin-bottom: .5rem;">Результат приходит участнику на email</li>
+    </ol>
+
+    <p><strong>Что видит участник (тариф &laquo;Стандарт&raquo; &mdash; базовый скоринг):</strong></p>
+    <ul class="list-styled">
+      <li>Чёткость позиции</li>
+      <li>Оправдательные конструкции (конкретные фразы)</li>
+      <li>Реакция на давление / возражения</li>
+      <li>Ключевые метрики модуля (зависят от недели)</li>
+    </ul>
+
+    <p><strong>Что видит участник (тариф &laquo;Персональный&raquo; &mdash; расширенный скоринг):</strong></p>
+    <ul class="list-styled">
+      <li>Всё из базового +</li>
+      <li>Детальная аналитика по каждому критерию</li>
+      <li>Сравнение с предыдущими модулями (динамика)</li>
+      <li>В модуле 5: полный переговорный профиль (PDF) &mdash; Influence / Trust / Team</li>
+    </ul>
+
+    <div class="warning-block">
+      <p><strong>Требует уточнения:</strong> конкретная разница между базовым и расширенным скорингом не описана в деталях в источниках. Необходимо согласовать с командой разработки AI-скоринг.</p>
+    </div>
+
+    <!-- Технические требования -->
+    <div class="section-header" style="margin-top: 3rem;">
+      <h3>Технические требования для участника</h3>
+    </div>
+
+    <ul class="list-styled">
+      <li>Стабильное интернет-соединение (достаточное для Zoom-звонка с видео)</li>
+      <li>Камера &mdash; обязательна (поединки требуют видимости: жесты, мимика, взгляд)</li>
+      <li>Микрофон &mdash; обязателен (AI-платформа транскрибирует речь)</li>
+      <li>Тихое помещение &mdash; рекомендовано (фоновый шум мешает транскрипции и поединку)</li>
+      <li>Компьютер или планшет &mdash; рекомендовано (breakout rooms на телефоне работают, но неудобно)</li>
+    </ul>
+
+  </div>
+</section>
+
+<!-- ============================== -->
+<!-- БЛОК 4: ПУТЬ УЧАСТНИКА -->
+<!-- ============================== -->
+<section class="section-large" id="b4">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-tag">Блок 4 &mdash; Путь участника (Customer Journey)</div>
+      <h2>Общий путь: от первого касания до выпуска</h2>
+    </div>
+
+    <div class="card card-accent">
+      <div class="card-description">
+        <p style="font-family: monospace; font-size: .9375rem; line-height: 2; color: var(--foreground);">
+          1. Первое касание (контент / реклама / рекомендация)<br>
+          &nbsp;&nbsp;&darr;<br>
+          2. Подача заявки / переход на страницу курса<br>
+          &nbsp;&nbsp;&darr;<br>
+          3. Диагностика (обязательная, до оплаты)<br>
+          &nbsp;&nbsp;&darr;<br>
+          4. Оплата (выбор тарифа: Стандарт / Персональный)<br>
+          &nbsp;&nbsp;&darr;<br>
+          5. Онбординг (доступ к каналу, инструкции, технические проверки)<br>
+          &nbsp;&nbsp;&darr;<br>
+          6. Неделя 1-5 (цикл: теория &rarr; эфир &rarr; скоринг &rarr; разбор &rarr; практика)<br>
+          &nbsp;&nbsp;&darr;<br>
+          7. Выпуск (финальный скоринг, переговорный профиль для &laquo;Персональный&raquo;)<br>
+          &nbsp;&nbsp;&darr;<br>
+          8. Что после (мостик к ILLM / клубу / наставничеству)
+        </p>
+      </div>
+    </div>
+
+    <!-- Детализация -->
+    <div class="section-header" style="margin-top: 3rem;">
+      <h3>Детализация каждого шага</h3>
+    </div>
+
+    <p><strong>Шаг 1-2: Первое касание &rarr; Заявка</strong></p>
+    <ul class="list-styled">
+      <li>Участник приходит из контент-воронки (МК &laquo;Нейроречь&raquo;, челлендж &laquo;Твёрдое слово&raquo;, Telegram-канал, реклама)</li>
+      <li>Переходит на лендинг или в бот</li>
+      <li>Оставляет заявку / контактные данные</li>
+    </ul>
+
+    <p><strong>Шаг 3: Диагностика</strong></p>
+    <ul class="list-styled">
+      <li>Обязательный первый шаг перед оплатой</li>
+      <li>Определяет стартовую точку для последующего измерения прогресса</li>
+      <li>Фиксирует начальный переговорный профиль участника</li>
+    </ul>
+
+    <div class="warning-block">
+      <p><strong>Требует уточнения:</strong> через какой инструмент проводится диагностика &mdash; AI-бот диагностики, живой созвон с менеджером, анкета? Какой конкретный результат диагностики и как он используется далее?</p>
+    </div>
+
+    <p><strong>Шаг 4: Оплата</strong></p>
+    <ul class="list-styled">
+      <li>Выбор тарифа: Стандарт (49 900 руб.) или Персональный (69 900 руб.)</li>
+      <li>Рассрочка: 3 мес / 4 мес соответственно</li>
+      <li>Подробности ценовой логики &mdash; в M3-04</li>
+    </ul>
+
+    <p><strong>Шаг 5: Онбординг</strong></p>
+    <ul class="list-styled">
+      <li>Доступ к закрытому Telegram-каналу</li>
+      <li>Приветственное сообщение: расписание, правила, технические требования</li>
+      <li>Проверка технической готовности: Zoom, камера, микрофон</li>
+      <li>Доступ к платформе видео-теории</li>
+    </ul>
+
+    <p><strong>Шаг 6: Недели 1-5</strong> (подробно описаны в Блоке 2)</p>
+
+    <div class="card card-accent" style="margin: 1rem 0;">
+      <div class="card-description">
+        <p style="font-family: monospace; font-size: .9375rem; line-height: 2; color: var(--foreground);">
+          Понедельник: &nbsp;&nbsp;Открывается видео-теория + сценарий<br>
+          Вт-Ср: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Участник изучает, готовится, пишет мини-задание в чат<br>
+          [День эфира]: &nbsp;Живой эфир 60 мин (поединок &rarr; разбор)<br>
+          После эфира: &nbsp;AI-скоринг приходит на email<br>
+          Чт-Пт: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Разборы Гоар в канале (голосовые)<br>
+          Вых: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Практика инструментов в реальной жизни
+        </p>
+      </div>
+    </div>
+
+    <p><strong>Шаг 7: Выпуск</strong></p>
+    <ul class="list-styled">
+      <li>Финальный AI-скоринг (модуль 5): полное сравнение с модулем 1</li>
+      <li>Для тарифа &laquo;Персональный&raquo;: итоговый переговорный профиль (PDF)</li>
+      <li>Финальные разборы и рекомендации в канале</li>
+      <li>Финальная фраза Гоар: &laquo;Слово &mdash; за вами&raquo;</li>
+    </ul>
+
+    <p><strong>Шаг 8: Что после</strong></p>
+    <ul class="list-styled">
+      <li>Мостик к ILLM: &laquo;У вас есть система КАК говорить. ILLM &mdash; это КОГДА решать и ЧТО выбирать&raquo;</li>
+      <li>Предложение вступить в Клуб (3 900 руб./мес) для поддержания навыка</li>
+      <li>Предложение наставничества (от 120 000 руб.) для персональной работы</li>
+    </ul>
+
+    <!-- Разница пути -->
+    <div class="section-header" style="margin-top: 3rem;">
+      <h3>Разница пути: Стандарт vs Персональный</h3>
+    </div>
+
+    <div class="table-wrapper">
+      <table>
+        <thead>
+          <tr><th>Шаг</th><th>Стандарт</th><th>Персональный</th></tr>
+        </thead>
+        <tbody>
+          <tr><td class="table-accent">Диагностика</td><td>Одинаковая</td><td>Одинаковая</td></tr>
+          <tr><td class="table-accent">Онбординг</td><td>Одинаковый</td><td>Одинаковый</td></tr>
+          <tr><td class="table-accent">Видео-теория</td><td>Да</td><td>Да</td></tr>
+          <tr><td class="table-accent">Живые эфиры</td><td>Да</td><td>Да</td></tr>
+          <tr><td class="table-accent">AI-скоринг</td><td>Базовый (ключевые метрики)</td><td>Расширенный (детальная аналитика + динамика)</td></tr>
+          <tr><td class="table-accent">Разборы в канале</td><td>Да (для всех)</td><td>Да (для всех)</td></tr>
+          <tr><td class="table-accent">Записи эфиров</td><td>Нет</td><td>Да &mdash; можно пересмотреть свой поединок</td></tr>
+          <tr><td class="table-accent">Персональный аудио-разбор Гоар</td><td>Нет</td><td>Да &mdash; 1 разбор за курс, 5-7 мин, участник выбирает модуль</td></tr>
+          <tr><td class="table-accent">Переговорный профиль (PDF)</td><td>Нет</td><td>Да &mdash; итоговый документ с метриками</td></tr>
+          <tr><td class="table-accent">Рассрочка</td><td>3 мес (16 633 руб./мес)</td><td>4 мес (17 475 руб./мес)</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+  </div>
+</section>
+
+<!-- ============================== -->
+<!-- БЛОК 5: МЕХАНИКА ПОЕДИНКОВ -->
+<!-- ============================== -->
+<section class="section-large" id="b5">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-tag">Блок 5 &mdash; Механика поединков</div>
+      <h2>Что такое поединок</h2>
+    </div>
+
+    <p>Поединок &mdash; центральный формат курса. Это не ролевая игра, не упражнение и не тренинг. Это моделирование реальной переговорной ситуации с живым оппонентом, нарастающей сложностью и двойной обратной связью (AI + эксперт).</p>
+
+    <p>Каждый поединок &mdash; это 10 минут реального взаимодействия: 5 минут в одну сторону (Роль А ведёт), потом смена &mdash; 5 минут в другую (Роль Б ведёт). Оба участника проходят обе роли.</p>
+
+    <!-- Как проходит -->
+    <div class="section-header" style="margin-top: 3rem;">
+      <h3>Как проходит поединок (пошагово)</h3>
+    </div>
+
+    <ol style="padding-left: 1.5rem; color: var(--muted); font-size: .9375rem;">
+      <li style="margin-bottom: .75rem;"><strong>До эфира:</strong> участник получает сценарий с описанием ролей А и Б, ситуации, задачи</li>
+      <li style="margin-bottom: .75rem;"><strong>Вход в эфир (0:00-0:05):</strong> Гоар задаёт вовлекающий вопрос, напоминает теорию, задаёт рамку</li>
+      <li style="margin-bottom: .75rem;"><strong>Инструктаж (0:05-0:07):</strong> краткое напоминание ролей, правила, сигнал &laquo;Поехали&raquo;</li>
+      <li style="margin-bottom: .75rem;"><strong>Арена (0:07-0:17):</strong> все участники уходят в breakout rooms Zoom парами. AI-платформа записывает транскрипцию
+        <ul class="list-styled" style="margin-top: .5rem;">
+          <li>Через 5 мин &mdash; broadcast-сообщение: &laquo;СМЕНА! Теперь ведёт Роль Б&raquo;</li>
+          <li>Через 10 мин &mdash; broadcast: &laquo;Возвращаемся в зал. 30 секунд&raquo;</li>
+        </ul>
+      </li>
+      <li style="margin-bottom: .75rem;"><strong>Возврат (0:17-0:22):</strong> вопросы-триггеры в чат (рефлексия)</li>
+      <li style="margin-bottom: .75rem;"><strong>Разбор 1 (0:22-0:37):</strong> одна пара выходит на публичный разбор. AI-скоринг + экспертный слой Гоар</li>
+      <li style="margin-bottom: .75rem;"><strong>Разбор 2 (0:37-0:52):</strong> другая пара. Сравнение подходов</li>
+      <li style="margin-bottom: .75rem;"><strong>Итог (0:52-1:00):</strong> паттерн недели + мостик к каналу + мостик к следующему модулю</li>
+    </ol>
+
+    <!-- Роли участников -->
+    <div class="section-header" style="margin-top: 3rem;">
+      <h3>Роли участников</h3>
+    </div>
+
+    <p><strong>Роль А</strong> &mdash; инициатор (тот, кто продвигает позицию, убеждает, предлагает):</p>
+    <ul class="list-styled">
+      <li>Неделя 1: представляет себя клиенту</li>
+      <li>Неделя 2: убеждает совет директоров</li>
+      <li>Неделя 3: удерживает позицию под давлением руководства</li>
+      <li>Неделя 4: продаёт за 500 тыс. и удерживает цену</li>
+      <li>Неделя 5: ведёт переговоры на высокие ставки</li>
+    </ul>
+
+    <p><strong>Роль Б</strong> &mdash; оппонент (тот, кто проверяет, давит, создаёт сопротивление):</p>
+    <ul class="list-styled">
+      <li>Неделя 1: сдержанный клиент с прямыми вопросами</li>
+      <li>Неделя 2: скептичный, но открытый директор</li>
+      <li>Неделя 3: агрессивный директор &mdash; перебивает, обесценивает</li>
+      <li>Неделя 4: клиент, требующий скидку &mdash; &laquo;дорого&raquo;, блеф</li>
+      <li>Неделя 5: финальный босс &mdash; комбинирует всё из модулей 2-4</li>
+    </ul>
+
+    <p><strong>Как назначаются роли:</strong></p>
+    <ul class="list-styled">
+      <li>Участники распределяются по парам в breakout rooms Zoom</li>
+      <li>Каждый участник играет обе роли: 5 мин &mdash; А, 5 мин &mdash; Б (по сигналу &laquo;СМЕНА!&raquo;)</li>
+    </ul>
+
+    <!-- Шкала сложности -->
+    <div class="section-header" style="margin-top: 3rem;">
+      <h3>Шкала сложности</h3>
+    </div>
+
+    <div class="table-wrapper">
+      <table>
+        <thead>
+          <tr><th>Модуль</th><th>Уровень</th><th>Описание</th><th>Оппонент</th></tr>
+        </thead>
+        <tbody>
+          <tr><td class="table-accent">1</td><td>Мягкий</td><td>Первый контакт с ареной</td><td>Не агрессивный, проверяет уверенность</td></tr>
+          <tr><td class="table-accent">2</td><td>Средний</td><td>Нужна структура</td><td>Скептичный, задаёт неудобные вопросы</td></tr>
+          <tr><td class="table-accent">3</td><td>Жёсткий</td><td>Давление</td><td>Перебивает, обесценивает, подменяет тему</td></tr>
+          <tr><td class="table-accent">4</td><td>Боевой</td><td>Деньги на столе</td><td>Давит на совесть, блефует, торгуется</td></tr>
+          <tr><td class="table-accent">5</td><td>Максимум</td><td>Всё вместе</td><td>Комбинирует всё: вопросы + давление + торг</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- AI-скоринг во время/после -->
+    <div class="section-header" style="margin-top: 3rem;">
+      <h3>Как работает AI-скоринг во время/после поединка</h3>
+    </div>
+
+    <p><strong>Во время поединка:</strong></p>
+    <ul class="list-styled">
+      <li>AI-платформа записывает транскрипцию речи обоих участников в breakout room</li>
+      <li>Фиксирует: фразы, паузы, речевые конструкции</li>
+    </ul>
+
+    <p><strong>После поединка:</strong></p>
+    <ul class="list-styled">
+      <li>AI анализирует транскрипцию по параметрам модуля</li>
+      <li>Формирует отчёт с конкретными фразами и метриками</li>
+      <li>Отчёт отправляется на email участника</li>
+    </ul>
+
+    <p><strong>Параметры скоринга по модулям:</strong></p>
+
+    <div class="table-wrapper">
+      <table>
+        <thead>
+          <tr><th>Модуль</th><th>Что измеряет AI</th></tr>
+        </thead>
+        <tbody>
+          <tr><td class="table-accent">1</td><td>Чёткость позиции, оправдательные конструкции, реакция на вопросы</td></tr>
+          <tr><td class="table-accent">2</td><td>Наличие структуры Монро, количество аргументов, конкретность призыва</td></tr>
+          <tr><td class="table-accent">3</td><td>Оправдательные конструкции, возвраты к фактам, моменты сдачи позиции, использование ППП</td></tr>
+          <tr><td class="table-accent">4</td><td>Удержание/сдача цены, фразы после суммы, аргументы ценности</td></tr>
+          <tr><td class="table-accent">5</td><td>Полный скоринг: Influence / Trust / Team + сравнение с модулем 1</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- AI vs Гоар -->
+    <div class="section-header" style="margin-top: 3rem;">
+      <h3>Что разбирает Гоар, чего не видит AI</h3>
+    </div>
+
+    <p>AI работает с текстом (транскрипция). Гоар работает с тем, что за текстом:</p>
+
+    <div class="table-wrapper">
+      <table>
+        <thead>
+          <tr><th>AI видит</th><th>Гоар видит</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Оправдательные фразы</td><td>Дрожание в первые 30 сек</td></tr>
+          <tr><td>Наличие структуры</td><td>Темп: тараторит или управляет</td></tr>
+          <tr><td>Количество аргументов</td><td>Паузы: настоящая тишина или &laquo;ну...&raquo;</td></tr>
+          <tr><td>Реакция на возражение (текст)</td><td>Режим звучания: кухня / зал / стадион</td></tr>
+          <tr><td>Удержание/сдача цены</td><td>Тело: плечи, руки, взгляд, улыбка</td></tr>
+          <tr><td>Конкретность призыва</td><td>Энергия: заражает или отталкивает</td></tr>
+          <tr><td>&mdash;</td><td>Скорость реакции: 0.5 сек (тело) vs 2-3 сек (рамка)</td></tr>
+          <tr><td>&mdash;</td><td>Верит ли сам в то, что говорит</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Нечётное количество -->
+    <div class="warning-block">
+      <p><strong>Нечётное количество участников. Требует уточнения:</strong> в источниках не описано, что происходит при нечётном количестве участников на эфире. Варианты: тройка (наблюдатель + двое), организатор встаёт в пару, участник работает с AI-ботом. Необходимо согласовать.</p>
+    </div>
+
+  </div>
+</section>
+
+<!-- ============================== -->
+<!-- БЛОК 6: ОПЕРАЦИОННАЯ ЛОГИКА -->
+<!-- ============================== -->
+<section class="section-large" id="b6">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-tag">Блок 6 &mdash; Операционная логика для организатора</div>
+      <h2>До старта потока: подготовка</h2>
+    </div>
+
+    <p><strong>За 4-6 недель до старта:</strong></p>
+
+    <div class="table-wrapper">
+      <table>
+        <thead>
+          <tr><th>Задача</th><th>Ответственный</th><th>Статус</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Записать 5 видео-теорий (20 мин каждое)</td><td>Гоар + продакшн</td><td>Одноразово (используются повторно)</td></tr>
+          <tr><td>Настроить AI-платформу скоринга для нового потока</td><td>Техническая команда</td><td>На каждый поток</td></tr>
+          <tr><td>Создать закрытый Telegram-канал потока</td><td>Организатор</td><td>На каждый поток</td></tr>
+          <tr><td>Подготовить Zoom-комнату с breakout rooms</td><td>Организатор</td><td>На каждый поток</td></tr>
+          <tr><td>Загрузить видео-теории на платформу</td><td>Организатор</td><td>На каждый поток</td></tr>
+          <tr><td>Подготовить сценарии поединков (5 шт.)</td><td>&mdash;</td><td>Одноразово (используются повторно)</td></tr>
+          <tr><td>Настроить email-цепочку для доставки скоринга</td><td>Техническая команда</td><td>На каждый поток</td></tr>
+          <tr><td>Провести тест: Zoom + AI-платформа (breakout + транскрипция)</td><td>Организатор + тех. команда</td><td>На каждый поток</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p><strong>За 1 неделю до старта:</strong></p>
+
+    <div class="table-wrapper">
+      <table>
+        <thead>
+          <tr><th>Задача</th><th>Ответственный</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Отправить онбординг-письмо участникам</td><td>Организатор</td></tr>
+          <tr><td>Открыть доступ к Telegram-каналу</td><td>Организатор</td></tr>
+          <tr><td>Проверить техническую готовность участников (Zoom, камера, микрофон)</td><td>Организатор</td></tr>
+          <tr><td>Отправить расписание: даты эфиров, время, формат</td><td>Организатор</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Еженедельный чеклист -->
+    <div class="section-header" style="margin-top: 3rem;">
+      <h3>Еженедельный чеклист организатора</h3>
+    </div>
+
+    <div class="grid grid-2">
+      <div class="card">
+        <div class="card-title">Понедельник</div>
+        <ul class="list-styled">
+          <li>Открыть доступ к видео-теории модуля N</li>
+          <li>Опубликовать сценарий поединка в канале</li>
+          <li>Опубликовать мини-задание до эфира</li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="card-title">За 1 день до эфира</div>
+        <ul class="list-styled">
+          <li>Напоминание в канале: время, ссылка на Zoom, сценарий</li>
+          <li>Проверить Zoom-комнату и breakout rooms</li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="card-title">День эфира</div>
+        <ul class="list-styled">
+          <li>Открыть Zoom за 10 мин до старта</li>
+          <li>Убедиться, что AI-скоринг подключена и записывает</li>
+          <li>Настроить breakout rooms (пары)</li>
+          <li>Отправить broadcast-сигналы: &laquo;СМЕНА!&raquo; (через 5 мин), &laquo;Возвращаемся&raquo; (через 10 мин)</li>
+          <li>После эфира: запустить генерацию AI-скоринга</li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="card-title">После эфира / Чт-Пт / Вс</div>
+        <ul class="list-styled">
+          <li>Убедиться, что скоринг доставлен на email участникам</li>
+          <li>Для &laquo;Персональный&raquo;: сохранить запись эфира и открыть доступ</li>
+          <li>Гоар записывает голосовые разборы (2 шт. по 5-7 мин)</li>
+          <li>Опубликовать разборы в канале</li>
+          <li>Опубликовать триггер (статистика, цитата, мини-задание)</li>
+          <li>Опубликовать мостик к следующему модулю</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Разница операций -->
+    <div class="section-header" style="margin-top: 3rem;">
+      <h3>Разница операций: Стандарт vs Персональный</h3>
+    </div>
+
+    <div class="table-wrapper">
+      <table>
+        <thead>
+          <tr><th>Операция</th><th>Стандарт</th><th>Персональный</th></tr>
+        </thead>
+        <tbody>
+          <tr><td class="table-accent">Видео-теория</td><td>Одинаково</td><td>Одинаково</td></tr>
+          <tr><td class="table-accent">Проведение эфира</td><td>Одинаково</td><td>Одинаково</td></tr>
+          <tr><td class="table-accent">AI-скоринг</td><td>Базовый отчёт</td><td>Расширенный отчёт (больше метрик, динамика)</td></tr>
+          <tr><td class="table-accent">Запись эфира</td><td>Не сохранять / не отдавать</td><td>Сохранить + открыть доступ участникам</td></tr>
+          <tr><td class="table-accent">Аудио-разбор Гоар</td><td>Не нужен</td><td>1 разбор за курс (5-7 мин). Участник выбирает модуль. Нагрузка: ~30 разборов x 7 мин = 3.5 часа на поток</td></tr>
+          <tr><td class="table-accent">Переговорный профиль (PDF)</td><td>Не нужен</td><td>Сформировать после модуля 5</td></tr>
+          <tr><td class="table-accent">Разборы в канале</td><td>Доступны всем</td><td>Доступны всем</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Нагрузка на Гоар -->
+    <div class="section-header" style="margin-top: 3rem;">
+      <h3>Нагрузка на Гоар</h3>
+    </div>
+
+    <div class="table-wrapper">
+      <table>
+        <thead>
+          <tr><th>Активность</th><th>Время</th><th>Частота</th></tr>
+        </thead>
+        <tbody>
+          <tr><td class="table-accent">Проведение эфира</td><td>60 мин</td><td>1 раз в неделю (5 раз за курс)</td></tr>
+          <tr><td class="table-accent">Голосовые разборы в канале</td><td>10-14 мин</td><td>2 раза в неделю (Чт-Пт)</td></tr>
+          <tr><td class="table-accent">Аудио-разборы &laquo;Персональный&raquo;</td><td>~3.5 часа</td><td>Один раз за поток (после выбранных модулей)</td></tr>
+          <tr><td class="table-accent"><strong>Итого за поток</strong></td><td><strong>~10 часов</strong></td><td>&mdash;</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Критические зависимости -->
+    <div class="section-header" style="margin-top: 3rem;">
+      <h3>Критические зависимости</h3>
+    </div>
+
+    <div class="table-wrapper">
+      <table>
+        <thead>
+          <tr><th>Зависимость</th><th>Что произойдёт при сбое</th><th>Митигация</th></tr>
+        </thead>
+        <tbody>
+          <tr><td class="table-accent">AI-скоринг</td><td>Участники не получат скоринг &rarr; обещание &laquo;рост в цифрах&raquo; не выполнено</td><td>Тестировать перед каждым эфиром. Иметь ручной fallback (экспертный разбор без AI)</td></tr>
+          <tr><td class="table-accent">Zoom breakout rooms</td><td>Поединки невозможны &rarr; эфир срывается</td><td>Запасная платформа (Google Meet breakout? Ручное распределение по комнатам?)</td></tr>
+          <tr><td class="table-accent">Гоар на эфире</td><td>Эфир невозможен без ведущего</td><td>Перенос на резервный день (согласовать заранее с участниками)</td></tr>
+          <tr><td class="table-accent">Стабильный интернет у Гоар</td><td>Эфир может прерваться</td><td>Резервный канал связи, возможность подключения с телефона</td></tr>
+          <tr><td class="table-accent">Чётное количество участников</td><td>При нечётном &mdash; один без пары</td><td>Требует уточнения (см. Блок 5)</td></tr>
+          <tr><td class="table-accent">Email-доставка скоринга</td><td>Участник не видит результатов</td><td>Дублировать в Telegram-канале или на платформе</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+  </div>
+</section>
+
+<!-- ============================== -->
+<!-- ТРЕБУЕТ УТОЧНЕНИЯ -->
+<!-- ============================== -->
+<section class="section-large" id="questions">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-tag">Требует уточнения у клиента</div>
+      <h2>Открытые вопросы</h2>
+    </div>
+
+    <ol style="padding-left: 1.5rem; color: var(--muted); font-size: .9375rem;">
+      <li style="margin-bottom: 1rem;"><strong>День и время эфиров.</strong> В источниках не зафиксированы конкретные дни и время проведения живых эфиров. Какой день недели? Какое время (МСК)?</li>
+      <li style="margin-bottom: 1rem;"><strong>Платформа для видео-теории.</strong> Где размещаются предзаписанные 20-минутные видео? Отдельная платформа (GetCourse, Teachable, другое)? Или в Telegram-канале?</li>
+      <li style="margin-bottom: 1rem;"><strong>Диагностика перед стартом: инструмент и формат.</strong> Через что проводится обязательная диагностика? AI-бот диагностики? Живой созвон? Анкета? Что конкретно получает участник как результат диагностики?</li>
+      <li style="margin-bottom: 1rem;"><strong>Разница базового и расширенного AI-скоринга.</strong> Конкретные отличия для участника: какие метрики видит &laquo;Стандарт&raquo;, какие дополнительно видит &laquo;Персональный&raquo;?</li>
+      <li style="margin-bottom: 1rem;"><strong>Нечётное количество участников.</strong> Как решается проблема нечётного количества участников при формировании пар для поединков?</li>
+      <li style="margin-bottom: 1rem;"><strong>Максимальный размер потока.</strong> 50 участников (из финансовой модели) &mdash; жёсткое ограничение или ориентир? При 50 участниках &mdash; 25 пар в breakout rooms. Zoom поддерживает до 50 breakout rooms, но управление большим количеством может быть сложным.</li>
+      <li style="margin-bottom: 1rem;"><strong>CRM и платёжная система.</strong> Какая система используется для приёма оплат и рассрочки? Тильда + ЮKassa? GetCourse? Другое?</li>
+      <li style="margin-bottom: 1rem;"><strong>Записи эфиров для &laquo;Персональный&raquo;.</strong> В каком формате и на какой платформе участники &laquo;Персональный&raquo; получают доступ к записям? Облако, платформа курса, Telegram?</li>
+      <li style="margin-bottom: 1rem;"><strong>AI-скоринг: текущий статус готовности.</strong> Платформа разработана и протестирована? Есть бета-версия? Или это в процессе создания? Без AI-скоринга основное обещание курса (рост в цифрах) не реализуемо.</li>
+      <li style="margin-bottom: 1rem;"><strong>Формат персонального аудио-разбора.</strong> Гоар записывает аудио-разбор для каждого участника &laquo;Персональный&raquo; после выбранного им модуля. Как участник выбирает модуль? Через бот, в канале, через менеджера? Есть ли дедлайн выбора?</li>
+      <li style="margin-bottom: 1rem;"><strong>Онбординг-процесс.</strong> Есть ли welcome-видео? Чеклист для участника? Тестовый заход в Zoom? Или просто текстовое письмо?</li>
+      <li style="margin-bottom: 1rem;"><strong>Что происходит при пропуске эфира.</strong> Участник &laquo;Стандарт&raquo; пропустил эфир &mdash; у него нет записи. Как компенсируется? Допуск к следующему модулю? Или пропуск = потеря?</li>
+      <li style="margin-bottom: 1rem;"><strong>Дата первого потока v2.</strong> В ценовой архитектуре указан июнь 2026. Актуально?</li>
+    </ol>
+
+  </div>
+</section>
+
+<!-- Footer -->
+<footer class="footer">
+  <div class="container">
+    <p>BrandOS &middot; M3-02 Архитектура продукта &middot; Гоар Багдасарова &middot; 9 апреля 2026</p>
+    <p style="margin-top: .5rem; font-size: .75rem;">Нейроупаковка &middot; Источники: M3-01 (Ядро продукта), Позиционирование и архитектура оффера v2, Ценовая архитектура 2026 v2.1, Production Guide, goar-voice-rules.md</p>
+    <p style="margin-top: .25rem; font-size: .75rem;">Версия: 1.0 &mdash; требует валидации клиентом</p>
+  </div>
+</footer>
+
+</body>
+</html>

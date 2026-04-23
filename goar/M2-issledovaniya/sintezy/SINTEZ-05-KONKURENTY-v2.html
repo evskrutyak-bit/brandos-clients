@@ -1,0 +1,805 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>M2-05 v2 · Синтез конкурентного исследования — Гоар Багдасарова · BrandOS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --primary: #0ea5e9;
+  --primary-dark: #0284c7;
+  --primary-light: #7dd3fc;
+  --primary-bg: #e0f2fe;
+  --background: #ffffff;
+  --foreground: #0f172a;
+  --card-bg: hsl(0,0%,97%);
+  --border: #1C1C1E;
+  --muted: #64748b;
+  --radius: 4px;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: 'Inter', sans-serif;
+  background: var(--background);
+  color: var(--foreground);
+  line-height: 1.75;
+  font-size: 16px;
+}
+
+.container { max-width: 1200px; margin: 0 auto; padding: 0 1.5rem; }
+
+.nav {
+  position: sticky;
+  top: 0;
+  background: white;
+  border-bottom: 1px solid var(--border);
+  z-index: 100;
+  padding: 1rem 0;
+}
+.nav-container { display: flex; justify-content: space-between; align-items: center; gap: 2rem; }
+.nav-brand { font-size: 1rem; font-weight: 700; color: var(--foreground); white-space: nowrap; }
+.nav-brand span { color: var(--primary); }
+.nav-links { display: flex; gap: 1.5rem; list-style: none; overflow-x: auto; flex-wrap: wrap; }
+.nav-links a {
+  color: var(--foreground);
+  text-decoration: none;
+  font-size: .875rem;
+  font-weight: 500;
+  white-space: nowrap;
+  transition: color .2s;
+}
+.nav-links a:hover { color: var(--primary); }
+
+.hero {
+  padding: 3.75rem 0;
+  background: linear-gradient(135deg, rgba(255,255,255,.98) 0%, rgba(240,249,255,.95) 100%);
+}
+.hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: .5rem;
+  padding: .5rem 1rem;
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  font-size: .875rem;
+  font-weight: 600;
+  margin-bottom: 1.5rem;
+  color: var(--foreground);
+}
+.hero h1 {
+  font-size: clamp(32px, 4vw, 51px);
+  font-weight: 500;
+  line-height: 1.2;
+  letter-spacing: -.03em;
+  margin-bottom: 1.5rem;
+}
+.hero-subtitle {
+  font-size: 1.125rem;
+  color: var(--muted);
+  margin-bottom: 2rem;
+}
+.hero-meta { display: flex; gap: 2rem; flex-wrap: wrap; }
+.hero-meta-item { font-size: .875rem; color: var(--muted); }
+.hero-meta-item strong { color: var(--primary); font-weight: 600; }
+
+.section { padding: 2.5rem 0; }
+.section-large { padding: 3.75rem 0; }
+@media (min-width: 768px) {
+  .section { padding: 3.75rem 0; }
+  .section-large { padding: 5rem 0; }
+}
+
+.section-header {
+  position: relative;
+  margin-bottom: 32px;
+  padding-top: 24px;
+}
+.section-header::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 1px;
+  background: repeating-linear-gradient(to right, #9CA3AF 0, #9CA3AF 4px, transparent 4px, transparent 8px);
+}
+
+.section-tag {
+  display: inline-block;
+  font-size: .75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: .1em;
+  color: var(--primary);
+  margin-bottom: .5rem;
+}
+
+h2 { font-size: 32px; font-weight: 300; line-height: 1.2; letter-spacing: -.02em; margin-bottom: 1rem; }
+h3 { font-size: 20px; font-weight: 600; line-height: 1.3; margin-bottom: 1rem; }
+
+p { margin-bottom: 1rem; color: var(--muted); }
+p:last-child { margin-bottom: 0; }
+
+.card {
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: linear-gradient(135deg, rgba(255,255,255,.98) 0%, rgba(250,250,252,.95) 100%);
+  padding: 1.5rem;
+  position: relative;
+  overflow: hidden;
+}
+.card-title { font-size: 1.0625rem; font-weight: 600; margin-bottom: .75rem; color: var(--foreground); }
+.card-description { font-size: .9375rem; line-height: 1.75; color: var(--muted); }
+.card-accent {
+  background: linear-gradient(135deg, rgba(14,165,233,.05) 0%, rgba(14,165,233,.02) 100%);
+  border-color: rgba(14,165,233,.25);
+}
+
+.grid { display: grid; gap: 1.5rem; }
+.grid-2 { grid-template-columns: 1fr; }
+.grid-3 { grid-template-columns: 1fr; }
+@media (min-width: 768px) {
+  .grid-2 { grid-template-columns: repeat(2, 1fr); }
+  .grid-3 { grid-template-columns: repeat(3, 1fr); }
+}
+
+.highlight-box {
+  background: linear-gradient(135deg, rgba(14,165,233,.05) 0%, rgba(14,165,233,.02) 100%);
+  border: 1px solid rgba(14,165,233,.2);
+  border-left: 4px solid var(--primary);
+  padding: 1.25rem 1.5rem;
+  border-radius: var(--radius);
+  margin: 1.5rem 0;
+}
+.highlight-box p { margin: 0; font-size: 1rem; }
+.highlight-box strong { color: var(--primary); }
+
+.warning-block {
+  background: linear-gradient(135deg, rgba(239,68,68,.04) 0%, rgba(239,68,68,.01) 100%);
+  border: 1px solid rgba(239,68,68,.18);
+  border-left: 4px solid #ef4444;
+  padding: 1.25rem 1.5rem;
+  border-radius: var(--radius);
+  margin: 1.5rem 0;
+}
+.warning-block p { margin: 0; font-size: .9375rem; color: var(--muted); }
+.warning-block strong { color: var(--foreground); }
+
+.green-block {
+  background: linear-gradient(135deg, rgba(34,197,94,.04) 0%, rgba(34,197,94,.01) 100%);
+  border: 1px solid rgba(34,197,94,.18);
+  border-left: 4px solid #22c55e;
+  padding: 1.25rem 1.5rem;
+  border-radius: var(--radius);
+  margin: 1.5rem 0;
+}
+.green-block p { margin: 0; font-size: .9375rem; color: var(--muted); }
+.green-block strong { color: var(--foreground); }
+
+.amber-block {
+  background: linear-gradient(135deg, rgba(245,158,11,.04) 0%, rgba(245,158,11,.01) 100%);
+  border: 1px solid rgba(245,158,11,.18);
+  border-left: 4px solid #f59e0b;
+  padding: 1.25rem 1.5rem;
+  border-radius: var(--radius);
+  margin: 1.5rem 0;
+}
+.amber-block p { margin: 0; font-size: .9375rem; color: var(--muted); }
+.amber-block strong { color: var(--foreground); }
+
+.list-styled { list-style: none; padding: 0; margin-bottom: 1rem; }
+.list-styled li { padding-left: 1.5rem; margin-bottom: .75rem; position: relative; color: var(--muted); font-size: .9375rem; }
+.list-styled li::before {
+  content: '';
+  position: absolute;
+  left: 0; top: .65rem;
+  width: 6px; height: 6px;
+  background: var(--primary);
+  border-radius: 50%;
+}
+
+.table-wrapper {
+  overflow-x: auto;
+  margin: 1.5rem 0;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+table { width: 100%; border-collapse: collapse; background: white; }
+th, td { padding: 1rem; text-align: left; border-bottom: 1px solid var(--border); }
+th {
+  background: var(--card-bg);
+  font-weight: 600;
+  font-size: .8125rem;
+  text-transform: uppercase;
+  letter-spacing: .05em;
+  color: var(--foreground);
+}
+td { font-size: .9375rem; color: var(--muted); }
+tr:last-child td { border-bottom: none; }
+tr:hover td { background: var(--card-bg); }
+.table-accent { color: var(--primary); font-weight: 600; }
+
+.footer {
+  padding: 2rem 0;
+  border-top: 1px solid var(--border);
+  text-align: center;
+  color: var(--muted);
+  font-size: .875rem;
+}
+
+.hypo-card {
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  background: linear-gradient(135deg, rgba(255,255,255,.98) 0%, rgba(250,250,252,.95) 100%);
+}
+.hypo-card h4 { font-size: 1rem; font-weight: 600; margin-bottom: .75rem; color: var(--foreground); }
+.hypo-card .hypo-label { font-size: .8125rem; font-weight: 600; color: var(--primary); text-transform: uppercase; letter-spacing: .05em; margin-bottom: .25rem; }
+.hypo-card .hypo-text { font-size: .9375rem; color: var(--muted); margin-bottom: .75rem; }
+
+.hypo-status {
+  display: inline-block;
+  padding: .25rem .75rem;
+  border-radius: var(--radius);
+  font-size: .75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: .05em;
+  margin-bottom: .75rem;
+}
+.status-confirmed { background: rgba(34,197,94,.12); color: #16a34a; border: 1px solid rgba(34,197,94,.3); }
+.status-partial { background: rgba(245,158,11,.12); color: #d97706; border: 1px solid rgba(245,158,11,.3); }
+.status-check { background: rgba(14,165,233,.12); color: #0284c7; border: 1px solid rgba(14,165,233,.3); }
+
+.question-card {
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.25rem 1.5rem;
+  margin-bottom: 1rem;
+  background: var(--card-bg);
+}
+.question-card .q-num { font-size: .75rem; font-weight: 700; color: var(--primary); margin-bottom: .25rem; }
+.question-card .q-text { font-size: 1rem; font-weight: 500; color: var(--foreground); margin-bottom: .5rem; }
+.question-card .q-why { font-size: .875rem; color: var(--muted); }
+
+@media (max-width: 768px) {
+  .container { padding: 0 1rem; }
+  h2 { font-size: 24px; }
+  h3 { font-size: 18px; }
+  .nav-links { gap: .75rem; }
+  .hero-meta { gap: 1rem; }
+}
+
+@media print {
+  @page { size: A4 landscape; margin: 1cm; }
+  .nav { display: none; }
+  .section { padding: 1.5rem 0; }
+  .hero { padding: 2rem 0; }
+}
+</style>
+</head>
+<body>
+
+<!-- Nav -->
+<nav class="nav">
+  <div class="container nav-container">
+    <div class="nav-brand">Brand<span>OS</span> &middot; Документ</div>
+    <ul class="nav-links">
+      <li><a href="#s1">Синтез</a></li>
+      <li><a href="#s2">Гипотезы</a></li>
+      <li><a href="#s3">Вопросы</a></li>
+      <li><a href="#s4">Реакция</a></li>
+      <li><a href="#s5">Далее</a></li>
+    </ul>
+  </div>
+</nav>
+
+<!-- Hero -->
+<section class="hero">
+  <div class="container">
+    <div class="hero-badge">M2-05 v2 &middot; Синтез конкурентного исследования &middot; BrandOS</div>
+    <h1>Синтез: Конкурентный ландшафт<br><span style="color:var(--primary)">Гоар Багдасарова</span></h1>
+    <p class="hero-subtitle">Нейроупаковка v5 &middot; 2026-04-22</p>
+    <div class="hero-meta">
+      <span class="hero-meta-item"><strong>Клиент:</strong> Гоар Багдасарова</span>
+      <span class="hero-meta-item"><strong>Модуль:</strong> M2 &mdash; Исследования</span>
+      <span class="hero-meta-item"><strong>Артефакт:</strong> M2-05 v2 Синтез</span>
+      <span class="hero-meta-item"><strong>Источники:</strong> DR + 5 артефактов M2-04</span>
+    </div>
+  </div>
+</section>
+
+
+<!-- ============================================================ -->
+<!-- ЧАСТЬ 1. СИНТЕЗ ИССЛЕДОВАНИЯ -->
+<!-- ============================================================ -->
+<section class="section-large" id="s1">
+  <div class="container">
+    <div class="section-header">
+      <span class="section-tag">Часть 1</span>
+      <h2>Синтез конкурентного исследования</h2>
+    </div>
+
+    <p style="margin-bottom: 2rem;">Десять стратегических инсайтов, извлечённых из Deep Research (167 КБ, ~15 конкурентов), карты ландшафта (5 зон, 28 Tier&nbsp;1, 65 Tier&nbsp;2, 20 международных референсов), банка 48 офферов, анализа 8 TG-каналов и сводного SWOT с 14 стратегическими разрывами.</p>
+
+    <!-- Инсайт 1 -->
+    <div class="card" style="margin-bottom: 1.5rem;">
+      <div class="card-title">1. Зона 5 пуста целиком &mdash; по всем сегментам</div>
+      <div class="card-description">
+        Из 28 ключевых игроков РФ/СНГ ни один системно не работает на пересечении нейробиологии речи, ежедневной переговорной практики, ответственного давления и измеримого бизнес-результата. Евгения Качалина &mdash; единственный индикатор зоны (осознанное слушание), но без нейробиологической основы, масштабного продукта и медийности. Предприниматели, руководители, женщины-лидеры, мужчины-управленцы, корпоративный B2B &mdash; каждая клетка матрицы &laquo;зона&nbsp;5 &times; аудитория&raquo; свободна. <strong>Действие:</strong> занять территорию и назвать её, прежде чем туда войдёт кто-то другой.
+      </div>
+    </div>
+
+    <!-- Инсайт 2 -->
+    <div class="card" style="margin-bottom: 1.5rem;">
+      <div class="card-title">2. &laquo;Нейроречь&raquo; &mdash; свободный нарратив, готовый к захвату</div>
+      <div class="card-description">
+        Слово &laquo;нейро&raquo; используется Курпатовым (мышление) и Хуберманом (фокус/стресс). Но ни один переговорный или речевой тренер в РФ/СНГ не привязал &laquo;нейро&raquo; к речи и переговорам. Рызов, Тарасов, Гандапас, Азимов &mdash; у всех методика эмпирическая, без научного обоснования. &laquo;Нейроречь&raquo; &mdash; маркер, мгновенно отстраивающий от всех школ. <strong>Действие:</strong> закрепить термин за Гоар через контент, спикерство и продукт до конца 2026.
+      </div>
+    </div>
+
+    <!-- Инсайт 3 -->
+    <div class="card" style="margin-bottom: 1.5rem;">
+      <div class="card-title">3. Рынок поляризован: &laquo;жёсткие&raquo; vs &laquo;мягкие&raquo; &mdash; между ними никого</div>
+      <div class="card-description">
+        Рызов, Тарасов, Азимов продают давление любой ценой. Каспарова, Прохорцева, Хакамада &mdash; уверенность и состояние без переговорного контекста. Позиция &laquo;давление &mdash; часть процесса, но без агрессии&raquo; не озвучена никем. Это не компромисс между полюсами, а зрелая позиция, для которой ещё нет языка на рынке. <strong>Действие:</strong> формулировать ответственное давление как философию &mdash; не антитезу Рызову, а следующий уровень.
+      </div>
+    </div>
+
+    <!-- Инсайт 4 -->
+    <div class="card" style="margin-bottom: 1.5rem;">
+      <div class="card-title">4. Proof of work Гоар невоспроизводим</div>
+      <div class="card-description">
+        Каспарова &mdash; тренер. Рызов &mdash; тренер. Гандапас &mdash; тренер. Все трое учат, но ни один не ведёт тысячи реальных переговоров на крупные суммы ежедневно. 9 лет директором по лизингу крупнейшего ТЦ России, Harvard Business School Online (Negotiation Mastery) прямо сейчас, профайлинг &mdash; каждый элемент по отдельности существует у разных игроков. Все вместе &mdash; только у Гоар. <strong>Действие:</strong> включать минимум один из трёх маркеров (практика Авиапарка / нейробиология / слова = деньги) в каждое касание бренда.
+      </div>
+    </div>
+
+    <!-- Инсайт 5 -->
+    <div class="card" style="margin-bottom: 1.5rem;">
+      <div class="card-title">5. Telegram для переговорной ниши &mdash; абсолютно свободный канал</div>
+      <div class="card-description">
+        Из 8 проанализированных TG-каналов ни один не относится к зоне переговоров. Каспарова использует TG вторично (к Instagram). Гандапас &mdash; как витрину для YouTube. Рызов, Тарасов, Азимов работают через офлайн, книги и YouTube. Подкастов о переговорах на русском языке нет вообще. <strong>Действие:</strong> сделать Telegram основным (не вспомогательным) каналом. Три рубрики: &laquo;Кейс из Авиапарка&raquo;, &laquo;Нейроречь&raquo;, &laquo;Профайлинг&raquo;.
+      </div>
+    </div>
+
+    <!-- Инсайт 6 -->
+    <div class="card" style="margin-bottom: 1.5rem;">
+      <div class="card-title">6. Мужчины-руководители &mdash; слепое пятно всего рынка</div>
+      <div class="card-description">
+        &laquo;Мягкие&raquo; эксперты работают с женщинами. &laquo;Жёсткие&raquo; (Рызов, Тарасов) не предлагают альтернативу для тех, кому силовые модели перестали работать. Мужчины 35&ndash;50, которые &laquo;переросли давление&raquo;, не находят себя: мягкие школы ассоциируются с женской психологией. Нейробиологическая подача Гоар снимает стигму &laquo;мягкости&raquo;. Мужчины уже активно комментируют её контент. <strong>Действие:</strong> при запуске не суживать до &laquo;женского&raquo; позиционирования &mdash; нейроречь гендерно нейтральна.
+      </div>
+    </div>
+
+    <!-- Инсайт 7 -->
+    <div class="card" style="margin-bottom: 1.5rem;">
+      <div class="card-title">7. Офферы конкурентов: эмоция (46%) доминирует, результат без цифр</div>
+      <div class="card-description">
+        Анализ 48 офферов показал: эмоциональный триггер &mdash; в каждом втором. Авторитет &mdash; на втором месте (21%). При этом конкретных бизнес-метрик &laquo;до/после&raquo; нет ни у кого, кроме Каспаровой (и те &mdash; выборочные кейсы). Промышленных гарантий не существует. Рынок продаёт ощущения, а не цифры. <strong>Действие:</strong> строить офферы от авторитета (Авиапарк, Harvard) + конкретного результата (&laquo;сохранила условия контракта, когда контрагент требовал скидку 40%&raquo;). Антипаттерн: FOMO, перечёркнутые цены, &laquo;осталось 3 места&raquo;.
+      </div>
+    </div>
+
+    <!-- Инсайт 8 -->
+    <div class="card" style="margin-bottom: 1.5rem;">
+      <div class="card-title">8. Корпоративный B2B &mdash; высокий чек, минимальная конкуренция</div>
+      <div class="card-description">
+        Модулей &laquo;ясная деловая коммуникация для руководителей&raquo; с нейробиологической основой нет в РФ. Kim Scott (Radical Candor) &mdash; международный аналог без русскоязычного эквивалента. У Рызова B2B-машина зрелая (150&ndash;500 тыс. за группу), но построена на &laquo;жёстких&raquo; техниках. Зона &laquo;обратная связь без агрессии&raquo; пуста. <strong>Действие:</strong> корпоративный модуль &laquo;Ясная встреча 1:1&raquo; (200&ndash;500 тыс.) &mdash; параллельный трек к B2C, не зависящий от масштаба личного бренда.
+      </div>
+    </div>
+
+    <!-- Инсайт 9 -->
+    <div class="card" style="margin-bottom: 1.5rem;">
+      <div class="card-title">9. Продуктовая лестница Гоар пока фрагментарна</div>
+      <div class="card-description">
+        У Рызова: книга &rarr; марафон &rarr; курс (3 тарифа) &rarr; корп. тренинг &rarr; клуб &rarr; медиация. У Азарёнок: книга &rarr; игра &rarr; курс &rarr; менторинг &rarr; сообщество. У Гоар: курс в 2 тарифах + B2B-концепция. Нет книги, нет лид-магнита масштаба Рызова, нет экосистемы удержания, нет кейсовой базы выпускников. <strong>Действие:</strong> достроить лестницу поэтапно: трипвайер (&laquo;Профайлинг&raquo; МК, 2&nbsp;900 руб.) &rarr; флагман &rarr; Offline Arena &rarr; B2B-лагерь. Кейсы собирать с первого потока.
+      </div>
+    </div>
+
+    <!-- Инсайт 10 -->
+    <div class="card" style="margin-bottom: 1.5rem;">
+      <div class="card-title">10. Формат &laquo;реакция на кейс&raquo; &mdash; незанятый контент-формат</div>
+      <div class="card-description">
+        Ни один конкурент не строит систему на живой реакции эксперта на реальную ситуацию. Якуба делает реалити-тренинги офлайн, но в онлайне формат пуст. Гоар раскрывается именно в реакции на стимул, а не в монологе на камеру. Каждый день &mdash; новый переговорный кейс из Авиапарка. <strong>Действие:</strong> производственный конвейер: команда присылает кейс/видео &rarr; Гоар реагирует голосовым &rarr; команда оформляет в пост/Reels. Нулевые затраты на &laquo;думанье&raquo; для Гоар.
+      </div>
+    </div>
+
+    <div class="highlight-box" style="margin-top: 2rem;">
+      <p><strong>Главный вывод:</strong> Гоар не конкурирует &mdash; она создаёт категорию. Связка &laquo;ежедневный практик + нейробиология + слова = деньги&raquo; невоспроизводима. Задача &mdash; не &laquo;обыграть&raquo; Каспарову или Рызова, а стать определяющим именем зоны 5, пока она свободна.</p>
+    </div>
+  </div>
+</section>
+
+
+<!-- ============================================================ -->
+<!-- ЧАСТЬ 2. ГИПОТЕЗЫ -->
+<!-- ============================================================ -->
+<section class="section-large" id="s2">
+  <div class="container">
+    <div class="section-header">
+      <span class="section-tag">Часть 2</span>
+      <h2>Гипотезы</h2>
+    </div>
+
+    <p style="margin-bottom: 2rem;">Семь основных и пять альтернативных гипотез. Статус каждой обновлён на основе полного конкурентного блока (DR + 6 артефактов M2-04).</p>
+
+    <h3>2.1 &mdash; Основные гипотезы</h3>
+
+    <!-- H1 -->
+    <div class="hypo-card">
+      <div class="hypo-status status-confirmed">Подтверждена</div>
+      <h4>H1. Гоар создаёт новую категорию, а не входит в существующую</h4>
+      <div class="hypo-text">Зона 5 (&laquo;осознанная коммуникация&raquo;) пуста по всем 5 аудиторным сегментам (карта пустот, M2-04-01 R5). Из 28 Tier&nbsp;1 и 65 Tier&nbsp;2 только Качалина касается этой зоны &mdash; без нейронауки, без масштаба, без медийности. Международные референсы (Treasure, Van Edwards, Voss, Susan Cain, Adam Grant) подтверждают: &laquo;эмпатичное влияние&raquo; &mdash; растущий глобальный тренд, но в русскоязычном пространстве позиция вакантна.</div>
+      <div class="hypo-label">Что это значит</div>
+      <div class="hypo-text">Гоар не &laquo;лучше Рызова&raquo; &mdash; она в другой категории. Каждый конкурент усиливает её позицию как контрастный фон. Тот, кто первым назовёт зону, определит её правила.</div>
+      <div class="hypo-label">Как проверить на практике</div>
+      <div class="hypo-text">Два варианта позиционирования в рекламе: &laquo;нейроречь &mdash; искусство договариваться&raquo; vs &laquo;переговоры для руководителей&raquo;. Сравнить CTR и заявки.</div>
+    </div>
+
+    <!-- H2 -->
+    <div class="hypo-card">
+      <div class="hypo-status status-partial">Частично подтверждена</div>
+      <h4>H2. Ядро аудитории &mdash; женщины 30+, уставшие от маскулинных моделей</h4>
+      <div class="hypo-text">Подтверждено: подавляющее большинство переговорных школ маскулинны по тону (Рызов: &laquo;танк-оппонент&raquo;, Тарасов: &laquo;управленческий поединок&raquo;). Женщины-руководительницы обслуживаются через психологию (Прохорцева) или технику звучания (Каспарова), но не через прикладные переговоры. Однако: мужчины-руководители 35&ndash;50, которым &laquo;силовые модели перестали работать&raquo; &mdash; тоже неохваченный сегмент (M2-04-06 G3, gap&nbsp;7). Мужчины активно реагируют на контент Гоар.</div>
+      <div class="hypo-label">Что это значит</div>
+      <div class="hypo-text">Женщины 30+ &mdash; ядро, но не единственный сегмент. Гоар работает &laquo;от силы&raquo;: её аудитория &mdash; уже сильные лидеры обоих полов. Жёсткий гендерный фокус сузит воронку.</div>
+      <div class="hypo-label">Как проверить</div>
+      <div class="hypo-text">Запустить два креатива: один с явным женским позиционированием, второй &mdash; гендерно нейтральный. Замерить долю мужчин в заявках.</div>
+    </div>
+
+    <!-- H3 -->
+    <div class="hypo-card">
+      <div class="hypo-status status-check">Требует проверки</div>
+      <h4>H3. Формат &laquo;реакция на кейс&raquo; может стать вирусной подписью бренда</h4>
+      <div class="hypo-text">Формат &laquo;уроки тишины&raquo; из v1 переосмыслен: реальная сила Гоар &mdash; не в тишине как таковой, а в мгновенной экспертной реакции на живой кейс. Она не готовится &mdash; она реагирует, и из реакции собирается контент. Ни один конкурент не строит контент-систему на формате &laquo;реакция практика&raquo;. Якуба делает реалити-тренинги офлайн, но в онлайне формат пуст.</div>
+      <div class="hypo-label">Что это значит</div>
+      <div class="hypo-text">Формат полностью совпадает с тем, как Гоар работает (&laquo;мне нужен живой стимул&raquo;), и решает проблему &laquo;не может снимать сама на камеру&raquo;. Конвейер: команда подаёт стимул &rarr; Гоар реагирует &rarr; команда упаковывает.</div>
+      <div class="hypo-label">Как проверить</div>
+      <div class="hypo-text">5 пилотных видео: команда присылает переговорную ситуацию, Гоар разбирает на камеру/аудио. Замерить retention и saves. Если saves &gt; 5% &mdash; формат рабочий.</div>
+    </div>
+
+    <!-- H4 -->
+    <div class="hypo-card">
+      <div class="hypo-status status-confirmed">Подтверждена</div>
+      <h4>H4. Корпоративный B2B &mdash; высокомаржинальная точка входа</h4>
+      <div class="hypo-text">Gap подтверждён из трёх источников: SWOT (Рызов имеет B2B, но &laquo;жёсткий&raquo;; Каспарова не имеет B2B вообще); ценовая матрица (корп. модули 200&ndash;500 тыс.); международный референс Kim Scott (Radical Candor &mdash; без российского аналога). HR ищут &laquo;культуру диалога&raquo;, а не очередной &laquo;тренинг по продажам&raquo;.</div>
+      <div class="hypo-label">Что это значит</div>
+      <div class="hypo-text">B2B не зависит от масштаба личного бренда. 2&ndash;3 пилота создают кейсы и открывают канал с высоким чеком. B2B может стать основным доходом, а B2C &mdash; медийной платформой.</div>
+      <div class="hypo-label">Как проверить</div>
+      <div class="hypo-text">Провести 2&ndash;3 пилота (по себестоимости или бесплатно), собрать NPS и измеримые результаты. Если NPS &gt; 70 и повторный запрос &mdash; масштабировать.</div>
+    </div>
+
+    <!-- H5 -->
+    <div class="hypo-card">
+      <div class="hypo-status status-partial">Частично подтверждена</div>
+      <h4>H5. Роль идеолога сильнее роли тренера</h4>
+      <div class="hypo-text">Ни один конкурент не формулирует повестку уровня &laquo;этика переговоров 2026&raquo;. Все продают курсы, но никто не формирует культуру. Хакамада и Черниговская задают тон &laquo;зрелой&raquo; коммуникации, но без продукта в нише. Гоар может стать не тренером, а человеком, который определяет правила новой коммуникации. Однако: это требует регулярного контента, выступлений, возможно книги &mdash; масштаб амбиции нужно сверить с Гоар.</div>
+      <div class="hypo-label">Что это значит</div>
+      <div class="hypo-text">Идеолог = медийность + приглашения на конференции + книга + масштаб, невозможный для &laquo;тренера курсов&raquo;. Но роль идеолога нельзя навязать &mdash; она или резонирует, или нет.</div>
+      <div class="hypo-label">Как проверить</div>
+      <div class="hypo-text">Черновик манифеста &laquo;Ответственные переговоры: новый стандарт&raquo;. Протестировать реакцию аудитории в TG. Если высокий engagement + репосты &mdash; роль резонирует.</div>
+    </div>
+
+    <!-- H6 -->
+    <div class="hypo-card">
+      <div class="hypo-status status-confirmed">Подтверждена</div>
+      <h4>H6. Антипод-позиционирование: &laquo;не ораторская школа, не жёсткие переговоры&raquo;</h4>
+      <div class="hypo-text">Банк офферов (M2-04-03) показал: весь рынок использует клише &laquo;уверенно выступай&raquo;, &laquo;побеждай в переговорах&raquo;, &laquo;закрой сделку&raquo;. Аудитория, разочарованная в этих обещаниях, активно ищет альтернативу. Матрица отстройки (M2-04-06 G4) подтверждает: для каждого из 7 топ-конкурентов есть чёткая формула границы. Тон &mdash; не враждебный, а контрастный: &laquo;просто другой путь&raquo;.</div>
+      <div class="hypo-label">Что это значит</div>
+      <div class="hypo-text">Позиционирование через контраст, а не через конкуренцию. Не &laquo;лучше Рызова&raquo;, а &laquo;другая категория&raquo;. Каждый известный конкурент работает как контрастный фон.</div>
+      <div class="hypo-label">Как проверить</div>
+      <div class="hypo-text">2&ndash;3 поста с мягкой антитезой: &laquo;Вас учили побеждать в переговорах. Я учу договариваться так, чтобы обе стороны хотели продолжать&raquo;. Замерить сохранения и комментарии.</div>
+    </div>
+
+    <!-- H7 -->
+    <div class="hypo-card">
+      <div class="hypo-status status-confirmed">Подтверждена</div>
+      <h4>H7. Telegram + подкаст &mdash; каналы с минимальной конкуренцией</h4>
+      <div class="hypo-text">Анализ 8 TG-каналов (M2-04-04): для всех конкурентов Telegram &mdash; вторичный канал. Только Хакамада и Гандапас имеют подкасты, оба мотивационного формата. Подкаста о переговорах на русском нет. Telegram-канала, системно посвящённого переговорной практике, нет.</div>
+      <div class="hypo-label">Что это значит</div>
+      <div class="hypo-text">Гоар может стать первым экспертом по переговорам, для которого Telegram &mdash; основная площадка. Это совпадает с принципом &laquo;один канал&raquo; и избавляет от необходимости визуального продакшена на старте.</div>
+      <div class="hypo-label">Как проверить</div>
+      <div class="hypo-text">Запустить TG с 5 постами/неделю (1 месяц). Записать 3 пилотных эпизода подкаста в формате &laquo;разбор кейса&raquo;. Замерить рост подписчиков и OR.</div>
+    </div>
+
+    <!-- Альтернативные гипотезы -->
+    <h3 style="margin-top: 2.5rem;">2.2 &mdash; Альтернативные гипотезы</h3>
+
+    <div class="card" style="margin-bottom: 1.5rem;">
+      <div class="card-title">A1. Книга &mdash; мощнейший лид-магнит, которого нет</div>
+      <div class="card-description">Рызов построил бренд на книге-бестселлере. Азарёнок &mdash; 60+ кейсов в книге как перманентный социальный пруф. Книга &laquo;нейроречь + переговорные кейсы из Авиапарка&raquo; не существует на рынке и может стать входной точкой для B2B-аудитории и мужчин-руководителей, которые не пойдут на курс без предварительного знакомства. Приоритет: после первого потока курса (M2-04-06 G3, gap&nbsp;11).</div>
+    </div>
+
+    <div class="card" style="margin-bottom: 1.5rem;">
+      <div class="card-title">A2. B2B может стать основным, а не дополнительным каналом</div>
+      <div class="card-description">Если пилотные корпоративные модули покажут NPS &gt; 70 и повторные заказы &mdash; имеет смысл перевернуть приоритеты. Стратегическая цель Гоар (&laquo;рост единого индекса для корпоративной монетизации&raquo;) напрямую указывает на B2B как на целевой доход. B2C &mdash; медийная платформа, генерирующая доверие.</div>
+    </div>
+
+    <div class="card" style="margin-bottom: 1.5rem;">
+      <div class="card-title">A3. Профайлинг &mdash; отдельный трипвайер-продукт</div>
+      <div class="card-description">Vanessa Van Edwards работает с невербаликой на международном рынке, но в РФ профайлинг для управленцев не упакован. Мастер-класс &laquo;Профайлинг с диагностикой&raquo; (2&nbsp;900 руб.) &mdash; низкий вход в экосистему Гоар и одновременно вирусный контент-формат (&laquo;Шерлок Холмс читает людей&raquo;).</div>
+    </div>
+
+    <div class="card" style="margin-bottom: 1.5rem;">
+      <div class="card-title">A4. &laquo;Слово за тобой&raquo; &mdash; подписка, а не разовый курс</div>
+      <div class="card-description">Вместо &laquo;курс &rarr; выпуск&raquo; &mdash; подписка на практику: еженедельные разборы, переговорные тренажёры, живые реакции Гоар. У Мавричевой подписочная модель (&laquo;Код публичности&raquo;, 30K/год) показывает высокий retention. Recurring revenue + комьюнити. Но: пока нет кейсовой базы, подписка не жизнеспособна.</div>
+    </div>
+
+    <div class="card" style="margin-bottom: 1.5rem;">
+      <div class="card-title">A5. Ценовая философия &laquo;без звёздочек&raquo; &mdash; сама по себе УТП</div>
+      <div class="card-description">Все 7 топ-конкурентов используют скидки, FOMO, перечёркнутые цены, закрытые продажи. Принцип Гоар &laquo;цена называется один раз, без обоснования&raquo; &mdash; уникальная стратегия, прямо связанная с методологией: &laquo;Если я учу тебя называть цену и молчать &mdash; я сама так делаю&raquo;. Это дифференциатор и proof of concept одновременно.</div>
+    </div>
+
+    <!-- Что пока рано -->
+    <h3 style="margin-top: 2.5rem;">2.3 &mdash; Что пока рано</h3>
+
+    <div class="amber-block">
+      <p><strong>1. Масштабирование через тренеров/лицензирование.</strong> Каспарова масштабирует через 20+ тренеров. У Гоар камерный формат &mdash; это и сила, и ограничение. Но до 2&ndash;3 потоков курса вопрос делегирования преждевременен.</p>
+    </div>
+    <div class="amber-block">
+      <p><strong>2. Англоязычный рынок.</strong> Философия Гоар ближе к западному запросу (Treasure, Van Edwards). Но требует отдельной стратегии, контента на английском и понимания конкурентов. Задача следующего года.</p>
+    </div>
+    <div class="amber-block">
+      <p><strong>3. AI-скоринг переговорных поединков.</strong> Никто не использует AI для оценки переговорных навыков в реальном времени. Привлекательно, но требует технологической разработки. Приоритет 3 (M2-04-06 G3, gap&nbsp;13).</p>
+    </div>
+  </div>
+</section>
+
+
+<!-- ============================================================ -->
+<!-- ЧАСТЬ 3. ВОПРОСЫ КЛИЕНТУ -->
+<!-- ============================================================ -->
+<section class="section-large" id="s3">
+  <div class="container">
+    <div class="section-header">
+      <span class="section-tag">Часть 3</span>
+      <h2>Вопросы клиенту</h2>
+    </div>
+
+    <p style="margin-bottom: 2rem;">Консолидированы из DR, всех артефактов M2-04 и voice rules. Каждый вопрос привязан к конкретному решению, которое зависит от ответа Гоар.</p>
+
+    <div class="question-card">
+      <div class="q-num">Вопрос 1 &mdash; Позиционирование</div>
+      <div class="q-text">Гоар, как вы описываете то, что делаете, когда вас спрашивают незнакомые люди &mdash; в одном предложении?</div>
+      <div class="q-why">Зачем: определить, совпадает ли язык Гоар с &laquo;нейроречь&raquo; и &laquo;ответственное давление&raquo;. Если её формулировка другая &mdash; строить бренд от неё, а не от наших конструкций.</div>
+    </div>
+
+    <div class="question-card">
+      <div class="q-num">Вопрос 2 &mdash; Конкурентное поле</div>
+      <div class="q-text">Из перечисленных конкурентов &mdash; кто для вас &laquo;свой рынок&raquo;, а кто &laquo;совсем другая история&raquo;? Есть ли имена, которые мы не учли?</div>
+      <div class="q-why">Зачем: откалибровать конкурентную карту. Возможно, Гоар видит пересечения или различия, которые мы не уловили из данных.</div>
+    </div>
+
+    <div class="question-card">
+      <div class="q-num">Вопрос 3 &mdash; Корпоративный опыт (H4)</div>
+      <div class="q-text">Вы когда-нибудь проводили обучение для команд или компаний &mdash; не как директор Авиапарка, а как внешний эксперт? Если да &mdash; что это было, какой результат?</div>
+      <div class="q-why">Зачем: если корпоративный опыт есть &mdash; B2B запускается сразу. Если нет &mdash; нужен пилот и кейс-база прежде, чем масштабировать.</div>
+    </div>
+
+    <div class="question-card">
+      <div class="q-num">Вопрос 4 &mdash; Роль идеолога (H5)</div>
+      <div class="q-text">Вам ближе роль практика, который учит конкретным навыкам, или идеолога, который формулирует новые правила коммуникации &mdash; манифест, книга, колонки, конференции?</div>
+      <div class="q-why">Зачем: от ответа зависит масштаб стратегии. Идеолог = медийность + книга + 10x рост. Практик = камерность + глубина + B2B-фокус. Оба пути рабочие, но ресурсы разные.</div>
+    </div>
+
+    <div class="question-card">
+      <div class="q-num">Вопрос 5 &mdash; Реальные клиенты</div>
+      <div class="q-text">Опишите 2&ndash;3 реальных человека, которые к вам обращались за последний год. Кто они, с какой болью пришли, что получили?</div>
+      <div class="q-why">Зачем: валидировать ЦА живыми данными. Если реальные клиенты отличаются от &laquo;женщины 30+&raquo; &mdash; корректируем сегментацию. Если совпадают &mdash; берём в кейсы.</div>
+    </div>
+
+    <div class="question-card">
+      <div class="q-num">Вопрос 6 &mdash; Формат &laquo;Слово за тобой&raquo;</div>
+      <div class="q-text">Курс &laquo;Слово за тобой&raquo; &mdash; это разовое событие (поток &rarr; выпуск) или вам ближе формат постоянного клуба-практикума?</div>
+      <div class="q-why">Зачем: определить продуктовую архитектуру. Подписочная модель даёт recurring revenue и комьюнити. Поточная &mdash; проще в управлении и быстрее даёт кейсы.</div>
+    </div>
+
+    <div class="question-card">
+      <div class="q-num">Вопрос 7 &mdash; Профайлинг как продукт</div>
+      <div class="q-text">Готовы ли вы проводить мастер-классы по профайлингу как отдельный продукт? Или невербалика &mdash; только часть основного курса?</div>
+      <div class="q-why">Зачем: профайлинг &mdash; потенциальный трипвайер (2&nbsp;900 руб.) и вирусный контент-формат. Но только если Гоар готова это давать в отрыве от курса.</div>
+    </div>
+
+    <div class="question-card">
+      <div class="q-num">Вопрос 8 &mdash; Контентная система</div>
+      <div class="q-text">Если команда каждый день будет присылать вам переговорную ситуацию (видео, диалог, кейс), а вы реагируете голосовым или на камеру за 3&ndash;5 минут &mdash; это рабочий формат для вас?</div>
+      <div class="q-why">Зачем: валидировать формат &laquo;реакция на кейс&raquo; (H3). Если Гоар подтвердит &mdash; это решает проблему контент-производства и совпадает с её стилем.</div>
+    </div>
+
+    <div class="question-card">
+      <div class="q-num">Вопрос 9 &mdash; HR-контакты (B2B)</div>
+      <div class="q-text">Есть ли у вас контакты в HR-сообществе или среди руководителей, которые могли бы стать пилотной площадкой для корпоративного модуля?</div>
+      <div class="q-why">Зачем: ускорить выход в B2B. Тёплые контакты сокращают путь до первого пилота с месяцев до недель.</div>
+    </div>
+
+    <div class="question-card">
+      <div class="q-num">Вопрос 10 &mdash; Скорость vs идеальность</div>
+      <div class="q-text">Что для вас важнее прямо сейчас: запустить первый поток &laquo;Слово за тобой&raquo; в ближайшие 3 месяца (пусть неидеальный) или подготовить идеальный продукт за 6&ndash;9 месяцев?</div>
+      <div class="q-why">Зачем: зона 5 свободна, но не навсегда. Каспарова может добавить нейро-терминологию. Рызов &mdash; смягчить стилистику. Скорость выхода &mdash; стратегическое преимущество.</div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ============================================================ -->
+<!-- ЧАСТЬ 4. ТАБЛИЦА РЕАКЦИИ КЛИЕНТА -->
+<!-- ============================================================ -->
+<section class="section-large" id="s4">
+  <div class="container">
+    <div class="section-header">
+      <span class="section-tag">Часть 4</span>
+      <h2>Таблица реакции клиента</h2>
+    </div>
+
+    <p style="margin-bottom: 1.5rem;">Гоар заполняет столбцы &laquo;Реакция&raquo; и &laquo;Комментарий&raquo; после прочтения синтеза. Результат определяет приоритеты M4&ndash;M6.</p>
+
+    <div class="table-wrapper">
+      <table>
+        <thead>
+          <tr>
+            <th style="width:5%">#</th>
+            <th style="width:40%">Тезис / Гипотеза</th>
+            <th style="width:12%">Реакция</th>
+            <th style="width:43%">Комментарий Гоар</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="table-accent">H1</td>
+            <td>Гоар создаёт новую категорию &laquo;ответственное речевое влияние&raquo;, а не входит в нишу переговоров</td>
+            <td></td>
+            <td></td>
+          </tr>
+          <tr>
+            <td class="table-accent">H2</td>
+            <td>Ядро &mdash; женщины 30+, но нельзя отсекать мужчин-руководителей</td>
+            <td></td>
+            <td></td>
+          </tr>
+          <tr>
+            <td class="table-accent">H3</td>
+            <td>Формат &laquo;реакция на кейс&raquo; &mdash; ваш естественный контент-формат</td>
+            <td></td>
+            <td></td>
+          </tr>
+          <tr>
+            <td class="table-accent">H4</td>
+            <td>Корпоративный B2B модуль &laquo;Ясная встреча&raquo; &mdash; параллельный трек к курсу</td>
+            <td></td>
+            <td></td>
+          </tr>
+          <tr>
+            <td class="table-accent">H5</td>
+            <td>Роль идеолога &gt; роль тренера (манифест, книга, конференции)</td>
+            <td></td>
+            <td></td>
+          </tr>
+          <tr>
+            <td class="table-accent">H6</td>
+            <td>Антипод-позиционирование: &laquo;не ораторская школа, не жёсткие переговоры&raquo;</td>
+            <td></td>
+            <td></td>
+          </tr>
+          <tr>
+            <td class="table-accent">H7</td>
+            <td>Telegram как основной канал + подкаст с разбором кейсов</td>
+            <td></td>
+            <td></td>
+          </tr>
+          <tr>
+            <td class="table-accent">A1</td>
+            <td>Книга &mdash; мощнейший лид-магнит, которого нет (после первого потока)</td>
+            <td></td>
+            <td></td>
+          </tr>
+          <tr>
+            <td class="table-accent">A2</td>
+            <td>B2B может стать основным каналом дохода</td>
+            <td></td>
+            <td></td>
+          </tr>
+          <tr>
+            <td class="table-accent">A3</td>
+            <td>Профайлинг как отдельный трипвайер-продукт (МК 2&nbsp;900 руб.)</td>
+            <td></td>
+            <td></td>
+          </tr>
+          <tr>
+            <td class="table-accent">A5</td>
+            <td>Ценовая философия &laquo;без звёздочек&raquo; &mdash; дифференциатор</td>
+            <td></td>
+            <td></td>
+          </tr>
+          <tr>
+            <td class="table-accent">I4</td>
+            <td>Связка &laquo;практик + нейро + результат&raquo; в каждом касании бренда</td>
+            <td></td>
+            <td></td>
+          </tr>
+          <tr>
+            <td class="table-accent">I10</td>
+            <td>Конвейер &laquo;реакция Гоар &rarr; контент команды&raquo; как производственная модель</td>
+            <td></td>
+            <td></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="highlight-box">
+      <p><strong>Шкала реакции:</strong> &laquo;Да, точно&raquo; / &laquo;Скорее да&raquo; / &laquo;Не уверена&raquo; / &laquo;Нет, не моё&raquo; / &laquo;Нужно обсудить&raquo;</p>
+    </div>
+  </div>
+</section>
+
+
+<!-- ============================================================ -->
+<!-- ЧАСТЬ 5. СЛЕДУЮЩИЕ ШАГИ -->
+<!-- ============================================================ -->
+<section class="section-large" id="s5">
+  <div class="container">
+    <div class="section-header">
+      <span class="section-tag">Часть 5</span>
+      <h2>Следующие шаги</h2>
+    </div>
+
+    <h3>Немедленно (до ответов Гоар)</h3>
+    <ul class="list-styled">
+      <li><strong>Закрепить &laquo;нейроречь&raquo; за Гоар:</strong> начать использовать термин в каждом контенте, упоминании, спикерстве. Чем раньше &mdash; тем сложнее скопировать.</li>
+      <li><strong>Три рубрики TG-канала:</strong> &laquo;Кейс из Авиапарка&raquo; (3&ndash;5 раз/нед), &laquo;Нейроречь&raquo; (1 раз/нед), &laquo;Профайлинг&raquo; (1 раз/нед). Ни один конкурент не занимает ни одну из них.</li>
+      <li><strong>Пилот формата &laquo;реакция на кейс&raquo;:</strong> 5 видео, замер метрик. Подтвердить или опровергнуть H3.</li>
+    </ul>
+
+    <h3 style="margin-top: 2rem;">M4-04 &mdash; Продуктовая архитектура (после ответов Гоар)</h3>
+    <ul class="list-styled">
+      <li><strong>Продуктовая лестница:</strong> трипвайер (МК &laquo;Профайлинг&raquo;, 2&nbsp;900 руб.) &rarr; флагман (&laquo;Слово за тобой&raquo;, Стандарт 49&nbsp;900 / Персональный 69&nbsp;900) &rarr; Offline Arena (45&nbsp;000) &rarr; B2B-лагерь (390&nbsp;000/день).</li>
+      <li><strong>Лид-магнит:</strong> нейробиологический квиз &laquo;Что блокирует ваши переговоры?&raquo; (5&ndash;7 вопросов &rarr; PDF с переговорным профилем). Аналог квиза Рызова, но с научной базой.</li>
+      <li><strong>Ценовая философия:</strong> сохранить &laquo;без звёздочек&raquo;. Исключение для первого потока: ранний доступ позиционируется не как скидка, а как привилегия за доверие.</li>
+    </ul>
+
+    <h3 style="margin-top: 2rem;">M5 &mdash; Позиционирование и бренд-платформа</h3>
+    <ul class="list-styled">
+      <li><strong>Три якоря позиционирования:</strong> (1) ежедневная практика в Авиапарке, (2) нейробиологическая основа, (3) &laquo;я превращаю слова в деньги&raquo;. Минимум один якорь в каждом касании.</li>
+      <li><strong>Отстройка через контраст:</strong> не против конкурентов, а рядом &mdash; на другой частоте. Каспарова учит звучать &mdash; Гоар учит договариваться. Рызов вооружает техниками &mdash; Гоар даёт систему ответственного давления.</li>
+      <li><strong>Ценностная рамка:</strong> ответственность, ясность, сила без агрессии, уважение как переговорный инструмент.</li>
+    </ul>
+
+    <h3 style="margin-top: 2rem;">M6 &mdash; Контент-стратегия и каналы</h3>
+    <ul class="list-styled">
+      <li><strong>Telegram &mdash; основной канал.</strong> Все конкуренты используют его вторично. Гоар &mdash; первая.</li>
+      <li><strong>Подкаст:</strong> формат &laquo;интервьюер задаёт кейс &mdash; Гоар разбирает&raquo;. Абсолютно незанятая ниша на русском языке.</li>
+      <li><strong>Конвейер контента:</strong> команда &rarr; стимул &rarr; Гоар реагирует &rarr; команда упаковывает. Нулевые затраты на &laquo;думанье&raquo;.</li>
+      <li><strong>Harvard BSO как &laquo;живой контент&raquo;:</strong> &laquo;что я сегодня узнала в Гарварде&raquo; &mdash; ни один конкурент не транслирует процесс собственного обучения.</li>
+    </ul>
+
+    <h3 style="margin-top: 2rem;">Открытые треки (после ответов Гоар)</h3>
+    <ul class="list-styled">
+      <li><strong>Манифест</strong> &mdash; если подтвердится роль идеолога (H5).</li>
+      <li><strong>Пилот B2B</strong> &mdash; если есть HR-контакты и готовность (H4).</li>
+      <li><strong>Книга</strong> &mdash; после первого потока и первых кейсов (A1).</li>
+    </ul>
+
+    <div class="warning-block" style="margin-top: 2rem;">
+      <p><strong>Главный риск:</strong> Зона 5 свободна, но не навсегда. Каспарова может добавить нейро-терминологию (вероятность средняя, импакт высокий). Рызов может смягчить стилистику (вероятность низкая-средняя, импакт высокий). Качалина может начать масштабирование (вероятность низкая, импакт средний). <strong>Скорость выхода важнее идеальности продукта.</strong></p>
+    </div>
+
+    <div class="highlight-box" style="margin-top: 1.5rem;">
+      <p><strong>Итог:</strong> У Гоар нет прямого конкурента на уровне формулы &laquo;ежедневный практик + нейробиология + слова&nbsp;=&nbsp;деньги&raquo;. Рынок ждёт системного игрока в зоне 5. Задача ближайших модулей &mdash; превратить это окно в конкретные формулировки, продукты и первый контент быстрее, чем конкуренты осознают пустоту.</p>
+    </div>
+  </div>
+</section>
+
+
+<!-- Footer -->
+<footer class="footer">
+  <div class="container">
+    <p>BrandOS &middot; M2-05 v2 &middot; Синтез конкурентного исследования &middot; Гоар Багдасарова &middot; 2026-04-22</p>
+    <p style="margin-top: .5rem;">Нейроупаковка v5 &middot; Источники: DR (167 КБ) + M2-04-01 -- M2-04-06 + goar-voice-rules.md</p>
+  </div>
+</footer>
+
+</body>
+</html>
