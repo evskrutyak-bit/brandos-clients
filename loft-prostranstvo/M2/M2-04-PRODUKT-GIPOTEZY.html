@@ -1,0 +1,766 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BrandOS · Синтез Продукт — Лофт-пространство</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --brand: #0ea5e9; --brand-dark: #0284c7; --brand-light: #7dd3fc; --brand-bg: #e0f2fe;
+  --n50: #f8fafc; --n100: #f1f5f9; --n200: #e2e8f0; --n300: #cbd5e1; --n400: #94a3b8;
+  --n500: #64748b; --n600: #475569; --n700: #334155; --n800: #1e293b; --n900: #0f172a;
+  --success: #10b981; --warning: #f59e0b; --error: #ef4444;
+  --font: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  --shadow-card: 0 1px 3px 0 rgba(0,0,0,.05), 0 1px 2px -1px rgba(0,0,0,.05);
+  --shadow-hover: 0 10px 25px -5px rgba(0,0,0,.08), 0 8px 10px -6px rgba(0,0,0,.04);
+  --shadow-btn: 0 4px 14px 0 rgba(14,165,233,.35);
+}
+body { font-family: var(--font); font-size: 16px; line-height: 1.6; color: var(--n600); background: var(--n100); }
+.container { max-width: 1100px; margin: 0 auto; padding: 0 24px; }
+.section { padding: 72px 0; }
+
+@keyframes shimmer { 0%{transform:translateX(-100%)} 100%{transform:translateX(200%)} }
+@keyframes fade-up { 0%{opacity:0;transform:translateY(24px)} 100%{opacity:1;transform:translateY(0)} }
+@keyframes pulse-glow { 0%,100%{box-shadow:0 0 20px rgba(14,165,233,.3)} 50%{box-shadow:0 0 40px rgba(14,165,233,.55)} }
+@keyframes scale-in { 0%{opacity:0;transform:scale(.96)} 100%{opacity:1;transform:scale(1)} }
+.fade-up { opacity:0; transform:translateY(24px); transition:opacity .6s ease-out, transform .6s ease-out; }
+.fade-up.visible { opacity:1; transform:translateY(0); }
+
+.nav { position: fixed; top:0; left:0; right:0; z-index:300; height: 64px; background: rgba(255,255,255,.9); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border-bottom: 1px solid var(--n200); }
+.nav-inner { height:100%; display:flex; align-items:center; justify-content:space-between; }
+.nav-logo { font-size:17px; font-weight:700; color:var(--n900); }
+.nav-logo span { color:var(--brand); }
+.nav-links { display:flex; gap:22px; }
+.nav-links a { font-size:13px; font-weight:500; color:var(--n600); text-decoration:none; transition:color .2s; }
+.nav-links a:hover { color:var(--brand); }
+.nav-tag { font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.06em; color:var(--brand); background:var(--brand-bg); padding:5px 12px; border-radius:9999px; }
+
+.hero { background: linear-gradient(135deg, var(--n900) 0%, #0f2744 60%, #0a1628 100%); padding: 88px 0 72px; position: relative; overflow: hidden; }
+.hero-glow { position:absolute; border-radius:50%; pointer-events:none; }
+.hero-glow-1 { top:-120px; right:-80px; width:440px; height:440px; background:radial-gradient(circle, rgba(14,165,233,.22) 0%, transparent 70%); }
+.hero-glow-2 { bottom:-80px; left:-40px; width:300px; height:300px; background:radial-gradient(circle, rgba(125,211,252,.12) 0%, transparent 70%); }
+.hero-badge { display:inline-flex; align-items:center; gap:8px; background:rgba(14,165,233,.15); border:1px solid rgba(14,165,233,.3); color:var(--brand-light); padding:7px 16px; border-radius:9999px; font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:.06em; margin-bottom:24px; animation: scale-in .4s ease-out both; }
+.hero-dot { width:6px; height:6px; border-radius:50%; background:var(--brand); animation:pulse-glow 2s infinite; }
+.hero-title { font-size:44px; line-height:1.12; letter-spacing:-.02em; font-weight:700; color:#fff; max-width:820px; margin-bottom:20px; animation: fade-up .6s ease-out .1s both; }
+.hero-sub { font-size:18px; line-height:1.6; color:var(--n400); max-width:720px; margin-bottom:40px; animation: fade-up .6s ease-out .2s both; }
+.hero-meta { display:flex; gap:32px; flex-wrap:wrap; animation: fade-up .6s ease-out .3s both; }
+.hero-meta-item { font-size:14px; color:var(--n400); }
+.hero-meta-item strong { color:var(--brand); font-weight:600; }
+
+.section-label { font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.08em; color:var(--brand); margin-bottom:12px; }
+.section-title { font-size:30px; line-height:1.2; font-weight:700; color:var(--n900); margin-bottom:12px; }
+.section-sub { font-size:16px; color:var(--n500); max-width:780px; }
+
+.stat-grid { display:grid; grid-template-columns:repeat(auto-fit, minmax(200px, 1fr)); gap:20px; margin-bottom:32px; }
+.stat-card { background:#fff; border-radius:16px; border:1px solid var(--n200); padding:22px; box-shadow:var(--shadow-card); transition:transform .3s ease, box-shadow .3s ease; }
+.stat-card:hover { transform:translateY(-4px); box-shadow:var(--shadow-hover); }
+.stat-label { font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.06em; color:var(--n500); margin-bottom:10px; }
+.stat-value { font-size:32px; line-height:1; font-weight:700; color:var(--n900); margin-bottom:8px; }
+.stat-desc { font-size:12px; color:var(--n500); }
+.stat-card-accent { background:linear-gradient(135deg,var(--brand) 0%,var(--brand-dark) 100%); border:none; color:#fff; box-shadow:var(--shadow-btn); position:relative; overflow:hidden; }
+.stat-card-accent:hover { transform:translateY(-4px); box-shadow:0 6px 20px rgba(14,165,233,.5); }
+.stat-card-accent .stat-label { color:rgba(255,255,255,.8); }
+.stat-card-accent .stat-value { color:#fff; }
+.stat-card-accent .stat-desc { color:rgba(255,255,255,.85); }
+.stat-card-accent::after { content:''; position:absolute; top:0; left:-100%; width:60%; height:100%; background:linear-gradient(90deg,transparent,rgba(255,255,255,.12),transparent); animation:shimmer 3s ease-in-out infinite; }
+
+.insight { background:var(--brand-bg); border-left:4px solid var(--brand); border-radius:12px; padding:20px 24px; margin-bottom:14px; }
+.insight-num { display:inline-flex; align-items:center; justify-content:center; width:26px; height:26px; background:var(--brand); color:#fff; border-radius:9999px; font-size:13px; font-weight:700; margin-right:10px; vertical-align:middle; }
+.insight p { font-size:15px; line-height:1.7; color:#0c4a6e; }
+.insight p strong { color:#0369a1; font-weight:700; }
+
+.warn { background:#fffbeb; border:1px solid #fde68a; border-left:4px solid var(--warning); border-radius:12px; padding:18px 22px; margin-bottom:12px; }
+.warn p { font-size:14px; line-height:1.65; color:#92400e; }
+.warn p strong { color:#78350f; font-weight:700; }
+
+.ok { background:#ecfdf5; border:1px solid #a7f3d0; border-left:4px solid var(--success); border-radius:12px; padding:18px 22px; margin-bottom:12px; }
+.ok p { font-size:14px; line-height:1.65; color:#065f46; }
+.ok p strong { color:#064e3b; font-weight:700; }
+
+.num-list { list-style:none; counter-reset:item; }
+.num-list li { counter-increment:item; position:relative; padding: 12px 0 12px 44px; border-bottom:1px solid var(--n200); font-size:14px; color:var(--n700); line-height:1.65; }
+.num-list li:last-child { border-bottom:none; }
+.num-list li::before { content: counter(item); position:absolute; left:0; top:10px; width:28px; height:28px; display:flex; align-items:center; justify-content:center; background:var(--brand-bg); color:var(--brand-dark); font-size:12px; font-weight:700; border-radius:9999px; }
+
+.hypo { background:#fff; border:1px solid var(--n200); border-radius:16px; margin-bottom:16px; overflow:hidden; box-shadow:var(--shadow-card); transition:transform .3s ease, box-shadow .3s ease; }
+.hypo:hover { transform:translateY(-2px); box-shadow:var(--shadow-hover); }
+.hypo-head { background:var(--n50); padding:16px 24px; border-bottom:1px solid var(--n200); }
+.hypo-id { display:inline-block; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.06em; color:var(--brand); background:var(--brand-bg); padding:3px 10px; border-radius:9999px; margin-bottom:6px; }
+.hypo-title { font-size:16px; font-weight:700; color:var(--n900); line-height:1.4; }
+.hypo-body { padding: 18px 24px; }
+.hypo-row { display:flex; gap:14px; margin-bottom:10px; }
+.hypo-row:last-child { margin-bottom:0; }
+.hypo-label { flex-shrink:0; width:130px; font-size:11px; font-weight:700; letter-spacing:.06em; text-transform:uppercase; color:var(--n500); padding-top:2px; }
+.hypo-value { font-size:14px; color:var(--n700); line-height:1.65; }
+.hypo-risks .hypo-value { color:#92400e; }
+.hypo-check .hypo-value { color:#065f46; }
+
+.seg { background:#fff; border:1px solid var(--n200); border-radius:16px; padding:22px 24px; margin-bottom:14px; box-shadow:var(--shadow-card); transition:transform .3s ease, box-shadow .3s ease; }
+.seg:hover { transform:translateY(-2px); box-shadow:var(--shadow-hover); }
+.seg h4 { font-size:16px; font-weight:700; color:var(--n900); margin-bottom:8px; }
+.seg p { font-size:14px; color:var(--n600); line-height:1.65; margin-bottom:8px; }
+.seg-role { display:inline-block; background:var(--brand-bg); color:var(--brand-dark); font-size:11px; font-weight:700; padding:4px 10px; border-radius:9999px; }
+
+.prio-card { background:linear-gradient(135deg, var(--brand-bg) 0%, #ecfeff 100%); border:1px solid var(--brand-light); border-radius:16px; padding:22px 24px; margin-bottom:14px; transition:transform .3s ease, box-shadow .3s ease; }
+.prio-card:hover { transform:translateY(-3px); box-shadow:0 8px 20px rgba(14,165,233,.15); }
+.prio-num { display:inline-flex; align-items:center; justify-content:center; width:32px; height:32px; background:var(--brand); color:#fff; border-radius:9999px; font-size:14px; font-weight:700; margin-bottom:12px; }
+.prio-card h4 { font-size:15px; font-weight:700; color:var(--n900); margin-bottom:6px; line-height:1.4; }
+.prio-card p { font-size:13px; color:var(--n600); }
+.card-grid { display:grid; grid-template-columns:repeat(auto-fit, minmax(300px, 1fr)); gap:16px; }
+
+.alt-card { background:#fff; border:1px solid var(--n200); border-radius:12px; padding:16px 22px; margin-bottom:10px; transition:background .2s ease; }
+.alt-card:hover { background:var(--n50); }
+.alt-card h4 { font-size:14px; font-weight:600; color:var(--n800); line-height:1.5; }
+
+.qbox { background:#fff; border:1px solid var(--n200); border-left:4px solid var(--brand); border-radius:12px; padding:18px 22px; margin-bottom:12px; box-shadow:var(--shadow-card); }
+.q-num { font-size:11px; font-weight:700; color:var(--brand); letter-spacing:.06em; text-transform:uppercase; margin-bottom:6px; }
+.qbox p { font-size:14px; color:var(--n700); line-height:1.7; }
+
+.table-wrap { overflow-x:auto; border-radius:16px; border:1px solid var(--n200); box-shadow:var(--shadow-card); margin: 20px 0; }
+table { width:100%; border-collapse:collapse; background:#fff; }
+thead tr { background:var(--n50); border-bottom:2px solid var(--n200); }
+th { padding:13px 16px; text-align:left; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.06em; color:var(--n500); white-space:nowrap; }
+td { padding:13px 16px; font-size:13px; color:var(--n600); border-bottom:1px solid var(--n200); vertical-align:top; }
+tr:last-child td { border-bottom:none; }
+tbody tr { transition:background .2s; }
+tbody tr:hover { background:var(--n50); }
+td strong { color:var(--n800); font-weight:600; }
+.badge-strength { display:inline-block; font-size:11px; font-weight:700; padding:3px 10px; border-radius:9999px; background:var(--brand-bg); color:#0369a1; }
+.badge-weak { background:#fef3c7; color:#92400e; }
+.badge-mid { background:#e0e7ff; color:#3730a3; }
+
+.bridge { background:#fff; border:1px solid var(--n200); border-radius:16px; padding:24px; margin-bottom:16px; box-shadow:var(--shadow-card); transition:transform .3s ease, box-shadow .3s ease; }
+.bridge:hover { transform:translateY(-2px); box-shadow:var(--shadow-hover); }
+.bridge-tag { display:inline-block; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.08em; color:var(--brand); background:var(--brand-bg); padding:4px 12px; border-radius:9999px; margin-bottom:12px; }
+.bridge h4 { font-size:17px; font-weight:700; color:var(--n900); margin-bottom:10px; }
+.bridge ul { list-style:none; }
+.bridge li { padding:8px 0 8px 20px; font-size:14px; color:var(--n700); border-bottom:1px solid var(--n100); position:relative; line-height:1.65; }
+.bridge li:last-child { border-bottom:none; }
+.bridge li::before { content:'→'; position:absolute; left:0; color:var(--brand); font-weight:700; }
+.bridge-accent { border-color:var(--brand); background:linear-gradient(135deg, var(--brand-bg) 0%, #f0f9ff 100%); }
+
+.sub { font-size:18px; font-weight:700; color:var(--n900); margin: 30px 0 16px; padding-bottom:8px; border-bottom:2px solid var(--n200); }
+
+.footer { background:var(--n900); padding:48px 0 32px; margin-top:80px; }
+.footer-inner { display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:24px; }
+.footer-brand { font-size:20px; font-weight:700; color:#fff; }
+.footer-brand span { color:var(--brand); }
+.footer-meta { font-size:14px; color:var(--n500); margin-top:6px; }
+.footer-btn { background:var(--brand); color:#fff; padding:12px 28px; border-radius:9999px; font-size:14px; font-weight:600; font-family:var(--font); border:none; cursor:pointer; box-shadow:var(--shadow-btn); text-decoration:none; display:inline-block; transition:all .2s; }
+.footer-btn:hover { background:var(--brand-dark); box-shadow:0 6px 20px rgba(14,165,233,.45); transform:translateY(-1px); }
+.footer-divider { height:1px; background:rgba(255,255,255,.08); margin:32px 0; }
+.footer-copy { font-size:13px; color:var(--n600); }
+
+@media (max-width: 768px) {
+  .nav-links { display:none; }
+  .container { padding: 0 16px; }
+  .section { padding: 48px 0; }
+  .hero { padding: 64px 0 48px; }
+  .hero-title { font-size:32px; }
+  .hero-sub { font-size:16px; }
+  .section-title { font-size:24px; }
+  .hypo-row { flex-direction:column; gap:4px; }
+  .hypo-label { width:auto; }
+  .stat-value { font-size:26px; }
+}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="container nav-inner">
+    <div class="nav-logo">BrandOS <span>·</span> Синтез Продукт</div>
+    <div class="nav-links">
+      <a href="#sintez">Синтез</a>
+      <a href="#gipotezy">Гипотезы</a>
+      <a href="#prioritety">Приоритеты</a>
+      <a href="#voprosy">Вопросы</a>
+      <a href="#reakcia">Реакция</a>
+      <a href="#most">Мост</a>
+    </div>
+    <div class="nav-tag">M2 · Профиль E</div>
+  </div>
+</nav>
+<div style="height:64px;"></div>
+
+<header class="hero">
+  <div class="hero-glow hero-glow-1"></div>
+  <div class="hero-glow hero-glow-2"></div>
+  <div class="container" style="position:relative; z-index:1;">
+    <div class="hero-badge"><span class="hero-dot"></span> M2 · Исследования · Профиль E</div>
+    <h1 class="hero-title">Синтез + Гипотезы: Продуктовое исследование</h1>
+    <p class="hero-sub">Что упаковано на рынке, что пусто, где реальные деньги. Последний синтез перед финальной стратегической сессией — 90% продуктовых решений закрыто данными.</p>
+    <div class="hero-meta">
+      <div class="hero-meta-item"><strong>Клиент:</strong> Юлия Лофте</div>
+      <div class="hero-meta-item"><strong>Проект:</strong> Лофт-пространство</div>
+      <div class="hero-meta-item"><strong>Дата:</strong> Апрель 2026</div>
+    </div>
+  </div>
+</header>
+
+<section class="section" style="padding-top:48px;">
+  <div class="container">
+    <div class="stat-grid">
+      <div class="stat-card fade-up"><div class="stat-label">Продуктов в DR</div><div class="stat-value">45+</div><div class="stat-desc">8 таблиц, 15+ игроков, 20 офферов</div></div>
+      <div class="stat-card fade-up"><div class="stat-label">Ценовых ярусов</div><div class="stat-value">3</div><div class="stat-desc">Микро / стандарт / премиум</div></div>
+      <div class="stat-card fade-up"><div class="stat-label">Гипотез</div><div class="stat-value">22</div><div class="stat-desc">8 блоков × 2–3 гипотезы</div></div>
+      <div class="stat-card-accent stat-card fade-up"><div class="stat-label">Цель через B2B</div><div class="stat-value">3 млн ₽</div><div class="stat-desc">75 тыс × 8 × 5 = в месяц</div></div>
+    </div>
+
+    <div class="warn fade-up"><p><strong>Замечание о данных.</strong> DR Profile-E (07.12.2025) даёт 8 таблиц с 45+ конкретными продуктами, ценами, включениями; 15+ игроков; 20 офферов; 10 CX-сценариев. Количественные данные сильные и прикладные. Пробелы (зафиксированы в R9): нет публичной ценовой прозрачности по новым лофтам, фрагментированы данные по фотостудиям, неполная матрица детских пакетов «под ключ». Для большинства гипотез этого достаточно.</p></div>
+  </div>
+</section>
+
+<section id="sintez" class="section" style="background:var(--n50);">
+  <div class="container">
+    <div class="section-label">Часть 1</div>
+    <h2 class="section-title">Синтез исследования</h2>
+    <p class="section-sub">Это последний синтез перед финальной стратегической сессией. Задача — закрыть всё, что можно закрыть данными, и передать на сессию только те развилки, которые без клиента не решаются.</p>
+
+    <div class="sub">1.1. Главное, что мы теперь понимаем о продуктовом поле (7 выводов)</div>
+
+    <div class="insight fade-up"><p><span class="insight-num">1</span><strong>У лофт-бизнеса в Москве три устойчивых ценовых яруса:</strong> микро (1 000–3 500 ₽/ч), стандарт (2 500–8 000 ₽/ч) и премиум (10 000–30 000 ₽/ч или пакет 150 000+ ₽). Юля со средним чеком 8–15 тыс. ₽ за мероприятие (при 5 часах это 1 600–3 000 ₽/ч) сидит на <strong>нижней границе стандарта, близко к микро</strong>. Это важно называть прямо: она не «в среднем сегменте», она на его границе снизу. До премиума — не один шаг, а два.</p></div>
+
+    <div class="insight fade-up"><p><span class="insight-num">2</span><strong>Рынок чётко перестраивается от почасовой к пакетной модели.</strong> В DR 45 продуктов — половина почасовые (1 000–5 000 ₽/ч), половина пакеты (22 000–170 000 ₽ за мероприятие). Все пакеты по объёму выручки — это +80–200% к эквиваленту той же площадки на почасовой. Bank a Banka: пакет ДР на выходные 51 000 ₽ за 7 ч = эффективные 7 300 ₽/ч при стандартной ставке 5 000 ₽/ч. Это +46% просто за счёт упаковки.</p></div>
+
+    <div class="insight fade-up"><p><span class="insight-num">3</span><strong>В премиум-сегменте уже появилось чёткое разделение «комплекс под ключ» vs «премиум-почасовая».</strong> Memory Place и Bank a Banka продают пакеты «под ключ» — ДР от 22 150 ₽, свадьба от 147 000 ₽. Loft Hall и Apollo Studios продают премиум-почасовую — от 10 000 ₽/ч, 160 000 ₽/день. Это два разных продукта, и у каждого своя экономика.</p></div>
+
+    <div class="insight fade-up"><p><span class="insight-num">4</span><strong>Апселлы на рынке систематизированы и имеют видимую структуру.</strong> Кейтеринг 300–10 000 ₽/гость, DJ 5 000–10 000 ₽/ч, фотограф 10 000+ ₽, аниматор 3 000–6 000 ₽/ч, декор 8 200–41 600 ₽, уборка 1 000–2 500 ₽. Это не опции — это стандартизированная продуктовая матрица с ясной маржой. У лидеров апселлы дают +30–40% выручки (подтверждено Soxspace).</p></div>
+
+    <div class="insight fade-up"><p><span class="insight-num">5</span><strong>Специализация пакетов по типу события чёткая, но покрыта неравномерно.</strong> Хорошо упакованы: свадьбы (77 000–157 000 ₽), ДР на выходные (22 150–51 000 ₽), новогодняя ночь (90 000–170 000 ₽). Слабо упакованы: корпоративы, детские «под ключ», выпускные класса. <strong>Это пустые ниши.</strong></p></div>
+
+    <div class="insight fade-up"><p><span class="insight-num">6</span><strong>Контент/съёмочный сегмент выделился в отдельный продукт с другой экономикой.</strong> Pink Photo Loft — 1 600 ₽/ч «блогер-тариф». Loft2Rent контент-база — 2 900 ₽/ч. Apollo Studios — 160 000 ₽/день. Это не доп к основной аренде, а параллельный продукт с другой ЦА, частотой и каналами.</p></div>
+
+    <div class="insight fade-up"><p><span class="insight-num">7</span><strong>CX-стандарт рынка уже сформирован, и Юля от него отстаёт.</strong> Онлайн-бронирование — у всех сильных. 50% предоплата — стандарт. Депозит 20 000–250 000 ₽. Отзывы 4.5–5.0 — вход в лигу. Менеджер на пакетах от 60 000 ₽ — норма. Welcome-пакет — стандарт. 24/7 — распространяется. У Юли из этого только менеджер и базовый сервис; ни сайта, ни онлайн-брони, ни стандартизированного пакета.</p></div>
+
+    <div class="sub">1.2. Продуктовая карта поля</div>
+    <p style="margin-bottom:14px; font-size:14px; color:var(--n600);"><strong>Ценовые ярусы (DR R1, Таблица 1):</strong></p>
+    <div class="table-wrap fade-up">
+      <table>
+        <thead><tr><th>Ярус</th><th>Цена</th><th>Формат</th><th>Типовые игроки</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Микро-лофты</strong></td><td>1 000–3 500 ₽/ч</td><td>Почасовая, 1–3 ч</td><td>SpeedRent (от 1 000), Loft For Party (1 900), Bogema (от 1 500)</td></tr>
+          <tr><td><strong>Стандарт</strong></td><td>2 500–8 000 ₽/ч</td><td>Почасовая / короткие пакеты</td><td>Loft2Rent, DeliSpace, Exit Loft (4 000), EventBooking</td></tr>
+          <tr><td><strong>Премиум</strong></td><td>10 000–30 000 ₽/ч или 60 000–350 000 ₽/пакет</td><td>Пакеты «под ключ»</td><td>Loft Hall, Bank a Banka, Memory Place, Space &amp; Place, Apollo Studios</td></tr>
+          <tr><td><strong>Фотостудии</strong></td><td>800–5 000 ₽/ч</td><td>Почасовая, мин. 1–2 ч</td><td>8bit Studio, Cross Studio, Apollo (160 000 ₽/день)</td></tr>
+          <tr><td><strong>Детские</strong></td><td>1 200–4 800 ₽/ч</td><td>Почасовая + пакет</td><td>Bambini Loft (3 400 ₽/ч), Papaya Loft (от 24 500 ₽ под ключ)</td></tr>
+          <tr><td><strong>Комплекс «под ключ»</strong></td><td>22 150–150 000 ₽</td><td>Пакет 4–10 ч</td><td>Memory Place (22 150), Bank a Banka (51 000 / 147 000), Letspartyloft (30 000–170 000)</td></tr>
+          <tr><td><strong>24/7 / сутки</strong></td><td>40 000–180 000 ₽/сутки</td><td>Ночь/сутки</td><td>Exit Loft, Loft-moskva</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p style="margin-top:20px; margin-bottom:10px; font-size:14px; color:var(--n600);"><strong>Архитектура лидеров (якорь / апселл / повтор):</strong></p>
+    <div class="seg fade-up"><h4>Memory Place</h4><p><strong>Якорь:</strong> «ДР под ключ 22 150 ₽» (прозрачный чек). <strong>Апселл:</strong> фотограф / DJ / аниматор. <strong>Повтор:</strong> через бренд «под ключ за N тысяч».</p></div>
+    <div class="seg fade-up"><h4>Bank a Banka</h4><p><strong>Якорь:</strong> пакет ДР 51 000 ₽ (выходные, 7 ч). <strong>Апселл:</strong> кейтеринг 2 000 ₽/ч + DJ + фотограф. <strong>Повтор:</strong> через сеть 10+ площадок и гибкость локаций.</p></div>
+    <div class="seg fade-up"><h4>Loft Hall</h4><p><strong>Якорь:</strong> премиум-банкет 30 000–350 000 ₽. <strong>Апселл:</strong> кухня 500 позиций (свой кейтеринг), DJ 10 000 ₽, выездной бар 40 000+. <strong>Повтор:</strong> через многоразовые корпоративные контракты.</p></div>
+    <div class="seg fade-up"><h4>Loft For Party (8 лофтов)</h4><p><strong>Якорь:</strong> почасовая от 1 900 ₽, PS5 и караоке. <strong>Апселл:</strong> уборка 1 000–2 500 ₽, DJ, аниматор. <strong>Повтор:</strong> через сеть и низкую цену входа.</p></div>
+    <div class="seg fade-up"><h4>Apollo Studios</h4><p><strong>Якорь:</strong> премиум-студия 160 000 ₽/день. <strong>Апселл:</strong> ассистент фотографа 15 000 ₽/смена. <strong>Повтор:</strong> через продакшены и брендовые съёмки.</p></div>
+
+    <div class="warn fade-up" style="margin-top:16px;"><p><strong>Где Юля на этой карте сегодня.</strong> Средний чек 8–15 тыс. ₽ за мероприятие × 5 часов = эффективная ставка 1 600–3 000 ₽/ч. Это нижний стандарт, соседство с Loft For Party (1 900 ₽/ч), выше микро-лофтов на SpeedRent (1 000 ₽/ч), но ниже среднего 2 500–8 000 ₽/ч. Формат — почасовая. Структура апселлов — не выстроена. Пакетов нет. Место между «крепким эконом-стандарт» и «входом в середину стандарта».</p></div>
+
+    <div class="sub">1.3. Ключевые наблюдения (14 фактов)</div>
+    <ol class="num-list">
+      <li>Рынок структурирован по 3 ценовым ярусам с чёткими границами: микро 1–3,5 тыс. / стандарт 2,5–8 тыс. / премиум 10–30 тыс. ₽/ч (DR R1, Табл.1).</li>
+      <li>Пиковое ценообразование — стандарт: выходные и праздники +40–80% к будням (DR R1).</li>
+      <li>Bank a Banka: пакет ДР на выходные 51 000 ₽ за 7 ч = эффективно 7 300 ₽/ч против стандартной 5 000 (DR R3, Табл.3, R9).</li>
+      <li>Memory Place: ДР «под ключ» 22 150 ₽ с прозрачным составом (лофт 22–65 м² + декор + организация) — самый прозрачный пакетный оффер на рынке (DR R3, R25).</li>
+      <li>Свадебные пакеты: Loft2Rent 77 000–97 000 ₽ за 6–8 ч с кейтерингом; Bank a Banka премиум 147 000–157 000 ₽ за 8 ч до 150 гостей (DR R3).</li>
+      <li>Новогодняя ночь как отдельный премиум-продукт: Bash Today Only You 90 000 ₽ / 10 ч; Letspartyloft 170 000 ₽ (DR R3, R5).</li>
+      <li>Корпоративный / тренинговый сегмент: WorkshopLoft 6 500–9 000 ₽ за 3+ ч; Loft Hall конференция 30 000–60 000 ₽ за 4–8 ч (DR R3).</li>
+      <li>Контент/блогер-тариф — выделен в отдельный продукт: Pink Photo Loft 1 600 ₽/ч; Loft2Rent Контент-база 2 900 ₽/ч (DR R3, R6 Табл.5).</li>
+      <li>Кейтеринг как отдельный канал выручки: CaterMe 300–2 000 ₽/гость (фуршет от 467 ₽); Preparty Catering от 15 000 ₽ минимум; Loft Hall 4 000–10 000 ₽/гость (DR R3, R4).</li>
+      <li>DJ — стабильный апселл 5 000–10 000 ₽/ч; аниматор 3 000–6 000 ₽/ч (включая костюм, программу); фотозоны 8 200–41 600 ₽/комплект (DR R3, R4).</li>
+      <li>Депозит — норма: 20 000 ₽ (Fara Loft) до 250 000 ₽ (свадьба) + 50% предоплата (Loft Hall) или 100% (SpeedRent) (DR R4).</li>
+      <li>Штрафы стандартизированы: обувь на шпильке 3 000 ₽; бенгальские огни 1 500 ₽; превышение людей +1 000–2 000 ₽/чел; задержка 15 мин = полчаса доп (DR R4).</li>
+      <li>Рейтинги 4.5–5.0 — порог входа в «заметного игрока»; онлайн-бронь через BookForm и EasyWeek как технологический стандарт 2025 (DR R6).</li>
+      <li>Памятка по правилам и штрафам — только у 3–5 площадок публично (loftblackout, loftfar4, loftpotolok, room35), и это уже воспринимается как плюс к доверию. Прозрачность правил — недооткрытый рычаг.</li>
+    </ol>
+
+    <div class="sub">1.4. Сквозные подтверждения (Продукт + Рынок + Конкуренты + ЦА)</div>
+    <p style="margin-bottom:14px; font-size:14px; color:var(--n600);">Самые надёжные выводы — подтверждённые минимум в 2 других исследованиях. Это прямые кандидаты в основные гипотезы.</p>
+
+    <div class="ok fade-up"><p><strong>Вывод 1. Переход от почасовой к пакетной модели — центральный продуктовый ход.</strong> Продукт (DR E R3): 50% продуктов у лидеров — пакеты. Рынок (B R4, R8): пакеты «всё включено» — зрелый тренд 2025. Конкуренты (D Soxspace): средний чек вырос с 25–27 тыс. до 50 тыс. после пакетного перехода. ЦА (A R5, R9): «пакеты под ключ снимают главный барьер — сложность организации».</p></div>
+    <div class="ok fade-up"><p><strong>Вывод 2. Апселлы +30–40% к выручке — воспроизводимая формула.</strong> Продукт (DR E R3, R4): апселлы стандартизированы, цены прозрачны. Рынок (B): допуслуги — ключевой слой маржи. Конкуренты (D Soxspace): +30–40% выручки прямо. Мир (C): модель Friends of Splacer, апселлы Peerspace.</p></div>
+    <div class="ok fade-up"><p><strong>Вывод 3. Корпоративный сегмент — недоиспользованный рычаг чека и стабильности.</strong> Продукт (DR E R3): корпоративных пакетов «под ключ» почти нет. Рынок (B R2): 17,8% структуры спроса, рост, ниша недообслуживается. Конкуренты (D): никто из 11 разобранных брендов не работает B2B системно. ЦА (A R1, R3): корпораты дают самый высокий чек (до 50–80 тыс.). Мир (C): Event Inc (Германия) — B2B-подписка; Storefront (США) — аккаунт-менеджер.</p></div>
+    <div class="ok fade-up"><p><strong>Вывод 4. Контент/съёмочный сегмент — отдельный продукт, не апселл.</strong> Продукт (DR E R3, R6): блогер-тариф, контент-база, фотостудии — отдельные продуктовые линии. Рынок (B R2): фотосъёмки у 30% лофтов, стабильный дневной трафик. Мир (C): SpaceCloud Корея — 25+ категорий под контент, +29% роста за год.</p></div>
+    <div class="ok fade-up"><p><strong>Вывод 5. Прозрачность и «нет скрытых платежей» — входной билет в премиум-доверие.</strong> Продукт (DR E R4, R5): явные офферы «без пробкового сбора» (Loft For Party), «гарантия лучшей цены» (DeliSpace). ЦА (A R5, R9): главная универсальная боль. Конкуренты (D R7): 3–5% негативных отзывов по возвратам залога. Мир (C): Peerspace «честная почасовая без скрытых комиссий».</p></div>
+    <div class="ok fade-up"><p><strong>Вывод 6. Онлайн-бронирование + оплата — технологический минимум.</strong> Продукт (DR E R4, R6): онлайн-календари стандарт; BookForm и EasyWeek — готовые SaaS-решения. Мир (C): Peerspace, SpaceCloud — бронь в 2 клика как норма. Конкуренты (D): у B69, Cross Studio, CleverLoft — есть. ЦА (A R4): очевидное ожидание сегментов пары, фотографы, корпораты.</p></div>
+    <div class="ok fade-up"><p><strong>Вывод 7. Средний чек «сервисный средний+» 25–40 тыс. ₽ за пакет — реалистичная промежуточная ступень между текущим положением Юли и премиумом.</strong> Продукт (DR E R3): Memory Place 22 150, Letspartyloft 30 000–45 000, Bank a Banka 25 000 (будни), WorkshopLoft 6 500–9 000 тренинг. Рынок (B): прямо названа как «сервисный средний плюс». Конкуренты (D): CleverLoft (ИЦУ 225–500 при 5.0/5), Bank a Banka переход в премиум — кейсы.</p></div>
+
+    <div class="sub">1.5. Противоречия и неожиданные находки</div>
+    <div class="warn fade-up"><p><strong>Сетка Light/Standard/Premium из гайда Юли — в том виде не подтверждается рынком.</strong> Никто из лидеров продуктово не разделяет «3 уровня одного продукта». На рынке другая логика — сегментация по типу события: «ДР-пакет», «Свадьба-пакет», «Корпоратив», «Детский», «Съёмка». Внутри каждого может быть 2 варианта (будни / выходные, мини / большая группа), но не вертикальный Light→Premium. Для Юли это означает: не строить сетку «3 уровня», а строить матрицу 5 событий × 2 варианта (базовый / расширенный).</p></div>
+    <div class="warn fade-up"><p><strong>Гипотеза Юли «обучающий продукт как отдельное направление» — не подтверждается продуктовыми данными.</strong> В исследовании 45 продуктов — ни одного обучающего. На рынке лофтов Москвы обучающих курсов для будущих собственников как отдельного продукта нет. Только у Soxspace это встроено во франшизу. Запуск — гипотеза веры, не гипотеза данных.</p></div>
+    <div class="warn fade-up"><p><strong>Гипотеза Юли «AI-ассистент закроет 80% рутины» — продуктовые данные тоже не подтверждают такой масштаб.</strong> В DR E фигурируют BookForm, EasyWeek — системы онлайн-записи. Но AI-ассистентов уровня «80% рутины» на рынке лофтов Москвы нет. Реалистичный масштаб — 30–50% + задача «скорость первого ответа», где AI даёт 100% выигрыш.</p></div>
+    <div class="warn fade-up"><p><strong>Средняя цена Memory Place 22 150 ₽ за ДР «под ключ» — ниже, чем кажется для комплексного пакета.</strong> Это прямо перекрывает Юлин верхний чек 15 тыс. ₽. Если она хочет удержать премиум-позицию при запуске пакетов, её минимальный пакет должен быть выше 22 150 ₽ — иначе она будет прямо ценой биться с конкретным игроком.</p></div>
+    <div class="warn fade-up"><p><strong>Loft Hall продаёт банкет-пакет от 30 000 до 350 000 ₽ — это разрыв в 12 раз на одном продукте.</strong> В премиум-сегменте «пакет» — это не цена, а конфигуратор. Клиент собирает под себя. Для Юли на её стадии конфигуратор невозможен — нужен фиксированный пакет с понятным чеком.</p></div>
+    <div class="warn fade-up"><p><strong>«Корпоративы под ключ» на рынке фактически не упакованы как отдельный продукт.</strong> Есть бизнес-тариф WorkshopLoft (1 000 ₽/ч), конференция Loft Hall (30 000–60 000 ₽), тренинг 6 500–9 000 ₽. Но пакета типа «корпоратив 40 гостей, 6 часов, кейтеринг + DJ + программа — 150 000 ₽» — в DR не видно. Это подтверждает ЦА-вывод (A) и рыночный (B) одновременно — ниша открыта.</p></div>
+    <div class="warn fade-up"><p><strong>«Новогодняя ночь» — отдельный premium-продукт с фиксированной ценой.</strong> Bash Today 90 000 ₽, Letspartyloft 170 000 ₽ за 10 часов. Это единственный праздник, под который рынок массово упаковал фиксированный пакет. У Юли наверняка 2–3 точки на новогоднюю ночь, цена за них не упакована — это быстрый эксперимент к ближайшему Новому году.</p></div>
+    <div class="warn fade-up"><p><strong>Памятки правил и штрафов публично только у 3–5 площадок.</strong> Loftblackout, loftfar4, loftpotolok, room35 имеют публичные страницы с правилами. Остальные — «по запросу менеджеру». Это недооткрытый рычаг доверия: прозрачно опубликованные правила + штрафы + возвратный депозит = сильный сигнал премиум-сегменту.</p></div>
+
+    <div class="sub">1.6. Что не потерять в финальном синтезе</div>
+
+    <p style="margin-bottom:10px; font-size:14px; color:var(--n600);"><strong>Конкретные цены-ориентиры:</strong></p>
+    <div class="insight fade-up"><p>• Нижний пакет «ДР под ключ» — минимум <strong>25–30 тыс. ₽</strong> (чтобы быть выше Memory Place 22 150).<br>• Пакет «Корпоратив 25–40 гостей, 6 ч, всё включено» — <strong>60 000–90 000 ₽</strong> (ниша открытая).<br>• Пакет «Выпускной класса 30 чел» — <strong>22–30 тыс. ₽ × 4 семьи</strong> складчина.<br>• Пакет «Детский ДР под ключ» — <strong>18 000–24 500 ₽</strong>.<br>• Пакет «Новогодняя ночь» — <strong>90 000–170 000 ₽</strong>.<br>• Дневной будний пакет / контент-база — <strong>1 600–2 900 ₽/ч</strong>.</p></div>
+
+    <p style="margin-bottom:10px; font-size:14px; color:var(--n600);"><strong>Структура апселлов для финмодели:</strong></p>
+    <div class="insight fade-up"><p>• <strong>Кейтеринг:</strong> фуршет 467 ₽/гость, средний 1 500 ₽, премиум 5 000–10 000 ₽ (агентская 10–15%).<br>• <strong>DJ:</strong> 5 000–10 000 ₽/ч (агентская 15–20%).<br>• <strong>Фотограф:</strong> 10 000+ ₽ (агентская 10–15%).<br>• <strong>Аниматор:</strong> 3 000–6 000 ₽/ч (агентская 15%).<br>• <strong>Декор/фотозона:</strong> 8 200–41 600 ₽ (агентская 20%).<br>• <strong>Уборка:</strong> включена в пакет или +1 000–2 500 ₽.</p></div>
+
+    <p style="margin-bottom:10px; font-size:14px; color:var(--n600);"><strong>Операционные стандарты рынка (без них не конкурируем):</strong></p>
+    <div class="ok fade-up"><p>Онлайн-бронирование + календарь · 50% предоплата онлайн · Электронный договор · Публичные правила и штрафы · Депозит 20 000–50 000 ₽ · Менеджер на площадке при пакетах от 60 000 ₽ · Welcome-пакет (шампанское/декор) включён · Возврат депозита 3–5 рабочих дней.</p></div>
+  </div>
+</section>
+
+<section id="gipotezy" class="section">
+  <div class="container">
+    <div class="section-label">Часть 2</div>
+    <h2 class="section-title">Гипотезы для обсуждения</h2>
+    <p class="section-sub">22 гипотезы в 8 блоках. Каждая — с основанием, сквозным подтверждением, рисками и способом проверки.</p>
+
+    <div class="sub">2.1. Архитектура ассортимента: якорь / тест / апселл / повтор</div>
+
+    <div class="hypo fade-up">
+      <div class="hypo-head"><div class="hypo-id">2.1.1 · Сильная</div><div class="hypo-title">Сетка Light/Standard/Premium не работает — строить матрицу «событие × вариант»</div></div>
+      <div class="hypo-body">
+        <div class="hypo-row"><div class="hypo-label">Суть</div><div class="hypo-value">Отказаться от трёх-уровневой сетки «одного продукта». Архитектура = 5 типов событий (ДР частный, юбилей, корпоратив, детский, съёмка) × 2 варианта (базовый / расширенный).</div></div>
+        <div class="hypo-row"><div class="hypo-label">Основание</div><div class="hypo-value">DR E R3 — 45 продуктов лидеров построены именно так; ни одного кейса Light/Standard/Premium. Сквозное подтверждение: Рынок (B) + Конкуренты (D Soxspace, Bank a Banka, Memory Place) + ЦА (A R1).</div></div>
+        <div class="hypo-row"><div class="hypo-label">Почему сработает</div><div class="hypo-value">Упрощает выбор клиенту («свой» пакет виден сразу), совпадает с логикой «Герой-проводник».</div></div>
+        <div class="hypo-row hypo-risks"><div class="hypo-label">Риски</div><div class="hypo-value">Больше SKU — 10 пакетов вместо 3. Нужна дисциплина в поддержке каталога. Без CRM — ручной ад.</div></div>
+        <div class="hypo-row"><div class="hypo-label">Экономика</div><div class="hypo-value">Средний чек вырастет на 40–80% (пакет против почасовой), конверсия выше.</div></div>
+        <div class="hypo-row hypo-check"><div class="hypo-label">Как проверить</div><div class="hypo-value">Уже закрыто — это вывод, не гипотеза на проверку. Сразу в дорожную карту.</div></div>
+      </div>
+    </div>
+
+    <div class="hypo fade-up">
+      <div class="hypo-head"><div class="hypo-id">2.1.2 · Сильная</div><div class="hypo-title">Якорь Юли на 2026 — пакет «Корпоратив под ключ 25–40 гостей, 6 ч, от 75 000 ₽»</div></div>
+      <div class="hypo-body">
+        <div class="hypo-row"><div class="hypo-label">Суть</div><div class="hypo-value">Именно этот пакет закрывает сразу 4 стратегические цели: высокий чек, открытая ниша, совпадение с силой (администрирование), стабильность B2B.</div></div>
+        <div class="hypo-row"><div class="hypo-label">Основание</div><div class="hypo-value">DR E R3 — корпоративного пакета «под ключ» на рынке нет; ближайшие — Loft Hall конференция 30–60 тыс., WorkshopLoft 6,5–9 тыс. тренинг. Пятикратное подтверждение: Рынок + Конкуренты + ЦА + Мир.</div></div>
+        <div class="hypo-row hypo-risks"><div class="hypo-label">Риски</div><div class="hypo-value">Требует ООО/ИП с полной документацией (договор, счёт, акты, УПД). Без этого сегмент не работает в принципе.</div></div>
+        <div class="hypo-row"><div class="hypo-label">Экономика</div><div class="hypo-value">75 000 × 8 корпоратов/мес × 1 площадка = 600 000 ₽/мес. На 5 точках — до 3 млн ₽/мес — половина целевой выручки.</div></div>
+        <div class="hypo-row hypo-check"><div class="hypo-label">Как проверить</div><div class="hypo-value">Собрать пакет → отправить 20 компаниям из текущей базы в течение 30 дней → замерить конверсию.</div></div>
+      </div>
+    </div>
+
+    <div class="hypo fade-up">
+      <div class="hypo-head"><div class="hypo-id">2.1.3 · Сильная</div><div class="hypo-title">Тестовый продукт для новой аудитории — «контент-слот 3 часа» от 5 000–8 000 ₽</div></div>
+      <div class="hypo-body">
+        <div class="hypo-row"><div class="hypo-label">Суть</div><div class="hypo-value">Низкорисковый вход для новой аудитории (фотографы, блогеры, корпоративный контент). Закрывает будние дни (главная дыра загрузки).</div></div>
+        <div class="hypo-row"><div class="hypo-label">Основание</div><div class="hypo-value">DR E R3 — Pink Photo Loft 1 600 ₽/ч, Loft2Rent контент-база 2 900 ₽/ч, Cross Studio 900–2 200 ₽/ч. Рынок (B), ЦА (A), Мир (C SpaceCloud).</div></div>
+        <div class="hypo-row hypo-risks"><div class="hypo-label">Риски</div><div class="hypo-value">Минимальный (одна из текущих площадок, лёгкая упаковка).</div></div>
+        <div class="hypo-row"><div class="hypo-label">Экономика</div><div class="hypo-value">8 броней/мес × 6 000 ₽ = 48 000 ₽/мес с 1 площадки — заполнение дня без каннибализации вечернего премиум-продукта.</div></div>
+      </div>
+    </div>
+
+    <div class="sub">2.2. Пакеты под тип события: что запускать первым</div>
+
+    <div class="hypo fade-up">
+      <div class="hypo-head"><div class="hypo-id">2.2.1 · Сильная</div><div class="hypo-title">Приоритет запуска: Корпоратив → ДР/юбилей → Детский → Съёмка. Свадьбы — отложить</div></div>
+      <div class="hypo-body">
+        <div class="hypo-row"><div class="hypo-label">Суть</div><div class="hypo-value">Свадьбы — перенасыщенный премиум-сегмент (Bank a Banka, Loft Hall, Casa Picassa), длинный цикл сделки (3–6 мес), высокая операционная нагрузка. Корпоративы — открытая ниша с коротким циклом (2–4 нед).</div></div>
+        <div class="hypo-row"><div class="hypo-label">Основание</div><div class="hypo-value">DR E R3 — свадебные пакеты перенасыщены (4+ игрока), корпоративные — пусто. Рынок + Конкуренты + ЦА (A — свадьбы 38,5%, но конкуренция максимальная).</div></div>
+        <div class="hypo-row hypo-risks"><div class="hypo-label">Риски</div><div class="hypo-value">Детский и корпоративный требуют разной операционки (детский — администратор с опытом, корпоративный — документооборот).</div></div>
+      </div>
+    </div>
+
+    <div class="hypo fade-up">
+      <div class="hypo-head"><div class="hypo-id">2.2.2 · Сильная</div><div class="hypo-title">Пакет «Новогодняя ночь» — быстрый тест высокомаржинального пакета</div></div>
+      <div class="hypo-body">
+        <div class="hypo-row"><div class="hypo-label">Суть</div><div class="hypo-value">К Новому году 2026 — упаковать 2 площадки как «Новогодняя ночь с нами» за 90 000–130 000 ₽ за 10 часов. Рыночный ориентир Bash Today 90 тыс., Letspartyloft 170 тыс.</div></div>
+        <div class="hypo-row"><div class="hypo-label">Экономика</div><div class="hypo-value">2 площадки × 120 000 = 240 000 ₽ за одну ночь. Прямой плюс к выручке декабря.</div></div>
+        <div class="hypo-row hypo-check"><div class="hypo-label">Как проверить</div><div class="hypo-value">Октябрь 2026 — подготовить пакет, ноябрь — таргетированная продажа.</div></div>
+      </div>
+    </div>
+
+    <div class="hypo fade-up">
+      <div class="hypo-head"><div class="hypo-id">2.2.3 · Средняя-сильная</div><div class="hypo-title">Пакет «Выпускной класса» — уникальное предложение без прямых конкурентов</div></div>
+      <div class="hypo-body">
+        <div class="hypo-row"><div class="hypo-label">Суть</div><div class="hypo-value">В DR E этого продукта нет в явном пакетированном виде. Exit Loft — только «выпускной 2025 архив»; отдельной упаковки не видно.</div></div>
+        <div class="hypo-row"><div class="hypo-label">Основание</div><div class="hypo-value">DR E R3 — ни одного пакета; ЦА A R1 — родители подростков ~15–25 тыс. со складчины. Продукт пуст + ЦА сильна + Рынок B растёт.</div></div>
+        <div class="hypo-row hypo-risks"><div class="hypo-label">Риски</div><div class="hypo-value">Сезонность (май-июнь), но большой чек компенсирует.</div></div>
+        <div class="hypo-row hypo-check"><div class="hypo-label">Как проверить</div><div class="hypo-value">Пакет «Выпускной 9-го / 11-го класса, 30 чел, 6 ч, администратор всю ночь, 30 000 ₽ × 4 семьи = 120 000 ₽» → март 2026 в школьные чаты.</div></div>
+      </div>
+    </div>
+
+    <div class="hypo fade-up">
+      <div class="hypo-head"><div class="hypo-id">2.2.4 · Средняя</div><div class="hypo-title">Детский пакет «под ключ» — отложить до Q2 2026</div></div>
+      <div class="hypo-body">
+        <div class="hypo-row"><div class="hypo-label">Суть</div><div class="hypo-value">Рынок закрыт (Bambini Loft, Papaya, Memory Place). Требует специальной операционки (игровая зона, аниматоры, уборка бумажного шоу).</div></div>
+        <div class="hypo-row"><div class="hypo-label">Основание</div><div class="hypo-value">DR E R3 — 3 прямых конкурента с чёткими пакетами; Memory Place 18 000 — сложно ниже пойти, сложно выше обосновать.</div></div>
+      </div>
+    </div>
+
+    <div class="sub">2.3. Ценовое позиционирование и переход в премиум</div>
+
+    <div class="hypo fade-up">
+      <div class="hypo-head"><div class="hypo-id">2.3.1 · Сильная</div><div class="hypo-title">Реалистичная дорожная карта среднего чека: 8–15 → 25–35 → 50 тыс. ₽ за мероприятие. 12 месяцев на каждую ступень</div></div>
+      <div class="hypo-body">
+        <div class="hypo-row"><div class="hypo-label">Суть</div><div class="hypo-value">Прыжок сразу на 50 тыс. — ×3–5 от текущего. Промежуточная ступень 25–35 тыс. — ×2–2,5 и достижима через запуск пакетов.</div></div>
+        <div class="hypo-row"><div class="hypo-label">Основание</div><div class="hypo-value">DR E R3 — Memory Place 22 150, Letspartyloft 30 000–45 000, WorkshopLoft 6 500–9 000. Продукт + Конкуренты (D Soxspace кейс 25–27 → 50) + Рынок.</div></div>
+        <div class="hypo-row"><div class="hypo-label">Экономика</div><div class="hypo-value">Первая ступень: средний чек × 2 + 20% апселлов = ×2,4 выручки при той же загрузке.</div></div>
+      </div>
+    </div>
+
+    <div class="hypo fade-up">
+      <div class="hypo-head"><div class="hypo-id">2.3.2 · Средняя-сильная</div><div class="hypo-title">Нижняя граница пакета — не 22 000 ₽, а 28 000–30 000 ₽. Иначе прямая ценовая битва с Memory Place</div></div>
+      <div class="hypo-body">
+        <div class="hypo-row"><div class="hypo-label">Суть</div><div class="hypo-value">Memory Place задал якорь 22 150 за «ДР под ключ». Запускать пакет дешевле или на том же уровне — становиться в очередь конкурентом Memory Place в глазах клиента.</div></div>
+        <div class="hypo-row hypo-risks"><div class="hypo-label">Риски</div><div class="hypo-value">Нужно реально больше ценности в пакете (состав, сервис, бренд), иначе клиент не выберет дороже.</div></div>
+      </div>
+    </div>
+
+    <div class="hypo fade-up">
+      <div class="hypo-head"><div class="hypo-id">2.3.3 · Сильная</div><div class="hypo-title">Переход в премиум 50 тыс. — через корпоративные пакеты, не через частные</div></div>
+      <div class="hypo-body">
+        <div class="hypo-row"><div class="hypo-label">Суть</div><div class="hypo-value">На B2B 50–80 тыс. за корпоратив — норма. На B2C 50 тыс. — премиум (BankaBanka, Casa Picassa), где Юле нужен ремонт/локация/бренд. Корпоративный путь короче.</div></div>
+        <div class="hypo-row"><div class="hypo-label">Экономика</div><div class="hypo-value">Корпоративный пакет 75 тыс. × 8/мес × 5 лофтов = 3 млн ₽/мес — целевая цифра Юлии без экстраординарных усилий.</div></div>
+      </div>
+    </div>
+
+    <div class="sub">2.4. Апселлы и допуслуги: где реальные деньги</div>
+
+    <div class="hypo fade-up">
+      <div class="hypo-head"><div class="hypo-id">2.4.1 · Сильная</div><div class="hypo-title">Партнёрская экосистема с агентскими 10–20% — воспроизводимая модель Soxspace на ресурсах Юли</div></div>
+      <div class="hypo-body">
+        <div class="hypo-row"><div class="hypo-label">Суть</div><div class="hypo-value">Подобрать 5–8 подрядчиков (кейтеринг, DJ, фотограф, декор, аниматор, флорист, видео, тех. поддержка). Все работают на её площадках только через неё. Комиссия 10–20%.</div></div>
+        <div class="hypo-row"><div class="hypo-label">Основание</div><div class="hypo-value">DR E R3 — все апселлы стандартизированы. Конкуренты (D Soxspace): +30–40% выручки. Мир (C Splacer Friends).</div></div>
+        <div class="hypo-row hypo-risks"><div class="hypo-label">Риски</div><div class="hypo-value">Управление 5–8 партнёрами — отдельная роль. Договор с каждым. Первые 60 дней — сбор экосистемы.</div></div>
+        <div class="hypo-row"><div class="hypo-label">Экономика</div><div class="hypo-value">При среднем чеке 30 000 ₽ и агентских 30% через партнёров: +9 000 ₽/мероприятие. На 30 мероприятиях/мес на 5 лофтах = +270 000 ₽/мес чистой комиссии.</div></div>
+        <div class="hypo-row hypo-check"><div class="hypo-label">Как проверить</div><div class="hypo-value">60 дней на сбор, ещё 30 на 1-й тестовый пакет с использованием партнёров.</div></div>
+      </div>
+    </div>
+
+    <div class="hypo fade-up">
+      <div class="hypo-head"><div class="hypo-id">2.4.2 · Сильная</div><div class="hypo-title">Приоритетные апселлы по маржинальности × частоте запроса: кейтеринг → DJ → фотограф → декор</div></div>
+      <div class="hypo-body">
+        <div class="hypo-row"><div class="hypo-label">Суть</div><div class="hypo-value">Не все 6 апселлов одинаково важны на старте. Кейтеринг — 70% запросов, DJ — 50%, фотограф — 40%, декор — 30%. Начинать партнёрство с кейтеринга и DJ.</div></div>
+        <div class="hypo-row"><div class="hypo-label">Основание</div><div class="hypo-value">DR E R3, R4 — структура запросов, CaterMe и Preparty Catering как готовые сервисы.</div></div>
+      </div>
+    </div>
+
+    <div class="hypo fade-up">
+      <div class="hypo-head"><div class="hypo-id">2.4.3 · Сильная</div><div class="hypo-title">«Welcome-пакет» как часть стандартного продукта — бесплатный рычаг лояльности</div></div>
+      <div class="hypo-body">
+        <div class="hypo-row"><div class="hypo-label">Суть</div><div class="hypo-value">Шампанское, декор для ДР, фотозона с надписью, 1 час подготовки бесплатно — это элемент пакета. Увеличивает рейтинг на 0.3 балла (Loft Hall), +10% к повторам.</div></div>
+        <div class="hypo-row"><div class="hypo-label">Основание</div><div class="hypo-value">DR E R4 Сценарий 4. Конкуренты (D Bank a Banka). ЦА (A R5 — wow-моменты).</div></div>
+        <div class="hypo-row"><div class="hypo-label">Экономика</div><div class="hypo-value">Себестоимость welcome-пакета ~500–800 ₽. Рост рейтинга, отзывов, повторов — окупается многократно.</div></div>
+      </div>
+    </div>
+
+    <div class="sub">2.5. Корпоративный пакет как рычаг</div>
+
+    <div class="hypo fade-up">
+      <div class="hypo-head"><div class="hypo-id">2.5.1 · Сильная</div><div class="hypo-title">Корпоративный пакет = ядро стратегии. Его экономика ведёт к цели 3 млн/мес</div></div>
+      <div class="hypo-body">
+        <div class="hypo-row"><div class="hypo-label">Суть</div><div class="hypo-value">Цена 60–90 тыс. ₽ за пакет × 8 корпоратов/мес × 5 лофтов = до 3,6 млн ₽/мес только от B2B.</div></div>
+        <div class="hypo-row"><div class="hypo-label">Основание</div><div class="hypo-value">DR E R3 — корпоративные пакеты «под ключ» не упакованы на рынке; WorkshopLoft 6,5–9 тыс. тренинг — не пакет. Пятикратное подтверждение.</div></div>
+        <div class="hypo-row hypo-risks"><div class="hypo-label">Риски</div><div class="hypo-value">Документы, договоры, закрывающие. Без ИП/ООО и внутренней бухгалтерии — не работает.</div></div>
+        <div class="hypo-row hypo-check"><div class="hypo-label">Как проверить</div><div class="hypo-value">Юля имеет ИП/ООО сейчас? Если нет — это первый операционный шаг до запуска продукта.</div></div>
+      </div>
+    </div>
+
+    <div class="hypo fade-up">
+      <div class="hypo-head"><div class="hypo-id">2.5.2 · Сильная</div><div class="hypo-title">Состав корпоративного пакета — 6 часов, 25–40 гостей, фуршет от 1 500 ₽/гость, администратор + тех. поддержка, проектор + Wi-Fi</div></div>
+      <div class="hypo-body">
+        <div class="hypo-row"><div class="hypo-label">Суть</div><div class="hypo-value">Это базовый конфиг, который покрывает 70% корпоративных запросов из DR.</div></div>
+        <div class="hypo-row"><div class="hypo-label">Основание</div><div class="hypo-value">DR E R3 R27 (Loft Hall конференция), R28 (WorkshopLoft тренинг), ЦА A.</div></div>
+      </div>
+    </div>
+
+    <div class="hypo fade-up">
+      <div class="hypo-head"><div class="hypo-id">2.5.3 · Средняя-сильная</div><div class="hypo-title">B2B-подписка (годовой контракт на 4–6 мероприятий со скидкой 15%) — дополнительный слой B2B</div></div>
+      <div class="hypo-body">
+        <div class="hypo-row"><div class="hypo-label">Суть</div><div class="hypo-value">После первых 3–5 удачных корпоративов у одной компании — предложение годового контракта.</div></div>
+        <div class="hypo-row"><div class="hypo-label">Основание</div><div class="hypo-value">Мир (C Event Inc, Storefront). ЦА (A — компании готовы к регулярности). DR E — на рынке Москвы таких пакетов нет.</div></div>
+        <div class="hypo-row hypo-check"><div class="hypo-label">Как проверить</div><div class="hypo-value">Q3 2026 — после накопления 5–10 корпоративных клиентов.</div></div>
+      </div>
+    </div>
+
+    <div class="sub">2.6. Контент-пакет и съёмочный сегмент</div>
+
+    <div class="hypo fade-up">
+      <div class="hypo-head"><div class="hypo-id">2.6.1 · Сильная</div><div class="hypo-title">Контент-пакет — отдельный продукт для закрытия будней, но не стратегический приоритет</div></div>
+      <div class="hypo-body">
+        <div class="hypo-row"><div class="hypo-label">Суть</div><div class="hypo-value">Запустить как второстепенный продукт: 1 600–2 900 ₽/ч, будни, минимум 2 часа, отдельная страница сайта. Цель — не премиум, а операционная эффективность.</div></div>
+        <div class="hypo-row"><div class="hypo-label">Основание</div><div class="hypo-value">DR E R3, R6 Табл.5 — Pink Photo Loft, Loft2Rent контент-база; блогер-тариф как тренд 2025. Продукт + Мир (C SpaceCloud) + ЦА (A).</div></div>
+        <div class="hypo-row hypo-risks"><div class="hypo-label">Риски</div><div class="hypo-value">Может каннибализировать премиум, если не развести каналом.</div></div>
+        <div class="hypo-row"><div class="hypo-label">Экономика</div><div class="hypo-value">+30–40% загрузки будней × 2 500 ₽/ч × 6 часов/день × 20 дней = +300 000 ₽/мес на одной площадке.</div></div>
+        <div class="hypo-row hypo-check"><div class="hypo-label">Как проверить</div><div class="hypo-value">Одна площадка, 60 дней, отдельный лендинг, таргет на фотографов.</div></div>
+      </div>
+    </div>
+
+    <div class="hypo fade-up">
+      <div class="hypo-head"><div class="hypo-id">2.6.2 · Сильная</div><div class="hypo-title">Контент-сегмент не требует отдельной точки — достаточно выделенного временного слота на существующих</div></div>
+      <div class="hypo-body">
+        <div class="hypo-row"><div class="hypo-label">Суть</div><div class="hypo-value">Утро-день будней (10:00–16:00) — контент-режим. Вечер / выходные — event-режим. Разная аудитория, один объект.</div></div>
+        <div class="hypo-row"><div class="hypo-label">Основание</div><div class="hypo-value">DR E R3 — так работает Cross Studio и Exit Loft (комбинированные форматы).</div></div>
+      </div>
+    </div>
+
+    <div class="sub">2.7. Обучающий продукт «как открыть лофт»: что это реально</div>
+
+    <div class="hypo fade-up">
+      <div class="hypo-head"><div class="hypo-id">2.7.1 · Слабая</div><div class="hypo-title">На продуктовых данных запуск обучающего продукта на этой стадии не обоснован. Отложить минимум на 12 месяцев</div></div>
+      <div class="hypo-body">
+        <div class="hypo-row"><div class="hypo-label">Суть</div><div class="hypo-value">В DR E — 45 продуктов, 0 обучающих. На рынке лофтов нет публичных курсов как отдельного продукта. Единственный мировой кейс — SpaceCloud Class (Корея). Soxspace делает обучение только внутри франшизы.</div></div>
+        <div class="hypo-row"><div class="hypo-label">Основание</div><div class="hypo-value">DR E — пусто. Сквозное подтверждение только из C (1 кейс) — слабое.</div></div>
+        <div class="hypo-row hypo-risks"><div class="hypo-label">Риски</div><div class="hypo-value">Огромный: требует упаковки методологии, частичной медийности (от которой Юля отказывается), 3–6 мес на запуск, непроверенный спрос.</div></div>
+        <div class="hypo-row"><div class="hypo-label">Экономика</div><div class="hypo-value">Неясна. Если курс 50–150 тыс., нужно 20–50 учеников/год для значимой выручки. Без lead-magnet системы — сомнительно.</div></div>
+        <div class="hypo-row hypo-check"><div class="hypo-label">Как проверить</div><div class="hypo-value">Не запускать курс. Вместо этого: 30 дней на тест спроса — провести 2 платные консультации по 50–100 тыс. ₽ с предпринимателями.</div></div>
+      </div>
+    </div>
+
+    <div class="hypo fade-up">
+      <div class="hypo-head"><div class="hypo-id">2.7.2 · Слабая</div><div class="hypo-title">Если обучающий продукт когда-либо запускается — он должен быть lead-magnet к франшизе, а не самостоятельным продуктом</div></div>
+      <div class="hypo-body">
+        <div class="hypo-row"><div class="hypo-label">Суть</div><div class="hypo-value">Формат: платный воркшоп 50–100 тыс. ₽ (2 дня, 10 участников) → через 30 дней предложение франшизы. Модель Soxspace инвертированная.</div></div>
+        <div class="hypo-row"><div class="hypo-label">Основание</div><div class="hypo-value">DR E — нет; Мир (C SpaceCloud Class) — слабое косвенное.</div></div>
+      </div>
+    </div>
+
+    <div class="sub">2.8. Продуктовая поддержка франшизы</div>
+
+    <div class="hypo fade-up">
+      <div class="hypo-head"><div class="hypo-id">2.8.1 · Сильная</div><div class="hypo-title">Франшизе Юли нужно 6 продуктовых компонентов, из которых у неё сейчас упакованы 0–1</div></div>
+      <div class="hypo-body">
+        <div class="hypo-row"><div class="hypo-label">Суть</div><div class="hypo-value">Франшиза = продуктовая система, а не «купи бренд». 6 компонентов: (1) стандартизированная матрица 5×2; (2) партнёрская экосистема с договорами; (3) скрипты продаж по сегментам; (4) CRM-шаблон; (5) операционные чек-листы; (6) AI-ассистент для первичных запросов.</div></div>
+        <div class="hypo-row"><div class="hypo-label">Основание</div><div class="hypo-value">DR E R3, R4 — все эти компоненты видны у лидеров. Soxspace — явно декларирует CRM + 30 каналов + контроль сервиса на местах.</div></div>
+        <div class="hypo-row hypo-risks"><div class="hypo-label">Риски</div><div class="hypo-value">Упаковка каждого компонента — отдельный проект. Делать параллельно с франшизной экспансией — двойная нагрузка.</div></div>
+        <div class="hypo-row hypo-check"><div class="hypo-label">Как проверить</div><div class="hypo-value">Аудит: что у Юли из 6 компонентов готово сейчас? Вероятно 0–1. Значит: франшиза как продукт пока не готова.</div></div>
+      </div>
+    </div>
+
+    <div class="hypo fade-up">
+      <div class="hypo-head"><div class="hypo-id">2.8.2 · Средняя</div><div class="hypo-title">Цена франшизы Юли должна быть 1,5–3 млн ₽ с окупаемостью 18–24 мес — ниже Soxspace-инвесторской, но выше порога «купи с Авито»</div></div>
+      <div class="hypo-body">
+        <div class="hypo-row"><div class="hypo-label">Суть</div><div class="hypo-value">Soxspace — инвесторская от миллионов (с реконструкцией особняка). Юля — классическая с партнёром. Её вход должен быть заметно легче.</div></div>
+        <div class="hypo-row"><div class="hypo-label">Основание</div><div class="hypo-value">Конкуренты (D Soxspace), ЦА (A — не покрыто, пробел). DR E — не покрыто.</div></div>
+        <div class="hypo-row hypo-check"><div class="hypo-label">Как проверить</div><div class="hypo-value">Финмодель: какую окупаемость даёт текущий лофт Юли, и обратная постройка цены франшизы.</div></div>
+      </div>
+    </div>
+
+    <div class="hypo fade-up">
+      <div class="hypo-head"><div class="hypo-id">2.8.3 · Сильная</div><div class="hypo-title">AI-ассистент — важный элемент франшизы, но не ради 80%, а ради стандартизации скорости ответа &lt;15 мин</div></div>
+      <div class="hypo-body">
+        <div class="hypo-row"><div class="hypo-label">Суть</div><div class="hypo-value">Каждый франчайзи получает AI-ассистента, который отвечает на первичные запросы по единому стандарту. Это даёт бренду единообразие и скорость.</div></div>
+        <div class="hypo-row"><div class="hypo-label">Основание</div><div class="hypo-value">DR E R4 Сценарий 5 — системы записи, но не полноценный AI. Продукт + Мир (C) + ЦА (A — скорость первого ответа).</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="prioritety" class="section" style="background:var(--n50);">
+  <div class="container">
+    <div class="section-label">Часть 3</div>
+    <h2 class="section-title">Приоритизация гипотез</h2>
+
+    <div class="sub">3.1. Основные гипотезы (6) — сильные + сквозные + ведут к цели 3 млн/мес</div>
+    <div class="card-grid">
+      <div class="prio-card fade-up"><div class="prio-num">1</div><h4>2.1.1. Матрица «событие × вариант» вместо Light/Standard/Premium</h4><p>Центральная архитектурная гипотеза. Закрыта данными, в сессию — как решение.</p></div>
+      <div class="prio-card fade-up"><div class="prio-num">2</div><h4>2.1.2 + 2.5.1. Корпоративный пакет 60–90 тыс. ₽ — якорь продуктовой линейки</h4><p>Ведёт прямо к цели по выручке, открытая ниша, совпадение с силой Юли.</p></div>
+      <div class="prio-card fade-up"><div class="prio-num">3</div><h4>2.2.1. Приоритет: Корпоратив → ДР/юбилей → Выпускные → Детский. Свадьбы отложить</h4><p>Структурное решение по порядку запусков.</p></div>
+      <div class="prio-card fade-up"><div class="prio-num">4</div><h4>2.3.1. Дорожная карта среднего чека: 8–15 → 25–35 → 50 тыс. ₽ за 12 + 12 мес</h4><p>Ступенчатый реалистичный рост. Любой более короткий срок требует инвестиций.</p></div>
+      <div class="prio-card fade-up"><div class="prio-num">5</div><h4>2.4.1 + 2.4.3. Партнёрская экосистема с агентскими + welcome-пакет как стандарт</h4><p>Воспроизводимая формула Soxspace на ресурсах Юли — +30–40% выручки.</p></div>
+      <div class="prio-card fade-up"><div class="prio-num">6</div><h4>2.6.1. Контент-пакет для закрытия будней — запуск на одной площадке</h4><p>Операционная эффективность, +300 тыс/мес с 1 точки.</p></div>
+    </div>
+
+    <div class="sub">3.2. Альтернативные гипотезы (3)</div>
+    <div class="alt-card fade-up"><h4>2.2.2. Быстрый тест «Новогодняя ночь» к декабрю 2026 — высокий чек, простая упаковка</h4></div>
+    <div class="alt-card fade-up"><h4>2.2.3. Пакет «Выпускной класса» к марту 2026 — уникальная ниша без прямых конкурентов</h4></div>
+    <div class="alt-card fade-up"><h4>2.5.3. B2B-подписка — Q3 2026 после накопления корпоративной базы</h4></div>
+
+    <div class="sub">3.3. Что пока рано обсуждать</div>
+    <div class="warn fade-up"><p><strong>Обучающий продукт «как открыть лофт» как самостоятельный курс.</strong> Данные не подтверждают спрос (2.7.1). В финальную сессию — как отсечённая гипотеза + альтернатива: 2–3 тестовые платные консультации за 30 дней.</p></div>
+    <div class="warn fade-up"><p><strong>AI-ассистент на 80% рутины.</strong> Данные подтверждают только 30–50%. Цель корректируется: скорость первого ответа и FAQ.</p></div>
+    <div class="warn fade-up"><p><strong>Детский пакет «под ключ» на 2026.</strong> Рынок закрыт, отложить до Q3 2026, пока не выстроена операционка корпоративов.</p></div>
+    <div class="warn fade-up"><p><strong>Свадебные пакеты.</strong> Перенасыщенный сегмент, требует позиционирования и бренда, которых у Юли пока нет.</p></div>
+    <div class="warn fade-up"><p><strong>Полная франшиза как продукт.</strong> 6 компонентов нужны, у Юли 0–1. Отдельный проект на 2026–2027.</p></div>
+  </div>
+</section>
+
+<section id="voprosy" class="section">
+  <div class="container">
+    <div class="section-label">Часть 4</div>
+    <h2 class="section-title">Вопросы клиенту для сессии</h2>
+    <p class="section-sub">Только развилки, которые нельзя закрыть данными. Всё, что закрывается — уже закрыто выше.</p>
+
+    <div class="qbox fade-up"><div class="q-num">Вопрос 01</div><p>Сетка Light/Standard/Premium из вашего гайда позиционирования не подтверждается продуктовыми данными — на рынке работает матрица «событие × вариант». Готовы ли вы отказаться от Light/Standard/Premium как модели и перестроить на 5 событий × 2 варианта?</p></div>
+    <div class="qbox fade-up"><div class="q-num">Вопрос 02</div><p>Корпоративный пакет 60–90 тыс. — центральная гипотеза стратегии (75 000 × 8 мероприятий × 5 площадок = до 3 млн/мес — почти ваша цель). Но это требует полной B2B-инфраструктуры: ООО/ИП, безнал, НДС-учёт, закрывающие документы, договора в 3 дня. Что из этого у вас готово сейчас, а что — придётся разворачивать?</p></div>
+    <div class="qbox fade-up"><div class="q-num">Вопрос 03</div><p>Memory Place продаёт «ДР под ключ» за 22 150 ₽ с прозрачным составом. Это якорь рынка. Ваш минимальный пакет должен быть не ниже 28–30 тыс., иначе вы становитесь их прямым конкурентом по цене. Согласны ли с этим ограничением нижней границы?</p></div>
+    <div class="qbox fade-up"><div class="q-num">Вопрос 04</div><p>Данные говорят: переход в премиум 50 тыс. — через корпоративы, не через частные праздники. На B2B это норма, на B2C это премиум с ремонтом и брендом. Вы согласны с приоритетом B2B-пути?</p></div>
+    <div class="qbox fade-up"><div class="q-num">Вопрос 05</div><p>Обучающий продукт «как открыть лофт» — на продуктовых данных не подтверждается. 0 прямых конкурентов, 1 кейс в мире (SpaceCloud). Запуск пока не обоснован. Готовы ли вы отложить на 12+ месяцев и сейчас провести 2 платные консультации по 50–100 тыс. как тест спроса, а не разрабатывать курс?</p></div>
+    <div class="qbox fade-up"><div class="q-num">Вопрос 06</div><p>Новогодняя ночь 2026 — 2 ваши площадки за 120 000 × 2 = 240 000 ₽ за одну ночь. Простой пакет, понятная экономика. Готовы ли вы успеть упаковать его к октябрю 2026 и продавать с ноября? Или этот приоритет уходит в 2027?</p></div>
+    <div class="qbox fade-up"><div class="q-num">Вопрос 07</div><p>Пакет «Выпускной класса» — ниша без прямых конкурентов в DR. Сезон март-июнь. 30 000 ₽ × 4 семьи = 120 000 за мероприятие. Готовы ли вы использовать текущую базу родителей как канал запуска к марту 2026?</p></div>
+    <div class="qbox fade-up"><div class="q-num">Вопрос 08</div><p>Партнёрская экосистема на 5–8 подрядчиков (кейтеринг, DJ, фотограф, декор, аниматор) — 60 дней на сбор. Есть ли у вас сейчас какие-то работающие партнёрства, или всё с нуля? Кто в команде будет отвечать за сбор и управление?</p></div>
+    <div class="qbox fade-up"><div class="q-num">Вопрос 09</div><p>AI-ассистент: цель 80% автоматизации на данных не подтверждается. Реалистично — 30–50% + скорость первого ответа &lt;15 мин. Готовы ли вы скорректировать планку и начать с узкой задачи (FAQ + сбор брифа + передача менеджеру)?</p></div>
+    <div class="qbox fade-up"><div class="q-num">Вопрос 10</div><p>Ваша франшиза — упакована как продукт? По данным, это 6 компонентов (матрица, партнёры, скрипты, CRM, чек-листы, AI). Какие из них у вас реально готовы сейчас? Если менее 3 — франшиза как продукт не готова к системной продаже, и первый франчайзи — это пилот, не масштабируемая модель.</p></div>
+    <div class="qbox fade-up"><div class="q-num">Вопрос 11</div><p>Продуктовая дорожная карта на 2026 (из синтеза): Q1 — корпоративный пакет + матрица событий + партнёры + контент-пакет на одной площадке. Q2 — ДР/юбилей + выпускные + AI-бот. Q3 — детский + B2B-подписка. Q4 — премиум-планка корпоратива + тест обучения. Согласна ли с приоритизацией? Какие два самых слабых места этого плана?</p></div>
+    <div class="qbox fade-up"><div class="q-num">Вопрос 12</div><p>Из всего списка — какие 3 действия готовы начать в следующие 14 дней? Ранжируйте.</p></div>
+  </div>
+</section>
+
+<section id="reakcia" class="section" style="background:var(--n50);">
+  <div class="container">
+    <div class="section-label">Часть 5</div>
+    <h2 class="section-title">Таблица фиксации реакции клиента</h2>
+
+    <div class="table-wrap fade-up">
+      <table>
+        <thead><tr><th>Гипотеза</th><th>Приоритет</th><th>Сила</th><th>Реакция</th><th>Комментарий</th><th>Статус</th><th>Что дальше</th></tr></thead>
+        <tbody>
+          <tr><td><strong>2.1.1.</strong> Матрица «событие × вариант» вместо Light/Std/Premium</td><td>Сразу</td><td><span class="badge-strength">Сильная</span></td><td></td><td></td><td></td><td></td></tr>
+          <tr><td><strong>2.1.2 + 2.5.1.</strong> Корпоративный пакет 60–90 тыс. — якорь</td><td>Сразу (Q1)</td><td><span class="badge-strength">Сильная</span></td><td></td><td></td><td></td><td></td></tr>
+          <tr><td><strong>2.1.3.</strong> Контент-слот 3 ч от 5–8 тыс. (тестовый продукт)</td><td>Q1</td><td><span class="badge-strength">Сильная</span></td><td></td><td></td><td></td><td></td></tr>
+          <tr><td><strong>2.2.1.</strong> Приоритет: Корпоратив → ДР → Выпускные → Детский</td><td>Сразу</td><td><span class="badge-strength">Сильная</span></td><td></td><td></td><td></td><td></td></tr>
+          <tr><td><strong>2.2.2.</strong> Пакет «Новогодняя ночь» 90–130 тыс.</td><td>Q3–Q4 2026</td><td><span class="badge-strength">Сильная</span></td><td></td><td></td><td></td><td></td></tr>
+          <tr><td><strong>2.2.3.</strong> Пакет «Выпускной класса» 120 тыс. складчина</td><td>Q1 (к марту)</td><td><span class="badge-strength badge-mid">Средняя-сильная</span></td><td></td><td></td><td></td><td></td></tr>
+          <tr><td><strong>2.2.4.</strong> Детский пакет «под ключ»</td><td>Отложить Q3</td><td><span class="badge-strength badge-mid">Средняя</span></td><td></td><td></td><td></td><td></td></tr>
+          <tr><td><strong>2.3.1.</strong> Дорожная карта чека 8–15 → 25–35 → 50 тыс.</td><td>Сразу</td><td><span class="badge-strength">Сильная</span></td><td></td><td></td><td></td><td></td></tr>
+          <tr><td><strong>2.3.2.</strong> Нижняя граница пакета — 28–30 тыс. (не 22)</td><td>Сразу</td><td><span class="badge-strength badge-mid">Средняя-сильная</span></td><td></td><td></td><td></td><td></td></tr>
+          <tr><td><strong>2.3.3.</strong> Премиум 50 тыс. — через корпоративы, не частные</td><td>Сразу</td><td><span class="badge-strength">Сильная</span></td><td></td><td></td><td></td><td></td></tr>
+          <tr><td><strong>2.4.1.</strong> Партнёрская экосистема с агентскими 10–20%</td><td>Q1 (60 дней)</td><td><span class="badge-strength">Сильная</span></td><td></td><td></td><td></td><td></td></tr>
+          <tr><td><strong>2.4.2.</strong> Приоритет апселлов: кейтеринг → DJ → фото → декор</td><td>Q1</td><td><span class="badge-strength">Сильная</span></td><td></td><td></td><td></td><td></td></tr>
+          <tr><td><strong>2.4.3.</strong> Welcome-пакет как стандарт пакета</td><td>Сразу</td><td><span class="badge-strength">Сильная</span></td><td></td><td></td><td></td><td></td></tr>
+          <tr><td><strong>2.5.2.</strong> Состав корп. пакета: 6 ч, 25–40 гостей, фуршет + админ</td><td>Сразу</td><td><span class="badge-strength">Сильная</span></td><td></td><td></td><td></td><td></td></tr>
+          <tr><td><strong>2.5.3.</strong> B2B-подписка 4–6 мероприятий / год со скидкой 15%</td><td>Q3 2026</td><td><span class="badge-strength badge-mid">Средняя-сильная</span></td><td></td><td></td><td></td><td></td></tr>
+          <tr><td><strong>2.6.1.</strong> Контент-пакет как продукт для закрытия будней</td><td>Q1</td><td><span class="badge-strength">Сильная</span></td><td></td><td></td><td></td><td></td></tr>
+          <tr><td><strong>2.6.2.</strong> Без отдельной точки — слоты на существующих</td><td>Сразу</td><td><span class="badge-strength">Сильная</span></td><td></td><td></td><td></td><td></td></tr>
+          <tr><td><strong>2.7.1.</strong> Обучающий продукт — отложить 12+ мес; тест через 2 консультации</td><td>Отложить</td><td><span class="badge-strength badge-weak">Слабая</span></td><td></td><td></td><td></td><td></td></tr>
+          <tr><td><strong>2.7.2.</strong> Обучение только как lead-magnet к франшизе</td><td>Отложить</td><td><span class="badge-strength badge-weak">Слабая</span></td><td></td><td></td><td></td><td></td></tr>
+          <tr><td><strong>2.8.1.</strong> Франшиза = 6 компонентов (аудит готовности)</td><td>Q2–Q3</td><td><span class="badge-strength">Сильная</span></td><td></td><td></td><td></td><td></td></tr>
+          <tr><td><strong>2.8.2.</strong> Цена франшизы 1,5–3 млн, окупаемость 18–24 мес</td><td>Q2</td><td><span class="badge-strength badge-mid">Средняя</span></td><td></td><td></td><td></td><td></td></tr>
+          <tr><td><strong>2.8.3.</strong> AI-ассистент для скорости, не для 80% автоматизации</td><td>Q1–Q2</td><td><span class="badge-strength">Сильная</span></td><td></td><td></td><td></td><td></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<section id="most" class="section">
+  <div class="container">
+    <div class="section-label">Часть 6</div>
+    <h2 class="section-title">Мост к финальному синтезу</h2>
+
+    <div class="bridge fade-up">
+      <div class="bridge-tag">Подтверждено данными</div>
+      <h4>6.1. Что передаём как подтверждённое (не обсуждать заново)</h4>
+      <ul>
+        <li><strong>Переход от почасовой к пакетной модели — центральный продуктовый ход.</strong> Средний чек вырастет ×1,5–2,5 при той же загрузке.</li>
+        <li><strong>Корпоративный сегмент — главный рычаг выручки.</strong> Пятикратное подтверждение (продукт + рынок + конкуренты + ЦА + мир).</li>
+        <li><strong>Апселлы +30–40% через партнёрскую экосистему с агентскими 10–20%.</strong> Воспроизводимая формула Soxspace на ресурсах Юли.</li>
+        <li><strong>Онлайн-бронирование + сайт с прямой бронью — технологический минимум.</strong> Без этого ни один продуктовый шаг не даёт эффекта в полной мере.</li>
+        <li><strong>AI-ассистент — 30–50% автоматизации (не 80%) + скорость первого ответа &lt;15 мин.</strong></li>
+        <li><strong>Контент-пакет для закрытия будней — отдельный продукт на существующих площадках.</strong></li>
+        <li><strong>Welcome-пакет (шампанское/декор/бонус-час) как стандарт пакета — рычаг рейтинга и повторов.</strong></li>
+        <li><strong>CRM + база клиентов + программа лояльности — первый приоритет из-за её 90% возвратности.</strong></li>
+      </ul>
+    </div>
+
+    <div class="bridge fade-up">
+      <div class="bridge-tag">Развилки · Решение на сессии</div>
+      <h4>6.2. Что выносим как продуктовые развилки</h4>
+      <ul>
+        <li><strong>Развилка 1. Архитектура линейки</strong> — «событие × вариант» vs. текущая сетка Light/Standard/Premium из гайда позиционирования. Данные склоняют к первому, но это требует отказа от части текущего планирования.</li>
+        <li><strong>Развилка 2. Операционная готовность к B2B.</strong> ООО/ИП, безнал, НДС, закрывающие документы — есть или развёртывать? От ответа зависит, когда реально запускать корпоративный пакет.</li>
+        <li><strong>Развилка 3. Приоритет запуска</strong> — Корпоратив vs. Новогодняя ночь vs. Выпускной. У всех сильные экономические аргументы. Операционно параллельно запустить три — нереально для текущей команды Юли.</li>
+        <li><strong>Развилка 4. Обучающий продукт</strong> — запуск теста сейчас (2 консультации) или полное отложение. Данные не подтверждают, но идея важна для Юли.</li>
+        <li><strong>Развилка 5. Франшиза</strong> — пилот (с тем, что есть) vs. упаковка 6 компонентов (9–12 мес) до масштабирования. Критическая развилка для стратегии масштабирования в регионы.</li>
+      </ul>
+    </div>
+
+    <div class="bridge fade-up">
+      <div class="bridge-tag">Отсечено</div>
+      <h4>6.3. Что отсечено продуктовым исследованием</h4>
+      <ul>
+        <li><strong>Сетка Light/Standard/Premium как продуктовая архитектура</strong> — на рынке не работает в этом виде.</li>
+        <li><strong>«Обучающий продукт как отдельное направление» в текущем виде</strong> — 0 продуктовых данных о спросе, рынок отсутствует.</li>
+        <li><strong>«AI на 80% рутины»</strong> — продуктовые данные не подтверждают такой масштаб, мировая практика — 30–50%.</li>
+        <li><strong>Приоритет свадеб на первой волне запуска</strong> — рынок перенасыщен, высокая операционная нагрузка, длинный цикл.</li>
+        <li><strong>Запуск всех 5 пакетов событий одновременно</strong> — операционно невозможно; приоритизация обязательна.</li>
+        <li><strong>Детский пакет как первоочередной</strong> — рынок закрыт Memory Place / Bambini / Papaya.</li>
+      </ul>
+    </div>
+
+    <div class="bridge fade-up">
+      <div class="bridge-tag">Дорожная карта · 12 месяцев</div>
+      <h4>6.4. Приоритизация запуска</h4>
+      <ul>
+        <li><strong>Ноябрь-декабрь 2025 (30–60 дней):</strong> Экспорт клиентской базы в Excel / простую CRM. Аудит ООО/ИП и документооборота для B2B. Аудит текущих лофтов: какая площадка готова к корп. пакету, какая — к контент-формату. Старт сбора партнёрской экосистемы (5–8 подрядчиков).</li>
+        <li><strong>Q1 2026 (январь-март):</strong> Запуск корп. пакета 60–90 тыс. на 1 площадке (MVP). Запуск контент-пакета на 1 площадке (MVP). Запуск пакета «Выпускной класса» к марту через базу родителей. Сайт с прямой бронью (MVP 5 страниц). AI-бот для первичного ответа. Матрица «событие × вариант» в виде каталога.</li>
+        <li><strong>Q2 2026 (апрель-июнь):</strong> Запуск ДР/юбилей пакет 28–40 тыс. на 2 площадках. Масштабирование корп. пакета на все площадки. Программа лояльности (уровни + рефералы). Welcome-пакет как стандарт.</li>
+        <li><strong>Q3 2026 (июль-сентябрь):</strong> Тест B2B-подписки на 3–5 постоянных клиентах. Детский пакет «под ключ» 28–35 тыс. Тест обучающего продукта через 2 консультации. Аудит франшизы: 6 компонентов → что упаковать.</li>
+        <li><strong>Q4 2026 (октябрь-декабрь):</strong> Новогодний пакет на 2 площадки (главная продажа года). Франшиза как упакованный продукт (если 6 компонентов готовы). Корпоративные годовые контракты (первые 3–5 договоров).</li>
+      </ul>
+    </div>
+
+    <div class="bridge fade-up">
+      <div class="bridge-tag">Операционные требования</div>
+      <h4>6.5. Что нужно для запуска каждого продукта</h4>
+      <ul>
+        <li><strong>Корпоративный пакет:</strong> ООО/ИП, безнал, НДС-учёт, типовой договор, счёт, акт, УПД, менеджер с B2B-опытом.</li>
+        <li><strong>Матрица «событие × вариант»:</strong> Сайт с каталогом, CRM с SKU-тегированием, чек-листы подготовки под каждый пакет.</li>
+        <li><strong>Партнёрская экосистема:</strong> 5–8 договоров с подрядчиками, agent-комиссии 10–20%, CRM для управления.</li>
+        <li><strong>Контент-пакет:</strong> Отдельный лендинг, таргет на фотографов, разведение временных слотов (день/вечер).</li>
+        <li><strong>Выпускной пакет:</strong> Памятка родителю для чата, договор с родительским комитетом, ограничения на алкоголь.</li>
+        <li><strong>AI-бот:</strong> WhatsApp Business API, интеграция с CRM, сценарий FAQ и сбора брифа.</li>
+        <li><strong>Welcome-пакет:</strong> Закуп шампанского / декора / стандартного комплекта на месяц вперёд.</li>
+        <li><strong>Программа лояльности:</strong> CRM с тегами уровней, шаблоны email/SMS, генератор промокодов.</li>
+        <li><strong>Онлайн-бронь:</strong> Сайт + BookForm/EasyWeek интеграция + онлайн-оплата (Robokassa/Юкасса).</li>
+      </ul>
+    </div>
+
+    <div class="bridge fade-up bridge-accent">
+      <div class="bridge-tag">Сквозные выводы для стратегии</div>
+      <h4>6.6. Пять главных продуктовых инсайтов, меняющих приоритизацию</h4>
+      <ul>
+        <li><strong>Рынок построен на матрице «событие × вариант», а не на сетке Light/Standard/Premium.</strong> Это не деталь — это архитектура всей продуктовой линейки.</li>
+        <li><strong>Корпоративный пакет — не один из продуктов, а экономическое ядро стратегии.</strong> Только через него Юля дойдёт до 3 млн/мес в разумный срок. Продуктовая линейка строится вокруг него, остальные пакеты — спутники.</li>
+        <li><strong>Апселлы через партнёрскую экосистему — +30–40% к выручке без CAPEX и на существующей загрузке.</strong> Прямая копия модели Soxspace, проверенная данными.</li>
+        <li><strong>Средний чек растёт ступенями, не прыжками.</strong> Промежуточная планка 25–35 тыс. — за 12 месяцев, премиум 50 тыс. — за 24 месяца. Реалистично, более короткий срок требует инвестиций.</li>
+        <li><strong>Франшиза — не готовый продукт, а пилот.</strong> 6 продуктовых компонентов должны быть упакованы до масштабирования, иначе франчайзи получают «купи бренд без системы» и гарантированно проваливаются. 2025–2026 — упаковка, 2027 — масштабирование.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="container">
+    <div class="footer-inner">
+      <div>
+        <div class="footer-brand">BrandOS <span>·</span> Нейроупаковка</div>
+        <div class="footer-meta">Синтез Продукт · Лофт-пространство · Апрель 2026</div>
+      </div>
+      <a href="#sintez" class="footer-btn">К началу ↑</a>
+    </div>
+    <div class="footer-divider"></div>
+    <div class="footer-copy">© 2026 · Конфиденциальный документ для клиента · 90% продуктовых решений закрыто данными</div>
+  </div>
+</footer>
+
+<script>
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach((e, i) => {
+    if (e.isIntersecting) {
+      setTimeout(() => e.target.classList.add('visible'), Math.min(i * 60, 400));
+      observer.unobserve(e.target);
+    }
+  });
+}, { threshold: 0.08, rootMargin: '0px 0px -40px 0px' });
+document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
+
+const sections = document.querySelectorAll('section[id]');
+const navLinks = document.querySelectorAll('.nav-links a[href^="#"]');
+window.addEventListener('scroll', () => {
+  let current = '';
+  sections.forEach(s => { if (window.scrollY >= s.offsetTop - 120) current = s.id; });
+  navLinks.forEach(a => {
+    a.style.color = a.getAttribute('href') === '#' + current ? 'var(--brand)' : '';
+    a.style.fontWeight = a.getAttribute('href') === '#' + current ? '700' : '500';
+  });
+});
+</script>
+</body>
+</html>
