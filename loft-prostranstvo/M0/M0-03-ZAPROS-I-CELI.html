@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BrandOS · Запрос и цели M0-03 — Лофт-пространство</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --brand: #0ea5e9; --brand-dark: #0284c7; --brand-light: #7dd3fc; --brand-bg: #e0f2fe;
+  --n50: #f8fafc; --n100: #f1f5f9; --n200: #e2e8f0; --n300: #cbd5e1; --n400: #94a3b8;
+  --n500: #64748b; --n600: #475569; --n700: #334155; --n800: #1e293b; --n900: #0f172a;
+  --success: #10b981; --warning: #f59e0b; --error: #ef4444; --info: #3b82f6;
+  --font: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  --shadow-card: 0 1px 3px 0 rgba(0,0,0,.05), 0 1px 2px -1px rgba(0,0,0,.05);
+  --shadow-hover: 0 10px 25px -5px rgba(0,0,0,.08), 0 8px 10px -6px rgba(0,0,0,.04);
+  --shadow-btn: 0 4px 14px 0 rgba(14,165,233,.35);
+  --shadow-btn-hover: 0 6px 20px 0 rgba(14,165,233,.45);
+  --shadow-glow: 0 0 40px rgba(14,165,233,.15);
+}
+body { font-family: var(--font); font-size: 16px; line-height: 1.6; color: var(--n600); background: var(--n100); }
+.container { max-width: 1100px; margin: 0 auto; padding: 0 24px; }
+.section { padding: 64px 0; }
+
+@keyframes fade-up-kf { 0%{opacity:0;transform:translateY(24px)} 100%{opacity:1;transform:translateY(0)} }
+@keyframes pulse-glow { 0%,100%{box-shadow:0 0 20px rgba(14,165,233,.3)} 50%{box-shadow:0 0 40px rgba(14,165,233,.55)} }
+@keyframes scale-in { 0%{opacity:0;transform:scale(.96)} 100%{opacity:1;transform:scale(1)} }
+
+.fade-up { opacity:0; transform:translateY(24px); transition:opacity .6s ease-out, transform .6s ease-out; }
+.fade-up.visible { opacity:1; transform:translateY(0); }
+
+/* === NAV === */
+.nav { position:fixed; top:0; left:0; right:0; z-index:300; height:64px; background:rgba(255,255,255,.93); backdrop-filter:blur(12px); border-bottom:1px solid var(--n200); }
+.nav-inner { height:100%; display:flex; align-items:center; justify-content:space-between; gap:16px; }
+.nav-logo { font-size:16px; font-weight:700; color:var(--n900); white-space:nowrap; }
+.nav-logo span { color:var(--brand); }
+.nav-links { display:flex; gap:20px; }
+.nav-links a { font-size:13px; font-weight:500; color:var(--n600); text-decoration:none; transition:color .2s; white-space:nowrap; }
+.nav-links a:hover { color:var(--brand); }
+.nav-tag { font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.06em; color:var(--brand); background:var(--brand-bg); padding:5px 12px; border-radius:9999px; white-space:nowrap; }
+.nav-back { font-size:13px; font-weight:500; color:var(--n600); text-decoration:none; transition:color .2s; white-space:nowrap; }
+.nav-back:hover { color:var(--brand); }
+.burger { display:none; flex-direction:column; gap:5px; cursor:pointer; padding:8px; }
+.burger span { width:22px; height:2px; background:var(--n700); border-radius:2px; transition:all .3s; }
+.mobile-menu { display:none; position:fixed; top:64px; left:0; right:0; background:#fff; border-bottom:1px solid var(--n200); padding:16px 24px; z-index:299; flex-direction:column; gap:12px; }
+.mobile-menu.open { display:flex; }
+.mobile-menu a { font-size:14px; font-weight:500; color:var(--n700); text-decoration:none; padding:8px 0; border-bottom:1px solid var(--n100); }
+
+@media(max-width:768px) {
+  .nav-links { display:none; }
+  .nav-tag { display:none; }
+  .burger { display:flex; }
+}
+
+/* === HERO === */
+.hero { background:linear-gradient(135deg, var(--n900) 0%, #0f2744 60%, #0a1628 100%); padding:88px 0 72px; position:relative; overflow:hidden; }
+.hero-glow { position:absolute; border-radius:50%; pointer-events:none; }
+.hero-badge { display:inline-flex; align-items:center; gap:8px; background:rgba(14,165,233,.15); border:1px solid rgba(14,165,233,.3); color:var(--brand-light); padding:7px 16px; border-radius:9999px; font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:.06em; margin-bottom:24px; animation:scale-in .4s ease-out both; }
+.hero-dot { width:6px; height:6px; border-radius:50%; background:var(--brand); animation:pulse-glow 2s infinite; display:inline-block; }
+.hero-title { font-size:40px; line-height:1.12; letter-spacing:-.02em; font-weight:700; color:#fff; max-width:700px; margin-bottom:20px; animation:fade-up-kf .6s ease-out .1s both; }
+.hero-sub { font-size:17px; line-height:1.65; color:var(--n400); max-width:620px; margin-bottom:32px; animation:fade-up-kf .6s ease-out .2s both; }
+.hero-sub strong { color:var(--brand-light); font-weight:600; }
+.hero-meta { display:flex; flex-wrap:wrap; gap:12px; margin-bottom:32px; animation:fade-up-kf .6s ease-out .25s both; }
+.hero-meta-item { display:flex; align-items:center; gap:6px; font-size:13px; color:var(--n400); }
+.hero-meta-item strong { color:#fff; }
+.hero-meta-sep { color:var(--n700); }
+
+/* === SECTION DIVIDER === */
+.section-divider { display:flex; align-items:center; gap:20px; padding:40px 0 20px; }
+.sd-num { font-size:48px; font-weight:700; color:var(--n200); line-height:1; flex-shrink:0; }
+.sd-line { flex:1; height:1px; background:var(--n200); }
+.sd-label { font-size:13px; font-weight:700; text-transform:uppercase; letter-spacing:.08em; color:var(--n400); }
+
+/* === INFO CARDS === */
+.info-card { background:#fff; border-radius:16px; border:1px solid var(--n200); padding:28px; box-shadow:var(--shadow-card); transition:all .3s; margin-bottom:16px; }
+.info-card:hover { box-shadow:var(--shadow-hover); transform:translateY(-2px); }
+.info-card h3 { font-size:17px; font-weight:600; color:var(--n900); margin-bottom:10px; }
+.info-card p { font-size:15px; line-height:1.65; color:var(--n600); }
+.info-card ul { padding-left:20px; margin-top:10px; }
+.info-card li { font-size:15px; line-height:1.65; color:var(--n600); margin-bottom:6px; }
+.info-card-inner { display:flex; align-items:flex-start; gap:16px; }
+.ic-icon { width:42px; height:42px; border-radius:12px; background:var(--brand-bg); color:var(--brand); display:flex; align-items:center; justify-content:center; font-size:16px; font-weight:700; flex-shrink:0; }
+.ic-body h3 { font-size:17px; font-weight:600; color:var(--n900); margin-bottom:6px; }
+.ic-body p { font-size:15px; line-height:1.65; color:var(--n600); }
+
+/* === ALERT === */
+.alert { border-radius:12px; padding:18px 22px; margin:16px 0; }
+.alert-info { background:linear-gradient(135deg, #eff6ff 0%, #e0f2fe 100%); border:1px solid #bae6fd; border-left:4px solid var(--brand); }
+.alert-info .alert-title { font-size:14px; font-weight:700; color:var(--n800); margin-bottom:6px; }
+.alert-info p { font-size:14px; color:var(--n700); line-height:1.6; }
+.alert-warning { background:linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%); border:1px solid #fde68a; border-left:4px solid var(--warning); }
+.alert-warning .alert-title { font-size:14px; font-weight:700; color:var(--n800); margin-bottom:6px; }
+.alert-warning p { font-size:14px; color:var(--n700); line-height:1.6; }
+
+/* === GOALS GRID === */
+.goals-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(300px,1fr)); gap:20px; margin:24px 0; }
+.goal-card { background:#fff; border-radius:16px; border:1px solid var(--n200); padding:24px; box-shadow:var(--shadow-card); transition:all .3s; position:relative; overflow:hidden; }
+.goal-card:hover { box-shadow:var(--shadow-hover); transform:translateY(-2px); }
+.goal-num { width:32px; height:32px; border-radius:50%; background:var(--brand); color:#fff; display:flex; align-items:center; justify-content:center; font-size:14px; font-weight:700; margin-bottom:12px; flex-shrink:0; }
+.goal-priority { font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.06em; color:var(--brand); margin-bottom:8px; }
+.goal-title { font-size:16px; font-weight:600; color:var(--n900); margin-bottom:8px; line-height:1.4; }
+.goal-body { font-size:14px; color:var(--n600); line-height:1.6; }
+.goal-card-business { border-top:3px solid var(--brand); }
+.goal-card-role { border-top:3px solid var(--success); }
+.goal-card-infra { border-top:3px solid var(--warning); }
+.goal-num-business { background:var(--brand); }
+.goal-num-role { background:var(--success); }
+.goal-num-infra { background:var(--warning); }
+
+/* === PAINS GRID === */
+.pains-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:16px; margin:24px 0; }
+.pain-card { background:#fff; border-radius:12px; border:1px solid var(--n200); padding:20px; box-shadow:var(--shadow-card); border-left:3px solid var(--error); }
+.pain-title { font-size:14px; font-weight:700; color:var(--n800); margin-bottom:6px; }
+.pain-body { font-size:13px; color:var(--n600); line-height:1.55; }
+
+/* === CONSTRAINTS GRID === */
+.constraints-wrap { display:grid; grid-template-columns:1fr 1fr; gap:24px; margin:24px 0; }
+@media(max-width:768px) { .constraints-wrap { grid-template-columns:1fr; } }
+
+/* === TABLE === */
+.table-wrap { overflow-x:auto; margin:20px 0; }
+table { width:100%; border-collapse:collapse; font-size:14px; }
+th { background:var(--n100); color:var(--n700); font-weight:600; padding:12px 16px; text-align:left; border-bottom:2px solid var(--n200); }
+td { padding:12px 16px; border-bottom:1px solid var(--n100); color:var(--n600); vertical-align:top; }
+tr:last-child td { border-bottom:none; }
+tr:hover td { background:var(--n50); }
+
+/* === STATUS CHECKLIST === */
+.status-list { list-style:none; padding:0; }
+.status-list li { display:flex; align-items:center; gap:12px; padding:14px 0; border-bottom:1px solid var(--n100); font-size:15px; color:var(--n700); }
+.status-list li:last-child { border-bottom:none; }
+.check-done { width:24px; height:24px; border-radius:50%; background:#d1fae5; color:#065f46; display:flex; align-items:center; justify-content:center; font-size:13px; font-weight:700; flex-shrink:0; }
+
+/* === NOT IN SCOPE === */
+.not-scope-list { list-style:none; padding:0; }
+.not-scope-list li { display:flex; align-items:flex-start; gap:12px; padding:12px 0; border-bottom:1px solid var(--n100); }
+.not-scope-list li:last-child { border-bottom:none; }
+.x-icon { width:20px; height:20px; border-radius:50%; background:#fee2e2; color:#991b1b; display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:700; flex-shrink:0; margin-top:2px; }
+.ns-text { font-size:14px; color:var(--n600); line-height:1.6; }
+
+/* === CTA === */
+.cta-section { background:var(--n900); padding:72px 0; text-align:center; }
+.cta-section h2 { font-size:28px; font-weight:700; color:#fff; margin-bottom:12px; }
+.cta-section p { font-size:16px; color:var(--n400); margin-bottom:32px; max-width:520px; margin-left:auto; margin-right:auto; }
+.btn-primary { display:inline-flex; align-items:center; gap:8px; background:var(--brand); color:#fff; padding:14px 32px; border-radius:9999px; font-size:15px; font-weight:600; text-decoration:none; box-shadow:var(--shadow-btn); transition:all .2s; }
+.btn-primary:hover { background:var(--brand-dark); box-shadow:var(--shadow-btn-hover); transform:translateY(-1px); }
+
+/* === FOOTER === */
+footer { background:#fff; border-top:1px solid var(--n200); padding:32px 0; }
+.footer-inner { display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:12px; }
+.footer-copy { font-size:13px; color:var(--n500); }
+.footer-meta { font-size:12px; color:var(--n400); }
+
+/* === BLOCKQUOTE === */
+blockquote { border-left:3px solid var(--brand); padding:12px 20px; background:#f0f9ff; border-radius:0 8px 8px 0; margin:16px 0; font-style:italic; color:var(--n700); font-size:15px; }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav">
+  <div class="container nav-inner">
+    <div class="nav-logo">BrandOS <span>·</span> Лофт-пространство</div>
+    <div class="nav-links">
+      <a href="#s1">Запрос</a>
+      <a href="#s2">Боли</a>
+      <a href="#s3">Цели</a>
+      <a href="#s4">Ограничения</a>
+      <a href="#s5">Ожидания</a>
+      <a href="#s6">Успех</a>
+    </div>
+    <div style="display:flex;align-items:center;gap:12px;">
+      <a class="nav-back" href="https://clients.brand-os.ru/loft-prostranstvo/">← К хабу</a>
+      <div class="nav-tag">M0 · Запрос и цели</div>
+    </div>
+    <div class="burger" onclick="document.getElementById('mobileMenu').classList.toggle('open')"><span></span><span></span><span></span></div>
+  </div>
+</nav>
+<div class="mobile-menu" id="mobileMenu">
+  <a href="#s1" onclick="this.closest('.mobile-menu').classList.remove('open')">Запрос</a>
+  <a href="#s2" onclick="this.closest('.mobile-menu').classList.remove('open')">Боли</a>
+  <a href="#s3" onclick="this.closest('.mobile-menu').classList.remove('open')">Цели</a>
+  <a href="#s4" onclick="this.closest('.mobile-menu').classList.remove('open')">Ограничения</a>
+  <a href="#s5" onclick="this.closest('.mobile-menu').classList.remove('open')">Ожидания</a>
+  <a href="#s6" onclick="this.closest('.mobile-menu').classList.remove('open')">Критерии успеха</a>
+</div>
+<div style="height:64px;"></div>
+
+<!-- HERO -->
+<header class="hero" id="hero">
+  <div class="hero-glow" style="top:-120px;right:-60px;width:500px;height:500px;background:radial-gradient(circle,rgba(14,165,233,.18) 0%,transparent 70%);"></div>
+  <div class="hero-glow" style="bottom:-80px;left:-80px;width:360px;height:360px;background:radial-gradient(circle,rgba(14,165,233,.08) 0%,transparent 70%);"></div>
+  <div class="container" style="position:relative;z-index:1;">
+    <div class="hero-badge"><span class="hero-dot"></span>Модуль M0 · Вход · Запрос и цели</div>
+    <h1 class="hero-title">Запрос и цели проекта</h1>
+    <p class="hero-sub">Что Юля принесла на вход и <strong>что именно нужно построить</strong> — цели, ограничения, ожидания и критерии успеха. Зафиксировано в октябре 2025.</p>
+    <div class="hero-meta">
+      <div class="hero-meta-item"><strong>Модуль M0</strong></div>
+      <span class="hero-meta-sep">·</span>
+      <div class="hero-meta-item">Дата: <strong>25 апреля 2026</strong></div>
+      <span class="hero-meta-sep">·</span>
+      <div class="hero-meta-item">Статус: <strong>Готово</strong></div>
+    </div>
+  </div>
+</header>
+
+<!-- MAIN -->
+<main>
+
+<!-- ═══ РАЗДЕЛ 1 — ЗАПРОС ═══ -->
+<section class="section" id="s1">
+<div class="container">
+  <div class="section-divider"><div class="sd-num">1</div><div class="sd-line"></div><div class="sd-label">Исходная формулировка запроса</div></div>
+
+  <h2 style="font-size:26px;font-weight:700;color:var(--n900);margin-bottom:8px;">1.1. Что Юля принесла на первую встречу</h2>
+  <p style="font-size:15px;color:var(--n500);margin-bottom:28px;">Дословные формулировки из стратсессии — октябрь 2025</p>
+
+  <div class="fade-up">
+    <blockquote>"Я управляю четырьмя площадками, проводила через кризисы, сделала франшизу уже и продала. Но сейчас просто я в операционке, потому что не автоматизировала."</blockquote>
+  </div>
+
+  <div class="fade-up">
+    <blockquote>"Я в операционке, некогда на стратегию. Бизнес зависит от агрегаторов, нет времени на внедрение ИИ."</blockquote>
+  </div>
+
+  <div class="fade-up">
+    <blockquote>"На мне всё висит. Нет чётких инструкций. Хочется работать по структуре, чтобы видеть, что делать."</blockquote>
+  </div>
+
+  <div class="alert alert-info fade-up">
+    <div class="alert-title">Короткая формулировка запроса</div>
+    <p>Выйти из операционки, построить систему, масштабироваться через франшизу, снизить зависимость от агрегаторов, построить личный бренд.</p>
+  </div>
+</div>
+</section>
+
+<!-- ═══ РАЗДЕЛ 2 — БОЛИ ═══ -->
+<section class="section" id="s2" style="background:#fff;">
+<div class="container">
+  <div class="section-divider"><div class="sd-num">2</div><div class="sd-line"></div><div class="sd-label">Реальная боль — глубже запроса</div></div>
+
+  <h2 style="font-size:26px;font-weight:700;color:var(--n900);margin-bottom:28px;">2.1. Семь болей, зафиксированных на сессии</h2>
+
+  <div class="pains-grid">
+    <div class="pain-card fade-up">
+      <div class="pain-title">Операционная перегрузка</div>
+      <div class="pain-body">Все решения на Юле — нет времени на стратегию. Даже простые вопросы сотрудников требуют её участия.</div>
+    </div>
+    <div class="pain-card fade-up">
+      <div class="pain-title">Зависимость от агрегаторов</div>
+      <div class="pain-body">80% трафика извне — структурная уязвимость. Любое изменение условий агрегаторов — угроза бизнесу.</div>
+    </div>
+    <div class="pain-card fade-up">
+      <div class="pain-title">Отсутствие системы в команде</div>
+      <div class="pain-body">Нет должностных инструкций, нет KPI, ручное управление. Делегировать невозможно — нет стандартов.</div>
+    </div>
+    <div class="pain-card fade-up">
+      <div class="pain-title">Провал автоматизации</div>
+      <div class="pain-body">AmoCRM не прижилась. AI-бот в разработке, но не работает. Попытки автоматизации остаются незавершёнными.</div>
+    </div>
+    <div class="pain-card fade-up">
+      <div class="pain-title">Нет позиционирования</div>
+      <div class="pain-body">Юля теряется на фоне конкурентов, которые упакованы лучше — даже с худшим сервисом. Нет бренда и голоса.</div>
+    </div>
+    <div class="pain-card fade-up">
+      <div class="pain-title">Франшиза как «сырой продукт»</div>
+      <div class="pain-body">Продана 1, но без стандартов для тиражирования. Масштабировать в текущем виде нельзя.</div>
+    </div>
+    <div class="pain-card fade-up">
+      <div class="pain-title">Усталость и сомнения</div>
+      <div class="pain-body">«Это теория», «не хочу платить за бумажки» — защитная реакция от нового. Нужны быстрые видимые результаты.</div>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- ═══ РАЗДЕЛ 3 — ЦЕЛИ ═══ -->
+<section class="section" id="s3">
+<div class="container">
+  <div class="section-divider"><div class="sd-num">3</div><div class="sd-line"></div><div class="sd-label">Зафиксированные цели проекта</div></div>
+
+  <h2 style="font-size:26px;font-weight:700;color:var(--n900);margin-bottom:8px;">3.1. Бизнес-цели</h2>
+  <p style="font-size:15px;color:var(--n500);margin-bottom:28px;">Приоритет 1 — деньги, масштаб, независимость</p>
+
+  <div class="goals-grid">
+    <div class="goal-card goal-card-business fade-up">
+      <div style="display:flex;align-items:flex-start;gap:12px;">
+        <div class="goal-num goal-num-business">1</div>
+        <div>
+          <div class="goal-priority">Приоритет #1 · Бизнес</div>
+          <div class="goal-title">Выручка 3 млн ₽/мес чистыми</div>
+          <div class="goal-body">От текущего состояния — рост кратно. Финансовая цель, которая определяет все остальные решения.</div>
+        </div>
+      </div>
+    </div>
+    <div class="goal-card goal-card-business fade-up">
+      <div style="display:flex;align-items:flex-start;gap:12px;">
+        <div class="goal-num goal-num-business">2</div>
+        <div>
+          <div class="goal-priority">Приоритет #1 · Бизнес</div>
+          <div class="goal-title">Снизить зависимость от агрегаторов: 80% → 30%</div>
+          <div class="goal-body">Собственные каналы прямого привлечения как основа устойчивости бизнеса.</div>
+        </div>
+      </div>
+    </div>
+    <div class="goal-card goal-card-business fade-up">
+      <div style="display:flex;align-items:flex-start;gap:12px;">
+        <div class="goal-num goal-num-business">3</div>
+        <div>
+          <div class="goal-priority">Приоритет #1 · Бизнес</div>
+          <div class="goal-title">Превратить ручной бизнес в масштабируемую систему</div>
+          <div class="goal-body">Процессы, стандарты, инструкции — чтобы бизнес работал без Юли на каждом шагу.</div>
+        </div>
+      </div>
+    </div>
+    <div class="goal-card goal-card-business fade-up">
+      <div style="display:flex;align-items:flex-start;gap:12px;">
+        <div class="goal-num goal-num-business">4</div>
+        <div>
+          <div class="goal-priority">Приоритет #1 · Бизнес</div>
+          <div class="goal-title">Франшиза 2.0 — готовый к тиражированию продукт</div>
+          <div class="goal-body">Финмодель + стандарты + обучение. Фокус на регионы — Москва насыщена.</div>
+        </div>
+      </div>
+    </div>
+    <div class="goal-card goal-card-business fade-up">
+      <div style="display:flex;align-items:flex-start;gap:12px;">
+        <div class="goal-num goal-num-business">5</div>
+        <div>
+          <div class="goal-priority">Приоритет #1 · Бизнес</div>
+          <div class="goal-title">Региональное расширение через франчайзи</div>
+          <div class="goal-body">Первые подписания — к апрелю 2026. Регионы как основной вектор роста.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <h2 style="font-size:22px;font-weight:700;color:var(--n900);margin:40px 0 12px;">3.2. Цели по роли Юли</h2>
+  <p style="font-size:15px;color:var(--n500);margin-bottom:24px;">Приоритет 2 — освобождение, личный бренд, делегирование</p>
+
+  <div class="goals-grid">
+    <div class="goal-card goal-card-role fade-up">
+      <div style="display:flex;align-items:flex-start;gap:12px;">
+        <div class="goal-num goal-num-role">6</div>
+        <div>
+          <div class="goal-priority">Приоритет #2 · Роль</div>
+          <div class="goal-title">Выйти из операционки</div>
+          <div class="goal-body">80% времени — на стратегию и развитие. Не «я в операционке», а «я на стратегии».</div>
+        </div>
+      </div>
+    </div>
+    <div class="goal-card goal-card-role fade-up">
+      <div style="display:flex;align-items:flex-start;gap:12px;">
+        <div class="goal-num goal-num-role">7</div>
+        <div>
+          <div class="goal-priority">Приоритет #2 · Роль</div>
+          <div class="goal-title">Построить личный бренд</div>
+          <div class="goal-body">Юля как эксперт в лофт-бизнесе. Не инфобизнесмен — хозяйка, которая держит процесс.</div>
+        </div>
+      </div>
+    </div>
+    <div class="goal-card goal-card-role fade-up">
+      <div style="display:flex;align-items:flex-start;gap:12px;">
+        <div class="goal-num goal-num-role">8</div>
+        <div>
+          <div class="goal-priority">Приоритет #2 · Роль</div>
+          <div class="goal-title">Делегировать команде</div>
+          <div class="goal-body">Нанять второго менеджера, SMM/продюсера. Обучить через стандарты и инструкции.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <h2 style="font-size:22px;font-weight:700;color:var(--n900);margin:40px 0 12px;">3.3. Инфраструктурные цели</h2>
+  <p style="font-size:15px;color:var(--n500);margin-bottom:24px;">Приоритет 3 — воронка, CRM, контент</p>
+
+  <div class="goals-grid">
+    <div class="goal-card goal-card-infra fade-up">
+      <div style="display:flex;align-items:flex-start;gap:12px;">
+        <div class="goal-num goal-num-infra">9</div>
+        <div>
+          <div class="goal-priority">Приоритет #3 · Инфраструктура</div>
+          <div class="goal-title">Рабочая воронка</div>
+          <div class="goal-body">Стратегия → сайт → CRM → контент → медиа → франшиза. Связный маршрут клиента без дыр.</div>
+        </div>
+      </div>
+    </div>
+    <div class="goal-card goal-card-infra fade-up">
+      <div style="display:flex;align-items:flex-start;gap:12px;">
+        <div class="goal-num goal-num-infra">10</div>
+        <div>
+          <div class="goal-priority">Приоритет #3 · Инфраструктура</div>
+          <div class="goal-title">CRM — видимость заявок, клиентов, денег</div>
+          <div class="goal-body">Человек + инструмент. Понятный отчёт 1 раз в неделю без ручного сбора данных.</div>
+        </div>
+      </div>
+    </div>
+    <div class="goal-card goal-card-infra fade-up">
+      <div style="display:flex;align-items:flex-start;gap:12px;">
+        <div class="goal-num goal-num-infra">11</div>
+        <div>
+          <div class="goal-priority">Приоритет #3 · Инфраструктура</div>
+          <div class="goal-title">Контент-машина</div>
+          <div class="goal-body">Telegram + видео + кейсы. Системная работа, а не разовые посты.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- ═══ РАЗДЕЛ 4 — ОГРАНИЧЕНИЯ ═══ -->
+<section class="section" id="s4" style="background:#fff;">
+<div class="container">
+  <div class="section-divider"><div class="sd-num">4</div><div class="sd-line"></div><div class="sd-label">Рамки и ограничения проекта</div></div>
+
+  <h2 style="font-size:26px;font-weight:700;color:var(--n900);margin-bottom:28px;">4.1. С чем работаем — и с чем нет</h2>
+
+  <div class="constraints-wrap">
+    <div class="fade-up">
+      <div class="info-card" style="margin-bottom:0;">
+        <h3 style="color:var(--brand);margin-bottom:16px;">Время и темп</h3>
+        <ul>
+          <li>Горизонт: ноябрь 2025 – апрель 2026 (6 месяцев)</li>
+          <li>Быстрые результаты обязательны — что-то видимое в первую неделю</li>
+          <li>Минимум zoom-встреч, максимум асинхронной работы с файлами</li>
+        </ul>
+      </div>
+    </div>
+    <div class="fade-up">
+      <div class="info-card" style="margin-bottom:0;">
+        <h3 style="color:var(--brand);margin-bottom:16px;">Бюджет</h3>
+        <ul>
+          <li>Консультация: 50 000 ₽/мес на первый месяц</li>
+          <li>Маркетинг: 10–20% от оборота, поэтапно</li>
+          <li>Отдельные контуры (веб-дизайн, съёмки, менеджер) — оплачиваются отдельно</li>
+        </ul>
+      </div>
+    </div>
+    <div class="fade-up">
+      <div class="info-card" style="margin-bottom:0;">
+        <h3 style="color:var(--brand);margin-bottom:16px;">Люди</h3>
+        <ul>
+          <li>Есть: ассистент, администратор, техник</li>
+          <li>Нужно нанять: второй менеджер, SMM/продюсер</li>
+          <li>Нужно обучить всех через стандарты и инструкции</li>
+        </ul>
+      </div>
+    </div>
+    <div class="fade-up">
+      <div class="info-card" style="margin-bottom:0;">
+        <h3 style="color:var(--brand);margin-bottom:16px;">Технологии</h3>
+        <ul>
+          <li>AmoCRM — сохраняем, но переходим на человека-оператора</li>
+          <li>AI-бот — дорабатываем постепенно</li>
+          <li>Сайт — делаем заново (отдельный контур)</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <h2 style="font-size:22px;font-weight:700;color:var(--n900);margin:40px 0 16px;">4.2. Что НЕ входит в рамки проекта</h2>
+
+  <div class="fade-up">
+    <div class="info-card">
+      <ul class="not-scope-list">
+        <li><div class="x-icon">✕</div><div class="ns-text"><strong>Прямая операционная работа</strong> — бронирования, приём гостей, уборка. Остаётся на команде Юли.</div></li>
+        <li><div class="x-icon">✕</div><div class="ns-text"><strong>Юридическое оформление франшизы</strong> — отдельный контур с юристом.</div></li>
+        <li><div class="x-icon">✕</div><div class="ns-text"><strong>Разработка сложного софта</strong> (свой CRM, приложение) — используем готовые решения.</div></li>
+        <li><div class="x-icon">✕</div><div class="ns-text"><strong>Личный коучинг / психологическая работа</strong> — за рамками методологии.</div></li>
+      </ul>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- ═══ РАЗДЕЛ 5 — ОЖИДАНИЯ ═══ -->
+<section class="section" id="s5">
+<div class="container">
+  <div class="section-divider"><div class="sd-num">5</div><div class="sd-line"></div><div class="sd-label">Ожидания клиента от проекта</div></div>
+
+  <h2 style="font-size:26px;font-weight:700;color:var(--n900);margin-bottom:28px;">5.1. Что Юля ждёт от работы</h2>
+
+  <div class="fade-up">
+    <div class="info-card">
+      <div class="info-card-inner">
+        <div class="ic-icon">📄</div>
+        <div class="ic-body">
+          <h3>От формата работы</h3>
+          <p>Артефакты, а не теория: «Дай мне прототип, финмодель, контент-план». Быстрые результаты — в первую неделю. Асинхрон — минимум zoom, максимум файлов. Честная обратная связь без прикрас.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="fade-up">
+    <div class="info-card">
+      <div class="info-card-inner">
+        <div class="ic-icon">🎯</div>
+        <div class="ic-body">
+          <h3>От результатов</h3>
+          <p>Свобода от рутины. Инструмент управления «в голове» — CRM, аналитика, контроль без ручного сбора. Рабочая воронка привлечения без агрегаторов. Франшиза как готовый бизнес-продукт.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="fade-up">
+    <div class="info-card">
+      <div class="info-card-inner">
+        <div class="ic-icon">🤝</div>
+        <div class="ic-body">
+          <h3>От исполнителя</h3>
+          <p>Экспертность в стратегии и системах. Знание AI-инструментов и их реального применения. Связка с командой (продюсер, дизайнер, копирайтер) при необходимости. Длительные отношения: стратегия → внедрение → сопровождение.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- ═══ РАЗДЕЛ 6 — КРИТЕРИИ УСПЕХА ═══ -->
+<section class="section" id="s6" style="background:#fff;">
+<div class="container">
+  <div class="section-divider"><div class="sd-num">6</div><div class="sd-line"></div><div class="sd-label">Критерии успеха на момент завершения стратегического этапа</div></div>
+
+  <h2 style="font-size:26px;font-weight:700;color:var(--n900);margin-bottom:28px;">6.1. Как поймём, что стратегический этап закрыт</h2>
+
+  <div class="fade-up table-wrap">
+    <table>
+      <thead>
+        <tr><th>#</th><th>Критерий</th><th>Как мерить</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>1</td><td>Стратегия и финмодель согласованы</td><td>Подписанный документ</td></tr>
+        <tr><td>2</td><td>ЦА описана с аватарами и JTBD</td><td>3+ аватара, сценарии выбора</td></tr>
+        <tr><td>3</td><td>Прототип сайта готов</td><td>Живой прототип на тестовом домене</td></tr>
+        <tr><td>4</td><td>CRM-человек подобран и работает</td><td>Отчёты по заявкам 1 раз/нед</td></tr>
+        <tr><td>5</td><td>Контент-план на 3 месяца</td><td>Telegram + видео + кейсы</td></tr>
+        <tr><td>6</td><td>Франшиза 2.0 — черновик пакета</td><td>Финмодель + стандарты + обучение</td></tr>
+        <tr><td>7</td><td>Юля делегировала 50% операционки</td><td>Должностные инструкции + KPI у команды</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2 style="font-size:22px;font-weight:700;color:var(--n900);margin:40px 0 16px;">6.2. Статус запроса</h2>
+
+  <div class="fade-up">
+    <ul class="status-list">
+      <li><div class="check-done">✓</div>Запрос принят — октябрь 2025</li>
+      <li><div class="check-done">✓</div>Рамки согласованы — ноябрь 2025</li>
+      <li><div class="check-done">✓</div>Оплата получена — ноябрь 2025</li>
+      <li><div class="check-done">✓</div>Активный период: ноябрь 2025 – апрель 2026</li>
+      <li><div class="check-done">✓</div>Текущий этап: M1 (апрель 2026)</li>
+    </ul>
+  </div>
+
+  <div class="alert alert-info fade-up">
+    <div class="alert-title">Следующий шаг — Стратегическая картина</div>
+    <p>Итоги пяти исследований M2 с конкретными выводами, рыночными данными и стратегическими развилками — это и есть реализация запроса Юли: не теория, а конкретные данные для решений.</p>
+  </div>
+</div>
+</section>
+
+</main>
+
+<!-- CTA -->
+<section class="cta-section">
+  <div class="container">
+    <h2>Дальше → Стратегическая картина</h2>
+    <p>Ответы на запрос Юли — в данных пяти исследований M2. Конкретные цифры, рыночные выводы и стратегические развилки, которые определяют всё дальнейшее.</p>
+    <a class="btn-primary" href="https://clients.brand-os.ru/loft-prostranstvo/M2/M2-06-KARTINA.html">Открыть стратегическую картину →</a>
+  </div>
+</section>
+
+<footer>
+  <div class="container footer-inner">
+    <div class="footer-copy">© 2026 BrandOS · Нейроупаковка 2.0</div>
+    <div class="footer-meta">Обновлено: 25 апреля 2026 · Клиент: Юлия (Лофт-пространство)</div>
+  </div>
+</footer>
+
+<script>
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+}, { threshold: 0.1 });
+document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
+</script>
+</body>
+</html>

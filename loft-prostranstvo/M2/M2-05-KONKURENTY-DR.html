@@ -1,0 +1,1314 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BrandOS · M2-05 · Глубокое исследование конкурентов — Лофт-пространство</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --brand: #0ea5e9; --brand-dark: #0284c7; --brand-light: #7dd3fc; --brand-bg: #e0f2fe;
+  --n50: #f8fafc; --n100: #f1f5f9; --n200: #e2e8f0; --n300: #cbd5e1; --n400: #94a3b8;
+  --n500: #64748b; --n600: #475569; --n700: #334155; --n800: #1e293b; --n900: #0f172a;
+  --success: #10b981; --warning: #f59e0b; --error: #ef4444; --info: #3b82f6;
+  --font: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  --shadow-card: 0 1px 3px 0 rgba(0,0,0,.05), 0 1px 2px -1px rgba(0,0,0,.05);
+  --shadow-hover: 0 10px 25px -5px rgba(0,0,0,.08), 0 8px 10px -6px rgba(0,0,0,.04);
+  --shadow-btn: 0 4px 14px 0 rgba(14,165,233,.35);
+  --shadow-btn-hover: 0 6px 20px 0 rgba(14,165,233,.45);
+}
+body { font-family: var(--font); font-size: 16px; line-height: 1.6; color: var(--n600); background: var(--n100); }
+.container { max-width: 1100px; margin: 0 auto; padding: 0 24px; }
+.section { padding: 72px 0; }
+
+@keyframes fade-up { 0%{opacity:0;transform:translateY(24px)} 100%{opacity:1;transform:translateY(0)} }
+@keyframes scale-in { 0%{opacity:0;transform:scale(.96)} 100%{opacity:1;transform:scale(1)} }
+@keyframes pulse-glow { 0%,100%{box-shadow:0 0 20px rgba(14,165,233,.3)} 50%{box-shadow:0 0 40px rgba(14,165,233,.55)} }
+
+.fade-up { opacity:0; transform:translateY(24px); transition:opacity .6s ease-out, transform .6s ease-out; }
+.fade-up.visible { opacity:1; transform:translateY(0); }
+
+/* NAV */
+.nav { position:fixed; top:0; left:0; right:0; z-index:300; height:64px; background:rgba(255,255,255,.93); backdrop-filter:blur(12px); border-bottom:1px solid var(--n200); }
+.nav-inner { height:100%; display:flex; align-items:center; justify-content:space-between; gap:16px; }
+.nav-logo { font-size:16px; font-weight:700; color:var(--n900); white-space:nowrap; }
+.nav-logo span { color:var(--brand); }
+.nav-links { display:flex; gap:20px; }
+.nav-links a { font-size:13px; font-weight:500; color:var(--n600); text-decoration:none; transition:color .2s; white-space:nowrap; }
+.nav-links a:hover { color:var(--brand); }
+.nav-tag { font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.06em; color:var(--brand); background:var(--brand-bg); padding:5px 12px; border-radius:9999px; white-space:nowrap; }
+.nav-back { font-size:13px; font-weight:500; color:var(--n600); text-decoration:none; display:flex; align-items:center; gap:6px; transition:color .2s; }
+.nav-back:hover { color:var(--brand); }
+.burger { display:none; flex-direction:column; gap:5px; cursor:pointer; padding:8px; }
+.burger span { width:22px; height:2px; background:var(--n700); border-radius:2px; transition:all .3s; }
+.mobile-menu { display:none; position:fixed; top:64px; left:0; right:0; background:#fff; border-bottom:1px solid var(--n200); padding:16px 24px; z-index:299; flex-direction:column; gap:12px; }
+.mobile-menu.open { display:flex; }
+.mobile-menu a { font-size:14px; font-weight:500; color:var(--n700); text-decoration:none; padding:8px 0; border-bottom:1px solid var(--n100); }
+@media(max-width:768px){ .nav-links{display:none;} .nav-tag{display:none;} .burger{display:flex;} }
+
+/* HERO */
+.hero { background:linear-gradient(135deg,var(--n900) 0%,#0f2744 60%,#0a1628 100%); padding:100px 0 72px; position:relative; overflow:hidden; }
+.hero-glow { position:absolute; border-radius:50%; pointer-events:none; }
+.hero-badge { display:inline-flex; align-items:center; gap:8px; background:rgba(14,165,233,.15); border:1px solid rgba(14,165,233,.3); color:var(--brand-light); padding:7px 16px; border-radius:9999px; font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:.06em; margin-bottom:24px; animation:scale-in .4s ease-out both; }
+.hero-dot { width:6px; height:6px; border-radius:50%; background:var(--brand); animation:pulse-glow 2s infinite; display:inline-block; }
+.hero-title { font-size:40px; line-height:1.12; letter-spacing:-.02em; font-weight:700; color:#fff; max-width:740px; margin-bottom:20px; animation:fade-up .6s ease-out .1s both; }
+.hero-sub { font-size:17px; line-height:1.65; color:var(--n400); max-width:640px; margin-bottom:32px; animation:fade-up .6s ease-out .2s both; }
+.hero-sub strong { color:var(--brand-light); font-weight:600; }
+.hero-stats { display:grid; grid-template-columns:repeat(4,1fr); gap:16px; margin-top:40px; animation:fade-up .6s ease-out .3s both; }
+.hs-card { background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.1); border-radius:14px; padding:20px; text-align:center; }
+.hs-card .num { font-size:32px; font-weight:700; color:#fff; line-height:1; margin-bottom:6px; }
+.hs-card .lbl { font-size:12px; color:var(--n400); line-height:1.4; }
+@media(max-width:768px){ .hero-title{font-size:28px;} .hero-stats{grid-template-columns:repeat(2,1fr);} }
+
+/* SECTION DIVIDER */
+.section-divider { display:flex; align-items:center; gap:20px; padding:40px 0 20px; }
+.sd-num { font-size:48px; font-weight:700; color:var(--n200); line-height:1; flex-shrink:0; }
+.sd-line { flex:1; height:1px; background:var(--n200); }
+.sd-label { font-size:13px; font-weight:700; text-transform:uppercase; letter-spacing:.08em; color:var(--n400); }
+
+/* CLUSTER BADGE */
+.cluster-badge { display:inline-flex; align-items:center; padding:4px 12px; border-radius:9999px; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.05em; }
+.cb-a { background:#fee2e2; color:#991b1b; border:1px solid #fca5a5; }
+.cb-b { background:#fef3c7; color:#92400e; border:1px solid #fde68a; }
+.cb-c { background:#f1f5f9; color:#475569; border:1px solid #cbd5e1; }
+.cb-0 { background:#f3e8ff; color:#6b21a8; border:1px solid #d8b4fe; }
+
+/* COMPETITOR CARD */
+.comp-card { background:#fff; border-radius:16px; border:1px solid var(--n200); overflow:hidden; margin-bottom:16px; box-shadow:var(--shadow-card); transition:all .3s; }
+.comp-card:hover { box-shadow:var(--shadow-hover); transform:translateY(-2px); }
+.comp-card-header { padding:20px 24px 16px; cursor:pointer; display:flex; align-items:flex-start; gap:16px; }
+.comp-card-header:hover { background:var(--n50); }
+.comp-num { width:36px; height:36px; border-radius:10px; background:var(--brand-bg); color:var(--brand); display:flex; align-items:center; justify-content:center; font-size:14px; font-weight:700; flex-shrink:0; margin-top:2px; }
+.comp-meta { flex:1; }
+.comp-name { font-size:18px; font-weight:700; color:var(--n900); margin-bottom:4px; }
+.comp-tagline { font-size:13px; color:var(--n500); margin-bottom:8px; }
+.comp-badges { display:flex; flex-wrap:wrap; gap:6px; }
+.badge { display:inline-flex; align-items:center; padding:3px 10px; border-radius:9999px; font-size:11px; font-weight:600; border:1px solid; white-space:nowrap; }
+.badge-blue { background:#eff6ff; color:#1d4ed8; border-color:#bfdbfe; }
+.badge-green { background:#d1fae5; color:#065f46; border-color:#6ee7b7; }
+.badge-orange { background:#fff7ed; color:#9a3412; border-color:#fed7aa; }
+.badge-red { background:#fee2e2; color:#991b1b; border-color:#fca5a5; }
+.badge-gray { background:#f1f5f9; color:#475569; border-color:#cbd5e1; }
+.badge-purple { background:#f3e8ff; color:#6b21a8; border-color:#d8b4fe; }
+.comp-toggle { font-size:18px; color:var(--n400); flex-shrink:0; transition:transform .2s; }
+.comp-toggle.open { transform:rotate(180deg); }
+.comp-body { display:none; border-top:1px solid var(--n100); }
+.comp-body.open { display:block; }
+.comp-grid { display:grid; grid-template-columns:1fr 1fr; gap:0; }
+.comp-field { padding:14px 24px; border-bottom:1px solid var(--n100); }
+.comp-field:nth-child(odd) { border-right:1px solid var(--n100); }
+.comp-field-label { font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.06em; color:var(--n400); margin-bottom:4px; }
+.comp-field-value { font-size:14px; color:var(--n700); line-height:1.5; }
+.comp-field-value strong { color:var(--n900); }
+.comp-takeaway { padding:16px 24px; background:linear-gradient(135deg,#f0f9ff,#e0f2fe); border-top:1px solid #bae6fd; }
+.comp-takeaway-label { font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.06em; color:var(--brand-dark); margin-bottom:6px; }
+.comp-takeaway-text { font-size:14px; color:var(--n700); line-height:1.55; }
+@media(max-width:640px){ .comp-grid{grid-template-columns:1fr;} .comp-field:nth-child(odd){border-right:none;} }
+
+/* CARDS GRID */
+.cards-grid-2 { display:grid; grid-template-columns:1fr 1fr; gap:16px; margin:20px 0; }
+.cards-grid-3 { display:grid; grid-template-columns:repeat(3,1fr); gap:16px; margin:20px 0; }
+@media(max-width:768px){ .cards-grid-2,.cards-grid-3{grid-template-columns:1fr;} }
+
+/* HIGHLIGHT */
+.highlight-box { background:linear-gradient(135deg,#eff6ff,#e0f2fe); border:1px solid #bae6fd; border-left:4px solid var(--brand); border-radius:12px; padding:20px 24px; margin:20px 0; }
+.highlight-box.warning { background:linear-gradient(135deg,#fffbeb,#fef3c7); border-color:#fde68a; border-left-color:var(--warning); }
+.highlight-box.danger { background:#fff5f5; border-color:#fed7d7; border-left-color:var(--error); }
+.highlight-box.success { background:#f0fdf4; border-color:#bbf7d0; border-left-color:var(--success); }
+.highlight-box .hb-title { font-size:14px; font-weight:700; color:var(--n800); margin-bottom:6px; }
+.highlight-box p { font-size:14px; color:var(--n700); line-height:1.6; }
+
+/* STICKY TABS */
+.sticky-tabs { position:sticky; top:64px; z-index:200; background:rgba(255,255,255,.95); backdrop-filter:blur(8px); border-bottom:1px solid var(--n200); padding:0; }
+.tabs-inner { display:flex; gap:4px; overflow-x:auto; padding:12px 24px; max-width:1100px; margin:0 auto; scrollbar-width:none; }
+.tabs-inner::-webkit-scrollbar { display:none; }
+.tab-btn { padding:8px 16px; border-radius:9999px; font-size:13px; font-weight:600; cursor:pointer; border:2px solid var(--n200); background:#fff; color:var(--n600); transition:all .2s; font-family:var(--font); white-space:nowrap; }
+.tab-btn:hover { border-color:var(--brand); color:var(--brand); }
+.tab-btn.active { background:var(--brand); border-color:var(--brand); color:#fff; }
+
+/* TABLE */
+.table-wrap { overflow-x:auto; margin:20px 0; border-radius:12px; box-shadow:var(--shadow-card); }
+table { width:100%; border-collapse:collapse; background:#fff; font-size:13px; }
+table thead th { background:var(--n800); color:#fff; padding:12px 14px; text-align:left; font-size:12px; font-weight:600; text-transform:uppercase; letter-spacing:.04em; white-space:nowrap; }
+table thead th:first-child { border-radius:12px 0 0 0; }
+table thead th:last-child { border-radius:0 12px 0 0; }
+table tbody tr { border-bottom:1px solid var(--n100); transition:background .15s; }
+table tbody tr:hover { background:var(--n50); }
+table tbody td { padding:11px 14px; color:var(--n700); vertical-align:top; line-height:1.45; }
+table tbody td:first-child { font-weight:600; color:var(--n900); }
+.td-center { text-align:center; }
+.td-a { color:#dc2626; font-weight:700; }
+.td-b { color:#d97706; font-weight:600; }
+.td-c { color:var(--n500); }
+.rating-high { color:#059669; font-weight:700; }
+.rating-low { color:#dc2626; font-weight:700; }
+
+/* INFO CARD */
+.info-card { background:#fff; border-radius:16px; border:1px solid var(--n200); padding:24px 28px; box-shadow:var(--shadow-card); transition:all .3s; margin-bottom:14px; }
+.info-card:hover { box-shadow:var(--shadow-hover); transform:translateY(-2px); }
+.info-card-inner { display:flex; align-items:flex-start; gap:14px; }
+.ic-icon { width:40px; height:40px; border-radius:10px; background:var(--brand-bg); color:var(--brand); display:flex; align-items:center; justify-content:center; font-size:15px; font-weight:700; flex-shrink:0; }
+.ic-body h3 { font-size:16px; font-weight:600; color:var(--n900); margin-bottom:5px; }
+.ic-body p { font-size:14px; line-height:1.6; color:var(--n600); }
+
+/* GEO CARD */
+.geo-card { background:#fff; border-radius:14px; border:1px solid var(--n200); padding:20px; box-shadow:var(--shadow-card); }
+.geo-zone { font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.06em; margin-bottom:6px; }
+.geo-name { font-size:16px; font-weight:600; color:var(--n900); margin-bottom:8px; }
+.geo-players { font-size:13px; color:var(--n600); line-height:1.5; margin-bottom:8px; }
+.geo-assessment { font-size:13px; color:var(--n700); font-style:italic; }
+
+/* OFER CARD */
+.offer-card { background:#fff; border-radius:12px; border:1px solid var(--n200); padding:16px 18px; box-shadow:var(--shadow-card); }
+.offer-quote { font-size:15px; font-weight:600; color:var(--n900); margin-bottom:8px; font-style:italic; }
+.offer-meta { display:flex; flex-wrap:wrap; gap:6px; align-items:center; }
+.offer-brand { font-size:12px; font-weight:600; color:var(--brand); }
+.offer-trigger { font-size:12px; color:var(--n500); }
+
+/* GAP CARD */
+.gap-card { background:#fff; border-radius:14px; border:1px solid var(--n200); padding:20px 22px; box-shadow:var(--shadow-card); }
+.gap-num { font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.06em; color:var(--brand); margin-bottom:6px; }
+.gap-title { font-size:15px; font-weight:600; color:var(--n900); margin-bottom:8px; }
+.gap-impact { font-size:13px; color:var(--n600); line-height:1.5; margin-bottom:8px; }
+.gap-solution { font-size:13px; color:var(--n700); background:var(--n50); border-radius:8px; padding:8px 12px; border-left:3px solid var(--brand); }
+
+/* SOURCE ROW */
+.source-row { display:flex; align-items:flex-start; gap:12px; padding:12px 0; border-bottom:1px solid var(--n100); }
+.source-row:last-child { border-bottom:none; }
+.source-num { width:28px; height:28px; border-radius:8px; background:var(--brand-bg); color:var(--brand); font-size:12px; font-weight:700; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+.source-body { flex:1; }
+.source-type { font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.05em; color:var(--n400); margin-bottom:2px; }
+.source-text { font-size:13px; color:var(--n700); line-height:1.45; }
+
+/* CTA */
+.cta-section { background:linear-gradient(135deg,var(--n900) 0%,#0f2744 100%); padding:72px 0; }
+.cta-inner { text-align:center; }
+.cta-title { font-size:32px; font-weight:700; color:#fff; margin-bottom:16px; line-height:1.2; }
+.cta-sub { font-size:17px; color:var(--n400); margin-bottom:36px; max-width:500px; margin-left:auto; margin-right:auto; }
+.cta-btn { display:inline-flex; align-items:center; gap:10px; background:var(--brand); color:#fff; padding:16px 36px; border-radius:9999px; font-size:17px; font-weight:600; text-decoration:none; box-shadow:var(--shadow-btn); transition:all .25s; }
+.cta-btn:hover { background:var(--brand-dark); box-shadow:var(--shadow-btn-hover); transform:translateY(-2px); }
+
+/* FOOTER */
+footer { background:var(--n900); padding:32px 0; }
+.footer-inner { display:flex; align-items:center; justify-content:space-between; gap:16px; flex-wrap:wrap; }
+.footer-logo { font-size:15px; font-weight:700; color:#fff; }
+.footer-logo span { color:var(--brand); }
+.footer-meta { font-size:13px; color:var(--n500); }
+.footer-link { color:var(--brand-light); text-decoration:none; }
+.footer-link:hover { text-decoration:underline; }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav">
+  <div class="container nav-inner">
+    <div class="nav-logo">BrandOS <span>·</span> M2-05</div>
+    <div class="nav-links">
+      <a href="#r0">Методика</a>
+      <a href="#r1">Агрегаторы</a>
+      <a href="#r2">Кластеры</a>
+      <a href="#r3">Кластер A</a>
+      <a href="#r4">Кластер B</a>
+      <a href="#r5">Кластер C</a>
+      <a href="#r6">География</a>
+      <a href="#r7">Офферы</a>
+      <a href="#r8">Пробелы</a>
+    </div>
+    <div style="display:flex;align-items:center;gap:12px;">
+      <a href="https://clients.brand-os.ru/loft-prostranstvo/" class="nav-back">← К хабу</a>
+      <div class="nav-tag">DR · M2-05 · 25.04.2026</div>
+    </div>
+    <div class="burger" onclick="document.getElementById('mobileMenu').classList.toggle('open')"><span></span><span></span><span></span></div>
+  </div>
+</nav>
+<div class="mobile-menu" id="mobileMenu">
+  <a href="#r0">R0 — Методика</a>
+  <a href="#r1">R1 — Агрегаторы</a>
+  <a href="#r2">R2 — Кластеры</a>
+  <a href="#r3">R3 — Кластер A (14 игроков)</a>
+  <a href="#r4">R4 — Кластер B</a>
+  <a href="#r5">R5 — Кластер C</a>
+  <a href="#r6">R6 — География</a>
+  <a href="#r7">R7 — Офферы и маркетинг</a>
+  <a href="#r8">R8 — Пробелы данных</a>
+</div>
+<div style="height:64px;"></div>
+
+<!-- HERO -->
+<header class="hero">
+  <div class="hero-glow" style="top:-120px;right:-80px;width:500px;height:500px;background:radial-gradient(circle,rgba(14,165,233,.18) 0%,transparent 70%);"></div>
+  <div class="hero-glow" style="bottom:-80px;left:-60px;width:320px;height:320px;background:radial-gradient(circle,rgba(245,158,11,.1) 0%,transparent 70%);"></div>
+  <div class="container" style="position:relative;z-index:1;">
+    <div class="hero-badge"><span class="hero-dot"></span>Модуль M2 · Глубокое исследование · Deep Research</div>
+    <h1 class="hero-title">Конкуренты: 28 московских игроков аренды лофт-пространств</h1>
+    <p class="hero-sub">Фактологическое досье. Кластеризация рынка, разбор 14 сильнейших игроков, карта агрегаторов, география и офферы. <strong>Фундамент для синтеза гипотез M2-05.</strong></p>
+    <div class="hero-stats">
+      <div class="hs-card"><div class="num">28</div><div class="lbl">игроков в базе исследования</div></div>
+      <div class="hs-card"><div class="num">14</div><div class="lbl">сильных конкурентов (Кластер A)</div></div>
+      <div class="hs-card"><div class="num">7</div><div class="lbl">таблиц и матриц сравнения</div></div>
+      <div class="hs-card"><div class="num">20</div><div class="lbl">верифицированных источников</div></div>
+    </div>
+  </div>
+</header>
+
+<!-- STICKY TABS -->
+<div class="sticky-tabs">
+  <div class="tabs-inner">
+    <a href="#r0" class="tab-btn">R0 Методика</a>
+    <a href="#r1" class="tab-btn">R1 Агрегаторы</a>
+    <a href="#r2" class="tab-btn">R2 Кластеры</a>
+    <a href="#r3" class="tab-btn">R3 Кластер A</a>
+    <a href="#r4" class="tab-btn">R4 Кластер B</a>
+    <a href="#r5" class="tab-btn">R5 Кластер C</a>
+    <a href="#r6" class="tab-btn">R6 География</a>
+    <a href="#r7" class="tab-btn">R7 Офферы</a>
+    <a href="#r8" class="tab-btn">R8 Пробелы</a>
+  </div>
+</div>
+
+<main>
+
+<!-- R0 -->
+<section class="section" id="r0">
+<div class="container">
+  <div class="section-divider"><div class="sd-num">R0</div><div class="sd-line"></div><div class="sd-label">Scope & Методика</div></div>
+
+  <div class="cards-grid-2">
+    <div class="info-card fade-up">
+      <div class="info-card-inner">
+        <div class="ic-icon">01</div>
+        <div class="ic-body">
+          <h3>Цель исследования</h3>
+          <p>Анализ конкурентной среды московского рынка почасовой аренды лофт-пространств. Жёсткое отделение IT-платформ (агрегаторов) от физических операторов. Кластеризация и выявление 14 сильнейших игроков, формирующих стандарты рынка.</p>
+        </div>
+      </div>
+    </div>
+    <div class="info-card fade-up">
+      <div class="info-card-inner">
+        <div class="ic-icon">02</div>
+        <div class="ic-body">
+          <h3>Методология</h3>
+          <p>Объединение списка 28 игроков + выгрузка ТОП-5 из Яндекс.Карт (19.12.2025) + ручной парсинг Яндекс.Директ и крупнейших агрегаторов. Итоговый пул — более 70 брендов, кластеризация по: сети (3+ объектов), рейтингу (4.8+, 100+ отзывов), digital-инвестициям, сложности продуктовой матрицы.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="highlight-box fade-up">
+    <div class="hb-title">Главный вывод для Юлии</div>
+    <p>Рынок лофтов Москвы не состоит из 2 300 равнозначных конкурентов. Существует жёсткая иерархия: небольшая группа профессиональных сетей (Кластер A) забирает наиболее маржинальный B2B и премиальный B2C трафик за счёт комплексного продукта. Сотни одиночек (Кластер C) сжигают рентабельность в ценовых войнах на Авито. Для достижения цели 3 млн ₽/мес бизнесу необходимо выстраивать инфраструктуру, сопоставимую с лидерами Кластера A.</p>
+  </div>
+</div>
+</section>
+
+<!-- R1 АГРЕГАТОРЫ -->
+<section class="section" id="r1" style="background:#fff;">
+<div class="container">
+  <div class="section-divider"><div class="sd-num">R1</div><div class="sd-line"></div><div class="sd-label">Кластер 0 — Агрегаторы</div></div>
+  <p style="font-size:15px;color:var(--n500);margin-bottom:24px;">Зафиксировать, не разбирать как конкурентов. Это цифровая инфраструктура рынка, а не конкуренты за проведение мероприятий.</p>
+
+  <div class="highlight-box warning fade-up">
+    <div class="hb-title">Ключевая аналитическая ошибка</div>
+    <p>Смешивание IT-платформ, генерирующих трафик, с физическими лофтами. Агрегаторы конкурируют за рекламные бюджеты владельцев площадок, а не за мероприятия. Эти платформы НЕ являются конкурентами Юлии — они каналы привлечения клиентов.</p>
+  </div>
+
+  <div class="table-wrap fade-up">
+    <table>
+      <thead>
+        <tr>
+          <th>Агрегатор</th>
+          <th>Тип</th>
+          <th>Масштаб (Москва)</th>
+          <th>Модель монетизации</th>
+          <th>Присутствие Юлии</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>Loft2Rent</td><td>Специализированный каталог</td><td>~1 726 лофтов</td><td>Платное премиум-размещение</td><td><span class="badge badge-green">Присутствует</span></td></tr>
+        <tr><td>Bash.Today</td><td>Крупный маркетплейс площадок</td><td>~690+ лофтов</td><td>Комиссия со сделки 10–20%</td><td><span class="badge badge-green">Присутствует</span></td></tr>
+        <tr><td>Avito</td><td>Общий маркетплейс</td><td>Тысячи объявлений</td><td>Платное продвижение</td><td><span class="badge badge-red">100% трафика Юлии</span></td></tr>
+        <tr><td>Reveltime</td><td>Агрегатор event-площадок</td><td>~2 300+ лофтов</td><td>Комиссия 15–35%</td><td><span class="badge badge-gray">Уточняется</span></td></tr>
+        <tr><td>Soulfulloft</td><td>Премиум-каталог и консьерж</td><td>Сотни (фокус на премиум)</td><td>Подписка, без комиссии</td><td><span class="badge badge-gray">Уточняется</span></td></tr>
+        <tr><td>GoLoft</td><td>Специализированный лофт-агрегатор</td><td>Сотни площадок</td><td>Платное размещение</td><td><span class="badge badge-gray">Уточняется</span></td></tr>
+        <tr><td>Rent-Location</td><td>Технологичный каталог</td><td>Сотни площадок</td><td>Плата за лид ~700 ₽</td><td><span class="badge badge-gray">Уточняется</span></td></tr>
+        <tr><td>DeliSpace</td><td>Маркетплейс почасовой аренды</td><td>Десятки лофтов</td><td>Подписка 1990 ₽/3 мес</td><td><span class="badge badge-gray">Уточняется</span></td></tr>
+        <tr><td>2GIS</td><td>Гео-справочник</td><td>Все физические объекты</td><td>Контекстная гео-реклама</td><td><span class="badge badge-green">Присутствует</span></td></tr>
+        <tr><td>Яндекс.Карты</td><td>Картографический сервис</td><td>Все физические объекты</td><td>Рекламная подписка / Приоритет</td><td><span class="badge badge-green">Присутствует</span></td></tr>
+        <tr><td>Gorko.ru</td><td>Свадебный портал</td><td>Сотни залов и лофтов</td><td>Платное продвижение</td><td><span class="badge badge-gray">Нет данных</span></td></tr>
+        <tr><td>4Banket</td><td>Банкетный портал</td><td>Сотни залов и лофтов</td><td>Бесплатная база / Продвижение</td><td><span class="badge badge-gray">Нет данных</span></td></tr>
+        <tr><td>Snapster</td><td>Агрегатор фотостудий</td><td>Десятки</td><td>Комиссионная</td><td><span class="badge badge-gray">Нет данных</span></td></tr>
+        <tr><td>EventBooking</td><td>Агрегатор event-площадок</td><td>Тысячи площадок</td><td>Продвижение профиля</td><td><span class="badge badge-gray">Уточняется</span></td></tr>
+        <tr><td>Speedrent</td><td>Агрегатор почасовой аренды</td><td>Сотни площадок</td><td>Комиссионная</td><td><span class="badge badge-gray">Уточняется</span></td></tr>
+        <tr><td>Photobase</td><td>Агрегатор фотостудий</td><td>Сотни площадок</td><td>Подписка / Комиссия</td><td><span class="badge badge-gray">Нет данных</span></td></tr>
+        <tr><td>EventCatalog</td><td>B2B-справочник</td><td>Тысячи площадок</td><td>Платное размещение</td><td><span class="badge badge-gray">Нет данных</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="highlight-box danger fade-up">
+    <div class="hb-title">Главный вывод для Юлии</div>
+    <p>Текущая бизнес-модель, на 100% зависящая от Авито и агрегаторов, делает бизнес критически уязвимым к изменениям алгоритмов выдачи и повышению стоимости лида (CAC). Сильные конкуренты (Кластер A) используют агрегаторы только для захвата холодного трафика, активно переводя клиентов в собственные CRM для формирования LTV через прямые продажи.</p>
+  </div>
+</div>
+</section>
+
+<!-- R2 КЛАСТЕРЫ -->
+<section class="section" id="r2">
+<div class="container">
+  <div class="section-divider"><div class="sd-num">R2</div><div class="sd-line"></div><div class="sd-label">Сбор и первичная классификация конкурентов</div></div>
+
+  <div class="cards-grid-3 fade-up">
+    <div class="info-card" style="border-top:4px solid #dc2626;">
+      <div class="ic-body">
+        <h3><span class="cluster-badge cb-a" style="margin-bottom:10px;display:inline-flex;">Кластер A</span></h3>
+        <h3 style="font-size:18px;margin-top:4px;">14 сильных конкурентов</h3>
+        <p style="margin-top:8px;">Инвестируют в бренд, инфраструктуру и сервис. Создают правила игры. Оперируют чеками 15 000 — 100 000+ ₽. Формируют ожидания потребителей.</p>
+      </div>
+    </div>
+    <div class="info-card" style="border-top:4px solid #d97706;">
+      <div class="ic-body">
+        <h3><span class="cluster-badge cb-b" style="margin-bottom:10px;display:inline-flex;">Кластер B</span></h3>
+        <h3 style="font-size:18px;margin-top:4px;">10 средних / нишевых</h3>
+        <p style="margin-top:8px;">Устойчивый бизнес и лояльная аудитория. Выживают за счёт уникальной специализации, которую сложно скопировать массовым сетям.</p>
+      </div>
+    </div>
+    <div class="info-card" style="border-top:4px solid var(--n400);">
+      <div class="ic-body">
+        <h3><span class="cluster-badge cb-c" style="margin-bottom:10px;display:inline-flex;">Кластер C</span></h3>
+        <h3 style="font-size:18px;margin-top:4px;">1500–1800 слабых одиночек</h3>
+        <p style="margin-top:8px;">Фоновая масса рынка. Демпингуют на Авито. Нет устойчивой бизнес-модели. До 70% номинального предложения.</p>
+      </div>
+    </div>
+  </div>
+
+  <h3 style="font-size:18px;font-weight:600;color:var(--n900);margin:32px 0 16px;">Сводная таблица кластеризации (ключевые игроки)</h3>
+
+  <div class="table-wrap fade-up">
+    <table>
+      <thead>
+        <tr>
+          <th>Игрок</th>
+          <th>Кластер</th>
+          <th>Отзывы ЯК</th>
+          <th>Рейтинг ЯК</th>
+          <th>Кол-во объектов</th>
+          <th>Сайт</th>
+          <th>Я.Директ</th>
+          <th>Агрегаторы</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>Soxspace</td><td><span class="cluster-badge cb-a">A</span></td><td class="td-center">н/д</td><td class="td-center">н/д</td><td>23 помещения</td><td>soxspace.ru</td><td class="td-center">✓</td><td class="td-center">✓</td></tr>
+        <tr><td>Loft Hall</td><td><span class="cluster-badge cb-a">A</span></td><td class="td-center rating-high">1 575</td><td class="td-center rating-high">5.0</td><td>12+ залов</td><td>lofthall.ru</td><td class="td-center">✓</td><td class="td-center">✓</td></tr>
+        <tr><td>Loft Blackout</td><td><span class="cluster-badge cb-a">A</span></td><td class="td-center">580</td><td class="td-center rating-high">5.0</td><td>4 локации</td><td>loftblackout.ru</td><td class="td-center">✓</td><td class="td-center">✓</td></tr>
+        <tr><td>Multiroom (Bogema)</td><td><span class="cluster-badge cb-a">A</span></td><td class="td-center">384</td><td class="td-center rating-high">5.0</td><td>5 локаций</td><td>bogema-party.ru</td><td class="td-center">✓</td><td class="td-center">✓</td></tr>
+        <tr><td>Campus Loft</td><td><span class="cluster-badge cb-a">A</span></td><td class="td-center">457</td><td class="td-center">4.8</td><td>1 здание (3 эт.)</td><td>campusloft.ru</td><td class="td-center">✓</td><td class="td-center">✓</td></tr>
+        <tr><td>Империя Скай Лофт</td><td><span class="cluster-badge cb-a">A</span></td><td class="td-center">131</td><td class="td-center rating-high">5.0</td><td>2 зала</td><td>imperiasky.ru</td><td class="td-center">✓</td><td class="td-center">✓</td></tr>
+        <tr><td>Let's Party</td><td><span class="cluster-badge cb-a">A</span></td><td class="td-center">>100</td><td class="td-center rating-high">5.0</td><td>6 лофтов + 4 комн.</td><td>letspartyloft.ru</td><td class="td-center">✓</td><td class="td-center">✓</td></tr>
+        <tr><td>CinemaSecret</td><td><span class="cluster-badge cb-a">A</span></td><td class="td-center">62</td><td class="td-center rating-high">5.0</td><td>5 лок. / 34 зала</td><td>cinemasecret.ru</td><td class="td-center">✓</td><td class="td-center">—</td></tr>
+        <tr><td>BankaBanka</td><td><span class="cluster-badge cb-a">A</span></td><td class="td-center">>100</td><td class="td-center">4.9</td><td>6 залов</td><td>bankabanka.ru</td><td class="td-center">✓</td><td class="td-center">✓</td></tr>
+        <tr><td>Loft Center B69</td><td><span class="cluster-badge cb-a">A</span></td><td class="td-center rating-high">2 276</td><td class="td-center rating-low">4.3</td><td>100+ (заявлено)</td><td>b69.ru</td><td class="td-center">✓</td><td class="td-center">✓</td></tr>
+        <tr><td>Casa Picassa</td><td><span class="cluster-badge cb-a">A</span></td><td class="td-center">>100</td><td class="td-center">4.9</td><td>15 залов</td><td>casapicassa.ru</td><td class="td-center">✓</td><td class="td-center">✓</td></tr>
+        <tr><td>AG Loft</td><td><span class="cluster-badge cb-a">A</span></td><td class="td-center">>200</td><td class="td-center">4.9</td><td>12 залов</td><td>agloft.ru</td><td class="td-center">✓</td><td class="td-center">✓</td></tr>
+        <tr><td>Pravda Event</td><td><span class="cluster-badge cb-a">A</span></td><td class="td-center">н/д</td><td class="td-center">н/д</td><td>1 зал (750 м²)</td><td>pravdaevent.ru</td><td class="td-center">—</td><td class="td-center">✓</td></tr>
+        <tr><td>My Loft (May.Moscow)</td><td><span class="cluster-badge cb-a">A</span></td><td class="td-center">н/д</td><td class="td-center">н/д</td><td>6 залов</td><td>may.moscow</td><td class="td-center">✓</td><td class="td-center">✓</td></tr>
+        <tr><td>Come In Loft</td><td><span class="cluster-badge cb-b">B</span></td><td class="td-center"><50</td><td class="td-center">4.8</td><td>2 зала</td><td>comeinloft.ru</td><td class="td-center">—</td><td class="td-center">✓</td></tr>
+        <tr><td>Artplay Лекторий</td><td><span class="cluster-badge cb-b">B</span></td><td class="td-center"><50</td><td class="td-center">н/д</td><td>1 зал</td><td>artplay.ru</td><td class="td-center">—</td><td class="td-center">✓</td></tr>
+        <tr><td>Loft Nastroyenie</td><td><span class="cluster-badge cb-b">B</span></td><td class="td-center">н/д</td><td class="td-center rating-high">5.0</td><td>1 зал</td><td>—</td><td class="td-center">—</td><td class="td-center">✓</td></tr>
+        <tr><td>N-Joy Community</td><td><span class="cluster-badge cb-b">B</span></td><td class="td-center">н/д</td><td class="td-center">4.9</td><td>2 зала</td><td>—</td><td class="td-center">—</td><td class="td-center">✓</td></tr>
+        <tr><td>PartyHard Loft</td><td><span class="cluster-badge cb-b">B</span></td><td class="td-center">н/д</td><td class="td-center rating-high">5.0</td><td>1 зал</td><td>—</td><td class="td-center">—</td><td class="td-center">✓</td></tr>
+        <tr><td>IONSPACE</td><td><span class="cluster-badge cb-b">B</span></td><td class="td-center"><50</td><td class="td-center">4.9</td><td>1 зал</td><td>—</td><td class="td-center">—</td><td class="td-center">✓</td></tr>
+        <tr><td>Loft Fantom</td><td><span class="cluster-badge cb-b">B</span></td><td class="td-center">н/д</td><td class="td-center">4.7</td><td>1 зал</td><td>—</td><td class="td-center">—</td><td class="td-center">✓</td></tr>
+        <tr><td>Illskill Lounge</td><td><span class="cluster-badge cb-b">B</span></td><td class="td-center">н/д</td><td class="td-center">4.8</td><td>1 зал</td><td>—</td><td class="td-center">—</td><td class="td-center">✓</td></tr>
+        <tr><td>Loft Roden</td><td><span class="cluster-badge cb-b">B</span></td><td class="td-center"><50</td><td class="td-center rating-high">5.0</td><td>1 зал</td><td>—</td><td class="td-center">—</td><td class="td-center">✓</td></tr>
+        <tr><td>LOFT THE PLACE</td><td><span class="cluster-badge cb-b">B</span></td><td class="td-center"><50</td><td class="td-center">4.9</td><td>1 зал</td><td>—</td><td class="td-center">—</td><td class="td-center">✓</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="highlight-box fade-up">
+    <div class="hb-title">Главный вывод для Юлии</div>
+    <p>Из гипотетических сотен лофтов реальную рыночную власть имеют 14 компаний. Именно они аккумулируют основную массу отзывов (Loft Hall — 1575, B69 — 2276, Loft Blackout — 580) и формируют у клиента понимание рыночных цен. Старый список из 28 одиночек искажал картину рынка, скрывая истинных системных игроков.</p>
+  </div>
+</div>
+</section>
+
+<!-- R3 КЛАСТЕР A -->
+<section class="section" id="r3" style="background:#fff;">
+<div class="container">
+  <div class="section-divider"><div class="sd-num">R3</div><div class="sd-line"></div><div class="sd-label">Кластер A — 14 сильных конкурентов</div></div>
+  <p style="font-size:15px;color:var(--n500);margin-bottom:8px;">Фактологические карточки. Ведущие игроки перестали продавать «голые стены», перейдя к продаже комплексных эмоций, сервисных пакетов и готовых сценариев мероприятий.</p>
+  <p style="font-size:13px;color:var(--n400);margin-bottom:28px;">Нажмите на карточку для развёртывания полного досье.</p>
+
+
+  <!-- COMPETITOR CARDS - CLUSTER A -->
+
+  <!-- 1. Soxspace -->
+  <div class="comp-card fade-up">
+    <div class="comp-card-header" onclick="toggleComp(this)">
+      <div class="comp-num">1</div>
+      <div class="comp-meta">
+        <div class="comp-name">Soxspace <span style="font-size:13px;color:var(--n500);font-weight:400;">— Главный премиум-референс</span></div>
+        <div class="comp-tagline">Премиальные высокодоходные пространства и готовый арендный бизнес (ГАП)</div>
+        <div class="comp-badges">
+          <span class="cluster-badge cb-a">Кластер A</span>
+          <span class="badge badge-purple">Премиум</span>
+          <span class="badge badge-green">Франшиза: 12</span>
+          <span class="badge badge-blue">50 000 ₽ ср. чек</span>
+        </div>
+      </div>
+      <div class="comp-toggle">▾</div>
+    </div>
+    <div class="comp-body">
+      <div class="comp-grid">
+        <div class="comp-field"><div class="comp-field-label">Объекты и масштаб</div><div class="comp-field-value">23 помещения, масштабная сеть с акцентом на исторические здания и особняки</div></div>
+        <div class="comp-field"><div class="comp-field-label">Ценовой ярус</div><div class="comp-field-value"><strong>Премиум.</strong> Средний чек 50 000 ₽. Маржинальность 30–46%</div></div>
+        <div class="comp-field"><div class="comp-field-label">Продуктовая матрица</div><div class="comp-field-value">Почасовая/пакетная аренда для B2C/B2B + инвестиционный продукт для партнёров (ГАП)</div></div>
+        <div class="comp-field"><div class="comp-field-label">Каналы продаж</div><div class="comp-field-value">Сильный собственный бренд, закрытые каталоги. Агрегаторы — не основной канал</div></div>
+        <div class="comp-field"><div class="comp-field-label">CX и сервис</div><div class="comp-field-value">Глубокая приватность, премиальный дизайн</div></div>
+        <div class="comp-field"><div class="comp-field-label">Целевые сегменты</div><div class="comp-field-value">Высокобюджетные частные мероприятия, VIP B2B, инвесторы</div></div>
+        <div class="comp-field"><div class="comp-field-label">Визуал и TOV</div><div class="comp-field-value">Экспертный, статусный, финансово-ориентированный тон</div></div>
+        <div class="comp-field"><div class="comp-field-label">Франшиза / ГАП</div><div class="comp-field-value"><strong>Да. Продано 12 франшиз.</strong> Упакована как твёрдый инвестиционный актив</div></div>
+        <div class="comp-field"><div class="comp-field-label">Главная сила</div><div class="comp-field-value">Вертикальная интеграция (приобретение/реконструкция → аренда) и высокий порог входа</div></div>
+        <div class="comp-field"><div class="comp-field-label">Слабые места</div><div class="comp-field-value">Высокая капиталоёмкость открытия новых точек ограничивает скорость экспансии</div></div>
+      </div>
+      <div class="comp-takeaway">
+        <div class="comp-takeaway-label">Стратегический вывод</div>
+        <div class="comp-takeaway-text">Опорный референс премиальной франшизной модели. Маржинальность 30–46% достигается через вертикальную интеграцию. Soxspace — не классический лофт-бизнес, а «Макдональдс на недвижимости». Копировать модель без инвестиций в объекты невозможно, но пакетная логика и уход от агрегаторов — применимы.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2. Loft Hall -->
+  <div class="comp-card fade-up">
+    <div class="comp-card-header" onclick="toggleComp(this)">
+      <div class="comp-num">2</div>
+      <div class="comp-meta">
+        <div class="comp-name">Loft Hall</div>
+        <div class="comp-tagline">«Лучшая городская event-площадка России» — лауреат TOP100AWARDS</div>
+        <div class="comp-badges">
+          <span class="cluster-badge cb-a">Кластер A</span>
+          <span class="badge badge-purple">Премиум</span>
+          <span class="badge badge-green">1575 отзывов · 5.0 ЯК</span>
+          <span class="badge badge-blue">12+ залов · до 800 чел</span>
+        </div>
+      </div>
+      <div class="comp-toggle">▾</div>
+    </div>
+    <div class="comp-body">
+      <div class="comp-grid">
+        <div class="comp-field"><div class="comp-field-label">Объекты и масштаб</div><div class="comp-field-value">Крупнейшая event-сеть. 12+ залов (Автозаводская, Волочаевская, загородная THE BIRCH). Вместимость до 800 человек</div></div>
+        <div class="comp-field"><div class="comp-field-label">Ценовой ярус</div><div class="comp-field-value"><strong>Премиум.</strong> Цены не публикуются открыто, продажи через индивидуальные сметы</div></div>
+        <div class="comp-field"><div class="comp-field-label">Продуктовая матрица</div><div class="comp-field-value">Свадьбы, масштабные корпоративы, концерты. Мощный in-house кейтеринг LOFT HALL CATERING с европейской, американской и авторской кухней</div></div>
+        <div class="comp-field"><div class="comp-field-label">Каналы продаж</div><div class="comp-field-value">lofthall.ru, активная контекстная реклама по ключам «корпоратив», «свадьба». Яндекс.Карты (1575 отзывов, 5.0)</div></div>
+        <div class="comp-field"><div class="comp-field-label">CX и сервис</div><div class="comp-field-value">Вышколенный персонал. Строгий контроль качества (официанты проверяют чистоту бокалов фонариками). Выделенные персональные менеджеры</div></div>
+        <div class="comp-field"><div class="comp-field-label">Целевые сегменты</div><div class="comp-field-value">Крупный B2B, высокобюджетные свадьбы</div></div>
+        <div class="comp-field"><div class="comp-field-label">Оффер</div><div class="comp-field-value">«Предложим несколько площадок для Новогоднего Корпоратива в LOFT HALL»</div></div>
+        <div class="comp-field"><div class="comp-field-label">Главная сила</div><div class="comp-field-value">Недосягаемый масштаб инфраструктуры, исторические здания, сильный собственный кейтеринг</div></div>
+        <div class="comp-field"><div class="comp-field-label">Слабые места</div><div class="comp-field-value">Не ориентированы на массовый сегмент малых частных праздников из-за высокого минимального бюджета</div></div>
+        <div class="comp-field"><div class="comp-field-label">Франшиза</div><div class="comp-field-value">Нет открытых данных, управление централизованное</div></div>
+      </div>
+      <div class="comp-takeaway">
+        <div class="comp-takeaway-label">Стратегический вывод</div>
+        <div class="comp-takeaway-text">Loft Hall закрывает крупный B2B и масштабные свадьбы — сегмент недосягаемый без гигантской инфраструктуры. Не прямой конкурент Юлии в текущем масштабе. Но их способность продавать через персональные сметы (не прайс-лист) — модель для корпоративного B2B Юлии.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3. Loft Blackout -->
+  <div class="comp-card fade-up">
+    <div class="comp-card-header" onclick="toggleComp(this)">
+      <div class="comp-num">3</div>
+      <div class="comp-meta">
+        <div class="comp-name">Loft Blackout</div>
+        <div class="comp-tagline">Лофты с верандами и крышей — агрессивный демпинг</div>
+        <div class="comp-badges">
+          <span class="cluster-badge cb-a">Кластер A</span>
+          <span class="badge badge-orange">Эконом-демпинг</span>
+          <span class="badge badge-green">580 отзывов · 5.0</span>
+          <span class="badge badge-red">от 1 499 ₽/час</span>
+        </div>
+      </div>
+      <div class="comp-toggle">▾</div>
+    </div>
+    <div class="comp-body">
+      <div class="comp-grid">
+        <div class="comp-field"><div class="comp-field-label">Объекты и масштаб</div><div class="comp-field-value">4 локации у м. Электрозаводская (Lucky Ducky, Historic 1914, Cuprum, HIGHLIGHT). Площади 70–145 м²</div></div>
+        <div class="comp-field"><div class="comp-field-label">Ценовой ярус</div><div class="comp-field-value"><strong>Агрессивный демпинг.</strong> Будни от 1 499 ₽/час, выходные от 2 599 до 4 399 ₽/час</div></div>
+        <div class="comp-field"><div class="comp-field-label">Продуктовая матрица</div><div class="comp-field-value">Почасовая аренда. Пробковый сбор 0₽, уборка 0₽, звук 0₽, 30 мин бесплатно на подготовку</div></div>
+        <div class="comp-field"><div class="comp-field-label">Каналы продаж</div><div class="comp-field-value">Массовый SEO-маркетинг, Яндекс.Директ. Яндекс.Карты (580 отзывов, 5.0)</div></div>
+        <div class="comp-field"><div class="comp-field-label">CX и сервис</div><div class="comp-field-value">Круглосуточно 24/7. Дружелюбные администраторы. Разрешено с животными (до 35 см)</div></div>
+        <div class="comp-field"><div class="comp-field-label">Целевые сегменты</div><div class="comp-field-value">Массовый B2C, молодёжь, студенты, девичники</div></div>
+        <div class="comp-field"><div class="comp-field-label">Офферы</div><div class="comp-field-value">«Час в подарок при бронировании до 30 января», «Скидка 10% для постоянных клиентов»</div></div>
+        <div class="comp-field"><div class="comp-field-label">Главная сила</div><div class="comp-field-value">Идеально выстроенная воронка лидогенерации на низкий чек (иллюзия абсолютной выгоды)</div></div>
+        <div class="comp-field"><div class="comp-field-label">Слабые места</div><div class="comp-field-value">Привлечение аудитории с низким чеком ведёт к быстрому износу площадок и маргинализации бренда</div></div>
+        <div class="comp-field"><div class="comp-field-label">TOV</div><div class="comp-field-value">Агрессивный розничный тон (акцент на перечёркнутые цены и «0 рублей»)</div></div>
+      </div>
+      <div class="comp-takeaway">
+        <div class="comp-takeaway-label">Стратегический вывод</div>
+        <div class="comp-takeaway-text">Стратегическая ловушка: конкурировать с ними по цене на Авито = кассовый разрыв. Они не закладывают в цену амортизацию, налоги, маркетинг. Их SEO-модель «0 рублей» — воронка в никуда. Это именно тот игрок, от которого нужно дистанцироваться всем позиционированием.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 4. Multiroom -->
+  <div class="comp-card fade-up">
+    <div class="comp-card-header" onclick="toggleComp(this)">
+      <div class="comp-num">4</div>
+      <div class="comp-meta">
+        <div class="comp-name">Multiroom (сеть Loft by Bogema)</div>
+        <div class="comp-tagline">Атмосферные эклектичные пространства с полным набором услуг «под ключ»</div>
+        <div class="comp-badges">
+          <span class="cluster-badge cb-a">Кластер A</span>
+          <span class="badge badge-blue">Средний сегмент</span>
+          <span class="badge badge-green">384 отзыва · 5.0</span>
+          <span class="badge badge-orange">Мастер апселлов</span>
+        </div>
+      </div>
+      <div class="comp-toggle">▾</div>
+    </div>
+    <div class="comp-body">
+      <div class="comp-grid">
+        <div class="comp-field"><div class="comp-field-label">Объекты и масштаб</div><div class="comp-field-value">5 локаций (Смирновская, Болотная наб., Бауманская и др.). Круглосуточно</div></div>
+        <div class="comp-field"><div class="comp-field-label">Ценовой ярус</div><div class="comp-field-value"><strong>Средний с динамическим ценообразованием.</strong> Будни 5 499 ₽, Вс 6 499 ₽, Пт-Сб 8 499 ₽</div></div>
+        <div class="comp-field"><div class="comp-field-label">Продуктовая матрица</div><div class="comp-field-value">Модель лоукостера с дорогостоящими апселлами. Звукорежиссёр (15к), клинер (1к), хостес (6к), иллюзионист (8к), ведущий (10к)</div></div>
+        <div class="comp-field"><div class="comp-field-label">Каналы продаж</div><div class="comp-field-value">bogema-party.ru, Яндекс.Карты (384 отзыва, 5.0)</div></div>
+        <div class="comp-field"><div class="comp-field-label">CX и сервис</div><div class="comp-field-value">Персональное сопровождение. Обилие деталей в интерьере (люстра из велосипеда, шкаф с секретом)</div></div>
+        <div class="comp-field"><div class="comp-field-label">Целевые сегменты</div><div class="comp-field-value">Частные вечеринки (B2C), камерные свадьбы</div></div>
+        <div class="comp-field"><div class="comp-field-label">Главная сила</div><div class="comp-field-value">Мастерская монетизация каждого шага клиента через прозрачное меню дополнительных услуг</div></div>
+        <div class="comp-field"><div class="comp-field-label">Слабые места</div><div class="comp-field-value">Локация на Смирновской (29% негатива за промзону и сложный доступ на 3 этаж)</div></div>
+      </div>
+      <div class="comp-takeaway">
+        <div class="comp-takeaway-label">Стратегический вывод</div>
+        <div class="comp-takeaway-text">Образцовая апселл-модель: низкая базовая ставка + каталог услуг «на любой вкус». Каждый апселл очевидно полезен клиенту и увеличивает средний чек на 30–80%. Эта схема воспроизводима для Юлии без CAPEX — нужны партнёрские договоры с поставщиками услуг.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 5. Campus Loft -->
+  <div class="comp-card fade-up">
+    <div class="comp-card-header" onclick="toggleComp(this)">
+      <div class="comp-num">5</div>
+      <div class="comp-meta">
+        <div class="comp-name">Campus Loft</div>
+        <div class="comp-tagline">Пространство с теплым индустриальным стилем и сервисом под ключ</div>
+        <div class="comp-badges">
+          <span class="cluster-badge cb-a">Кластер A</span>
+          <span class="badge badge-blue">Средний сегмент</span>
+          <span class="badge badge-green">457 отзывов · 4.8</span>
+          <span class="badge badge-orange">WhatsApp-маркетинг</span>
+        </div>
+      </div>
+      <div class="comp-toggle">▾</div>
+    </div>
+    <div class="comp-body">
+      <div class="comp-grid">
+        <div class="comp-field"><div class="comp-field-label">Объекты и масштаб</div><div class="comp-field-value">1 трёхэтажное здание (Самокатная ул.) с внутренним балконом и эксплуатируемой верандой на крыше</div></div>
+        <div class="comp-field"><div class="comp-field-label">Ценовой ярус</div><div class="comp-field-value"><strong>Средний сегмент.</strong> Пакет «Бар под ключ!» — 50 000 ₽ на 100 коктейлей. Кальянный кейтеринг от 2 000 ₽/шт</div></div>
+        <div class="comp-field"><div class="comp-field-label">Каналы продаж</div><div class="comp-field-value">Высокая активность в WhatsApp для подогрева базы. Яндекс.Карты (457 отзывов, 4.8)</div></div>
+        <div class="comp-field"><div class="comp-field-label">CX и сервис</div><div class="comp-field-value">Круглосуточно. Активная помощь владельцев (Александр и Ксения) в координации событий</div></div>
+        <div class="comp-field"><div class="comp-field-label">Целевые сегменты</div><div class="comp-field-value">Корпоративы, свадьбы, крупные дни рождения (до 80 человек)</div></div>
+        <div class="comp-field"><div class="comp-field-label">Офферы</div><div class="comp-field-value">«Выгодные пакеты на популярные даты декабря», «1 час в подарок»</div></div>
+        <div class="comp-field"><div class="comp-field-label">Главная сила</div><div class="comp-field-value">Сильный проактивный прямой маркетинг и продажа высокочековых пакетов (напитки, кальяны)</div></div>
+        <div class="comp-field"><div class="comp-field-label">Слабые места</div><div class="comp-field-value">Сложная логистика в промзоне завода «Кристалл» (запрет въезда такси после 00:00)</div></div>
+      </div>
+      <div class="comp-takeaway">
+        <div class="comp-takeaway-label">Стратегический вывод</div>
+        <div class="comp-takeaway-text">Прямой аналог модели Юлии по масштабу, но с работающим WhatsApp-маркетингом и пакетной продажей бара. Их «Бар под ключ» — конкретный пример пакета, который Юля может создать в течение месяца через договор с кейтеринг-партнёром.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 6. Империя Скай -->
+  <div class="comp-card fade-up">
+    <div class="comp-card-header" onclick="toggleComp(this)">
+      <div class="comp-num">6</div>
+      <div class="comp-meta">
+        <div class="comp-name">Империя Скай Лофт (Imperia Sky Loft)</div>
+        <div class="comp-tagline">Ультра-премиум на 43 этаже башни «Империя» — статусная локация «выше рынка»</div>
+        <div class="comp-badges">
+          <span class="cluster-badge cb-a">Кластер A</span>
+          <span class="badge badge-purple">Ультра-премиум</span>
+          <span class="badge badge-green">131 отзыв · 5.0</span>
+          <span class="badge badge-red">от 100 000 ₽</span>
+        </div>
+      </div>
+      <div class="comp-toggle">▾</div>
+    </div>
+    <div class="comp-body">
+      <div class="comp-grid">
+        <div class="comp-field"><div class="comp-field-label">Объекты и масштаб</div><div class="comp-field-value">2 зала на 43 этаже башни «Империя» (Москва-Сити)</div></div>
+        <div class="comp-field"><div class="comp-field-label">Ценовой ярус</div><div class="comp-field-value"><strong>Ультра-премиум.</strong> Базовая аренда от 100 000 ₽. Частный формат от 70к, бизнес от 80к</div></div>
+        <div class="comp-field"><div class="comp-field-label">Продуктовая матрица</div><div class="comp-field-value">Закрытые мероприятия без посторонних. Авторский кейтеринг, технический продакшн (экраны, звук)</div></div>
+        <div class="comp-field"><div class="comp-field-label">CX и сервис</div><div class="comp-field-value">Строгая приватность. Персональный банкетный менеджер</div></div>
+        <div class="comp-field"><div class="comp-field-label">Целевые сегменты</div><div class="comp-field-value">Крупный B2B (конференции, бизнес-ужины), элитные частные юбилеи</div></div>
+        <div class="comp-field"><div class="comp-field-label">Оффер-изюминка</div><div class="comp-field-value">«Приезжайте к нам в гости на просмотр лофта — такси за наш счёт»</div></div>
+        <div class="comp-field"><div class="comp-field-label">Главная сила</div><div class="comp-field-value">Уникальное расположение и грамотная работа с барьерами входа (оплата VIP-такси на просмотр)</div></div>
+        <div class="comp-field"><div class="comp-field-label">Слабые места</div><div class="comp-field-value">Крайне узкая ЦА, полная зависимость от корпоративных бюджетов</div></div>
+      </div>
+      <div class="comp-takeaway">
+        <div class="comp-takeaway-label">Стратегический вывод</div>
+        <div class="comp-takeaway-text">Их такси-оффер — идеальный пример снятия барьера входа для B2B клиента. Небольшие инвестиции в «жест» существенно повышают конверсию из лида в просмотр. Аналог для Юлии: бесплатный тур по лофтам + онлайн 360°-тур на сайте.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 7. Let's Party -->
+  <div class="comp-card fade-up">
+    <div class="comp-card-header" onclick="toggleComp(this)">
+      <div class="comp-num">7</div>
+      <div class="comp-meta">
+        <div class="comp-name">Let's Party (Бюро Хороших Событий)</div>
+        <div class="comp-tagline">Тематические лофты (Бали, Гавайи) с уличными территориями — эталон пакетных B2C предложений</div>
+        <div class="comp-badges">
+          <span class="cluster-badge cb-a">Кластер A</span>
+          <span class="badge badge-blue">Высокий средний</span>
+          <span class="badge badge-green">5.0 ЯК</span>
+          <span class="badge badge-orange">Пакеты 45–75к ₽</span>
+        </div>
+      </div>
+      <div class="comp-toggle">▾</div>
+    </div>
+    <div class="comp-body">
+      <div class="comp-grid">
+        <div class="comp-field"><div class="comp-field-label">Объекты и масштаб</div><div class="comp-field-value">6 крупных лофтов (Soul, Surf, Hawaii, Viola) + 4 малые комнаты (Олив, Нави, Охра, Скарлет). Локации: Бауманская, Сокольники</div></div>
+        <div class="comp-field"><div class="comp-field-label">Ценовой ярус</div><div class="comp-field-value"><strong>Высокий средний.</strong> Soul Loft (150+350 м² улица) — 45–65к ₽. Viola (320 м²) — 60–75к ₽. Surf (90 м²) — 20–27,5к ₽</div></div>
+        <div class="comp-field"><div class="comp-field-label">Продуктовая матрица</div><div class="comp-field-value">Мощная пакетная система (Премиум, Стандарт, Лайт). Включено всё: 5 часов аренды, уборка, проектор, лёд, кикер, кальяны. Кейтеринг (фуршет от 2000 ₽/чел)</div></div>
+        <div class="comp-field"><div class="comp-field-label">Каналы продаж</div><div class="comp-field-value">letspartyloft.ru. Продвижение через event-агентства</div></div>
+        <div class="comp-field"><div class="comp-field-label">CX и сервис</div><div class="comp-field-value">Нет пробкового сбора. Нет ограничений по шуму (отдельные здания). Администраторы активно помогают во время праздника</div></div>
+        <div class="comp-field"><div class="comp-field-label">Главная сила</div><div class="comp-field-value">Безупречная упаковка пакетных B2C предложений + уникальные уличные зоны (веранды, костровые зоны, сцены во дворах)</div></div>
+        <div class="comp-field"><div class="comp-field-label">Слабые места</div><div class="comp-field-value">Сильная зависимость конверсии от погоды (летние веранды)</div></div>
+        <div class="comp-field"><div class="comp-field-label">Офферы</div><div class="comp-field-value">Пакетные скидки, проектор в подарок при бронировании в будни</div></div>
+      </div>
+      <div class="comp-takeaway">
+        <div class="comp-takeaway-label">Стратегический вывод</div>
+        <div class="comp-takeaway-text">Let's Party — эталонный пример пакетной архитектуры для B2C. Их трёхуровневая система (Лайт/Стандарт/Премиум) чётко сегментирует аудиторию и увеличивает средний чек. Уличные зоны создают уникальный USP, который Юлия не может копировать, но может создать аналог через сетевой масштаб (несколько лофтов = выбор формата).</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 8. CinemaSecret -->
+  <div class="comp-card fade-up">
+    <div class="comp-card-header" onclick="toggleComp(this)">
+      <div class="comp-num">8</div>
+      <div class="comp-meta">
+        <div class="comp-name">Секрет / CinemaSecret / BigPartyShow</div>
+        <div class="comp-tagline">Частный антикинотеатр → пространство для интерактивных шоу и сюрпризов «под ключ»</div>
+        <div class="comp-badges">
+          <span class="cluster-badge cb-a">Кластер A</span>
+          <span class="badge badge-blue">Высокий средний</span>
+          <span class="badge badge-green">5.0 ЯК</span>
+          <span class="badge badge-purple">34 тематических зала</span>
+        </div>
+      </div>
+      <div class="comp-toggle">▾</div>
+    </div>
+    <div class="comp-body">
+      <div class="comp-grid">
+        <div class="comp-field"><div class="comp-field-label">Объекты и масштаб</div><div class="comp-field-value">5 локаций по Москве, 34 тематических зала (Космос, Джунгли, Гэтсби и др.)</div></div>
+        <div class="comp-field"><div class="comp-field-label">Ценовой ярус</div><div class="comp-field-value"><strong>Высокий средний.</strong> Пакет «Интерактивная шоу-игра» (4 часа) — 31 990 ₽</div></div>
+        <div class="comp-field"><div class="comp-field-label">Продуктовая матрица</div><div class="comp-field-value">До 25 человек. Продают программу: 2 ч ведущий (квизы, конкурсы) + 2 ч караоке/Xbox. Апселлы: тату-бар 4990₽, фокусник 6490₽, стриптиз 8990₽, написание песни 8990₽</div></div>
+        <div class="comp-field"><div class="comp-field-label">CX и сервис</div><div class="comp-field-value">Полная приватность. Личный помощник за клиентом. Можно со своей едой</div></div>
+        <div class="comp-field"><div class="comp-field-label">Целевые сегменты</div><div class="comp-field-value">Дни рождения (молодёжь, дети), девичники, романтические свидания</div></div>
+        <div class="comp-field"><div class="comp-field-label">Главная сила</div><div class="comp-field-value">Инновационный подход: монетизация впечатлений (контента), а не квадратных метров</div></div>
+        <div class="comp-field"><div class="comp-field-label">Слабые места</div><div class="comp-field-value">Ограничение по вместимости (макс. 25 человек) отсекает средний и крупный B2B</div></div>
+      </div>
+      <div class="comp-takeaway">
+        <div class="comp-takeaway-label">Стратегический вывод</div>
+        <div class="comp-takeaway-text">CinemaSecret доказывает: можно продавать дороже, не имея большого пространства. Их модель — продажа «программы праздника», а не «часов в помещении». Для Юлии: пакет «ДР под ключ с ведущим» — прямая аналогия, реализуемая через партнёрство с event-агентствами.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 9. BankaBanka -->
+  <div class="comp-card fade-up">
+    <div class="comp-card-header" onclick="toggleComp(this)">
+      <div class="comp-num">9</div>
+      <div class="comp-meta">
+        <div class="comp-name">BankaBanka</div>
+        <div class="comp-tagline">Креативные лофты на Флаконе — «всё включено» с прозрачной B2B документацией</div>
+        <div class="comp-badges">
+          <span class="cluster-badge cb-a">Кластер A</span>
+          <span class="badge badge-blue">Средний / Высокий</span>
+          <span class="badge badge-green">>100 отзывов · 4.9</span>
+          <span class="badge badge-orange">B2B документы — эталон</span>
+        </div>
+      </div>
+      <div class="comp-toggle">▾</div>
+    </div>
+    <div class="comp-body">
+      <div class="comp-grid">
+        <div class="comp-field"><div class="comp-field-label">Объекты и масштаб</div><div class="comp-field-value">6 залов (Банка, Телескоп, Витрина, Мираж, Аудиенция, Эркер). Дизайн-завод «Флакон» и БЦ «Фактория»</div></div>
+        <div class="comp-field"><div class="comp-field-label">Ценовой ярус</div><div class="comp-field-value"><strong>Средний / Высокий.</strong> Воркшопы от 7 500 ₽/ч, корпоративы от 13 200 ₽/ч, свадьбы от 14 000 ₽/ч. Пример чека на 30 чел — 59 000 ₽</div></div>
+        <div class="comp-field"><div class="comp-field-label">Продуктовая матрица</div><div class="comp-field-value">Комплексные пакеты. PDF-презентации с фиксированными ценами: бар (коктейли 400 ₽), BBQ на крыше (стейк 2700 ₽), фотозоны (до 40к), казино</div></div>
+        <div class="comp-field"><div class="comp-field-label">CX и сервис</div><div class="comp-field-value">Жёсткий подход: предоплата 50%, договор, возвратный депозит 30 000 ₽ наличными. Безупречный клиентский сервис</div></div>
+        <div class="comp-field"><div class="comp-field-label">Целевые сегменты</div><div class="comp-field-value">Корпоративы, бизнес-тренинги, частные вечеринки платёжеспособной аудитории</div></div>
+        <div class="comp-field"><div class="comp-field-label">Главная сила</div><div class="comp-field-value">Феноменально проработанная коммерческая документация (PDF-презентации для агентств) и прозрачное ценообразование, вызывающее доверие B2B</div></div>
+        <div class="comp-field"><div class="comp-field-label">Слабые места</div><div class="comp-field-value">Депозит 30к отпугивает студентов и эконом-сегмент (для бизнес-модели — скорее фильтр)</div></div>
+      </div>
+      <div class="comp-takeaway">
+        <div class="comp-takeaway-label">Стратегический вывод</div>
+        <div class="comp-takeaway-text">BankaBanka — образец B2B документации. Их PDF-прайс с фиксированными ценами на каждую услугу — конкретный артефакт, который Юля может создать для корпоративных клиентов. Высокий депозит работает как квалификатор: отсекает «туристов», оставляет серьёзных клиентов.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 10. B69 -->
+  <div class="comp-card fade-up">
+    <div class="comp-card-header" onclick="toggleComp(this)">
+      <div class="comp-num">10</div>
+      <div class="comp-meta">
+        <div class="comp-name">Loft Center B69</div>
+        <div class="comp-tagline">Агрессивный рост, 100+ лофтов — машина демпинга и захвата доли</div>
+        <div class="comp-badges">
+          <span class="cluster-badge cb-a">Кластер A</span>
+          <span class="badge badge-orange">Эконом / Средний</span>
+          <span class="badge badge-red">2276 отзывов · 4.3</span>
+          <span class="badge badge-red">от 600 ₽/чел</span>
+        </div>
+      </div>
+      <div class="comp-toggle">▾</div>
+    </div>
+    <div class="comp-body">
+      <div class="comp-grid">
+        <div class="comp-field"><div class="comp-field-label">Объекты и масштаб</div><div class="comp-field-value">Агрессивный рост. Заявлено 100+ дизайнерских лофтов (вероятно, витрина партнёрских объектов). Базовые локации: Бауманская, ВДНХ</div></div>
+        <div class="comp-field"><div class="comp-field-label">Ценовой ярус</div><div class="comp-field-value"><strong>Эконом / Средний.</strong> Цены от 600 ₽/чел. Почасовая от 1 650 ₽/ч за малые залы (до 15 чел)</div></div>
+        <div class="comp-field"><div class="comp-field-label">Продуктовая матрица</div><div class="comp-field-value">Ориентация на комбо: PlayStation, караоке, сладкая вата, шоу-программы 18+</div></div>
+        <div class="comp-field"><div class="comp-field-label">Каналы продаж</div><div class="comp-field-value">b69.ru. Яндекс.Карты (2 276 отзывов, рейтинг 4.3)</div></div>
+        <div class="comp-field"><div class="comp-field-label">Целевые сегменты</div><div class="comp-field-value">Молодёжь, студенты, девичники</div></div>
+        <div class="comp-field"><div class="comp-field-label">TOV</div><div class="comp-field-value">Киберпанк, неон, клубный стиль (залы Готэм, Вандал, Буржуй)</div></div>
+        <div class="comp-field"><div class="comp-field-label">Главная сила</div><div class="comp-field-value">Мощная машина лидогенерации, захват рынка за счёт демпинговых спецпредложений</div></div>
+        <div class="comp-field"><div class="comp-field-label">Слабые места</div><div class="comp-field-value">Конвейерный подход привёл к падению рейтинга до 4.3 — худший в Кластере A — из-за жалоб на износ инфраструктуры</div></div>
+      </div>
+      <div class="comp-takeaway">
+        <div class="comp-takeaway-label">Стратегический вывод</div>
+        <div class="comp-takeaway-text">B69 — анти-пример масштабирования через демпинг. Рейтинг 4.3 при 2276 отзывах — это 25–30% негативных отзывов. Конвейерный подход разрушает качество. Для Юлии: конкурировать с ними по цене — невозможно и бессмысленно. Лучший ответ — полная противоположность: персонализация, сервис, честные цены.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 11. Casa Picassa -->
+  <div class="comp-card fade-up">
+    <div class="comp-card-header" onclick="toggleComp(this)">
+      <div class="comp-num">11</div>
+      <div class="comp-meta">
+        <div class="comp-name">Casa Picassa</div>
+        <div class="comp-tagline">Арт-лофты в стилях великих художников — уникальный бренд-сторителлинг</div>
+        <div class="comp-badges">
+          <span class="cluster-badge cb-a">Кластер A</span>
+          <span class="badge badge-blue">Средний / Премиум</span>
+          <span class="badge badge-green">>100 отзывов · 4.9</span>
+          <span class="badge badge-purple">15 арт-залов</span>
+        </div>
+      </div>
+      <div class="comp-toggle">▾</div>
+    </div>
+    <div class="comp-body">
+      <div class="comp-grid">
+        <div class="comp-field"><div class="comp-field-label">Объекты и масштаб</div><div class="comp-field-value">15 уникальных архитектурных лофтов. Локации: Бауманская, Таганская, Сокольники. Особняки до 500 м²</div></div>
+        <div class="comp-field"><div class="comp-field-label">Ценовой ярус</div><div class="comp-field-value"><strong>Средний / Премиум.</strong> От 2 000 ₽/ч за малые до 16 000 ₽/ч за особняки. 6-часовые пакеты 40 000 — 180 000 ₽</div></div>
+        <div class="comp-field"><div class="comp-field-label">Продуктовая матрица</div><div class="comp-field-value">Эстетика и авторские квесты. Обязательный минимальный заказ по кухне (например, 60 000 ₽ для зала Микеланджело)</div></div>
+        <div class="comp-field"><div class="comp-field-label">CX и сервис</div><div class="comp-field-value">Высочайший уровень визуального комфорта. Профессиональный свет и звук. Своя кухня</div></div>
+        <div class="comp-field"><div class="comp-field-label">Целевые сегменты</div><div class="comp-field-value">Свадьбы, эстетичные дни рождения, контент-съёмки</div></div>
+        <div class="comp-field"><div class="comp-field-label">Главная сила</div><div class="comp-field-value">Уникальный бренд-сторителлинг, позволяющий продавать помещения с высокой наценкой «за искусство»</div></div>
+        <div class="comp-field"><div class="comp-field-label">Слабые места</div><div class="comp-field-value">Высокие капитальные затраты на поддержание сложного декора</div></div>
+      </div>
+      <div class="comp-takeaway">
+        <div class="comp-takeaway-label">Стратегический вывод</div>
+        <div class="comp-takeaway-text">Casa Picassa — демонстрация силы нарративного позиционирования. Каждый зал — отдельная история (Климт, Микеланджело, Ван Гог). Это позволяет продавать не квадратные метры, а арт-опыт. Для Юлии: создать нарративы для каждого лофта — не «зал 1», а пространство с именем и историей.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 12. AG Loft -->
+  <div class="comp-card fade-up">
+    <div class="comp-card-header" onclick="toggleComp(this)">
+      <div class="comp-num">12</div>
+      <div class="comp-meta">
+        <div class="comp-name">AG Loft</div>
+        <div class="comp-tagline">Аутентичные лофты с подлинными предметами винтажного интерьера — крупный B2B</div>
+        <div class="comp-badges">
+          <span class="cluster-badge cb-a">Кластер A</span>
+          <span class="badge badge-blue">Высокий средний / Премиум</span>
+          <span class="badge badge-green">>200 отзывов · 4.9</span>
+          <span class="badge badge-orange">Залы до 350 м²</span>
+        </div>
+      </div>
+      <div class="comp-toggle">▾</div>
+    </div>
+    <div class="comp-body">
+      <div class="comp-grid">
+        <div class="comp-field"><div class="comp-field-label">Объекты и масштаб</div><div class="comp-field-value">12 залов в стиле лофт площадью 30–350 м². Локации на Курской и Нагатинской</div></div>
+        <div class="comp-field"><div class="comp-field-label">Ценовой ярус</div><div class="comp-field-value"><strong>Высокий средний / Премиум.</strong> Зал Royal (350 м²) — от 9 000 ₽/ч. Зал Vinyl (200 м²) — от 13 500 ₽/ч</div></div>
+        <div class="comp-field"><div class="comp-field-label">Продуктовая матрица</div><div class="comp-field-value">Почасовая аренда крупногабаритных помещений с высокими потолками (до 10 метров). Собственная кухня</div></div>
+        <div class="comp-field"><div class="comp-field-label">Целевые сегменты</div><div class="comp-field-value">Крупный B2B, презентации автомобилей, масштабные вечеринки (до 200 человек)</div></div>
+        <div class="comp-field"><div class="comp-field-label">TOV</div><div class="comp-field-value">Брутальный, индустриально-роскошный</div></div>
+        <div class="comp-field"><div class="comp-field-label">Главная сила</div><div class="comp-field-value">Наличие огромных залов без колонн, способных принимать нестандартные мероприятия</div></div>
+        <div class="comp-field"><div class="comp-field-label">Слабые места</div><div class="comp-field-value">Сложность заполнения таких больших площадей в будние дни</div></div>
+      </div>
+      <div class="comp-takeaway">
+        <div class="comp-takeaway-label">Стратегический вывод</div>
+        <div class="comp-takeaway-text">AG Loft закрывает нишу «крупного B2B с нестандартными требованиями» (презентации авто, выставки). Прямой конкурент в корпоративном сегменте только при наличии зала 200+ м². Их слабость — заполнение в будни — точка входа для Юлии с корпоративными будними пакетами.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 13. Pravda Event -->
+  <div class="comp-card fade-up">
+    <div class="comp-card-header" onclick="toggleComp(this)">
+      <div class="comp-num">13</div>
+      <div class="comp-meta">
+        <div class="comp-name">Pravda Event</div>
+        <div class="comp-tagline">Ивент-площадка концертного и выставочного масштаба — 750 м², до 800 человек</div>
+        <div class="comp-badges">
+          <span class="cluster-badge cb-a">Кластер A</span>
+          <span class="badge badge-purple">Премиум B2B</span>
+          <span class="badge badge-red">от 25 000 ₽/час</span>
+        </div>
+      </div>
+      <div class="comp-toggle">▾</div>
+    </div>
+    <div class="comp-body">
+      <div class="comp-grid">
+        <div class="comp-field"><div class="comp-field-label">Объекты и масштаб</div><div class="comp-field-value">1 гигантская площадка 750 м² (м. Нагатинская)</div></div>
+        <div class="comp-field"><div class="comp-field-label">Ценовой ярус</div><div class="comp-field-value"><strong>Премиум.</strong> От 25 000 ₽/час</div></div>
+        <div class="comp-field"><div class="comp-field-label">Продуктовая матрица</div><div class="comp-field-value">Аренда под крупные ивенты. LED-экраны, концертный звук, летняя веранда. Вместимость до 800 человек</div></div>
+        <div class="comp-field"><div class="comp-field-label">Целевые сегменты</div><div class="comp-field-value">Концерты, конференции, фестивали</div></div>
+        <div class="comp-field"><div class="comp-field-label">Главная сила</div><div class="comp-field-value">Закрывает нишу масштабных событий, недоступную классическим лофтам</div></div>
+        <div class="comp-field"><div class="comp-field-label">Слабые места</div><div class="comp-field-value">Формат концерт-холла, а не уютного лофта для частного праздника — разные рынки</div></div>
+      </div>
+      <div class="comp-takeaway">
+        <div class="comp-takeaway-label">Стратегический вывод</div>
+        <div class="comp-takeaway-text">Не прямой конкурент Юлии — разные масштабы и сегменты. Pravda Event закрывает концертно-выставочный рынок, который Юля не обслуживает и не планирует. Полезен как ориентир по ценообразованию в крупном B2B.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 14. My Loft -->
+  <div class="comp-card fade-up">
+    <div class="comp-card-header" onclick="toggleComp(this)">
+      <div class="comp-num">14</div>
+      <div class="comp-meta">
+        <div class="comp-name">My Loft (May.Moscow)</div>
+        <div class="comp-tagline">Уютные тематические лофты в центре Москвы — идеальный баланс цены и локации</div>
+        <div class="comp-badges">
+          <span class="cluster-badge cb-a">Кластер A</span>
+          <span class="badge badge-blue">Средний сегмент</span>
+          <span class="badge badge-orange">2 000–5 000 ₽/час</span>
+          <span class="badge badge-gray">Нет явного УТП</span>
+        </div>
+      </div>
+      <div class="comp-toggle">▾</div>
+    </div>
+    <div class="comp-body">
+      <div class="comp-grid">
+        <div class="comp-field"><div class="comp-field-label">Объекты и масштаб</div><div class="comp-field-value">6 залов (Гоголь, Роза, Флоу, Льюис и др.) площадью 50–151 м² (м. Бауманская / Курская)</div></div>
+        <div class="comp-field"><div class="comp-field-label">Ценовой ярус</div><div class="comp-field-value"><strong>Средний сегмент.</strong> От 2 000 до 5 000 ₽/час</div></div>
+        <div class="comp-field"><div class="comp-field-label">Продуктовая матрица</div><div class="comp-field-value">Понятная почасовая аренда для мероприятий до 60 человек</div></div>
+        <div class="comp-field"><div class="comp-field-label">Каналы продаж</div><div class="comp-field-value">may.moscow, Loft2Rent</div></div>
+        <div class="comp-field"><div class="comp-field-label">Целевые сегменты</div><div class="comp-field-value">B2C, дни рождения, мастер-классы</div></div>
+        <div class="comp-field"><div class="comp-field-label">TOV</div><div class="comp-field-value">Цветочные и тропические мотивы («Свежесть пионов», «Яркие тропики»)</div></div>
+        <div class="comp-field"><div class="comp-field-label">Главная сила</div><div class="comp-field-value">Идеальный баланс цены и вместимости в сверхконкурентной локации (ЦАО)</div></div>
+        <div class="comp-field"><div class="comp-field-label">Слабые места</div><div class="comp-field-value">Отсутствие ярко выраженного УТП на фоне концептуальных соседей</div></div>
+      </div>
+      <div class="comp-takeaway">
+        <div class="comp-takeaway-label">Стратегический вывод</div>
+        <div class="comp-takeaway-text">My Loft — «серая зона» рынка: в Кластере A по масштабу, но без УТП. Показательный пример того, как можно держаться на плаву в ЦАО только за счёт локации. Для Юлии: присутствие в ЦАО без уникального позиционирования = вечная ценовая война.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SUMMARY TABLE CLUSTER A -->
+  <h3 style="font-size:18px;font-weight:600;color:var(--n900);margin:40px 0 16px;">Сводная матрица Кластера A</h3>
+
+  <div class="table-wrap fade-up">
+    <table>
+      <thead>
+        <tr>
+          <th>Игрок</th>
+          <th>Объекты</th>
+          <th>Ставка / Пакет</th>
+          <th>Основной сегмент</th>
+          <th>Франшиза</th>
+          <th>Главная сила</th>
+          <th>Главная слабость</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>Soxspace</td><td>23</td><td>~50 000 ₽ (пакет)</td><td>Премиум B2C/B2B</td><td><span class="badge badge-green">12 франшиз</span></td><td>Недвижимость / ГАП</td><td>Сложность масштабирования</td></tr>
+        <tr><td>Loft Hall</td><td>12+</td><td>Премиум (смета)</td><td>B2B, Свадьбы</td><td><span class="badge badge-gray">Нет</span></td><td>In-house кейтеринг</td><td>Не для малых B2C</td></tr>
+        <tr><td>Loft Blackout</td><td>4</td><td>от 1 499 ₽/час</td><td>B2C молодёжь</td><td><span class="badge badge-gray">Нет</span></td><td>SEO / Демпинг</td><td>Маргинализация ЦА</td></tr>
+        <tr><td>Multiroom</td><td>5</td><td>5 500–8 500 ₽/ч</td><td>B2C вечеринки</td><td><span class="badge badge-gray">Нет</span></td><td>Апселлы (монетизация)</td><td>Промзона (отзывы)</td></tr>
+        <tr><td>Campus Loft</td><td>1 (3 эт.)</td><td>Средний пакет</td><td>B2C «под ключ»</td><td><span class="badge badge-gray">Нет</span></td><td>WhatsApp-маркетинг</td><td>Логистика после 00:00</td></tr>
+        <tr><td>Империя Скай</td><td>2</td><td>100 000+ ₽ (пакет)</td><td>VIP B2B</td><td><span class="badge badge-gray">Нет</span></td><td>Москва-Сити, статус</td><td>Слишком узкая ЦА</td></tr>
+        <tr><td>Let's Party</td><td>10</td><td>45–75 тыс. ₽ (пакет)</td><td>B2C средний/выс.</td><td><span class="badge badge-gray">Нет</span></td><td>Уличные зоны, Пакеты</td><td>Зависимость от сезона</td></tr>
+        <tr><td>CinemaSecret</td><td>34</td><td>31 990 ₽ (шоу)</td><td>B2C дни рождения</td><td><span class="badge badge-gray">Нет</span></td><td>Интерактив, Контент</td><td>Макс. 25 человек</td></tr>
+        <tr><td>BankaBanka</td><td>6</td><td>7 500–14 000 ₽/ч</td><td>B2C/B2B средний</td><td><span class="badge badge-gray">Нет</span></td><td>B2B документация</td><td>Высокий депозит</td></tr>
+        <tr><td>Loft Center B69</td><td>100+</td><td>от 1 650 ₽/час</td><td>B2C эконом/средний</td><td><span class="badge badge-gray">Нет</span></td><td>Агрессивный захват</td><td>Рейтинг 4.3 (падение качества)</td></tr>
+        <tr><td>Casa Picassa</td><td>15</td><td>2 500–16 000 ₽/ч</td><td>Свадьбы, контент</td><td><span class="badge badge-gray">Нет</span></td><td>Арт-сторителлинг</td><td>Затраты на декор</td></tr>
+        <tr><td>AG Loft</td><td>12</td><td>8 000–13 500 ₽/ч</td><td>Крупный B2B/B2C</td><td><span class="badge badge-gray">Нет</span></td><td>Площади до 350 м²</td><td>Сложно заполнять будни</td></tr>
+        <tr><td>Pravda Event</td><td>1</td><td>25 000 ₽/час</td><td>Концерты, B2B</td><td><span class="badge badge-gray">Нет</span></td><td>LED-оснащение</td><td>Формат концерт-холла</td></tr>
+        <tr><td>My Loft</td><td>6</td><td>2 000–5 000 ₽/ч</td><td>B2C частные</td><td><span class="badge badge-gray">Нет</span></td><td>Баланс цена/локация</td><td>Нет явного УТП</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="highlight-box fade-up">
+    <div class="hb-title">Главный вывод для Юлии</div>
+    <p>Разбор Кластера A доказывает: маржинальность на московском рынке генерируется не за счёт продажи часов аренды, а за счёт создания сложного комплексного продукта (Turnkey). Сильные игроки — Let's Party, CinemaSecret, BankaBanka — продают готовые сценарии праздника. Стратегия перехода Юлии в премиум-сегмент должна сопровождаться созданием закрытой инфраструктуры сервисов и отстройкой через уникальный CX, а не просто повышением базовой ставки.</p>
+  </div>
+</div>
+</section>
+
+<!-- R4 КЛАСТЕР B -->
+<section class="section" id="r4">
+<div class="container">
+  <div class="section-divider"><div class="sd-num">R4</div><div class="sd-line"></div><div class="sd-label">Кластер B — Средние и нишевые конкуренты</div></div>
+  <p style="font-size:15px;color:var(--n500);margin-bottom:24px;">Игроки с устойчивым бизнесом и лояльной аудиторией — выживают за счёт уникальной специализации, которую сложно скопировать массовым сетям.</p>
+
+  <div class="table-wrap fade-up">
+    <table>
+      <thead>
+        <tr>
+          <th>Игрок</th>
+          <th>Объекты</th>
+          <th>Ставка ₽/час</th>
+          <th>Основной сегмент</th>
+          <th>Главная фишка / специализация</th>
+          <th>Каналы</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>Come In Loft</td><td>2</td><td>2 200 ₽</td><td>Авто-съёмки, B2C</td><td>Заезд автомобилей и мотоциклов прямо в зал</td><td>Сайт, Агрегаторы</td></tr>
+        <tr><td>Artplay (Лекторий)</td><td>1</td><td>4 000 ₽</td><td>B2B, Образование</td><td>Фокус на лекции, кинопоказы и образовательные события</td><td>Агрегаторы</td></tr>
+        <tr><td>Loft Nastroyenie</td><td>1</td><td>3 000 ₽</td><td>B2C, молодёжь</td><td>Тёплая «ламповая» атмосфера на Бауманской</td><td>Агрегаторы</td></tr>
+        <tr><td>N-Joy Community</td><td>2</td><td>4 000 ₽</td><td>B2C, концерты</td><td>Профессиональная сцена для малых концертов</td><td>Агрегаторы</td></tr>
+        <tr><td>PartyHard Loft</td><td>1</td><td>3 000 ₽</td><td>B2C вечеринки</td><td>Идеальные отзывы — феноменальная клиентоориентированность</td><td>Агрегаторы</td></tr>
+        <tr><td>IONSPACE</td><td>1</td><td>8 000 ₽</td><td>Премиум B2B</td><td>Панорамные окна для малых VIP-встреч (до 50 чел)</td><td>Агрегаторы (премиум)</td></tr>
+        <tr><td>Loft Fantom</td><td>1</td><td>3 500 ₽</td><td>Клубы, B2C</td><td>Формат закрытого ночного клуба и лаунжа</td><td>Авито, Агрегаторы</td></tr>
+        <tr><td>Illskill Lounge</td><td>1</td><td>2 000 ₽</td><td>Эконом B2C</td><td>Граффити, уличный стиль — нишевая неформальная молодёжь</td><td>Агрегаторы</td></tr>
+        <tr><td>Loft Roden</td><td>1</td><td>4 000 ₽</td><td>B2C, свадьбы</td><td>Белый эстетичный зал с верандой (отсылка к скульптору Родену)</td><td>Агрегаторы</td></tr>
+        <tr><td>LOFT THE PLACE</td><td>1</td><td>10 000 ₽</td><td>Премиум B2C</td><td>Видовой лофт на крыше в центре Москвы</td><td>Карты, Агрегаторы</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="highlight-box success fade-up">
+    <div class="hb-title">Главный вывод для Юлии</div>
+    <p>Игроки Кластера B подтверждают: для стабильной генерации выручки необязательно иметь 15 залов и миллионные бюджеты на Яндекс.Директ. Узкое продуманное позиционирование (как заезд авто у Come In Loft) делает площадку монополистом в своём субсегменте. При масштабировании франшизы — сильная нишевая концепция выделит точки в регионах с минимальными затратами на маркетинг.</p>
+  </div>
+</div>
+</section>
+
+<!-- R5 КЛАСТЕР C -->
+<section class="section" id="r5" style="background:#fff;">
+<div class="container">
+  <div class="section-divider"><div class="sd-num">R5</div><div class="sd-line"></div><div class="sd-label">Кластер C — Слабые / одиночки</div></div>
+  <p style="font-size:15px;color:var(--n500);margin-bottom:24px;">Профиль кластера без индивидуального разбора. 70% номинального предложения на рынке — фоновый шум.</p>
+
+  <div class="cards-grid-2 fade-up">
+    <div class="info-card">
+      <div class="info-card-inner">
+        <div class="ic-icon" style="background:#fee2e2;color:#dc2626;">C</div>
+        <div class="ic-body">
+          <h3>Портрет типичного игрока</h3>
+          <p>Физическое лицо или микро-ИП с 1–2 помещениями. Бывшие коммерческие помещения на цокольных этажах или крошечные фотостудии (до 20 м²). Нет зарегистрированной торговой марки. Сайт на Tilda по типовому шаблону с нулевым SEO. Нет CRM. Договоры часто не подписываются, оплата — переводом на карту физлица.</p>
+        </div>
+      </div>
+    </div>
+    <div class="info-card">
+      <div class="info-card-inner">
+        <div class="ic-icon" style="background:#fef3c7;color:#d97706;">₽</div>
+        <div class="ic-body">
+          <h3>Ценообразование и роль</h3>
+          <p>Жёсткий демпинг. Средний чек редко превышает 1 000–2 000 ₽/час. Полная зависимость от Авито и бесплатных тарифов агрегаторов. Карточки в Яндекс.Картах отсутствуют или имеют менее 10–20 отзывов. Предлагают «голые стены» без администратора и стандартов клининга.</p>
+        </div>
+      </div>
+    </div>
+    <div class="info-card">
+      <div class="info-card-inner">
+        <div class="ic-icon" style="background:#fee2e2;color:#dc2626;">⚠</div>
+        <div class="ic-body">
+          <h3>Риски и проблемы</h3>
+          <p>Расположение в жилом фонде генерирует жалобы соседей, привлекает правоохранительные органы и ведёт к регулярным закрытиям. Не закладывают в цену амортизацию, налоги и затраты на маркетинг. Поэтому работают либо в убыток, либо с теневой схемой.</p>
+        </div>
+      </div>
+    </div>
+    <div class="info-card">
+      <div class="info-card-inner">
+        <div class="ic-icon" style="background:#d1fae5;color:#059669;">→</div>
+        <div class="ic-body">
+          <h3>Стратегический вывод</h3>
+          <p>Конкурировать с Кластером C по цене на Авито — стратегическая ошибка, ведущая к кассовому разрыву. Стратегия «без хаоса, по уму» должна строиться на полном дистанцировании: уход в B2B-каналы, формирование языка премиум-класса, продажа сложного сервиса.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- R6 ГЕОГРАФИЯ -->
+<section class="section" id="r6">
+<div class="container">
+  <div class="section-divider"><div class="sd-num">R6</div><div class="sd-line"></div><div class="sd-label">География конкурентов в Москве</div></div>
+  <p style="font-size:15px;color:var(--n500);margin-bottom:24px;">Локация определяет маржинальность. Большинство объектов привязано к бывшим индустриальным зонам. Это создаёт высокую плотность в одних округах и «белые пятна» в других.</p>
+
+  <div class="table-wrap fade-up">
+    <table>
+      <thead>
+        <tr>
+          <th>Зона / Кластер</th>
+          <th>Концентрация</th>
+          <th>Ключевые игроки</th>
+          <th>Стратегическая оценка</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>Бауманская / Электрозаводская</td><td><span class="badge badge-red">Очень высокая</span></td><td>Loft Blackout, CinemaSecret, Casa Picassa, Soul Loft</td><td>«Красный океан», жёсткий демпинг и борьба за трафик</td></tr>
+        <tr><td>Флакон / Савёловская (САО)</td><td><span class="badge badge-orange">Высокая</span></td><td>BankaBanka, Campus Loft</td><td>Развитая инфраструктура, модная ЦА. Высокая конкуренция</td></tr>
+        <tr><td>Курская / Артплей (ЦАО)</td><td><span class="badge badge-orange">Высокая</span></td><td>AG Loft, Artplay</td><td>Креативный B2B кластер, высокие базовые ставки аренды</td></tr>
+        <tr><td>Нагатинская / Автозаводская</td><td><span class="badge badge-blue">Средняя</span></td><td>Loft Hall, Pravda Event</td><td>Площадки-гиганты, фокус на масштабные корпоративы</td></tr>
+        <tr><td>Москва-Сити / Пресня</td><td><span class="badge badge-gray">Низкая</span></td><td>Империя Скай Лофт</td><td>Ультра-премиум. Сложная логистика (пропуска, парковки)</td></tr>
+        <tr><td>Спальные районы за ТТК</td><td><span class="badge badge-gray">Низкая</span></td><td>Одиночки Кластера C</td><td>Нет аутентичных промзон. Спрос уходит в другие форматы</td></tr>
+        <tr><td style="color:#059669;font-weight:700;">Новая Москва / ЗАО (элит)</td><td><span class="badge badge-green">Отсутствует</span></td><td style="color:#059669;">Нет системных игроков</td><td style="color:#059669;font-weight:600;">Пустая ниша. Огромный потенциал для премиум B2C/B2B</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="highlight-box warning fade-up">
+    <div class="hb-title">Главный вывод для Юлии</div>
+    <p>Открытие новой, пятой площадки или запуск франшизных точек в зоне Бауманской или Флакона означает вход в лобовую ценовую войну. Стратегически выгодно рассматривать «белые пятна» — престижные направления (ЗАО, Новорижское направление, Новая Москва), где можно стать монополистом локального премиум-сервиса для состоятельной аудитории, избегающей поездок по пробкам в центр.</p>
+  </div>
+</div>
+</section>
+
+<!-- R7 ОФФЕРЫ -->
+<section class="section" id="r7" style="background:#fff;">
+<div class="container">
+  <div class="section-divider"><div class="sd-num">R7</div><div class="sd-line"></div><div class="sd-label">Офферы, обещания и стратегии маркетинга</div></div>
+  <p style="font-size:15px;color:var(--n500);margin-bottom:24px;">Лидеры рынка применяют мощные психологические триггеры: страх скрытых переплат, желание переложить ответственность и стремление к эксклюзивности.</p>
+
+  <div class="cards-grid-2 fade-up" style="margin-bottom:32px;">
+    <div class="info-card" style="border-left:4px solid #dc2626;">
+      <div class="ic-body">
+        <h3>Агрессивный ритейл (Демпинг)</h3>
+        <p>Акцент на цифры «0 рублей» и перечёркнутые ценники. Работает на эконом-сегмент, вызывая чувство срочной выгоды (FOMO). Характерен для: Loft Blackout, B69.</p>
+      </div>
+    </div>
+    <div class="info-card" style="border-left:4px solid var(--brand);">
+      <div class="ic-body">
+        <h3>Эмоциональная упаковка (Storytelling)</h3>
+        <p>Продажа магии и загадки. Клиенту предлагают не аренду дивана, а «ВАУ-эффект» и шоу. Характерен для: CinemaSecret, Casa Picassa.</p>
+      </div>
+    </div>
+    <div class="info-card" style="border-left:4px solid var(--success);">
+      <div class="ic-body">
+        <h3>Комплексное спасение (Turnkey)</h3>
+        <p>Прямой ответ на боль организатора-новичка. Обещание избавить от хаоса, собрав все услуги в один понятный пакет. Характерен для: Campus Loft, BankaBanka, Let's Party.</p>
+      </div>
+    </div>
+    <div class="info-card" style="border-left:4px solid var(--warning);">
+      <div class="ic-body">
+        <h3>Статусный барьер (VIP)</h3>
+        <p>Искусственное создание премиальности через заградительные чеки и подчёркнутый VIP-сервис (бесплатное такси). Характерен для: Империя Скай, Soxspace.</p>
+      </div>
+    </div>
+  </div>
+
+  <h3 style="font-size:18px;font-weight:600;color:var(--n900);margin:32px 0 16px;">Каталог офферов конкурентов (16 примеров)</h3>
+
+  <div class="table-wrap fade-up">
+    <table>
+      <thead>
+        <tr>
+          <th>Оффер (цитата)</th>
+          <th>Игрок</th>
+          <th>Триггер</th>
+          <th>Сегмент</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>«Приезжайте к нам в гости на просмотр — такси за наш счёт»</td><td>Империя Скай</td><td>Снятие барьера логистики, VIP-статус</td><td>Премиум B2B</td></tr>
+        <tr><td>«Бар под ключ! 50 000 ₽ на 100 коктейлей»</td><td>Campus Loft</td><td>Избавление от хаоса поиска подрядчиков</td><td>B2C вечеринки</td></tr>
+        <tr><td>«Пробковый сбор 0₽. Уборка 0₽. Звук 0₽»</td><td>Loft Blackout</td><td>Страх скрытых наценок</td><td>Эконом B2C</td></tr>
+        <tr><td>«Интерактивная шоу-игра — 31 990 ₽» (4 часа)</td><td>CinemaSecret</td><td>Готовый сценарий праздника, не надо думать</td><td>Дни рождения</td></tr>
+        <tr><td>«Всё включено: декор, бар, звук, свет, персонал»</td><td>BankaBanka</td><td>Статусность, прозрачность бюджета</td><td>Средний / Премиум</td></tr>
+        <tr><td>«Предложим несколько площадок для Новогоднего Корпоратива»</td><td>Loft Hall</td><td>Широта выбора, решение B2B проблемы</td><td>Корпоративы</td></tr>
+        <tr><td>«Дарим -30% на бронирование + 30 минут в подарок»</td><td>Loft Center B69</td><td>FOMO, срочность</td><td>Эконом B2C</td></tr>
+        <tr><td>«Будни 5499 ₽, Пт-Сб 8499 ₽» (динамика)</td><td>Multiroom</td><td>Логичное обоснование, иллюзия умного выбора</td><td>B2C/B2B</td></tr>
+        <tr><td>«Панорамный лофт с выходом на крышу»</td><td>Loft Blackout</td><td>Потребность в эстетичном контенте (Instagram)</td><td>Свадьбы, B2C</td></tr>
+        <tr><td>«Устройте вечеринку на крыше с настоящим газоном и грилем»</td><td>BankaBanka (Телескоп)</td><td>Уникальный опыт, escape from city</td><td>B2C / Корпоративы</td></tr>
+        <tr><td>«Можно шуметь после 23:00; можно со своей едой»</td><td>Общий паттерн</td><td>Базовая свобода действий (≠ ресторан)</td><td>B2C массовый</td></tr>
+        <tr><td>«Организация мероприятий "под ключ". Мы всё сделаем сами»</td><td>Campus Loft</td><td>Снятие организационного стресса</td><td>Свадьбы, B2B</td></tr>
+        <tr><td>«Без скрытых комиссий, оплата только за время»</td><td>Паттерн рынка</td><td>Доверие, прозрачность</td><td>B2C/B2B</td></tr>
+        <tr><td>«Составим для вас эксклюзивное коммерческое предложение»</td><td>AG Loft</td><td>Индивидуальный B2B подход</td><td>Крупный B2B</td></tr>
+        <tr><td>«1 час в подарок при бронировании»</td><td>Campus Loft</td><td>Срочность + воспринимаемая ценность</td><td>B2C</td></tr>
+        <tr><td>«Чарующая атмосфера большого города, свет огней и софитов»</td><td>CinemaSecret</td><td>Эмоциональная продажа (атмосфера)</td><td>Романтика B2C</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="highlight-box fade-up">
+    <div class="hb-title">Главный вывод для Юлии</div>
+    <p>Бренд Юлии со слоганом «без хаоса, по уму» уже имеет правильный триггер. Анализ офферов конкурентов подтверждает: этот триггер (спасение от хаоса) крайне востребован платёжеспособной аудиторией. Премиум-клиент не ищет скидку 30%. Он готов заплатить дорого за готовый упакованный пакет — как у Campus Loft или BankaBanka. Коммуникация должна транслировать уверенность и полное снятие «головной боли» с заказчика.</p>
+  </div>
+</div>
+</section>
+
+<!-- R8 ПРОБЕЛЫ -->
+<section class="section" id="r8">
+<div class="container">
+  <div class="section-divider"><div class="sd-num">R8</div><div class="sd-line"></div><div class="sd-label">Пробелы данных</div></div>
+  <p style="font-size:15px;color:var(--n500);margin-bottom:24px;">Информационные лакуны из-за высокой непрозрачности московского рынка коммерческой аренды лофтов.</p>
+
+  <div class="cards-grid-2 fade-up">
+
+    <div class="gap-card">
+      <div class="gap-num">Пробел 1</div>
+      <div class="gap-title">Реальная юнит-экономика конкурентов</div>
+      <div class="gap-impact">В открытом доступе нет P&L конкурентов (кроме Soxspace: маржа 30–46%). Неизвестна доля ФОТ, расходов на клининг и амортизацию у Loft Hall или Let's Party. Демпинг Loft Blackout (1 499 ₽) может быть работой в ноль ради захвата доли.</div>
+      <div class="gap-solution">Решение: глубинные интервью с бывшими управляющими площадок или метод «тайного покупателя» с запросом детальных смет</div>
+    </div>
+
+    <div class="gap-card">
+      <div class="gap-num">Пробел 2</div>
+      <div class="gap-title">Структура веб-трафика (Similarweb)</div>
+      <div class="gap-impact">Не оценена доля органического, прямого и платного трафика сайтов Кластера A. Непонятно, насколько силён собственный маркетинг Campus Loft vs агрегатор Loft2Rent. Это затрудняет расчёт бюджета на Яндекс.Директ.</div>
+      <div class="gap-solution">Решение: интеграция Similarweb Pro на этапе разработки маркетинг-плана для бенчмаркинга CAC</div>
+    </div>
+
+    <div class="gap-card">
+      <div class="gap-num">Пробел 3</div>
+      <div class="gap-title">Показатели удержания (LTV и Retention Rate)</div>
+      <div class="gap-impact">Отраслевые гипотезы: возвратность B2C ~10%. Но неизвестно, насколько успешно удерживают шоу-лофты (CinemaSecret) или пакетные сети (Let's Party). Без данных по LTV невозможно рассчитать окупаемость привлечения корпоративных клиентов.</div>
+      <div class="gap-solution">Решение: внедрение тестовых механик лояльности на 4 площадках Юлии → когортный анализ → экстраполяция на новую бизнес-модель</div>
+    </div>
+
+    <div class="gap-card">
+      <div class="gap-num">Пробел 4</div>
+      <div class="gap-title">«Теневой» оборот и скрытые транзакции</div>
+      <div class="gap-impact">Рынок изобилует скрытыми доплатами: удержание депозитов, переводы на личные карты за уборку и посуду. Официальный средний чек может быть на 20–30% ниже реально уплаченной суммы.</div>
+      <div class="gap-solution">Решение: парсинг негативных отзывов на ЯК (у B69, Multiroom и др.) для выявления паттернов монетизации → формирование оффера «Честная цена без сюрпризов»</div>
+    </div>
+
+    <div class="gap-card">
+      <div class="gap-num">Пробел 5</div>
+      <div class="gap-title">Сплит выручки B2B vs B2C у премиальных игроков</div>
+      <div class="gap-impact">Неясно, какую долю в структуре выручки AG Loft и Loft Hall занимают корпоративные контракты vs частные свадьбы. Это критично для позиционирования франшизы: нужен ли отдел продаж для HR-директоров или весь бюджет — на свадебные агентства.</div>
+      <div class="gap-solution">Решение: мониторинг календарей занятости конкурентов на агрегаторах (декабрь/B2B vs лето/свадьбы)</div>
+    </div>
+
+    <div class="gap-card">
+      <div class="gap-num">Вывод</div>
+      <div class="gap-title">Как использовать пробелы</div>
+      <div class="gap-impact">Наличие пробелов в данных о прибыльности конкурентов означает: их маркетинговая активность не всегда коррелирует с финансовым успехом. Loft Blackout может быть убыточен. B69 теряет рейтинг за конвейерностью.</div>
+      <div class="gap-solution">Переход Юлии в премиум-сегмент должен опираться на собственную твёрдую юнит-экономику (как в кейсе Soxspace), а не на попытки скопировать внешнюю активность игроков, чья внутренняя кухня может оказаться убыточной.</div>
+    </div>
+
+  </div>
+
+  <!-- ИСТОЧНИКИ -->
+  <h3 style="font-size:18px;font-weight:600;color:var(--n900);margin:40px 0 16px;">Источники исследования (20 верифицированных)</h3>
+  <div style="background:#fff;border-radius:14px;border:1px solid var(--n200);padding:20px 24px;box-shadow:var(--shadow-card);" class="fade-up">
+    <div class="source-row"><div class="source-num">1</div><div class="source-body"><div class="source-type">Аналитический отчёт Яндекс.Карты · 19.12.2025</div><div class="source-text">Анализ_Конкурентов_ТОП5.pdf — разбор Loft Hall, Blackout, Multiroom, Campus, Imperia</div></div></div>
+    <div class="source-row"><div class="source-num">2</div><div class="source-body"><div class="source-type">Отраслевой Research · 04.11.2025</div><div class="source-text">DR рынок москва.docx — структура спроса, медианные цены, география</div></div></div>
+    <div class="source-row"><div class="source-num">3</div><div class="source-body"><div class="source-type">Глобальный Research · 30.10.2025</div><div class="source-text">DR рынка лофтов: Москва vs Мир.docx — оценка влияния инфляции, система доплат</div></div></div>
+    <div class="source-row"><div class="source-num">4</div><div class="source-body"><div class="source-type">SEO / Analytics · 2025</div><div class="source-text">Семантическое_Ядро.csv — частотность запросов и выявление брендов конкурентов</div></div></div>
+    <div class="source-row"><div class="source-num">5</div><div class="source-body"><div class="source-type">Карточка Яндекс.Карт · 2025–2026</div><div class="source-text">lofthall.ru + ЯК — отзывы (1575, 5.0), перечень залов, кейтеринг LOFT HALL CATERING</div></div></div>
+    <div class="source-row"><div class="source-num">6</div><div class="source-body"><div class="source-type">Сайт конкурента · 2025</div><div class="source-text">loftblackout.ru — условия аренды (от 1499 ₽), офферы про 0₽ сборы</div></div></div>
+    <div class="source-row"><div class="source-num">7</div><div class="source-body"><div class="source-type">Карточка Яндекс.Карт · 2025</div><div class="source-text">Multiroom — динамические цены, меню апселлов, негатив по локации на Смирновской</div></div></div>
+    <div class="source-row"><div class="source-num">8</div><div class="source-body"><div class="source-type">Карточка Яндекс.Карт · 2025</div><div class="source-text">Campus Loft — пакеты «Бар под ключ», WhatsApp-маркетинг владельцев</div></div></div>
+    <div class="source-row"><div class="source-num">9</div><div class="source-body"><div class="source-type">Сайт конкурента · 2025–2026</div><div class="source-text">imperiasky.ru — цены (от 70–100к ₽), акция с такси, B2B-фокус</div></div></div>
+    <div class="source-row"><div class="source-num">10</div><div class="source-body"><div class="source-type">Сайт конкурента · 2025</div><div class="source-text">letspartyloft.ru — пакетные предложения (45–75к ₽), уличные зоны</div></div></div>
+    <div class="source-row"><div class="source-num">11</div><div class="source-body"><div class="source-type">Сайт конкурента · 2025–2026</div><div class="source-text">cinemasecret.ru / msk.bigpartyshow.ru — интерактивные шоу (31 990 ₽), доп. услуги</div></div></div>
+    <div class="source-row"><div class="source-num">12</div><div class="source-body"><div class="source-type">Сайт конкурента · 2024–2025</div><div class="source-text">bankabanka.ru — цены, депозиты, разбор PDF-презентаций для агентств</div></div></div>
+    <div class="source-row"><div class="source-num">13</div><div class="source-body"><div class="source-type">Сайт + Яндекс.Карты · 2025</div><div class="source-text">b69.ru — агрессивные акции, масштабирование. Падение рейтинга 4.3 на базе 2276 отзывов</div></div></div>
+    <div class="source-row"><div class="source-num">14</div><div class="source-body"><div class="source-type">Сайт конкурента · 2025</div><div class="source-text">casapicassa.ru — арт-залы (Климт, Ван Гог), цены 2 500–16 000 ₽</div></div></div>
+    <div class="source-row"><div class="source-num">15</div><div class="source-body"><div class="source-type">Сайт конкурента · 2025</div><div class="source-text">agloft.ru — описание залов Royal и Vinyl, крупный B2B сегмент</div></div></div>
+    <div class="source-row"><div class="source-num">16</div><div class="source-body"><div class="source-type">Агрегатор · 2025</div><div class="source-text">loft2rent.ru — статистика по 1726 площадкам, фильтры выдачи, ТОП-размещения</div></div></div>
+    <div class="source-row"><div class="source-num">17</div><div class="source-body"><div class="source-type">Сайт конкурента · 2025</div><div class="source-text">may.moscow — позиционирование залов Гоголь, Роза, Флоу, Льюис</div></div></div>
+    <div class="source-row"><div class="source-num">18</div><div class="source-body"><div class="source-type">Сайт конкурента · 2025</div><div class="source-text">comeinloft.ru — нишевый формат заезда автомобилей</div></div></div>
+    <div class="source-row"><div class="source-num">19</div><div class="source-body"><div class="source-type">Агрегатор · 2025</div><div class="source-text">artplay.ru — B2B-лекторий, образовательный кластер</div></div></div>
+    <div class="source-row"><div class="source-num">20</div><div class="source-body"><div class="source-type">Глобальный Research · 2024–2025</div><div class="source-text">DR рынок мир.pdf — обзор западных платформ, глобальные тренды (контент-румы, TOV)</div></div></div>
+  </div>
+</div>
+</section>
+
+<!-- CTA -->
+<section class="cta-section">
+  <div class="container">
+    <div class="cta-inner">
+      <div class="cta-title">Следующий шаг — Синтез гипотез</div>
+      <p class="cta-sub">Фактологическое досье собрано. Переходите к стратегическим гипотезам M2-05 — что это означает для позиционирования Юлии.</p>
+      <a href="https://clients.brand-os.ru/loft-prostranstvo/M2/M2-05-KONKURENTY-GIPOTEZY.html" class="cta-btn">Перейти к M2-05 Гипотезы →</a>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <div class="container">
+    <div class="footer-inner">
+      <div class="footer-logo">BrandOS <span>·</span> Нейроупаковка 2.0</div>
+      <div class="footer-meta">M2-05 · Deep Research · Конкуренты · 28 игроков · 25.04.2026</div>
+      <div class="footer-meta">Юлия (Лофт-пространство) · <a href="https://clients.brand-os.ru/loft-prostranstvo/" class="footer-link">← К хабу</a></div>
+    </div>
+  </div>
+</footer>
+
+<script>
+// Fade-up on scroll
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(e => { if(e.isIntersecting){ e.target.classList.add('visible'); observer.unobserve(e.target); } });
+}, { threshold: 0.08 });
+document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
+
+// Toggle competitor card
+function toggleComp(header) {
+  const body = header.nextElementSibling;
+  const toggle = header.querySelector('.comp-toggle');
+  body.classList.toggle('open');
+  toggle.classList.toggle('open');
+}
+
+// Mobile menu close on link click
+document.querySelectorAll('.mobile-menu a').forEach(a => {
+  a.addEventListener('click', () => document.getElementById('mobileMenu').classList.remove('open'));
+});
+
+// Smooth scroll for sticky tabs
+document.querySelectorAll('.sticky-tabs a, .nav-links a').forEach(a => {
+  a.addEventListener('click', e => {
+    const href = a.getAttribute('href');
+    if(href.startsWith('#')) {
+      e.preventDefault();
+      const target = document.querySelector(href);
+      if(target) {
+        const offset = 130;
+        const y = target.getBoundingClientRect().top + window.scrollY - offset;
+        window.scrollTo({ top: y, behavior: 'smooth' });
+      }
+    }
+  });
+});
+
+// Active tab highlight on scroll
+const sections = document.querySelectorAll('section[id]');
+const tabBtns = document.querySelectorAll('.sticky-tabs .tab-btn');
+window.addEventListener('scroll', () => {
+  let current = '';
+  sections.forEach(s => {
+    if(window.scrollY >= s.offsetTop - 160) current = s.id;
+  });
+  tabBtns.forEach(btn => {
+    btn.classList.remove('active');
+    if(btn.getAttribute('href') === '#' + current) btn.classList.add('active');
+  });
+});
+</script>
+</body>
+</html>

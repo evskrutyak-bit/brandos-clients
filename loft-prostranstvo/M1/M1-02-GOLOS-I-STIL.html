@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BrandOS · Голос и стиль — Лофт-пространство</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --brand: #0ea5e9; --brand-dark: #0284c7; --brand-light: #7dd3fc; --brand-bg: #e0f2fe;
+  --n50: #f8fafc; --n100: #f1f5f9; --n200: #e2e8f0; --n300: #cbd5e1; --n400: #94a3b8;
+  --n500: #64748b; --n600: #475569; --n700: #334155; --n800: #1e293b; --n900: #0f172a;
+  --success: #10b981; --warning: #f59e0b; --error: #ef4444; --info: #3b82f6;
+  --font: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  --shadow-card: 0 1px 3px 0 rgba(0,0,0,.05), 0 1px 2px -1px rgba(0,0,0,.05);
+  --shadow-hover: 0 10px 25px -5px rgba(0,0,0,.08), 0 8px 10px -6px rgba(0,0,0,.04);
+  --shadow-btn: 0 4px 14px 0 rgba(14,165,233,.35);
+  --shadow-btn-hover: 0 6px 20px 0 rgba(14,165,233,.45);
+}
+body { font-family: var(--font); font-size: 16px; line-height: 1.6; color: var(--n600); background: var(--n100); }
+.container { max-width: 1100px; margin: 0 auto; padding: 0 24px; }
+.section { padding: 72px 0; }
+
+@keyframes fade-up { 0%{opacity:0;transform:translateY(24px)} 100%{opacity:1;transform:translateY(0)} }
+@keyframes scale-in { 0%{opacity:0;transform:scale(.96)} 100%{opacity:1;transform:scale(1)} }
+@keyframes pulse-glow { 0%,100%{box-shadow:0 0 20px rgba(14,165,233,.3)} 50%{box-shadow:0 0 40px rgba(14,165,233,.55)} }
+
+.fade-up { opacity:0; transform:translateY(24px); transition:opacity .6s ease-out, transform .6s ease-out; }
+.fade-up.visible { opacity:1; transform:translateY(0); }
+
+/* NAV */
+.nav { position:fixed; top:0; left:0; right:0; z-index:300; height:64px; background:rgba(255,255,255,.93); backdrop-filter:blur(12px); border-bottom:1px solid var(--n200); }
+.nav-inner { height:100%; display:flex; align-items:center; justify-content:space-between; gap:16px; }
+.nav-logo { font-size:16px; font-weight:700; color:var(--n900); white-space:nowrap; }
+.nav-logo span { color:var(--brand); }
+.nav-links { display:flex; gap:20px; }
+.nav-links a { font-size:13px; font-weight:500; color:var(--n600); text-decoration:none; transition:color .2s; white-space:nowrap; }
+.nav-links a:hover { color:var(--brand); }
+.nav-tag { font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.06em; color:var(--brand); background:var(--brand-bg); padding:5px 12px; border-radius:9999px; white-space:nowrap; }
+.back-link { display:inline-flex; align-items:center; gap:6px; font-size:13px; font-weight:600; color:var(--n600); text-decoration:none; transition:color .2s; }
+.back-link:hover { color:var(--brand); }
+.burger { display:none; flex-direction:column; gap:5px; cursor:pointer; padding:8px; }
+.burger span { width:22px; height:2px; background:var(--n700); border-radius:2px; }
+@media(max-width:768px) { .nav-links { display:none; } .nav-tag { display:none; } .burger { display:flex; } }
+
+/* HERO */
+.hero { background:linear-gradient(135deg, var(--n900) 0%, #0f2744 60%, #0a1628 100%); padding:88px 0 72px; position:relative; overflow:hidden; }
+.hero-glow { position:absolute; border-radius:50%; pointer-events:none; }
+.hero-badge { display:inline-flex; align-items:center; gap:8px; background:rgba(14,165,233,.15); border:1px solid rgba(14,165,233,.3); color:var(--brand-light); padding:7px 16px; border-radius:9999px; font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:.06em; margin-bottom:24px; animation:scale-in .4s ease-out both; }
+.hero-dot { width:6px; height:6px; border-radius:50%; background:var(--brand); animation:pulse-glow 2s infinite; display:inline-block; }
+.hero-title { font-size:40px; line-height:1.12; letter-spacing:-.02em; font-weight:700; color:#fff; max-width:700px; margin-bottom:20px; animation:fade-up .6s ease-out .1s both; }
+.hero-sub { font-size:17px; line-height:1.65; color:var(--n400); max-width:620px; margin-bottom:32px; animation:fade-up .6s ease-out .2s both; }
+.hero-sub strong { color:var(--brand-light); font-weight:600; }
+.stat-grid-hero { display:grid; grid-template-columns:repeat(4,1fr); gap:16px; margin-top:40px; animation:fade-up .6s ease-out .35s both; }
+.stat-card-hero { background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.1); border-radius:14px; padding:20px; text-align:center; }
+.stat-card-hero .num { font-size:32px; font-weight:700; color:#fff; line-height:1; margin-bottom:6px; }
+.stat-card-hero .lbl { font-size:12px; color:var(--n400); line-height:1.4; }
+@media(max-width:768px) { .hero-title{font-size:28px;} .stat-grid-hero{grid-template-columns:repeat(2,1fr);} }
+
+/* SECTION DIVIDER */
+.section-divider { display:flex; align-items:center; gap:20px; padding:40px 0 20px; }
+.sd-num { font-size:48px; font-weight:700; color:var(--n200); line-height:1; flex-shrink:0; }
+.sd-line { flex:1; height:1px; background:var(--n200); }
+.sd-label { font-size:13px; font-weight:700; text-transform:uppercase; letter-spacing:.08em; color:var(--n400); }
+
+/* VOICE GRID */
+.voice-grid { display:grid; grid-template-columns:1fr 1fr; gap:24px; margin:24px 0; }
+@media(max-width:768px) { .voice-grid { grid-template-columns:1fr; } }
+
+.voice-col { border-radius:16px; padding:28px; }
+.voice-col-yes { background:#f0fdf4; border:2px solid #bbf7d0; }
+.voice-col-no { background:#fff5f5; border:2px solid #fecaca; }
+.voice-col-title { font-size:13px; font-weight:700; text-transform:uppercase; letter-spacing:.08em; margin-bottom:16px; padding-bottom:10px; border-bottom:1px solid rgba(0,0,0,.08); }
+.voice-col-yes .voice-col-title { color:#065f46; }
+.voice-col-no .voice-col-title { color:#991b1b; }
+.voice-item { display:flex; align-items:flex-start; gap:10px; margin-bottom:12px; font-size:14px; line-height:1.5; }
+.voice-item-icon { width:20px; height:20px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:700; flex-shrink:0; margin-top:1px; }
+.voice-col-yes .voice-item-icon { background:#d1fae5; color:#065f46; }
+.voice-col-no .voice-item-icon { background:#fee2e2; color:#991b1b; }
+.voice-col-yes .voice-item { color:var(--n700); }
+.voice-col-no .voice-item { color:var(--n700); }
+
+/* INFO CARD */
+.info-card { background:#fff; border-radius:16px; border:1px solid var(--n200); padding:28px; box-shadow:var(--shadow-card); transition:all .3s; margin-bottom:16px; }
+.info-card:hover { box-shadow:var(--shadow-hover); transform:translateY(-2px); }
+.info-card-inner { display:flex; align-items:flex-start; gap:16px; }
+.ic-icon { width:42px; height:42px; border-radius:12px; background:var(--brand-bg); color:var(--brand); display:flex; align-items:center; justify-content:center; font-size:16px; font-weight:700; flex-shrink:0; }
+.ic-body h3 { font-size:17px; font-weight:600; color:var(--n900); margin-bottom:6px; }
+.ic-body p { font-size:15px; line-height:1.65; color:var(--n600); }
+
+/* BLOCKQUOTE */
+blockquote { border-left:3px solid var(--brand); padding:14px 20px; background:#f0f9ff; border-radius:0 10px 10px 0; margin:12px 0; font-style:italic; color:var(--n700); font-size:15px; line-height:1.7; }
+blockquote cite { display:block; margin-top:8px; font-style:normal; font-size:12px; font-weight:600; color:var(--n400); text-transform:uppercase; letter-spacing:.05em; }
+
+/* BADGE */
+.badge { display:inline-flex; align-items:center; padding:3px 10px; border-radius:9999px; font-size:11px; font-weight:600; border:1px solid; margin:0 3px 4px; }
+.badge-blue { background:#eff6ff; color:#1d4ed8; border-color:#bfdbfe; }
+.badge-green { background:#d1fae5; color:#065f46; border-color:#6ee7b7; }
+.badge-red { background:#fee2e2; color:#991b1b; border-color:#fca5a5; }
+.badge-gray { background:#f1f5f9; color:#475569; border-color:#cbd5e1; }
+
+/* HIGHLIGHT BOX */
+.highlight-box { background:linear-gradient(135deg, #eff6ff 0%, #e0f2fe 100%); border:1px solid #bae6fd; border-left:4px solid var(--brand); border-radius:12px; padding:20px 24px; margin:20px 0; }
+.highlight-box.warning { background:linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%); border-color:#fde68a; border-left-color:var(--warning); }
+.highlight-box.error { background:#fff5f5; border-color:#fed7d7; border-left-color:var(--error); }
+.highlight-box .hb-title { font-size:14px; font-weight:700; color:var(--n800); margin-bottom:6px; }
+.highlight-box p { font-size:14px; color:var(--n700); line-height:1.6; }
+
+/* TABLE */
+.data-table { width:100%; border-collapse:collapse; font-size:14px; }
+.data-table th { background:var(--n50); padding:10px 14px; text-align:left; font-weight:600; color:var(--n700); border-bottom:2px solid var(--n200); font-size:12px; text-transform:uppercase; letter-spacing:.05em; }
+.data-table td { padding:12px 14px; border-bottom:1px solid var(--n100); color:var(--n600); vertical-align:top; }
+.data-table tr:hover td { background:var(--n50); }
+.table-wrap { background:#fff; border-radius:14px; border:1px solid var(--n200); overflow:hidden; box-shadow:var(--shadow-card); margin:20px 0; overflow-x:auto; }
+
+/* QUOTE EXAMPLES */
+.quote-example { background:#fff; border-radius:14px; border:1px solid var(--n200); padding:24px; margin-bottom:16px; box-shadow:var(--shadow-card); }
+.qe-label { font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.08em; color:var(--brand); margin-bottom:12px; }
+.qe-quotes { display:flex; flex-direction:column; gap:8px; }
+
+/* MODE CARDS */
+.mode-card { background:#fff; border-radius:14px; border:1px solid var(--n200); padding:20px 24px; margin-bottom:12px; box-shadow:var(--shadow-card); display:flex; align-items:flex-start; gap:14px; }
+.mode-num { width:36px; height:36px; border-radius:10px; background:var(--brand-bg); color:var(--brand); display:flex; align-items:center; justify-content:center; font-size:15px; font-weight:700; flex-shrink:0; }
+.mode-body h4 { font-size:15px; font-weight:600; color:var(--n900); margin-bottom:4px; }
+.mode-body p { font-size:14px; color:var(--n600); }
+
+/* TONE ALERT */
+.tone-alert { background:linear-gradient(135deg, var(--n900) 0%, #0f2744 100%); border-radius:16px; padding:28px 32px; color:#fff; margin:20px 0; }
+.tone-alert .ta-label { font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.08em; color:var(--brand-light); margin-bottom:12px; }
+.tone-alert h3 { font-size:20px; font-weight:700; color:#fff; margin-bottom:12px; }
+.tone-alert p { font-size:15px; color:var(--n300); line-height:1.7; }
+.tone-alert strong { color:#fff; }
+
+/* TABOO ROW */
+.taboo-row { display:flex; align-items:flex-start; gap:12px; padding:12px 0; border-bottom:1px solid var(--n100); }
+.taboo-row:last-child { border-bottom:none; }
+.taboo-word { font-size:14px; font-weight:600; color:var(--error); width:220px; flex-shrink:0; }
+.taboo-why { font-size:14px; color:var(--n600); }
+
+/* CTA SECTION */
+.cta-section { background:linear-gradient(135deg, var(--n900) 0%, #0f2744 100%); padding:72px 0; }
+.cta-section h2 { font-size:30px; font-weight:700; color:#fff; margin-bottom:16px; }
+.cta-section p { font-size:17px; color:var(--n400); margin-bottom:32px; max-width:560px; }
+.cta-section p strong { color:var(--brand-light); }
+.cta-btn { display:inline-flex; align-items:center; gap:8px; background:var(--brand); color:#fff; padding:14px 32px; border-radius:9999px; font-size:15px; font-weight:600; text-decoration:none; box-shadow:var(--shadow-btn); transition:all .2s; }
+.cta-btn:hover { background:var(--brand-dark); box-shadow:var(--shadow-btn-hover); transform:translateY(-1px); }
+.cta-btn-outline { display:inline-flex; align-items:center; gap:8px; background:transparent; color:var(--brand-light); padding:14px 32px; border-radius:9999px; font-size:15px; font-weight:600; text-decoration:none; border:2px solid rgba(14,165,233,.4); transition:all .2s; margin-left:12px; }
+.cta-btn-outline:hover { border-color:var(--brand); color:#fff; }
+
+/* FOOTER */
+footer { background:var(--n900); padding:32px 0; }
+.footer-inner { display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:16px; }
+.footer-brand { font-size:14px; font-weight:700; color:#fff; }
+.footer-brand span { color:var(--brand); }
+.footer-meta { font-size:13px; color:var(--n500); }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav">
+  <div class="container nav-inner">
+    <a href="https://clients.brand-os.ru/loft-prostranstvo/" class="back-link">← К хабу</a>
+    <div class="nav-links">
+      <a href="#voice-char">Голос</a>
+      <a href="#quotes">15 цитат</a>
+      <a href="#yes-no">Так / Не так</a>
+      <a href="#taboo">Табу</a>
+      <a href="#examples">Примеры</a>
+    </div>
+    <div class="nav-tag">M1-02 · Голос и стиль · 25 апр 2026</div>
+    <div class="burger" onclick="this.classList.toggle('open')"><span></span><span></span><span></span></div>
+  </div>
+</nav>
+<div style="height:64px;"></div>
+
+<!-- HERO -->
+<header class="hero">
+  <div class="hero-glow" style="top:-120px;right:-80px;width:500px;height:500px;background:radial-gradient(circle,rgba(14,165,233,.18) 0%,transparent 70%);"></div>
+  <div class="hero-glow" style="bottom:-80px;left:-60px;width:320px;height:320px;background:radial-gradient(circle,rgba(245,158,11,.1) 0%,transparent 70%);"></div>
+  <div class="container" style="position:relative;z-index:1;">
+    <div class="hero-badge"><span class="hero-dot"></span>М1 · Распаковка · 25 апр 2026</div>
+    <h1 class="hero-title">Голос и стиль</h1>
+    <p class="hero-sub">15 цитат-эталонов, табу, разрешённые обороты и готовые заготовки. <strong>Основа для voice-adapter и всего контента.</strong></p>
+    <div class="stat-grid-hero">
+      <div class="stat-card-hero"><div class="num">15</div><div class="lbl">цитат-эталонов голоса</div></div>
+      <div class="stat-card-hero"><div class="num">11</div><div class="lbl">табу-слов</div></div>
+      <div class="stat-card-hero"><div class="num">3</div><div class="lbl">режима голоса</div></div>
+      <div class="stat-card-hero"><div class="num">6</div><div class="lbl">ситуационных тонов</div></div>
+    </div>
+  </div>
+</header>
+
+<main>
+
+<!-- ОБЩАЯ ХАРАКТЕРИСТИКА -->
+<section class="section" id="voice-char">
+<div class="container">
+  <div class="section-divider"><div class="sd-num">1</div><div class="sd-line"></div><div class="sd-label">Общая характеристика голоса</div></div>
+
+  <div class="fade-up">
+    <div class="tone-alert">
+      <div class="ta-label">Tone-of-Voice</div>
+      <h3>Прямая, живая, без лакировки, прагматичная</h3>
+      <p>Юля — <strong>не «учительница» и не «звезда»</strong>. Она — хозяйка, оператор, практик. Тон — тон человека, который много раз сам всё делал и теперь рассказывает, как оно работает на самом деле.</p>
+    </div>
+  </div>
+
+  <div class="fade-up" style="margin-top:24px;">
+    <h3 style="font-size:18px;font-weight:600;color:var(--n800);margin-bottom:16px;">3 режима голоса</h3>
+    <div class="mode-card">
+      <div class="mode-num">1</div>
+      <div class="mode-body">
+        <h4>Деловой</h4>
+        <p>Когда считает, объясняет структуру, договаривается. «4 площадки, 85 м², 35 человек, 1500 ₽/час».</p>
+      </div>
+    </div>
+    <div class="mode-card">
+      <div class="mode-num">2</div>
+      <div class="mode-body">
+        <h4>Эмоциональный</h4>
+        <p>Когда говорит про клиентов, события, «живое». «Представляете, у них был 20-летний юбилей свадьбы...»</p>
+      </div>
+    </div>
+    <div class="mode-card">
+      <div class="mode-num">3</div>
+      <div class="mode-body">
+        <h4>Усталый-ироничный</h4>
+        <p>Под стрессом, но с сохранением фокуса. «Всё нормально, мне просто это интересно. Хочешь жить — умеешь».</p>
+      </div>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- 15 ЦИТАТ -->
+<section class="section" style="background:#fff;" id="quotes">
+<div class="container">
+  <div class="section-divider"><div class="sd-num">2</div><div class="sd-line"></div><div class="sd-label">15 характерных цитат — эталон голоса</div></div>
+  <p style="font-size:15px;color:var(--n500);margin-bottom:24px;">Реальные высказывания Юлии. Основа для проверки любого контента «в её голосе».</p>
+
+  <div class="fade-up">
+    <blockquote>"Нерешаемых задач нет — вопрос только в подходе. Я импровизирую, вырулиаю, решаю"<cite>— AIDI, уверенно, быстро</cite></blockquote>
+    <blockquote>"Я управляю и владею этими площадками. На данный момент у меня работают четыре площадки, и пятая сейчас пока в рядом ожидания"<cite>— Zoom, деловой тон, точный подсчёт</cite></blockquote>
+    <blockquote>"Я не знаю, я не могу залезть в твою голову и понять твой мысли"<cite>— Zoom с менеджером, прямая просьба ясности</cite></blockquote>
+    <blockquote>"Я могу располагать людей, и я умею давать то, что они хотят. Я считаю себя хорошим продавцом"<cite>— AIDI, самоопределение, без кокетства</cite></blockquote>
+    <blockquote>"Это не просто аренда, это наше управление площадками для мероприятий — это готовая бизнес-система, которая может масштабироваться, учить других и держать рынок с ними"<cite>— Рабочий проект, стратегический тон</cite></blockquote>
+    <blockquote>"Сопротивление — не негативный поступок, а психологическая защита от хаоса"<cite>— AIDI, философская нота</cite></blockquote>
+    <blockquote>"Всё нормально, мне просто это интересно. Хочешь жить, умеешь"<cite>— Zoom, усталая, но решительная</cite></blockquote>
+    <blockquote>"Клиента не отпускаем. Выявляю. Двигаем. Предлагаем. Сделку довожу"<cite>— Zoom, ритм продаж, быстрый список</cite></blockquote>
+    <blockquote>"Я сейчас это понимаю, как выращивание"<cite>— встреча с менеджером, раздумчиво</cite></blockquote>
+    <blockquote>"Бот работает на 20%. Всё остальное — админ вручную"<cite>— Zoom, признание провала — честно</cite></blockquote>
+    <blockquote>"Я просто как бы живая, нормальная, ясная"<cite>— AIDI, самоопределение бренда</cite></blockquote>
+    <blockquote>"Я — основатель и автор франшизы лофтов. За 5 лет ни одного срыва, потому что я делаю"<cite>— Гайд позиционирования, гордость без хвастовства</cite></blockquote>
+    <blockquote>"90% клиентов к нам возвращаются и говорят спасибо"<cite>— Zoom, через цифру — самый сильный аргумент</cite></blockquote>
+    <blockquote>"Расписание не доверю никому, в принципе, потому что все будут тупить"<cite>— Zoom, прямой, жёсткий</cite></blockquote>
+    <blockquote>"Я долго занималась, года три. Я хорошо зарабатывала до 500 тысяч в месяц"<cite>— Zoom, вдумчиво, с поправками на ходу</cite></blockquote>
+  </div>
+</div>
+</section>
+
+<!-- ТАК ГОВОРИМ / НЕ ГОВОРИМ -->
+<section class="section" id="yes-no">
+<div class="container">
+  <div class="section-divider"><div class="sd-num">3</div><div class="sd-line"></div><div class="sd-label">Так говорим / Так не говорим</div></div>
+
+  <div class="fade-up">
+    <div class="voice-grid">
+      <div class="voice-col voice-col-yes">
+        <div class="voice-col-title">✓ Так говорим</div>
+        <div class="voice-item"><div class="voice-item-icon">✓</div><div>Говорит списками, где возможно (мысль-факт-действие)</div></div>
+        <div class="voice-item"><div class="voice-item-icon">✓</div><div>Называет вещи своими именами: «я управляю и владею», а не «мы работаем с недвижимостью»</div></div>
+        <div class="voice-item"><div class="voice-item-icon">✓</div><div>Вставляет цифры и факты: «90%», «4 площадки», «500 тысяч»</div></div>
+        <div class="voice-item"><div class="voice-item-icon">✓</div><div>Признаёт границы понимания: «я не знаю»</div></div>
+        <div class="voice-item"><div class="voice-item-icon">✓</div><div>Ритм: короткая фраза → длинное объяснение → короткий вывод</div></div>
+        <div class="voice-item"><div class="voice-item-icon">✓</div><div>Глаголы действия: держу, вырулиаю, решаю, делаю, управляю</div></div>
+        <div class="voice-item"><div class="voice-item-icon">✓</div><div>Честные признания: «сырой продукт», «не получилось», «провал», «учусь»</div></div>
+        <div class="voice-item"><div class="voice-item-icon">✓</div><div>Конкретные детали: веранда с мангалом, кирпич XIX века, 85 м²</div></div>
+      </div>
+      <div class="voice-col voice-col-no">
+        <div class="voice-col-title">✗ Так не говорим</div>
+        <div class="voice-item"><div class="voice-item-icon">✗</div><div>Пышные слова: «инновационный», «революционный», «прорывной» — табу</div></div>
+        <div class="voice-item"><div class="voice-item-icon">✗</div><div>«Медиа» в позитиве (для неё это глянец)</div></div>
+        <div class="voice-item"><div class="voice-item-icon">✗</div><div>Игра в «гуру», «наставника», «ментора»</div></div>
+        <div class="voice-item"><div class="voice-item-icon">✗</div><div>Рассказ через «личные трансформации» с драмой</div></div>
+        <div class="voice-item"><div class="voice-item-icon">✗</div><div>Оправдание через «это не мой стиль» (скорее: «это не работает»)</div></div>
+        <div class="voice-item"><div class="voice-item-icon">✗</div><div>Медитации, духовность, энергии — не её словарь</div></div>
+        <div class="voice-item"><div class="voice-item-icon">✗</div><div>«Лайфстайл», «вайб», «мудборд», «прогрев», «воронка» наружу</div></div>
+        <div class="voice-item"><div class="voice-item-icon">✗</div><div>«Душевные события», «ваши мечты станут реальностью» — глянец</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- МАРКЕРНЫЕ СЛОВА -->
+<section class="section" style="background:#fff;" id="markers">
+<div class="container">
+  <div class="section-divider"><div class="sd-num">4</div><div class="sd-line"></div><div class="sd-label">Маркерные слова и синтаксис</div></div>
+
+  <div class="fade-up">
+    <div class="table-wrap">
+      <table class="data-table">
+        <thead><tr><th>Оборот</th><th>Функция</th></tr></thead>
+        <tbody>
+          <tr><td><strong>"в принципе"</strong></td><td>смягчает категоричность</td></tr>
+          <tr><td><strong>"я понимаю, что..." / "я не понимаю"</strong></td><td>переговорная позиция</td></tr>
+          <tr><td><strong>"это нормально"</strong></td><td>трансформация сложного в управляемое</td></tr>
+          <tr><td><strong>"опять же", "ещё раз"</strong></td><td>повторяет для убедительности</td></tr>
+          <tr><td><strong>"как бы", "ну", "вот"</strong></td><td>разговорно-деловой маркер</td></tr>
+          <tr><td><strong>"супер"</strong></td><td>одобрение (факт, а не эмоция)</td></tr>
+          <tr><td><strong>"блин"</strong></td><td>эмоция под стрессом</td></tr>
+          <tr><td><strong>"хочешь жить, умеешь"</strong></td><td>присказка-девиз</td></tr>
+          <tr><td><strong>"нерешаемых задач нет"</strong></td><td>внутренний девиз</td></tr>
+          <tr><td><strong>"я делаю"</strong></td><td>точка уверенности</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="fade-up" style="margin-top:24px;">
+    <h3 style="font-size:18px;font-weight:600;color:var(--n800);margin-bottom:14px;">Синтаксические паттерны</h3>
+    <div class="highlight-box">
+      <div class="hb-title">Короткая фраза → длинное объяснение</div>
+      <p>«Я управляю. На данный момент четыре площадки. И пятая...»</p>
+    </div>
+    <div class="highlight-box">
+      <div class="hb-title">Списки действий без связок</div>
+      <p>«Выявляю. Двигаем. Предлагаем.»</p>
+    </div>
+    <div class="highlight-box">
+      <div class="hb-title">Уточнения на ходу</div>
+      <p>«года три. Я хорошо зарабатывала до 500 тысяч в месяц. Это люди с небольшим бюджетом...»</p>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- ТАБУ -->
+<section class="section" id="taboo">
+<div class="container">
+  <div class="section-divider"><div class="sd-num">5</div><div class="sd-line"></div><div class="sd-label">Табу — нельзя использовать от её имени</div></div>
+
+  <div class="fade-up">
+    <div class="info-card" style="border-left:4px solid var(--error);">
+      <div style="padding:0;">
+        <div class="taboo-row"><div class="taboo-word">"инновационный лофт"</div><div class="taboo-why">пышность без содержания</div></div>
+        <div class="taboo-row"><div class="taboo-word">"уникальное предложение"</div><div class="taboo-why">маркетинговый штамп</div></div>
+        <div class="taboo-row"><div class="taboo-word">"эксклюзивная атмосфера"</div><div class="taboo-why">клише без смысла</div></div>
+        <div class="taboo-row"><div class="taboo-word">"ваши мечты станут реальностью"</div><div class="taboo-why">глянец и инфобизнес</div></div>
+        <div class="taboo-row"><div class="taboo-word">"поможем вам найти себя"</div><div class="taboo-why">духовный маркетинг</div></div>
+        <div class="taboo-row"><div class="taboo-word">"энергетика пространства"</div><div class="taboo-why">эзотерика</div></div>
+        <div class="taboo-row"><div class="taboo-word">"прокачайте бизнес"</div><div class="taboo-why">жаргон коучей</div></div>
+        <div class="taboo-row"><div class="taboo-word">"секреты успеха"</div><div class="taboo-why">инфобизнес</div></div>
+        <div class="taboo-row"><div class="taboo-word">"лайфстайл", "вайб", "мудборд"</div><div class="taboo-why">не её словарь</div></div>
+        <div class="taboo-row"><div class="taboo-word">"прогрев", "воронка" (наружу)</div><div class="taboo-why">бизнес-сленг для клиента</div></div>
+        <div class="taboo-row"><div class="taboo-word">"душевные события"</div><div class="taboo-why">штамп, потерял смысл</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- ПРИМЕРЫ ФРАЗ -->
+<section class="section" style="background:#fff;" id="examples">
+<div class="container">
+  <div class="section-divider"><div class="sd-num">6</div><div class="sd-line"></div><div class="sd-label">Примеры фраз «в голосе Юлии»</div></div>
+  <p style="font-size:15px;color:var(--n500);margin-bottom:24px;">Готовые заготовки для Telegram, лендинга и переговоров.</p>
+
+  <div class="fade-up">
+    <div class="quote-example">
+      <div class="qe-label">Для Telegram / поста</div>
+      <div class="qe-quotes">
+        <blockquote>"За 5 лет ни одного сорванного мероприятия. Потому что когда всё летит в тартарары — а оно летит, поверьте — я просто беру и делаю. Клиент даже не узнаёт."</blockquote>
+        <blockquote>"4 лофта, 14 лофтов — разница не в количестве, а в том, что к 14-му уже нельзя всё держать на себе. Или делаешь систему, или захлёбываешься."</blockquote>
+        <blockquote>"Из AmoCRM вышли через полгода. Не потому что плохая — потому что мы ею не пользовались. Оказалось, нам нужен был человек, а не софт."</blockquote>
+      </div>
+    </div>
+    <div class="quote-example">
+      <div class="qe-label">Для лендинга / hero</div>
+      <div class="qe-quotes">
+        <blockquote>"Лофт-пространство. 14 площадок в Москве. 7000+ проведённых мероприятий. 90% клиентов возвращаются."</blockquote>
+        <blockquote>"Я — Юлия. 5 лет в лофт-бизнесе. За это время ни один праздник не сорвался."</blockquote>
+      </div>
+    </div>
+    <div class="quote-example">
+      <div class="qe-label">Для переговоров с клиентом</div>
+      <div class="qe-quotes">
+        <blockquote>"Давайте по-простому. Что за событие, сколько людей, какой день — и я скажу, подходит ли нам друг другу."</blockquote>
+        <blockquote>"Нерешаемых задач нет. Есть задачи, которые пока не решены."</blockquote>
+      </div>
+    </div>
+    <div class="quote-example">
+      <div class="qe-label">Для разговора с франчайзи</div>
+      <div class="qe-quotes">
+        <blockquote>"Франшиза 1.0 была сырая, честно. Я делаю 2.0 потому что вижу, где мы спотыкались, и могу это убрать."</blockquote>
+      </div>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- ИНТОНАЦИОННАЯ ШКАЛА -->
+<section class="section" id="tone-scale">
+<div class="container">
+  <div class="section-divider"><div class="sd-num">7</div><div class="sd-line"></div><div class="sd-label">Интонационная шкала</div></div>
+
+  <div class="fade-up">
+    <div class="table-wrap">
+      <table class="data-table">
+        <thead><tr><th>Ситуация</th><th>Тон</th><th>Пример</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Рассказ о клиентах</strong></td><td><span class="badge badge-green">тёплый, эмоциональный</span></td><td>"Представляете, у них был 20-летний юбилей свадьбы..."</td></tr>
+          <tr><td><strong>Обсуждение цифр</strong></td><td><span class="badge badge-blue">холодный, деловой</span></td><td>"4 площадки, 85 м², 35 человек, 1500 ₽/час"</td></tr>
+          <tr><td><strong>Признание провала</strong></td><td><span class="badge badge-gray">ироничный, честный</span></td><td>"Бот работает на 20%. Всё остальное — админ вручную"</td></tr>
+          <tr><td><strong>Конфликт с командой</strong></td><td><span class="badge badge-red">прямой, жёсткий</span></td><td>"Расписание не доверю никому, потому что все будут тупить"</td></tr>
+          <tr><td><strong>Переговоры</strong></td><td><span class="badge badge-blue">прямой, вопросительный</span></td><td>"Ты управляешь или сдаёшь чужие как агент?"</td></tr>
+          <tr><td><strong>Философская мысль</strong></td><td><span class="badge badge-gray">тихий, вдумчивый</span></td><td>"Сопротивление — это защита от хаоса"</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- CTA -->
+<section class="cta-section">
+<div class="container">
+  <div class="fade-up">
+    <h2>Следующий документ</h2>
+    <p>История и путь Юлии — <strong>хронология от первого лофта до 14</strong>, поворотные точки и сюжеты для контента.</p>
+    <a href="M1-03-ISTORIYA-I-PUT.html" class="cta-btn">M1-03 История и путь →</a>
+    <a href="M1-04-BAZOVY-BRAND-PROFILE.html" class="cta-btn-outline">M1-04 Brand Profile</a>
+  </div>
+</div>
+</section>
+
+</main>
+
+<footer>
+  <div class="container footer-inner">
+    <div class="footer-brand">BrandOS <span>·</span> Нейроупаковка 2.0</div>
+    <div class="footer-meta">Юлия (Лофт-пространство) · M1-02 · Голос и стиль · 25 апр 2026</div>
+  </div>
+</footer>
+
+<script>
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); observer.unobserve(e.target); } });
+}, { threshold: 0.1 });
+document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
+</script>
+</body>
+</html>
