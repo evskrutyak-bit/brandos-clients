@@ -1,0 +1,943 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>M1-02 КАРТА ФАКТОВ — Alien Cat | Нейроупаковка 2.0</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --brand:#0ea5e9;--brand-dark:#0284c7;--brand-light:#7dd3fc;--brand-bg:#e0f2fe;
+  --black:#0f172a;
+  --n50:#f8fafc;--n100:#f1f5f9;--n200:#e2e8f0;--n300:#cbd5e1;--n400:#94a3b8;
+  --n500:#64748b;--n600:#475569;--n700:#334155;--n800:#1e293b;--n900:#0f172a;
+  --success:#10b981;--warning:#f59e0b;--error:#ef4444;--info:#3b82f6;
+  --font:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;
+  --shadow-card:0 1px 3px 0 rgba(0,0,0,.05),0 1px 2px -1px rgba(0,0,0,.05);
+  --shadow-hover:0 10px 25px -5px rgba(0,0,0,.08),0 8px 10px -6px rgba(0,0,0,.04);
+  --shadow-btn:0 4px 14px 0 rgba(14,165,233,.35);
+  --shadow-glow:0 0 40px rgba(14,165,233,.15);
+  --r-sm:4px;--r-md:6px;--r-lg:8px;--r-xl:12px;--r-2xl:16px;--r-3xl:24px;--r-full:9999px;
+}
+html{scroll-behavior:smooth}
+body{font-family:var(--font);font-size:16px;line-height:1.6;color:var(--n600);background:var(--n100)}
+
+@keyframes shimmer{0%{transform:translateX(-100%)}100%{transform:translateX(200%)}}
+@keyframes fade-up{0%{opacity:0;transform:translateY(20px)}100%{opacity:1;transform:translateY(0)}}
+@keyframes pulse-glow{0%,100%{box-shadow:0 0 20px rgba(14,165,233,.3)}50%{box-shadow:0 0 40px rgba(14,165,233,.5)}}
+@keyframes scale-in{0%{opacity:0;transform:scale(.95)}100%{opacity:1;transform:scale(1)}}
+
+.fade-up{opacity:0;transform:translateY(20px);transition:opacity .6s ease-out,transform .6s ease-out}
+.fade-up.visible{opacity:1;transform:translateY(0)}
+
+.container{max-width:1200px;margin:0 auto;padding:0 24px}
+.section{padding:64px 0}
+.section h2{font-size:30px;font-weight:600;color:var(--n900);margin-bottom:8px;letter-spacing:-.01em}
+.section h3{font-size:20px;font-weight:600;color:var(--n900);margin:28px 0 14px}
+.section h4{font-size:16px;font-weight:600;color:var(--n800);margin:18px 0 10px}
+.section .lead{font-size:16px;color:var(--n500);margin-bottom:32px}
+.section p{margin-bottom:14px;font-size:15px;line-height:1.65}
+
+.nav-fixed{position:fixed;top:0;left:0;right:0;z-index:300;background:rgba(255,255,255,.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--n200);height:64px}
+.nav-inner{height:100%;display:flex;align-items:center;justify-content:space-between;gap:24px}
+.nav-logo{font-size:18px;font-weight:700;color:var(--n900);white-space:nowrap}
+.nav-logo span{color:var(--brand)}
+.nav-links{display:flex;gap:18px;flex-wrap:wrap}
+.nav-links a{font-size:13px;font-weight:500;color:var(--n600);text-decoration:none;transition:color .2s}
+.nav-links a:hover{color:var(--brand)}
+.nav-badge{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--brand);background:var(--brand-bg);padding:6px 14px;border-radius:var(--r-full);white-space:nowrap}
+
+header.hero{background:linear-gradient(135deg,var(--n900) 0%,#1e3a5f 100%);padding:96px 0 80px;position:relative;overflow:hidden;margin-top:64px}
+.hero-glow{position:absolute;top:-100px;right:-100px;width:500px;height:500px;border-radius:50%;background:radial-gradient(circle,rgba(14,165,233,.25) 0%,transparent 70%);pointer-events:none}
+.hero-glow-2{position:absolute;bottom:-150px;left:-100px;width:400px;height:400px;border-radius:50%;background:radial-gradient(circle,rgba(125,211,252,.15) 0%,transparent 70%);pointer-events:none}
+.hero-inner{position:relative;z-index:1}
+.hero-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(14,165,233,.15);border:1px solid rgba(14,165,233,.3);color:var(--brand-light);padding:8px 16px;border-radius:var(--r-full);font-size:13px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;margin-bottom:24px}
+.hero-badge .dot{width:6px;height:6px;border-radius:50%;background:var(--brand);animation:pulse-glow 2s infinite}
+.hero h1{font-size:48px;line-height:1.1;letter-spacing:-.02em;font-weight:700;color:#fff;max-width:820px;margin-bottom:20px}
+.hero p.sub{font-size:18px;line-height:1.6;color:#cbd5e1;max-width:720px;margin-bottom:36px}
+.hero-meta{display:flex;gap:32px;flex-wrap:wrap}
+.hero-meta .m{color:#94a3b8;font-size:14px}
+.hero-meta .m strong{color:var(--brand);font-weight:600}
+
+.stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:20px;margin:40px 0}
+.metric-card{background:#fff;border-radius:var(--r-2xl);border:1px solid var(--n200);padding:24px;box-shadow:var(--shadow-card);transition:all .3s ease}
+.metric-card:hover{transform:translateY(-4px);box-shadow:var(--shadow-hover)}
+.metric-card .label{font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--n500);margin-bottom:8px}
+.metric-card .val{font-size:36px;font-weight:700;color:var(--n900);line-height:1;margin-bottom:8px}
+.metric-card .desc{font-size:13px;color:var(--n500)}
+.metric-card.accent{background:linear-gradient(135deg,var(--brand) 0%,var(--brand-dark) 100%);color:#fff;border:none;box-shadow:var(--shadow-btn)}
+.metric-card.accent .label{color:rgba(255,255,255,.85)}
+.metric-card.accent .val{color:#fff}
+.metric-card.accent .desc{color:rgba(255,255,255,.85)}
+.metric-card.success{border-top:3px solid var(--success)}
+.metric-card.success .val{color:var(--success)}
+.metric-card.warning{border-top:3px solid var(--warning)}
+.metric-card.warning .val{color:var(--warning)}
+
+.info-card{background:#fff;border-radius:var(--r-2xl);border:1px solid var(--n200);padding:28px;box-shadow:var(--shadow-card);margin-bottom:16px;transition:all .3s ease}
+.info-card:hover{box-shadow:var(--shadow-hover)}
+.info-card h3{font-size:18px;font-weight:600;color:var(--n900);margin-bottom:12px;margin-top:0;display:flex;align-items:center;gap:10px}
+.info-card h3 .ico{width:36px;height:36px;border-radius:var(--r-lg);background:var(--brand-bg);color:var(--brand);display:inline-flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.info-card p{font-size:15px;color:var(--n600);line-height:1.65}
+.info-card ul{margin-top:8px;padding-left:20px}
+.info-card li{font-size:15px;color:var(--n600);margin-bottom:6px;line-height:1.6}
+
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+
+.table-brandos{width:100%;border-collapse:collapse;background:#fff;border-radius:var(--r-2xl);overflow:hidden;box-shadow:var(--shadow-card);margin:20px 0}
+.table-brandos thead tr{background:var(--n50);border-bottom:2px solid var(--n200)}
+.table-brandos th{padding:14px 18px;text-align:left;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--n500)}
+.table-brandos td{padding:14px 18px;font-size:14px;color:var(--n700);border-bottom:1px solid var(--n200);vertical-align:top}
+.table-brandos tbody tr:last-child td{border-bottom:none}
+.table-brandos tbody tr{transition:background .2s}
+.table-brandos tbody tr:hover{background:var(--n50)}
+.table-brandos td.fact{font-weight:500;color:var(--n800);width:38%}
+.table-brandos td.value{font-weight:600;color:var(--n900);width:30%}
+.table-brandos td.source{color:var(--n500);font-size:13px;font-style:italic}
+.table-wrap{overflow-x:auto;border-radius:var(--r-2xl);border:1px solid var(--n200);margin:20px 0}
+.table-wrap .table-brandos{border-radius:0;box-shadow:none;margin:0}
+
+.badge{display:inline-flex;align-items:center;padding:4px 10px;border-radius:var(--r-full);font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.04em;white-space:nowrap}
+.badge-blue{background:var(--brand-bg);color:#0369a1}
+.badge-success{background:#d1fae5;color:#065f46}
+.badge-warning{background:#fef3c7;color:#92400e}
+.badge-error{background:#fee2e2;color:#991b1b}
+.badge-neutral{background:var(--n100);color:var(--n700)}
+
+.alert{display:flex;gap:16px;border-radius:var(--r-xl);padding:18px 22px;margin:14px 0;align-items:flex-start}
+.alert .ico-l{font-size:20px;flex-shrink:0;line-height:1}
+.alert .body{flex:1}
+.alert .title{font-weight:600;margin-bottom:4px;font-size:15px}
+.alert .text{font-size:14px;line-height:1.55}
+.alert-info{background:#eff6ff;border:1px solid #bfdbfe;border-left:4px solid var(--info)}
+.alert-info .title,.alert-info .text{color:#1e40af}
+.alert-warning{background:#fffbeb;border:1px solid #fde68a;border-left:4px solid var(--warning)}
+.alert-warning .title,.alert-warning .text{color:#92400e}
+.alert-success{background:#ecfdf5;border:1px solid #a7f3d0;border-left:4px solid var(--success)}
+.alert-success .title,.alert-success .text{color:#065f46}
+
+.highlight-box{background:linear-gradient(135deg,rgba(14,165,233,.08) 0%,rgba(125,211,252,.05) 100%);border:1px solid rgba(14,165,233,.2);border-left:4px solid var(--brand);border-radius:var(--r-xl);padding:24px;margin:20px 0}
+.highlight-box .label{font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--brand);margin-bottom:8px}
+.highlight-box .text{font-size:18px;line-height:1.5;color:var(--n800);font-weight:500}
+.highlight-box .text em{font-style:normal;color:var(--brand-dark);font-weight:600}
+
+.section-divider{height:1px;background:linear-gradient(90deg,transparent,var(--n300),transparent);margin:48px 0}
+
+.checklist{list-style:none;padding:0;margin:12px 0}
+.checklist li{padding:10px 14px 10px 36px;border-radius:var(--r-lg);background:#fff;border:1px solid #fde68a;margin-bottom:8px;font-size:14px;line-height:1.5;color:var(--n700);position:relative}
+.checklist li::before{content:"☐";position:absolute;left:12px;top:9px;font-size:18px;color:var(--warning);font-weight:600}
+.checklist.plan li{border-color:#bfdbfe}
+.checklist.plan li::before{content:"◷";color:var(--info)}
+
+footer{background:var(--n900);padding:48px 0;margin-top:80px;color:#fff}
+footer .f-top{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:24px}
+footer .f-title{font-size:20px;font-weight:700;color:#fff;margin-bottom:6px}
+footer .f-title span{color:var(--brand)}
+footer .f-sub{font-size:14px;color:var(--n500)}
+footer .f-line{height:1px;background:rgba(255,255,255,.08);margin:32px 0}
+footer .f-bottom{font-size:13px;color:var(--n500)}
+
+@media (max-width:1024px){
+  .grid-3{grid-template-columns:repeat(2,1fr)}
+}
+@media (max-width:768px){
+  .container{padding:0 16px}
+  .section{padding:48px 0}
+  .nav-links{display:none}
+  .nav-inner{justify-content:space-between}
+  .hero{padding:72px 0 56px}
+  .hero h1{font-size:30px;line-height:1.2}
+  .hero p.sub{font-size:15px}
+  .hero-meta{gap:16px}
+  .grid-2,.grid-3{grid-template-columns:1fr}
+  .stat-grid{grid-template-columns:1fr 1fr;gap:12px}
+  .metric-card{padding:18px}
+  .metric-card .val{font-size:28px}
+  .section h2{font-size:24px}
+  .table-brandos th,.table-brandos td{padding:10px 12px;font-size:13px}
+  .table-brandos td.fact,.table-brandos td.value{width:auto}
+  .nav-badge{font-size:10px;padding:5px 10px}
+  .nav-logo{font-size:15px}
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav-fixed">
+  <div class="container nav-inner">
+    <div class="nav-logo">BrandOS <span>·</span> M1-02 Карта фактов</div>
+    <div class="nav-links">
+      <a href="#identity">Личность</a>
+      <a href="#operations">Опыт</a>
+      <a href="#product">Продукт</a>
+      <a href="#clients">Клиенты</a>
+      <a href="#values">Ценности</a>
+      <a href="#market">Рынок</a>
+      <a href="#competitors">Конкуренты</a>
+      <a href="#ip">IP</a>
+      <a href="#nonfacts">Не-факты</a>
+    </div>
+    <div class="nav-badge">Карта фактов · 2026-04-25</div>
+  </div>
+</nav>
+
+<!-- HERO -->
+<header class="hero">
+  <div class="hero-glow"></div>
+  <div class="hero-glow-2"></div>
+  <div class="container hero-inner">
+    <div class="hero-badge">
+      <span class="dot"></span>
+      Нейроупаковка 2.0 · Модуль M1
+    </div>
+    <h1>M1-02 КАРТА ФАКТОВ — Alien Cat</h1>
+    <p class="sub">
+      Ретро-сборка только из верифицируемых источников. В этот документ попадает только то, что прямо зафиксировано в source, brand/ или отзывах. Каждая цифра имеет источник. Интерпретации и гипотезы — в M1-01, M1-04, M1-05.
+    </p>
+    <div class="hero-meta">
+      <div class="m"><strong>Артефакт:</strong> M1-02 Карта фактов</div>
+      <div class="m"><strong>Статус:</strong> v0</div>
+      <div class="m"><strong>Принцип:</strong> только верифицируемые источники</div>
+      <div class="m"><strong>Дата:</strong> 2026-04-25</div>
+    </div>
+  </div>
+</header>
+
+<main>
+
+<!-- INTRO / HOW TO READ -->
+<section class="section" id="howto" style="padding-top:48px">
+  <div class="container">
+    <h2 class="fade-up">Как читать эту карту</h2>
+    <p class="lead fade-up">Дисциплина источников: только зафиксированное в source / brand / отзывах.</p>
+
+    <div class="grid-3">
+      <div class="info-card fade-up">
+        <h3><span class="ico">F</span>Колонка «Факт»</h3>
+        <p>Утверждение, верифицируемое через источник. Никаких интерпретаций, домыслов или склейки данных «на лету».</p>
+      </div>
+      <div class="info-card fade-up">
+        <h3><span class="ico">№</span>Колонка «Цифра / дата»</h3>
+        <p>Если есть — точное значение. Берётся буквально из исходника, округления только если так в самом источнике.</p>
+      </div>
+      <div class="info-card fade-up">
+        <h3><span class="ico">S</span>Колонка «Источник»</h3>
+        <p>Прямая ссылка на файл brand/ или блок PDF-стратегии. Если факт противоречив — помечается ⚠ конфликт.</p>
+      </div>
+    </div>
+
+    <div class="alert alert-info fade-up">
+      <span class="ico-l">ℹ️</span>
+      <div class="body">
+        <div class="title">Правило отсечения</div>
+        <div class="text">Если в исходниках факта нет — его в этом документе тоже нет. Все белые пятна явно перечислены в разделе 9 «Что НЕ является фактом». Это служебная страховка от додумывания.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- 1. IDENTITY -->
+<section class="section" id="identity" style="padding-top:0">
+  <div class="container">
+    <h2 class="fade-up">1. Личность</h2>
+    <p class="lead fade-up">Основатель + публичная идентичность бренда.</p>
+
+    <h3 class="fade-up">1.1. Основатель</h3>
+    <div class="table-wrap fade-up">
+      <table class="table-brandos">
+        <thead>
+          <tr>
+            <th>Факт</th>
+            <th>Цифра / дата</th>
+            <th>Источник</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td class="fact">Имя основателя</td><td class="value">Светлана</td><td class="source">brand/personal-dna.md</td></tr>
+          <tr><td class="fact">Город</td><td class="value">Москва</td><td class="source">brand/profile.md, PDF-стратегия Блок 5</td></tr>
+          <tr><td class="fact">Роль в проекте</td><td class="value">CEO / Product lead / дизайнер-конструктор</td><td class="source">PDF-стратегия Блок 7.1 «Сердцевина»</td></tr>
+          <tr><td class="fact">Режим работы</td><td class="value">full-time</td><td class="source">PDF-стратегия Блок 7.1</td></tr>
+          <tr><td class="fact">Схема оплаты</td><td class="value">дивиденды (100% участия, опциона нет)</td><td class="source">PDF-стратегия Блок 7.1</td></tr>
+          <tr><td class="fact">Описание клиентами</td><td class="value">«рукодельница», которая «добавляет цветок сверх ТЗ»</td><td class="source">brand/personal-dna.md, отзывы клиентов</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3 class="fade-up">1.2. Публичная идентичность бренда</h3>
+    <div class="table-wrap fade-up">
+      <table class="table-brandos">
+        <thead>
+          <tr>
+            <th>Факт</th>
+            <th>Значение</th>
+            <th>Источник</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td class="fact">Название бренда</td><td class="value">Alien Cat</td><td class="source">PDF-стратегия Блок 7 (кодовое имя) + все brand-файлы</td></tr>
+          <tr><td class="fact">Бытовое название</td><td class="value">Кошкин Дом</td><td class="source">PDF-стратегия титульный лист, brand/profile.md</td></tr>
+          <tr><td class="fact">Код проекта в методологии</td><td class="value">alian-cat</td><td class="source">CLAUDE.md проекта</td></tr>
+          <tr><td class="fact">Стиль коммуникации</td><td class="value">«умный уют, визуальный кайф, кошачья ирония»</td><td class="source">brand/voice-style.md</td></tr>
+          <tr><td class="fact">Обращение к аудитории</td><td class="value">«ты» в Telegram/Instagram, «вы» в Avito/деловых</td><td class="source">brand/voice-style.md</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- 2. OPERATIONS -->
+<section class="section" id="operations" style="padding-top:0">
+  <div class="container">
+    <h2 class="fade-up">2. Опыт и операции</h2>
+    <p class="lead fade-up">Производство, поставки, логистика, контроль качества.</p>
+
+    <h3 class="fade-up">2.1. Производственная база</h3>
+    <div class="table-wrap fade-up">
+      <table class="table-brandos">
+        <thead>
+          <tr>
+            <th>Факт</th>
+            <th>Цифра</th>
+            <th>Источник</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td class="fact">Площадь цеха</td><td class="value">100 м²</td><td class="source">PDF-стратегия Блок 5.1</td></tr>
+          <tr><td class="fact">Тип аренды цеха</td><td class="value">бесплатно (партнёрский)</td><td class="source">PDF-стратегия Блок 5.1</td></tr>
+          <tr><td class="fact">Мастеров-столяров в команде</td><td class="value">1</td><td class="source">PDF-стратегия Блок 5.1 + 7.1</td></tr>
+          <tr><td class="fact">Декораторов</td><td class="value">1</td><td class="source">PDF-стратегия Блок 5.1 + 7.1</td></tr>
+          <tr><td class="fact">Core team всего</td><td class="value">6 штатных ролей</td><td class="source">PDF-стратегия Блок 7.1</td></tr>
+          <tr><td class="fact">Текущая производительность</td><td class="value">~8 тронов / мес</td><td class="source">PDF-стратегия Блок 5.1</td></tr>
+          <tr><td class="fact">Lead time на единицу</td><td class="value">4–5 дней</td><td class="source">PDF-стратегия Блок 5.1</td></tr>
+          <tr><td class="fact">План мощности после оптимизации</td><td class="value">25–30 тронов / мес</td><td class="source">PDF-стратегия Блок 5.2</td></tr>
+          <tr><td class="fact">План на второй смене</td><td class="value">до 50 шт / мес</td><td class="source">PDF-стратегия Блок 5.2</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3 class="fade-up">2.2. Цепочка поставок</h3>
+    <div class="table-wrap fade-up">
+      <table class="table-brandos">
+        <thead>
+          <tr>
+            <th>Поставщик</th>
+            <th>Материал</th>
+            <th>Цена</th>
+            <th>Источник</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td class="fact">РосЛес СПб</td><td>Дуб клеёный щит (S/M/L)</td><td class="value">48 000 ₽/м³</td><td class="source">PDF-стратегия Блок 5.3</td></tr>
+          <tr><td class="fact">Экотекс</td><td>Эко-мех</td><td class="value">2 800 ₽/пог. м</td><td class="source">PDF-стратегия Блок 5.3</td></tr>
+          <tr><td class="fact">Cordex</td><td>Сизалевый канат 8</td><td class="value">120 ₽/м</td><td class="source">PDF-стратегия Блок 5.3</td></tr>
+          <tr><td class="fact">Häfele</td><td>Фурнитура Ikea-style</td><td class="value">95 ₽/комплект</td><td class="source">PDF-стратегия Блок 5.3</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3 class="fade-up">2.3. Логистика</h3>
+    <div class="table-wrap fade-up">
+      <table class="table-brandos">
+        <thead>
+          <tr>
+            <th>Направление</th>
+            <th>Цена</th>
+            <th>Срок</th>
+            <th>Источник</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td class="fact">СДЭК «Стандарт» до Москвы</td><td class="value">650 ₽/короб</td><td>2 дня</td><td class="source">PDF-стратегия Блок 5.5</td></tr>
+          <tr><td class="fact">ПЭК EasyWay Казахстан/Минск</td><td class="value">1 200–1 400 ₽</td><td>4–6 дней</td><td class="source">PDF-стратегия Блок 5.5</td></tr>
+          <tr><td class="fact">Паллет-шип (5 коробов, СПб→Казань)</td><td class="value">~3 800 ₽</td><td>—</td><td class="source">PDF-стратегия Блок 5.5</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3 class="fade-up">2.4. Контроль качества</h3>
+    <div class="table-wrap fade-up">
+      <table class="table-brandos">
+        <thead>
+          <tr>
+            <th>Факт</th>
+            <th>Значение</th>
+            <th>Источник</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td class="fact">Чек-лист QC</td><td class="value">15 пунктов (заноза-шлиф, клей-следы, люфт &lt;2 мм)</td><td class="source">PDF-стратегия Блок 5.6</td></tr>
+          <tr><td class="fact">Фото-процедура</td><td class="value">фотоархив «Ваш трон перед отправкой» для клиента</td><td class="source">PDF-стратегия Блок 5.6</td></tr>
+          <tr><td class="fact">Кот-тестер</td><td class="value">«Мурчик» (сытый; не лезет точить → брак)</td><td class="source">PDF-стратегия Блок 5.6</td></tr>
+          <tr><td class="fact">Целевой уровень брака после оптимизации</td><td class="value">&lt;2%</td><td class="source">PDF-стратегия Блок 5.2</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- 3. PRODUCT -->
+<section class="section" id="product" style="padding-top:0">
+  <div class="container">
+    <h2 class="fade-up">3. Продукт — фактический срез</h2>
+    <p class="lead fade-up">Линейка, конструкция, экономика на единицу, на месяц, break-even, cash-flow, exit.</p>
+
+    <!-- Quick metrics from product economics -->
+    <div class="stat-grid">
+      <div class="metric-card fade-up">
+        <div class="label">Линейка</div>
+        <div class="val">35–70k</div>
+        <div class="desc">₽ за трон S/M/L</div>
+      </div>
+      <div class="metric-card success fade-up">
+        <div class="label">Маржа на трон</div>
+        <div class="val">75%</div>
+        <div class="desc">~34 000 ₽ при цене 45k</div>
+      </div>
+      <div class="metric-card accent fade-up">
+        <div class="label">EBITDA · 30 шт/мес</div>
+        <div class="val">700k</div>
+        <div class="desc">₽ / мес</div>
+      </div>
+      <div class="metric-card fade-up">
+        <div class="label">Cash-flow 12 мес</div>
+        <div class="val">+8,1m</div>
+        <div class="desc">₽ кумулятивно (30 шт/мес)</div>
+      </div>
+    </div>
+
+    <h3 class="fade-up">3.1. Линейка</h3>
+    <div class="table-wrap fade-up">
+      <table class="table-brandos">
+        <thead>
+          <tr>
+            <th>Модель</th>
+            <th>Для кого</th>
+            <th>Цена</th>
+            <th>Уровни</th>
+            <th>Источник</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td class="fact">Трон S</td><td>котята, мелкие породы</td><td class="value">35 000 ₽</td><td>2 уровня, компакт</td><td class="source">brand/offer-core.md, CLAUDE.md</td></tr>
+          <tr><td class="fact">Трон M</td><td>стандартные породы</td><td class="value">45 000 ₽</td><td>3 уровня + домик</td><td class="source">brand/offer-core.md, CLAUDE.md</td></tr>
+          <tr><td class="fact">Трон L</td><td>крупные, мейн-кун</td><td class="value">70 000 ₽</td><td>4 уровня, усиленная</td><td class="source">brand/offer-core.md, CLAUDE.md</td></tr>
+          <tr><td class="fact">Подушка-компаньон</td><td>upsell-аксессуар</td><td class="value">~5 000 ₽</td><td>—</td><td class="source">brand/offer-core.md</td></tr>
+          <tr><td class="fact">Сменный сизалевый вкладыш</td><td>upsell-аксессуар</td><td class="value">~3 000 ₽</td><td>—</td><td class="source">brand/offer-core.md</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3 class="fade-up">3.2. Конструкция и материалы</h3>
+    <div class="table-wrap fade-up">
+      <table class="table-brandos">
+        <thead>
+          <tr>
+            <th>Факт</th>
+            <th>Значение</th>
+            <th>Источник</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td class="fact">Основной материал ствола</td><td class="value">клеёный дубовый щит</td><td class="source">PDF-стратегия Блок 2, 5</td></tr>
+          <tr><td class="fact">Мех</td><td class="value">эко-мех, 4 цвета (зелёный / розовый / белый / лавандовый)</td><td class="source">PDF-стратегия Блок 2, profile.md</td></tr>
+          <tr><td class="fact">Стойка для когтей</td><td class="value">сизалевый канат</td><td class="source">PDF-стратегия Блок 2</td></tr>
+          <tr><td class="fact">Фурнитура</td><td class="value">Häfele</td><td class="source">PDF-стратегия Блок 5</td></tr>
+          <tr><td class="fact">Форма ствола</td><td class="value">нерегулярная, органическая, «нет двух одинаковых»</td><td class="source">PDF-стратегия Блок 2, 4</td></tr>
+          <tr><td class="fact">Сборка</td><td class="value">flat-pack, модульная, без шурупов</td><td class="source">PDF-стратегия Блок 2, 5</td></tr>
+          <tr><td class="fact">Размер коробки</td><td class="value">70 × 50 × 15 см</td><td class="source">PDF-стратегия Блок 5.2</td></tr>
+          <tr><td class="fact">Вес коробки (цель)</td><td class="value">&lt; 10 кг</td><td class="source">PDF-стратегия Блок 10</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3 class="fade-up">3.3. Экономика на единицу</h3>
+    <div class="table-wrap fade-up">
+      <table class="table-brandos">
+        <thead>
+          <tr>
+            <th>Метрика</th>
+            <th>Значение</th>
+            <th>Источник</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td class="fact">Средняя цена</td><td class="value">45 000 ₽</td><td class="source">PDF-стратегия Блок 8.1</td></tr>
+          <tr><td class="fact">Себестоимость (до оптимизации)</td><td class="value">12 200 ₽</td><td class="source">PDF-стратегия Блок 5.4</td></tr>
+          <tr><td class="fact">Себестоимость (после оптимизации)</td><td class="value">10 950 ₽ ≈ 11 000 ₽</td><td class="source">PDF-стратегия Блок 5.4, 8.1</td></tr>
+          <tr><td class="fact">Маркетинг + сервисы</td><td class="value">20% выручки (~9 000 ₽/шт)</td><td class="source">PDF-стратегия Блок 8.1</td></tr>
+          <tr><td class="fact">Маржа на трон</td><td class="value">~34 000 ₽ (75%)</td><td class="source">PDF-стратегия Блок 5.4</td></tr>
+          <tr><td class="fact">CPO целевой</td><td class="value">≤ 7 000 ₽</td><td class="source">PDF-стратегия Блок 6.2</td></tr>
+          <tr><td class="fact">LTV (с аксессуарами)</td><td class="value">&gt; 50 000 ₽</td><td class="source">brand/offer-core.md</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3 class="fade-up">3.4. Экономика на месяц (3 сценария)</h3>
+    <div class="table-wrap fade-up">
+      <table class="table-brandos">
+        <thead>
+          <tr>
+            <th>Метрика</th>
+            <th>10 шт</th>
+            <th>30 шт</th>
+            <th>50 шт</th>
+            <th>Источник</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td class="fact">Выручка</td><td class="value">450 k₽</td><td class="value">1 350 k₽</td><td class="value">2 250 k₽</td><td class="source">Блок 8.2</td></tr>
+          <tr><td class="fact">COGS</td><td>110 k₽</td><td>330 k₽</td><td>550 k₽</td><td class="source">Блок 8.2</td></tr>
+          <tr><td class="fact">Маркетинг (20%)</td><td>90 k₽</td><td>270 k₽</td><td>450 k₽</td><td class="source">Блок 8.2</td></tr>
+          <tr><td class="fact">Постоянка</td><td>50 k₽</td><td>50 k₽</td><td>80 k₽</td><td class="source">Блок 8.2</td></tr>
+          <tr><td class="fact"><strong>EBITDA</strong></td><td class="value"><strong>200 k₽</strong></td><td class="value"><strong>700 k₽</strong></td><td class="value"><strong>1 100 k₽</strong></td><td class="source">Блок 8.2</td></tr>
+          <tr><td class="fact">Маржа</td><td class="value">44%</td><td class="value">52%</td><td class="value">49%</td><td class="source">Блок 8.2</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3 class="fade-up">3.5. Break-even</h3>
+    <div class="table-wrap fade-up">
+      <table class="table-brandos">
+        <thead>
+          <tr>
+            <th>Факт</th>
+            <th>Значение</th>
+            <th>Источник</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td class="fact">Постоянные расходы</td><td class="value">~50 000 ₽/мес</td><td class="source">Блок 8.1 (цех 25k + ИИ 10k + прочее 15k)</td></tr>
+          <tr><td class="fact">Переменные затраты на трон</td><td class="value">20 000 ₽</td><td class="source">Блок 8.3</td></tr>
+          <tr><td class="fact">Break-even формулой</td><td class="value">2,5 трона/мес (округлено до 3)</td><td class="source">Блок 8.3</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3 class="fade-up">3.6. Cash-flow, 12 мес (сценарий 30 шт/мес)</h3>
+    <div class="table-wrap fade-up">
+      <table class="table-brandos">
+        <thead>
+          <tr>
+            <th>Квартал</th>
+            <th>Операционный</th>
+            <th>Кумулятивно</th>
+            <th>Источник</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td class="fact">Q1 (M1–M3)</td><td class="value">+1,8 m₽</td><td class="value">+1,8 m₽</td><td class="source">Блок 8.4</td></tr>
+          <tr><td class="fact">Q2</td><td class="value">+2,1 m₽</td><td class="value">+3,9 m₽</td><td class="source">Блок 8.4</td></tr>
+          <tr><td class="fact">Q3</td><td class="value">+2,1 m₽</td><td class="value">+6,0 m₽</td><td class="source">Блок 8.4</td></tr>
+          <tr><td class="fact">Q4</td><td class="value">+2,1 m₽</td><td class="value"><strong>+8,1 m₽</strong></td><td class="source">Блок 8.4</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="alert alert-success fade-up">
+      <span class="ico-l">✓</span>
+      <div class="body">
+        <div class="title">CAPEX</div>
+        <div class="text">0 (оборудование по часам) — Блок 8.4.</div>
+      </div>
+    </div>
+
+    <h3 class="fade-up">3.7. Exit-оценка</h3>
+    <div class="table-wrap fade-up">
+      <table class="table-brandos">
+        <thead>
+          <tr>
+            <th>Факт</th>
+            <th>Значение</th>
+            <th>Источник</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td class="fact">Горизонт</td><td class="value">3–5 лет</td><td class="source">Блок 8.6</td></tr>
+          <tr><td class="fact">EBITDA на момент Exit (проекция)</td><td class="value">10 m₽/год</td><td class="source">Блок 8.6</td></tr>
+          <tr><td class="fact">Мультипликатор DTC-бренда</td><td class="value">4–6×</td><td class="source">Блок 8.6</td></tr>
+          <tr><td class="fact">Оценка бренда на Exit</td><td class="value">40–60 m₽</td><td class="source">Блок 8.6</td></tr>
+          <tr><td class="fact">Потенциальные покупатели</td><td class="value">Четыре Лапы, ASKO, lifestyle-холдинги</td><td class="source">Блок 8.6</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- 4. CLIENTS -->
+<section class="section" id="clients" style="padding-top:0">
+  <div class="container">
+    <h2 class="fade-up">4. Клиенты — именные факты</h2>
+    <p class="lead fade-up">Только то, что прямо зафиксировано в brand-файлах и примерах отзывов.</p>
+
+    <h3 class="fade-up">4.1. Клиенты, чьи отзывы встречаются в brand/</h3>
+    <div class="table-wrap fade-up">
+      <table class="table-brandos">
+        <thead>
+          <tr>
+            <th>Имя</th>
+            <th>Факт из отзыва</th>
+            <th>Где упомянут</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td class="fact">Юлия</td><td>«Швы и крепления замаскированы и не бросаются в глаза»</td><td class="source">voice-style.md пример «Мастер-1», personal-dna.md</td></tr>
+          <tr><td class="fact">Юлия</td><td>«Любовь с первой палки»</td><td class="source">voice-style.md пример «Эстет-1»</td></tr>
+          <tr><td class="fact">Андрей</td><td>Заказал для двух кошек; «кошки сразу же стали проводить свой тест-драйв»; «всё оказалось качественным, без посторонних запахов и дефектов. Все в восторге»</td><td class="source">voice-style.md примеры «Мастер-2», «Эстет-2»</td></tr>
+          <tr><td class="fact">Варвара</td><td>Упомянута как клиент</td><td class="source">personal-dna.md (рубрика «Истории хвостов»)</td></tr>
+          <tr><td class="fact">питомник Summer Cherry</td><td>Упомянут как клиент</td><td class="source">personal-dna.md</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3 class="fade-up">4.2. NPS</h3>
+    <div class="table-wrap fade-up">
+      <table class="table-brandos">
+        <thead>
+          <tr>
+            <th>Факт</th>
+            <th>Значение</th>
+            <th>Источник</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td class="fact">Целевой NPS</td><td class="value">&gt; 70</td><td class="source">PDF-стратегия Блок 7.1 (KPI менеджера)</td></tr>
+          <tr><td class="fact">Заявленный текущий NPS</td><td class="value">&gt; 70</td><td class="source">PDF-кейс (раздел «Текущий статус»), CLAUDE.md</td></tr>
+          <tr><td class="fact">Срок опроса</td><td class="value">через 14 дней после получения</td><td class="source">brand/selling-map.md, PDF-стратегия Блок 6.5</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3 class="fade-up">4.3. Фактический канал первых продаж</h3>
+    <div class="table-wrap fade-up">
+      <table class="table-brandos">
+        <thead>
+          <tr>
+            <th>Факт</th>
+            <th>Значение</th>
+            <th>Источник</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td class="fact">Канал первых продаж</td><td class="value">Avito</td><td class="source">PDF-кейс, PDF-стратегия Блок 2.3, Блок 3.5</td></tr>
+          <tr><td class="fact">Кейс-доказательство цены</td><td class="value">«Avito: когтеточки по 45 k₽ уходят без торга»</td><td class="source">PDF-стратегия Блок 3.5</td></tr>
+          <tr><td class="fact">Текущий статус на Avito</td><td class="value">7 активных объявлений, 1 город, без тарифа</td><td class="source">brand/selling-map.md</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- 5. VALUES -->
+<section class="section" id="values" style="padding-top:0">
+  <div class="container">
+    <h2 class="fade-up">5. Ценности — зафиксированные в языке и решениях</h2>
+    <p class="lead fade-up">Заявленные, через язык, через антилексику, через действия.</p>
+
+    <h3 class="fade-up">5.1. Заявленные ценности (в brand-файлах)</h3>
+    <div class="table-wrap fade-up">
+      <table class="table-brandos">
+        <thead>
+          <tr>
+            <th>Ценность</th>
+            <th>Формулировка</th>
+            <th>Источник</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td class="fact">Забота и уважение</td><td>«к кошке как к равному жителю дома»</td><td class="source">personal-dna.md</td></tr>
+          <tr><td class="fact">Slow-living</td><td>«медленный, осознанный быт»</td><td class="source">personal-dna.md</td></tr>
+          <tr><td class="fact">Интерьер = гармония</td><td>«кошке хорошо, человеку красиво»</td><td class="source">personal-dna.md</td></tr>
+          <tr><td class="fact">Материалы говорят сами</td><td>«натуральный дуб, эко-мех, цех в Москве»</td><td class="source">personal-dna.md</td></tr>
+          <tr><td class="fact">Эко-материалы</td><td>заявлено как приоритет</td><td class="source">PDF-стратегия Блок 7</td></tr>
+          <tr><td class="fact">Ручная работа</td><td>заявлено как стандарт, не маркетинг</td><td class="source">PDF-стратегия Блок 5.1 («100 м² цех, ручная сборка»)</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3 class="fade-up">5.2. Ценности через язык (слова-маркеры)</h3>
+    <div class="table-wrap fade-up">
+      <table class="table-brandos">
+        <thead>
+          <tr>
+            <th>Маркер</th>
+            <th>Использование</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td class="fact">трон, арт-объект, пространство</td><td class="source">voice-style.md — маркеры</td></tr>
+          <tr><td class="fact">slow living, осознанный, ручная работа</td><td class="source">voice-style.md — маркеры</td></tr>
+          <tr><td class="fact">натуральное дерево, эко-мех, дуб</td><td class="source">voice-style.md — маркеры</td></tr>
+          <tr><td class="fact">забота, уважение к питомцу</td><td class="source">voice-style.md — маркеры</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3 class="fade-up">5.3. Ценности через антилексику (табу)</h3>
+    <div class="table-wrap fade-up">
+      <table class="table-brandos">
+        <thead>
+          <tr>
+            <th>Табу</th>
+            <th>Что это говорит о ценностях</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td class="fact">«когтеточка»</td><td>Продукт ≠ зоотовар (эстетическая позиция)</td></tr>
+          <tr><td class="fact">«зоотовар»</td><td>Категория = мебель, не pet-индустрия</td></tr>
+          <tr><td class="fact">«дёшево», «выгодно», «скидка», «акция»</td><td>Цена ≠ аргумент</td></tr>
+          <tr><td class="fact">«эксклюзив», «VIP», «люкс»</td><td>Премиум — тихий, не крикливый</td></tr>
+          <tr><td class="fact">«пушистик», «котик», «мурлыка»</td><td>Уважение к коту = не инфантилизировать</td></tr>
+          <tr><td class="fact">AI-штампы («в мире где…»)</td><td>Голос — живой, не машинный</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3 class="fade-up">5.4. Ценности через действия</h3>
+    <div class="table-wrap fade-up">
+      <table class="table-brandos">
+        <thead>
+          <tr>
+            <th>Действие</th>
+            <th>Что оно говорит о ценностях</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td class="fact">Выбор Häfele (не дешевле)</td><td>Качество &gt; экономия</td></tr>
+          <tr><td class="fact">Lead time 4–5 дней, не 1</td><td>Скорость &lt; качество</td></tr>
+          <tr><td class="fact">Флат-пак без шурупов</td><td>Экологичность + респект к материалу</td></tr>
+          <tr><td class="fact">«1% выручки → кот-фонд»</td><td>Забота о животных — часть этики бренда</td></tr>
+          <tr><td class="fact">«Пятничный Demo-Day»</td><td>Прозрачность внутри команды</td></tr>
+          <tr><td class="fact">Опцион 5–10% для ключевых</td><td>Ответственность = доля</td></tr>
+          <tr><td class="fact">«Максимум 2 слоя иерархии»</td><td>Анти-бюрократия</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- 6. MARKET -->
+<section class="section" id="market" style="padding-top:0">
+  <div class="container">
+    <h2 class="fade-up">6. Рыночные факты (только подтверждённые)</h2>
+    <p class="lead fade-up">Гипотезы рынка — в M1-05. Здесь только то, что прямо зафиксировано в источниках с цитатой.</p>
+
+    <div class="table-wrap fade-up">
+      <table class="table-brandos">
+        <thead>
+          <tr>
+            <th>Факт</th>
+            <th>Цифра</th>
+            <th>Источник</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td class="fact">Глобальный рынок товаров для животных</td><td class="value">≈ $197,6 млрд к 2024</td><td class="source">Euromonitor, цит. по PDF-стратегии Блок 3</td></tr>
+          <tr><td class="fact">Рынок мебели для животных США</td><td class="value">$2,44 млрд к 2025</td><td class="source">Coherent Market Insights, цит. по PDF-стратегии Блок 3</td></tr>
+          <tr><td class="fact">Мировой рынок мебели для животных</td><td class="value">$1,74 млрд в 2023</td><td class="source">Grand View Research, цит. по PDF-стратегии Блок 3</td></tr>
+          <tr><td class="fact">Глобальный рынок мебели для животных</td><td class="value">$1,89 млрд к 2024</td><td class="source">Mordor Intelligence, цит. по PDF-стратегии Блок 3</td></tr>
+          <tr><td class="fact">Рост российского рынка товаров для животных</td><td class="value">+$2,2 млрд, CAGR 6,5% 2025–2030</td><td class="source">StrategyHelix, цит. по PDF-стратегии Блок 3</td></tr>
+          <tr><td class="fact">Премиум-сегмент в pet растёт быстрее масс-маркета</td><td class="value">≈ +6% CAGR</td><td class="source">PDF-стратегия Блок 3.1</td></tr>
+          <tr><td class="fact">SAM Россия+ЕАЭС премиум</td><td class="value">≈ $120–150 млн</td><td class="source">Собственная оценка, Блок 3.2</td></tr>
+          <tr><td class="fact">SOM целевой</td><td class="value">~0,5% SAM → ~$600–750k/год</td><td class="source">Собственная модель, Блок 3.2</td></tr>
+          <tr><td class="fact">Tuft+Paw — рост выручки</td><td class="value">с $30k до $300k/мес</td><td class="source">Блок 3.5</td></tr>
+          <tr><td class="fact">Tuft+Paw — инвестиции</td><td class="value">$1 млн</td><td class="source">Блок 3.5</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- 7. COMPETITORS -->
+<section class="section" id="competitors" style="padding-top:0">
+  <div class="container">
+    <h2 class="fade-up">7. Конкурентные факты (только прямые сравнения)</h2>
+    <p class="lead fade-up">Цены и сегменты строго из цитированных источников.</p>
+
+    <div class="table-wrap fade-up">
+      <table class="table-brandos">
+        <thead>
+          <tr>
+            <th>Конкурент</th>
+            <th>Тип</th>
+            <th>Цена</th>
+            <th>Источник цитирования</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td class="fact">Tuft+Paw (US)</td><td>Премиум-дизайн</td><td class="value">$300–600</td><td class="source">PDF-стратегия Блок 3.4</td></tr>
+          <tr><td class="fact">Catissa</td><td>Премиум-настенные</td><td class="value">от 14 500 ₽ (4-модуль)</td><td class="source">Блок 4.1</td></tr>
+          <tr><td class="fact">Catsby Family</td><td>Премиум-дуб, LEGO, AR</td><td class="value">40–90 k₽ (в отзывах 45–80k)</td><td class="source">Блок 4.1</td></tr>
+          <tr><td class="fact">Cat Brand (Алтай)</td><td>Премиум-эко</td><td class="value">17–30 k₽</td><td class="source">Блок 4.1</td></tr>
+          <tr><td class="fact">MySnoopy</td><td>Мид-бревно</td><td class="value">от 2 990 ₽</td><td class="source">Блок 4.1</td></tr>
+          <tr><td class="fact">КотоСчастье / YoCat</td><td>Мид-дворцы</td><td class="value">7–30 k₽</td><td class="source">Блок 4.1</td></tr>
+          <tr><td class="fact">Ozon/WB «CatSet»</td><td>Масс-маркет</td><td class="value">450 – 8 000 ₽</td><td class="source">Блок 4.1</td></tr>
+          <tr><td class="fact">Handmade на Etsy</td><td>Handmade-премиум</td><td class="value">15–25 k₽</td><td class="source">Блок 3.4</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- 8. IP -->
+<section class="section" id="ip" style="padding-top:0">
+  <div class="container">
+    <h2 class="fade-up">8. Факты об IP-плане</h2>
+    <p class="lead fade-up">Бюджет регистрации и сроки. Сами регистрации — пока в плане (см. раздел 9).</p>
+
+    <div class="table-wrap fade-up">
+      <table class="table-brandos">
+        <thead>
+          <tr>
+            <th>Инструмент</th>
+            <th>Стоимость подачи</th>
+            <th>Срок госрегистрации</th>
+            <th>Действует</th>
+            <th>Источник</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td class="fact">ТМ «Alien Cat» (классы 20, 31)</td><td class="value">~35 000 ₽</td><td>12–18 мес (≤8 через МСП)</td><td>10 лет +10</td><td class="source">PDF-стратегия Блок 9.1</td></tr>
+          <tr><td class="fact">Пром. образец (1 модель + 2 варианта)</td><td class="value">3 000 ₽ + 2 500 ₽/вариант = ~8 000 ₽</td><td>6–8 мес</td><td>5 лет (+5+5, max 15)</td><td class="source">Блок 9.1</td></tr>
+          <tr><td class="fact">Полезная модель (замок flat-pack)</td><td class="value">4 500 ₽</td><td>8–10 мес</td><td>10 лет</td><td class="source">Блок 9.1</td></tr>
+          <tr><td class="fact"><strong>Итого IP-бюджет</strong></td><td class="value"><strong>~50 000 ₽ (без юр. услуг)</strong></td><td>—</td><td>—</td><td class="source">Блок 9.1</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- 9. NON-FACTS -->
+<section class="section" id="nonfacts" style="padding-top:0">
+  <div class="container">
+    <h2 class="fade-up">9. Что НЕ является фактом</h2>
+    <p class="lead fade-up">Явная фиксация белых пятен — служебная страховка от додумывания.</p>
+
+    <div class="alert alert-warning fade-up">
+      <span class="ico-l">⚠️</span>
+      <div class="body">
+        <div class="title">Эти данные ОТСУТСТВУЮТ или находятся в плане</div>
+        <div class="text">Ниже — два чек-листа. Любая агентская работа, требующая этих данных, должна сначала запросить их у Светланы или пометить как гипотезу. Эти пункты переходят в <strong>M2-исследования / ВОПРОСЫ-СВЕТЛАНЕ-ДЛЯ-M3.md</strong> как блок «Проверить статусы».</div>
+      </div>
+    </div>
+
+    <h3 class="fade-up">9.1. Отсутствуют в source / brand / отзывах</h3>
+    <ul class="checklist fade-up">
+      <li>Возраст Светланы.</li>
+      <li>Образование.</li>
+      <li>Прошлые проекты / карьера.</li>
+      <li>Как появилась идея Alien Cat (первый кот, первый трон, момент решения).</li>
+      <li>Семейный статус.</li>
+      <li>Финансовый вход в проект (своими / инвестор / партнёрство).</li>
+      <li>Наличие / отсутствие партнёров по бизнесу.</li>
+      <li>Юридическая форма (ИП / ООО / самозанятый).</li>
+      <li>Домен <code>aliencat.ru</code> — статус: заявлен в плане, регистрация в M3 запланирована, факта нет.</li>
+      <li>Статус товарного знака и патента — <strong>в плане</strong>, не в реальности.</li>
+      <li>Фамилии клиентов (только имена Юлии, Андрея, Варвары).</li>
+      <li>Отрасль работы «Настя» из CRM-процесса — упомянута в <code>selling-map.md</code> как роль; аудит помечал как ⚠ warning.</li>
+    </ul>
+
+    <h3 class="fade-up">9.2. Заявлено в плане, не подтверждено как факт</h3>
+    <ul class="checklist plan fade-up">
+      <li>CRM (Amo / Битрикс24) — упомянута как выбор, но не настроена.</li>
+      <li>WhatsApp-бот — в плане.</li>
+      <li>Figma-макет за 15 мин — описана процедура, не зафиксировано, что она работает.</li>
+      <li>Telegram-канал бренда — нет подтверждения запуска.</li>
+      <li>Шоурум — в плане «4.4 Что делаем прямо сейчас».</li>
+      <li>Выход на WB / Ozon — Q2–Q3 плана, не факт.</li>
+      <li>Коллаб с дизайнерами — в плане.</li>
+    </ul>
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- 10. SOURCES -->
+<section class="section" id="sources" style="padding-top:0">
+  <div class="container">
+    <h2 class="fade-up">10. Источники</h2>
+    <p class="lead fade-up">Полный реестр исходников этой карты.</p>
+
+    <div class="table-wrap fade-up">
+      <table class="table-brandos">
+        <thead>
+          <tr>
+            <th>Источник</th>
+            <th>Что взято</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td class="fact">source/pdf/кошкин дом стратегия .pages.pdf <span class="badge badge-blue">23 стр., 10 блоков</span></td><td>Блоки 2, 3, 4, 5, 6, 7, 8, 9, 10 — факты по продукту, производству, экономике, рынку, конкурентам, IP</td></tr>
+          <tr><td class="fact">source/pdf/#кейс кошкин дом.pdf</td><td>Статус «продукт готов, первые продажи через Avito, NPS &gt; 70»</td></tr>
+          <tr><td class="fact">source/pdf/стратегичкий консалтинг.pdf</td><td>Подтверждение размеров рынка, сегментов, модели DTC</td></tr>
+          <tr><td class="fact">brand/profile.md</td><td>Паспорт бренда, команда, экономика</td></tr>
+          <tr><td class="fact">brand/offer-core.md</td><td>Линейка, цены, unit-экономика, формулы</td></tr>
+          <tr><td class="fact">brand/personal-dna.md</td><td>Имя основателя, описание клиентами, ценности</td></tr>
+          <tr><td class="fact">brand/voice-style.md</td><td>Язык, режимы голоса, маркеры, табу, примеры с именами клиентов</td></tr>
+          <tr><td class="fact">brand/selling-map.md</td><td>Каналы, воронка, продажный процесс</td></tr>
+          <tr><td class="fact">brand/audience.md</td><td>Персоны, сегменты, боли, возражения</td></tr>
+          <tr><td class="fact">M1-распаковка/M1-01-ID-ПРОФИЛЬ.md</td><td>Служит парой к этой карте фактов</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="highlight-box fade-up">
+      <div class="label">Принцип карты</div>
+      <div class="text">
+        Если в источниках факта <em>нет</em> — его в этом документе <em>нет</em>. Все интерпретации, гипотезы и реконструкции — в M1-01, M1-04, M1-05.
+      </div>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<!-- FOOTER -->
+<footer>
+  <div class="container">
+    <div class="f-top">
+      <div>
+        <div class="f-title">BrandOS <span>·</span> Нейроупаковка 2.0</div>
+        <div class="f-sub">M1-02 КАРТА ФАКТОВ — Alien Cat / Кошкин Дом</div>
+      </div>
+      <div style="text-align:right">
+        <div class="f-sub">Версия v0 · 2026-04-25</div>
+        <div class="f-sub">Только верифицируемые источники</div>
+      </div>
+    </div>
+    <div class="f-line"></div>
+    <div class="f-bottom">Нейроупаковка 2.0 | alian-cat | M1-02 КАРТА ФАКТОВ | 2026-04-25</div>
+  </div>
+</footer>
+
+<script>
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(e => { if(e.isIntersecting) e.target.classList.add('visible'); });
+}, { threshold: 0.1 });
+document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
+</script>
+
+</body>
+</html>

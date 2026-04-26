@@ -1,0 +1,1032 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>M2 СИНТЕЗ КОНКУРЕНТЫ — Alien Cat | Нейроупаковка 2.0</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --brand:#0ea5e9;--brand-dark:#0284c7;--brand-light:#7dd3fc;--brand-bg:#e0f2fe;
+  --black:#0f172a;
+  --n50:#f8fafc;--n100:#f1f5f9;--n200:#e2e8f0;--n300:#cbd5e1;--n400:#94a3b8;
+  --n500:#64748b;--n600:#475569;--n700:#334155;--n800:#1e293b;--n900:#0f172a;
+  --success:#10b981;--warning:#f59e0b;--error:#ef4444;--info:#3b82f6;
+  --font:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;
+  --shadow-card:0 1px 3px 0 rgba(0,0,0,.05),0 1px 2px -1px rgba(0,0,0,.05);
+  --shadow-hover:0 10px 25px -5px rgba(0,0,0,.08),0 8px 10px -6px rgba(0,0,0,.04);
+  --shadow-btn:0 4px 14px 0 rgba(14,165,233,.35);
+  --shadow-glow:0 0 40px rgba(14,165,233,.15);
+  --r-sm:4px;--r-md:6px;--r-lg:8px;--r-xl:12px;--r-2xl:16px;--r-3xl:24px;--r-full:9999px;
+}
+html{scroll-behavior:smooth}
+body{font-family:var(--font);font-size:16px;line-height:1.6;color:var(--n600);background:var(--n100)}
+
+@keyframes shimmer{0%{transform:translateX(-100%)}100%{transform:translateX(200%)}}
+@keyframes pulse-glow{0%,100%{box-shadow:0 0 20px rgba(14,165,233,.3)}50%{box-shadow:0 0 40px rgba(14,165,233,.5)}}
+@keyframes scale-in{0%{opacity:0;transform:scale(.95)}100%{opacity:1;transform:scale(1)}}
+
+.fade-up{opacity:0;transform:translateY(20px);transition:opacity .6s ease-out,transform .6s ease-out}
+.fade-up.visible{opacity:1;transform:translateY(0)}
+
+.container{max-width:1200px;margin:0 auto;padding:0 24px}
+.section{padding:64px 0}
+.section h2{font-size:30px;font-weight:600;color:var(--n900);margin-bottom:8px;letter-spacing:-.01em}
+.section h3{font-size:20px;font-weight:600;color:var(--n900);margin:28px 0 14px}
+.section h4{font-size:16px;font-weight:600;color:var(--n800);margin:18px 0 10px}
+.section .lead{font-size:16px;color:var(--n500);margin-bottom:32px}
+.section p{margin-bottom:14px;font-size:15px;line-height:1.65}
+
+.nav-fixed{position:fixed;top:0;left:0;right:0;z-index:300;background:rgba(255,255,255,.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--n200);height:64px}
+.nav-inner{height:100%;display:flex;align-items:center;justify-content:space-between;gap:24px}
+.nav-logo{font-size:18px;font-weight:700;color:var(--n900);white-space:nowrap}
+.nav-logo span{color:var(--brand)}
+.nav-links{display:flex;gap:16px;flex-wrap:wrap}
+.nav-links a{font-size:13px;font-weight:500;color:var(--n600);text-decoration:none;transition:color .2s}
+.nav-links a:hover{color:var(--brand)}
+.nav-badge{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--brand);background:var(--brand-bg);padding:6px 14px;border-radius:var(--r-full);white-space:nowrap}
+
+header.hero{background:linear-gradient(135deg,var(--n900) 0%,#1e3a5f 100%);padding:96px 0 80px;position:relative;overflow:hidden;margin-top:64px}
+.hero-glow{position:absolute;top:-100px;right:-100px;width:500px;height:500px;border-radius:50%;background:radial-gradient(circle,rgba(14,165,233,.25) 0%,transparent 70%);pointer-events:none}
+.hero-glow-2{position:absolute;bottom:-150px;left:-100px;width:400px;height:400px;border-radius:50%;background:radial-gradient(circle,rgba(125,211,252,.15) 0%,transparent 70%);pointer-events:none}
+.hero-inner{position:relative;z-index:1}
+.hero-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(14,165,233,.15);border:1px solid rgba(14,165,233,.3);color:var(--brand-light);padding:8px 16px;border-radius:var(--r-full);font-size:13px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;margin-bottom:24px}
+.hero-badge .dot{width:6px;height:6px;border-radius:50%;background:var(--brand);animation:pulse-glow 2s infinite}
+.hero h1{font-size:48px;line-height:1.1;letter-spacing:-.02em;font-weight:700;color:#fff;max-width:880px;margin-bottom:20px}
+.hero p.sub{font-size:18px;line-height:1.6;color:#cbd5e1;max-width:760px;margin-bottom:36px}
+.hero-meta{display:flex;gap:32px;flex-wrap:wrap}
+.hero-meta .m{color:#94a3b8;font-size:14px}
+.hero-meta .m strong{color:var(--brand);font-weight:600}
+
+.stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:20px;margin:40px 0}
+.metric-card{background:#fff;border-radius:var(--r-2xl);border:1px solid var(--n200);padding:24px;box-shadow:var(--shadow-card);transition:all .3s ease}
+.metric-card:hover{transform:translateY(-4px);box-shadow:var(--shadow-hover)}
+.metric-card .label{font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--n500);margin-bottom:8px}
+.metric-card .val{font-size:34px;font-weight:700;color:var(--n900);line-height:1;margin-bottom:8px}
+.metric-card .desc{font-size:13px;color:var(--n500)}
+.metric-card.accent{background:linear-gradient(135deg,var(--brand) 0%,var(--brand-dark) 100%);color:#fff;border:none;box-shadow:var(--shadow-btn)}
+.metric-card.accent .label{color:rgba(255,255,255,.85)}
+.metric-card.accent .val{color:#fff}
+.metric-card.accent .desc{color:rgba(255,255,255,.85)}
+.metric-card.success{border-top:3px solid var(--success)}
+.metric-card.success .val{color:var(--success)}
+.metric-card.warning{border-top:3px solid var(--warning)}
+.metric-card.warning .val{color:var(--warning)}
+
+.info-card{background:#fff;border-radius:var(--r-2xl);border:1px solid var(--n200);padding:28px;box-shadow:var(--shadow-card);margin-bottom:16px;transition:all .3s ease}
+.info-card:hover{box-shadow:var(--shadow-hover)}
+.info-card h3{font-size:18px;font-weight:600;color:var(--n900);margin-bottom:12px;margin-top:0;display:flex;align-items:center;gap:10px}
+.info-card h3 .ico{width:36px;height:36px;border-radius:var(--r-lg);background:var(--brand-bg);color:var(--brand);display:inline-flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;font-weight:700}
+.info-card p{font-size:15px;color:var(--n600);line-height:1.65}
+.info-card ul{margin-top:8px;padding-left:20px}
+.info-card li{font-size:15px;color:var(--n600);margin-bottom:6px;line-height:1.6}
+
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+
+.table-brandos{width:100%;border-collapse:collapse;background:#fff;border-radius:var(--r-2xl);overflow:hidden;box-shadow:var(--shadow-card);margin:20px 0}
+.table-brandos thead tr{background:var(--n50);border-bottom:2px solid var(--n200)}
+.table-brandos th{padding:14px 18px;text-align:left;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--n500)}
+.table-brandos td{padding:14px 18px;font-size:14px;color:var(--n700);border-bottom:1px solid var(--n200);vertical-align:top}
+.table-brandos tbody tr:last-child td{border-bottom:none}
+.table-brandos tbody tr{transition:background .2s}
+.table-brandos tbody tr:hover{background:var(--n50)}
+.table-wrap{overflow-x:auto;border-radius:var(--r-2xl);border:1px solid var(--n200);margin:20px 0}
+.table-wrap .table-brandos{border-radius:0;box-shadow:none;margin:0}
+
+.badge{display:inline-flex;align-items:center;padding:4px 10px;border-radius:var(--r-full);font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.04em;white-space:nowrap}
+.badge-blue{background:var(--brand-bg);color:#0369a1}
+.badge-success{background:#d1fae5;color:#065f46}
+.badge-warning{background:#fef3c7;color:#92400e}
+.badge-error{background:#fee2e2;color:#991b1b}
+.badge-neutral{background:var(--n100);color:var(--n700)}
+
+.alert{display:flex;gap:16px;border-radius:var(--r-xl);padding:18px 22px;margin:14px 0;align-items:flex-start}
+.alert .ico-l{font-size:20px;flex-shrink:0;line-height:1}
+.alert .body{flex:1}
+.alert .title{font-weight:600;margin-bottom:4px;font-size:15px}
+.alert .text{font-size:14px;line-height:1.55}
+.alert-info{background:#eff6ff;border:1px solid #bfdbfe;border-left:4px solid var(--info)}
+.alert-info .title,.alert-info .text{color:#1e40af}
+.alert-warning{background:#fffbeb;border:1px solid #fde68a;border-left:4px solid var(--warning)}
+.alert-warning .title,.alert-warning .text{color:#92400e}
+
+.highlight-box{background:linear-gradient(135deg,rgba(14,165,233,.08) 0%,rgba(125,211,252,.05) 100%);border:1px solid rgba(14,165,233,.2);border-left:4px solid var(--brand);border-radius:var(--r-xl);padding:24px;margin:20px 0}
+.highlight-box .label{font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--brand);margin-bottom:8px}
+.highlight-box .text{font-size:17px;line-height:1.55;color:var(--n800);font-weight:500}
+.highlight-box .text em{font-style:normal;color:var(--brand-dark);font-weight:600}
+
+.section-divider{height:1px;background:linear-gradient(90deg,transparent,var(--n300),transparent);margin:48px 0}
+
+/* Bet card — для основных гипотез O1-O6 */
+.bet-card{background:#fff;border-radius:var(--r-2xl);border:1px solid var(--n200);padding:30px;margin-bottom:22px;box-shadow:var(--shadow-card);transition:all .3s;border-left:4px solid var(--brand)}
+.bet-card:hover{transform:translateY(-2px);box-shadow:var(--shadow-hover)}
+.bet-card .num{display:inline-block;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--brand);background:var(--brand-bg);padding:5px 14px;border-radius:var(--r-full);margin-bottom:12px}
+.bet-card h3{font-size:21px;font-weight:600;color:var(--n900);margin:0 0 14px;line-height:1.3}
+.bet-card .thesis{font-size:15px;color:var(--n700);line-height:1.65;margin-bottom:14px;padding:14px 18px;background:var(--n50);border-radius:var(--r-lg);border-left:3px solid var(--brand)}
+.bet-card .meta-row{padding:10px 0;font-size:14px;color:var(--n600);border-top:1px solid var(--n100);line-height:1.55}
+.bet-card .meta-row strong{color:var(--n800);font-weight:600;display:inline-block;min-width:160px}
+
+/* Alt card — компактные карточки A1-A4 */
+.alt-card{background:#fff;border-radius:var(--r-xl);border:1px solid var(--n200);padding:22px 24px;margin-bottom:14px;box-shadow:var(--shadow-card);transition:all .3s;border-left:3px solid var(--n400)}
+.alt-card:hover{border-left-color:var(--brand);transform:translateX(4px);box-shadow:var(--shadow-hover)}
+.alt-card .num{display:inline-block;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--n700);background:var(--n100);padding:3px 10px;border-radius:var(--r-full);margin-bottom:8px}
+.alt-card h3{font-size:17px;font-weight:600;color:var(--n900);margin:0 0 10px;line-height:1.35}
+.alt-card .thesis{font-size:14px;color:var(--n600);line-height:1.6;margin-bottom:10px}
+.alt-card .meta-row{padding:6px 0;font-size:13px;color:var(--n500);line-height:1.5}
+.alt-card .meta-row strong{color:var(--n700);font-weight:600}
+
+/* Early card — серые карточки P1-P6 */
+.early-card{background:var(--n50);border-radius:var(--r-lg);border:1px dashed var(--n300);padding:18px 22px;margin-bottom:12px}
+.early-card .num{display:inline-block;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;margin-right:10px;margin-bottom:6px}
+.early-card h4{font-size:15px;font-weight:600;color:var(--n800);margin:0 0 6px;display:inline}
+.early-card .desc{font-size:13px;color:var(--n600);line-height:1.55;margin-top:6px}
+
+/* Dev card — нумерованные вопросы Свете */
+.dev-card{background:#fff;border-radius:var(--r-xl);padding:18px 22px;margin-bottom:12px;border-left:3px solid var(--n300);transition:all .3s ease;box-shadow:var(--shadow-card)}
+.dev-card:hover{border-left-color:var(--brand);transform:translateX(4px)}
+.dev-card .num{display:inline-block;font-size:13px;font-weight:700;color:var(--brand);background:var(--brand-bg);width:30px;height:30px;text-align:center;line-height:30px;border-radius:var(--r-full);margin-right:12px;flex-shrink:0}
+.dev-card .head{display:flex;align-items:flex-start;gap:8px}
+.dev-card .head-text{flex:1}
+.dev-card .text{font-size:15px;color:var(--n800);line-height:1.55;font-weight:500}
+.dev-card .why{display:block;font-size:13px;color:var(--n500);font-style:italic;margin-top:6px;line-height:1.5}
+
+/* Observation card — 15 наблюдений */
+.obs-card{background:#fff;border-radius:var(--r-lg);border:1px solid var(--n200);padding:18px 22px;margin-bottom:10px;box-shadow:var(--shadow-card);display:flex;gap:14px;align-items:flex-start;transition:all .3s}
+.obs-card:hover{box-shadow:var(--shadow-hover);border-color:var(--brand-light)}
+.obs-card .obs-num{flex-shrink:0;width:32px;height:32px;border-radius:var(--r-md);background:linear-gradient(135deg,var(--brand) 0%,var(--brand-dark) 100%);color:#fff;font-size:13px;font-weight:700;display:flex;align-items:center;justify-content:center}
+.obs-card .obs-body{flex:1}
+.obs-card .obs-body strong:first-of-type{display:block;font-size:15px;color:var(--n900);font-weight:600;margin-bottom:4px}
+.obs-card .obs-body{font-size:14px;color:var(--n600);line-height:1.6}
+.obs-card .obs-body strong{color:var(--n800);font-weight:600}
+.obs-card .obs-body .num-acc{color:var(--brand-dark);font-weight:700}
+
+/* Tier-block (для следующих этапов) */
+.tier-block{background:#fff;border-radius:var(--r-2xl);border:1px solid var(--n200);padding:24px;margin-bottom:16px;box-shadow:var(--shadow-card)}
+.tier-block .tier-label{display:inline-block;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--brand);background:var(--brand-bg);padding:4px 12px;border-radius:var(--r-full);margin-bottom:12px}
+.tier-block h4{font-size:17px;font-weight:600;color:var(--n900);margin:0 0 10px}
+.tier-block p{font-size:14px;color:var(--n600);line-height:1.6;margin:0}
+.tier-block ul{margin-top:8px;padding-left:20px}
+.tier-block li{font-size:14px;color:var(--n600);margin-bottom:6px;line-height:1.55}
+
+footer{background:var(--n900);padding:48px 0;margin-top:80px;color:#fff}
+footer .f-top{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:24px}
+footer .f-title{font-size:20px;font-weight:700;color:#fff;margin-bottom:6px}
+footer .f-title span{color:var(--brand)}
+footer .f-sub{font-size:14px;color:var(--n500)}
+footer .f-line{height:1px;background:rgba(255,255,255,.08);margin:32px 0}
+footer .f-bottom{font-size:13px;color:var(--n500)}
+
+@media (max-width:1024px){
+  .grid-3{grid-template-columns:repeat(2,1fr)}
+}
+@media (max-width:768px){
+  .container{padding:0 16px}
+  .section{padding:48px 0}
+  .nav-links{display:none}
+  .nav-inner{justify-content:space-between}
+  .hero{padding:72px 0 56px}
+  .hero h1{font-size:28px;line-height:1.2}
+  .hero p.sub{font-size:15px}
+  .hero-meta{gap:16px}
+  .grid-2,.grid-3{grid-template-columns:1fr}
+  .stat-grid{grid-template-columns:1fr 1fr;gap:12px}
+  .metric-card{padding:18px}
+  .metric-card .val{font-size:26px}
+  .section h2{font-size:24px}
+  .table-brandos th,.table-brandos td{padding:10px 12px;font-size:13px}
+  .nav-badge{font-size:10px;padding:5px 10px}
+  .nav-logo{font-size:15px}
+  .bet-card{padding:22px}
+  .bet-card h3{font-size:18px}
+  .bet-card .meta-row strong{display:block;min-width:0;margin-bottom:2px}
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav-fixed">
+  <div class="container nav-inner">
+    <div class="nav-logo">BrandOS <span>·</span> M2 Синтез Конкуренты</div>
+    <div class="nav-links">
+      <a href="#synthesis">Синтез</a>
+      <a href="#observations">15 наблюдений</a>
+      <a href="#main-bets">Гипотезы основные</a>
+      <a href="#alt-bets">Альтернативные</a>
+      <a href="#early">Рано</a>
+      <a href="#questions">Вопросы</a>
+      <a href="#stages">Этапы</a>
+    </div>
+    <div class="nav-badge">Синтез R4 · 2026-04-25</div>
+  </div>
+</nav>
+
+<!-- HERO -->
+<header class="hero">
+  <div class="hero-glow"></div>
+  <div class="hero-glow-2"></div>
+  <div class="container hero-inner">
+    <div class="hero-badge">
+      <span class="dot"></span>
+      Нейроупаковка 2.0 · Модуль M2 · Синтез R4
+    </div>
+    <h1>M2 СИНТЕЗ КОНКУРЕНТЫ — Alien Cat</h1>
+    <p class="sub">
+      Мост между фактами конкурентного ресёрча и решениями, которые Свете предстоит принять на стратсессии. Карта поля, незанятые позиции, гипотезы и развилки. 6 основных гипотез, 4 альтернативных, 6 «рано», 14 вопросов.
+    </p>
+    <div class="hero-meta">
+      <div class="m"><strong>Клиент:</strong> Светлана</div>
+      <div class="m"><strong>Тип:</strong> Синтез + гипотезы</div>
+      <div class="m"><strong>Источник:</strong> R4 Конкуренты</div>
+      <div class="m"><strong>Дата:</strong> 2026-04-25</div>
+    </div>
+  </div>
+</header>
+
+<main>
+
+<!-- KEY METRICS / OS -->
+<section class="section" id="overview" style="padding-top:48px">
+  <div class="container">
+    <h2 class="fade-up">Ось синтеза за 30 секунд</h2>
+    <p class="lead fade-up">Главная находка ресёрча. Все гипотезы и развилки проверяются именно ей.</p>
+
+    <div class="highlight-box fade-up">
+      <div class="label">Главная ось</div>
+      <div class="text">
+        Продукт мастера с Авито (уникальные коряги, природная форма, неповторимая асимметрия) <em>+</em> сервис Catsby Family (рассрочка, AR, гарантия, упаковка, юр. оформление, договор) <em>= гибрид</em>, против которого нет прямой защиты ни у системных корпоративных игроков, ни у кустарных ремесленников.
+      </div>
+    </div>
+
+    <div class="stat-grid">
+      <div class="metric-card warning fade-up">
+        <div class="label">Catsby Family</div>
+        <div class="val">20–30k</div>
+        <div class="desc">Технологический бенчмарк · сканди · AR · 0-0-10</div>
+      </div>
+      <div class="metric-card fade-up">
+        <div class="label">Teddy Room</div>
+        <div class="val">30–50k</div>
+        <div class="desc">Лофт · маркетплейсы · акции · опаснее всего по копированию</div>
+      </div>
+      <div class="metric-card accent fade-up">
+        <div class="label">Ядро Alien Cat</div>
+        <div class="val">45–70k</div>
+        <div class="desc">Вход 35k, ядро 45–70k, якорь 100–150k</div>
+      </div>
+      <div class="metric-card success fade-up">
+        <div class="label">Murr &amp; Woof</div>
+        <div class="val">100k+</div>
+        <div class="desc">Локальный люкс свободен · они — на международку</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- 1. SYNTHESIS -->
+<section class="section" id="synthesis" style="padding-top:0">
+  <div class="container">
+    <h2 class="fade-up">1. Синтез исследования — главное за 5 минут</h2>
+    <p class="lead fade-up">Российский премиум мебели для кошек поляризован: системный технологичный (Catsby, Pettel) ↔ единичный люкс (Murr &amp; Woof). Между ними — дыра 35–70 тыс. ₽.</p>
+
+    <h3 class="fade-up">Три главных опасных конкурента</h3>
+    <div class="grid-3">
+      <div class="info-card fade-up">
+        <h3><span class="ico">1</span> Catsby Family</h3>
+        <p><strong>Технологический бенчмарк.</strong> Дуб, скандинавский минимализм, AR-примерка, рассрочка 0-0-10, гарантия, кастомизация. Чек 20–30 тыс. ₽ — задаёт стандарт «как должна выглядеть премиум-витрина в РФ».</p>
+      </div>
+      <div class="info-card fade-up">
+        <h3><span class="ico">2</span> Teddy Room</h3>
+        <p><strong>Самая опасная для копирования.</strong> Уже работает: лофт-эстетика, тумбы под лоток, акции «второе изделие за полцены», маркетплейсы как продуктовая воронка. Учиться у них в бизнес-механиках, не в эстетике.</p>
+      </div>
+      <div class="info-card fade-up">
+        <h3><span class="ico">3</span> Murr &amp; Woof</h3>
+        <p><strong>Конкурент по позиции «настоящий люкс».</strong> Кватрад, Раф Симонс, мрамор, мини-диван €700, шоурумы в Дубае и Милане, AD. Задаёт визуальный потолок категории.</p>
+      </div>
+    </div>
+
+    <h3 class="fade-up" style="margin-top:36px">Главный конкурент по продукту — мастера с Авито</h3>
+    <div class="alert alert-warning fade-up">
+      <span class="ico-l">⚠</span>
+      <div class="body">
+        <div class="title">Тот же продукт, но без бренда</div>
+        <div class="text">Натуральная коряга + мех/джут, цена 8–25 тыс. ₽. Без бренда, юр. лица, гарантии, упаковки, сайта, договора — но содержательно опасны: продукт ровно тот же. Премиальный клиент будет спрашивать: «А чем вы отличаетесь от того мужика с Авито за 18 тысяч?»</div>
+      </div>
+    </div>
+
+    <h3 class="fade-up" style="margin-top:32px">Свободное место — три незанятые позиции</h3>
+    <div class="grid-3">
+      <div class="info-card fade-up">
+        <h3><span class="ico">A</span> Эстетика «эко-люкс / ваби-саби»</h3>
+        <p>Рынок поляризован между сканди (Catsby) и лофтом (Teddy Room). Природное несовершенство — сучки, изгибы, асимметрия — никем не занято.</p>
+      </div>
+      <div class="info-card fade-up">
+        <h3><span class="ico">B</span> Коридор 35–70 тыс. ₽ + сервис</h3>
+        <p>Catsby — 20–30, Teddy Room — 30–50, M&amp;W — 100+. Между Teddy Room и M&amp;W — практически вакуум. Авито-мастера заходят, но без бренда.</p>
+      </div>
+      <div class="info-card fade-up">
+        <h3><span class="ico">C</span> Лакшери-якорь от 100 тыс. ₽</h3>
+        <p>На рынке РФ его держит только M&amp;W, и они работают на Дубай/Милан. Локальный лакшери-сегмент свободен.</p>
+      </div>
+    </div>
+
+    <h3 class="fade-up" style="margin-top:32px">Ориентир по цене</h3>
+    <div class="highlight-box fade-up">
+      <div class="text">
+        Ядро линейки — <em>45–70 тыс. ₽</em>, входной чек — <em>35 тыс.</em> (для холодного клиента), якорь — <em>100–150 тыс. ₽</em> (одна-две лимитированные модели).
+        Опускаться ниже 35 тыс. — путь в зону Catsby. Заходить за 200 тыс. без шоурума и истории — путь в восприятие «непонятно, кто это».
+      </div>
+    </div>
+
+    <h3 class="fade-up">Что критично повторить за конкурентами в первые 90 дней</h3>
+    <div class="info-card fade-up">
+      <ol style="padding-left:22px;font-size:15px;line-height:1.7;color:var(--n700)">
+        <li><strong>Рассрочку через сплит-сервисы</strong> (Долями / Сбер / Тинькофф). Catsby делает 0-0-10. Без рассрочки в этом чеке теряется <span style="color:var(--brand-dark);font-weight:700">15–25%</span> сделок.</li>
+        <li><strong>Юридическое оформление + договор + гарантия 6 месяцев.</strong> Базовый барьер между «мастером с Авито» и «брендом».</li>
+        <li><strong>Эталонную упаковку для крупногабарита + видеоинструкцию по сборке.</strong> Логистика — универсальная боль рынка.</li>
+      </ol>
+    </div>
+
+    <h3 class="fade-up" style="margin-top:32px">Системные риски ниши</h3>
+    <div class="grid-3">
+      <div class="info-card fade-up">
+        <h3 style="margin-top:0"><span class="ico" style="background:#fee2e2;color:#991b1b">!</span> Узкое горло производства</h3>
+        <p>Физический потолок 30–50 изделий/мес одна Света + плотник + декоратор. Когда пойдёт спрос с Instagram и от дизайнеров — либо очереди по 2–3 месяца, либо падение качества.</p>
+      </div>
+      <div class="info-card fade-up">
+        <h3 style="margin-top:0"><span class="ico" style="background:#fee2e2;color:#991b1b">!</span> Логистика крупногабарита</h3>
+        <p>Каждый комплекс индивидуален по форме. Без выстроенного процесса — повреждения при доставке убьют отзывы быстрее, чем плохой продукт.</p>
+      </div>
+      <div class="info-card fade-up">
+        <h3 style="margin-top:0"><span class="ico" style="background:#fee2e2;color:#991b1b">!</span> Копирование концепции</h3>
+        <p>Catsby, Teddy Room, Pettel могут скопировать «премиум из природной коряги + сервис» за 60–90 дней. Защита — через узнаваемость лица мастера и быстрое занятие медийного пространства.</p>
+      </div>
+    </div>
+
+    <div class="alert alert-info fade-up" style="margin-top:24px">
+      <span class="ico-l">ℹ</span>
+      <div class="body">
+        <div class="title">Структурное окно роста — 3–5 лет</div>
+        <div class="text">Рынок зоотоваров в 2023 году оценивался в ₽433 млрд. Доля премиум-сегмента кошачьей мебели стабильно растёт за счёт смены поколений (зумеры и младшие миллениалы воспринимают кошку как члена семьи). Вход в нишу сейчас даёт более выгодные условия, чем будет через 2 года.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- 2. 15 OBSERVATIONS -->
+<section class="section" id="observations" style="padding-top:0">
+  <div class="container">
+    <h2 class="fade-up">2. 15 ключевых наблюдений из конкурентного ландшафта</h2>
+    <p class="lead fade-up">Список наблюдений, на которых строятся гипотезы. Каждое — с привязкой к конкретному игроку.</p>
+
+    <div class="obs-card fade-up">
+      <div class="obs-num">1</div>
+      <div class="obs-body"><strong>Премиум-сегмент в РФ поляризован.</strong> На одном полюсе — системный технологичный (<strong>Catsby Family, Pettel, Tomeow</strong>): сканди, дуб, AR, рассрочка. На другом — кастомный крафтовый (<strong>Murr &amp; Woof</strong>, мастера): авторская рука, дорогие материалы, ноль системности. Между ними — пустота, и в этой пустоте стоит Alien Cat.</div>
+    </div>
+
+    <div class="obs-card fade-up">
+      <div class="obs-num">2</div>
+      <div class="obs-body"><strong>Между <span class="num-acc">35 и 70 тыс. ₽</span> при работе с природной формой нет никого.</strong> Catsby — 20–30 тыс., Teddy Room — 30–50 тыс. на лофт-эстетике, Komod-Pet — крафт без чёткого бренда, Murr &amp; Woof — от 100 тыс. Природная коряга в этом коридоре — пустая ниша.</div>
+    </div>
+
+    <div class="obs-card fade-up">
+      <div class="obs-num">3</div>
+      <div class="obs-body"><strong>В диапазоне 70+ тыс. ₽ системно работает только Murr &amp; Woof.</strong> И они сфокусированы на международном рынке (Дубай, Милан, Maison&amp;Objet). Локальный лакшери-сегмент не закрыт.</div>
+    </div>
+
+    <div class="obs-card fade-up">
+      <div class="obs-num">4</div>
+      <div class="obs-body"><strong>Рассрочка — драйвер продаж в премиуме, а не маркер удешевления.</strong> Catsby Family — <span class="num-acc">0% на 10 месяцев</span> — один из факторов закрытия дорогих сделок. Без неё клиент уходит думать и не возвращается.</div>
+    </div>
+
+    <div class="obs-card fade-up">
+      <div class="obs-num">5</div>
+      <div class="obs-body"><strong>Логистика крупногабарита — универсальная боль.</strong> Об этом говорят все: Teddy Room, Catsby, Murr &amp; Woof, мастера. Кто решит «доставка под ключ + сборка + видеоинструкция» — заберёт повторные продажи всей категории.</div>
+    </div>
+
+    <div class="obs-card fade-up">
+      <div class="obs-num">6</div>
+      <div class="obs-body"><strong>Монополия двух визуальных стилей.</strong> Сканди (Catsby, Tomeow, Pettel) и лофт (Teddy Room, Komod-Pet). Природная эстетика «эко-люкс / ваби-саби» — пустое поле. Никто не работает с сучками и асимметрией как с УТП.</div>
+    </div>
+
+    <div class="obs-card fade-up">
+      <div class="obs-num">7</div>
+      <div class="obs-body"><strong>B2B через дизайнеров интерьеров — слепая зона рынка.</strong> Pettel заигрывает с дизайнерским языком, но системной B2B-программы (3D-модели, комиссия, выездные презентации) ни у кого нет.</div>
+    </div>
+
+    <div class="obs-card fade-up">
+      <div class="obs-num">8</div>
+      <div class="obs-body"><strong>Породная специализация отсутствует.</strong> Никто не делает «heavy duty для крупных пород» (мейн-куны, бенгалы, саванны до <span class="num-acc">12–15 кг</span>). Сообщество замкнутое, информация распространяется быстро, и достаточно <span class="num-acc">5–10 довольных владельцев</span> для сарафана.</div>
+    </div>
+
+    <div class="obs-card fade-up">
+      <div class="obs-num">9</div>
+      <div class="obs-body"><strong>Авито-мастера — продуктовые конкуренты с провальным CX.</strong> Правильный продукт, но нет: бренда, лица, упаковки, гарантии, юр. лица, договора, доставки. Прямой вектор отстройки — не «лучше, чем мастер», а «другая лига».</div>
+    </div>
+
+    <div class="obs-card fade-up">
+      <div class="obs-num">10</div>
+      <div class="obs-body"><strong>Teddy Room — самая опасная модель для копирования.</strong> Воронка «дешёвый SKU на маркетплейсе → отзывы → переход на сайт за дорогими вещами». Учиться в бизнес-механиках, не в визуале — иначе сольёмся.</div>
+    </div>
+
+    <div class="obs-card fade-up">
+      <div class="obs-num">11</div>
+      <div class="obs-body"><strong>Catsby Family — технологический бенчмарк.</strong> Рассрочка + AR + системный сайт + кастомизация = планка, ниже которой опускаться нельзя. AR копировать не обязательно — но соответствовать по уровню сайта и коммуникации обязательно.</div>
+    </div>
+
+    <div class="obs-card fade-up">
+      <div class="obs-num">12</div>
+      <div class="obs-body"><strong>Trixie, PetTails, IKEA Lurvig, Catit — другая лига.</strong> Масс-маркет и mid-market. Не конкуренты, не ориентир. Важно держать в голове, чтобы случайно не скатиться в их визуал и язык.</div>
+    </div>
+
+    <div class="obs-card fade-up">
+      <div class="obs-num">13</div>
+      <div class="obs-body"><strong>Видео процесса — норма для серьёзных игроков.</strong> У всех, кто претендует на премиум, есть либо видео производства, либо видео с котом-пользователем в интерьере. Пустую конструкцию в премиуме никто не публикует.</div>
+    </div>
+
+    <div class="obs-card fade-up">
+      <div class="obs-num">14</div>
+      <div class="obs-body"><strong>Сервис «как часть продукта».</strong> Ответ в директ за <span class="num-acc">5–30 минут</span>, инструмент в коробке, упаковка как кейс, договор, гарантия — у Catsby и Pettel это норма. У Авито-мастеров этого нет. Это и есть ось гибрида.</div>
+    </div>
+
+    <div class="obs-card fade-up">
+      <div class="obs-num">15</div>
+      <div class="obs-body"><strong>«Вещь на века» работает в премиуме.</strong> Murr &amp; Woof открыто говорят: возможна перетяжка через <span class="num-acc">5–10 лет</span>, обновление чехлов. Это превращает разовую сделку в долгие отношения и — мощную отстройку от разовых продаж Авито.</div>
+    </div>
+
+    <h3 class="fade-up" style="margin-top:36px">Что подтверждается одновременно из нескольких частей (рыночная норма)</h3>
+    <div class="info-card fade-up">
+      <ul>
+        <li><strong>Премиум = онлайн + ручное производство.</strong> Чистый онлайн без ручной работы — масс-маркет. Чистый офлайн без онлайна — Авито без бренда.</li>
+        <li><strong>Видео производства или видео с котом-пользователем</strong> — у всех серьёзных игроков. Без него рынок не верит в чек выше 20 тыс. ₽.</li>
+        <li><strong>В премиуме никто не публикует пустую конструкцию.</strong> Только с котом и/или в интерьере.</li>
+        <li><strong>Кастомизация — стандарт.</strong> У Catsby — 3 оттенка + цвет каната. У Teddy Room — индивидуальные размеры. У M&amp;W — Kvadrat / Raf Simons. Без хотя бы минимальной — выпадение из нормы.</li>
+        <li><strong>Рассрочка через сплит — стандарт.</strong> Без неё ставка 45–70 тыс. ₽ автоматически проигрывает 15–25% конверсии.</li>
+        <li><strong>Tone of voice — взрослый, профессиональный, без сюсюканья.</strong> Никто из премиум-игроков не использует «пушистик», «любимец», розовый и сердечки.</li>
+        <li><strong>Дизайн-медиа как точка доверия.</strong> Sobaka.ru, AD Magazine, myDecor — без хотя бы одной публикации в первые 60 дней Alien Cat не виден дизайнерам.</li>
+      </ul>
+    </div>
+
+    <h3 class="fade-up">Противоречия и неожиданные находки</h3>
+    <div class="alert alert-warning fade-up">
+      <span class="ico-l">⚡</span>
+      <div class="body">
+        <div class="title">Авито-мастера делают по продукту лучше, чем «крупные» бренды</div>
+        <div class="text">Уникальная природная форма — есть у мастеров. У Catsby, Teddy Room, Pettel — нет. Продуктовая ось Alien Cat — не «премиальное дерево», а «уникальная природная форма каждого экземпляра». Сучок, изгиб, асимметрия — не дефект, а УТП.</div>
+      </div>
+    </div>
+    <div class="alert alert-warning fade-up">
+      <span class="ico-l">⚡</span>
+      <div class="body">
+        <div class="title">Murr &amp; Woof — формально лидер, но реально работает на международку</div>
+        <div class="text">Шоурумы в Дубае и Милане, цены в евро. На локалке у них почти нет инструментов влияния, кроме AD-публикации 2019 года. Локальный люкс-сегмент свободен.</div>
+      </div>
+    </div>
+    <div class="alert alert-warning fade-up">
+      <span class="ico-l">⚡</span>
+      <div class="body">
+        <div class="title">Catsby формально круче по технологии, но проигрывает по продукту</div>
+        <div class="text">AR, рассрочка, кастомизация — выше Alien Cat. Но их продукт — фабричный дуб с прямыми углами. Не нужно гнаться за Catsby по технологии. AR — поздняя история на 6–12 месяцев. Догнать по сервису, оставить продукт как главный аргумент.</div>
+      </div>
+    </div>
+    <div class="alert alert-warning fade-up">
+      <span class="ico-l">⚡</span>
+      <div class="body">
+        <div class="title">Teddy Room — самая «понятная» модель, но не та, на которую нужно равняться</div>
+        <div class="text">Их эстетика (лофт, тёмный, брутальный) — уже занятое место. Природный эко-люкс — единственное направление, в котором Alien Cat будет первым, а не вторым. Учиться в бизнес-механиках, не в визуале.</div>
+      </div>
+    </div>
+
+    <h3 class="fade-up" style="margin-top:32px">Что важно не потерять на следующих этапах</h3>
+    <div class="info-card fade-up">
+      <ol style="padding-left:22px;font-size:14px;line-height:1.7;color:var(--n700)">
+        <li>Ценовой коридор ядра — <strong>45–70 тыс. ₽</strong>, входной — 35, якорь — 100–150 тыс. ₽.</li>
+        <li>Эстетика «природный эко-люкс / ваби-саби» — отстройка от Catsby и Teddy Room.</li>
+        <li>Уникальность каждой коряги — центральный продуктовый аргумент.</li>
+        <li>Обязательный сервисный пакет: рассрочка, юр. оформление, договор, гарантия 6 мес., упаковка, видеоинструкция, доставка под ключ.</li>
+        <li>Дизайнеры интерьеров — отдельный канал, а не «ещё одна ЦА». 3D-модели, комиссия 10–15%, образцы.</li>
+        <li>B2B-подсегмент «крупные породы» — мейн-куны, бенгалы, саванны.</li>
+        <li>Авито — не выключать, но не делать витриной. Канал тёплых лидов, прайс от 35 тыс. ₽.</li>
+        <li>Дешёвый SKU-крючок на маркетплейсах — 1500–3000 ₽. Не для прибыли, а для отзывов и трафика.</li>
+        <li>Лицо мастера — открытый сторителлинг (если Света готова). Главный отстройщик от Авито-мастеров.</li>
+        <li>«Вещь на века» — платная перетяжка через 2–3 года как сервис.</li>
+        <li>Дизайн-медиа — минимум одна публикация в первые 60 дней.</li>
+        <li>Срок изготовления — 3–4 недели максимум. Любое превышение — клиент уходит к Catsby или Teddy Room.</li>
+      </ol>
+    </div>
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- 3. MAIN BETS — 6 -->
+<section class="section" id="main-bets" style="padding-top:0">
+  <div class="container">
+    <h2 class="fade-up">3. Основные гипотезы для обсуждения — 6</h2>
+    <p class="lead fade-up">Шесть гипотез, которые стоит вынести на сессию первыми. Каждая — структурированный блок: суть, на чём основана, почему сработает, что подтверждает, что неясно, как проверить.</p>
+
+    <!-- O1 -->
+    <div class="bet-card fade-up">
+      <span class="num">Гипотеза O1</span>
+      <h3>Позиционная ниша «Природный эко-люкс / Wabi-Sabi»</h3>
+      <div class="thesis"><strong>Суть.</strong> Встать в незанятый сегмент эстетики природного несовершенства — сучки, изгибы, асимметрия как УТП — противопоставляясь фабричной геометрии Catsby и тёмному лофту Teddy Room.</div>
+      <div class="meta-row"><strong>На чём основана:</strong> Монополия двух стилей — сканди + лофт. Природная/ваби-саби эстетика свободна. M&amp;W — модернизм, не природа. Komod-Pet — близко, но без бренда и без акцента на природной форме.</div>
+      <div class="meta-row"><strong>Почему сработает:</strong> Каждая коряга по форме невоспроизводима — физическое свойство материала. На рынке, где у всех серийные изделия, уникальность каждого экземпляра — мощный аргумент в пользу 45–70 тыс. ₽. Биофильный дизайн и ваби-саби — растущие тренды в myDecor, Interior+Design, AD Russia.</div>
+      <div class="meta-row"><strong>Что подтверждает:</strong> Цитаты ЦА — «вписался в интерьер», «не выглядит как зоомагазин», «арт-объект, который одобрил кот». Western-аналоги: Tuft+Paw (США), MiaCara (Германия), LucyBalu (Германия), Goldtatze — все с натуральными материалами, но в скандинавской геометрии. Природная форма как УТП не занята даже на Западе.</div>
+      <div class="meta-row"><strong>Что неясно / риски:</strong> Часть ЦА (дизайн-пары 28–38 с тягой к минимализму) может прочитать «корягу» как «деревенское». Решение — иметь в линейке не только корягу-флагман, но и более геометрические продукты на той же базе.</div>
+      <div class="meta-row"><strong>Как проверить:</strong> A/B-тест на лендинге: «Мебель из природной коряги — каждая уникальна» vs «Дизайнерская мебель для кошек из натурального дуба». 2 недели, 2000+ уников на каждый вариант. + Pinterest-доска, 20–30 референсов, замер сохранений за 14 дней.</div>
+    </div>
+
+    <!-- O2 -->
+    <div class="bet-card fade-up">
+      <span class="num">Гипотеза O2</span>
+      <h3>Гибридная бизнес-модель «Продукт Авито + сервис Catsby»</h3>
+      <div class="thesis"><strong>Суть.</strong> Брать продуктовую уникальность мастеров с Авито (коряги, природная форма) и оборачивать в системный CX уровня Catsby Family — рассрочка, гарантия, упаковка, инструкция, юр. оформление, доставка под ключ.</div>
+      <div class="meta-row"><strong>На чём основана:</strong> Прямая ось ресёрча. Поле поляризовано: либо продукт без сервиса (Авито), либо сервис без уникального продукта (Catsby — фабричный дуб). Гибрид защищён с обеих сторон одновременно.</div>
+      <div class="meta-row"><strong>Почему сработает:</strong> Премиальный клиент покупает не «вещь», а «опыт + спокойствие». Уникальность коряги — эмоция. Сервис — рациональное снятие страха. Совмещение даёт оффер, против которого нет прямого аналога.</div>
+      <div class="meta-row"><strong>Что подтверждает:</strong> Catsby с рассрочкой 0-0-10, AR, кастомизацией закрывает сделки в 20–30 тыс. ₽. Авито-мастера с уникальным продуктом, но без сервиса закрывают только «ищущих подешевле» в 8–18 тыс. ₽. Никто не объединяет — и именно эта комбинация открывает чек 45–70 тыс. ₽.</div>
+      <div class="meta-row"><strong>Что неясно / риски:</strong> Сервис на старте = деньги. На 30 изделий/мес окупается медленно, основные затраты возвращаются на объёме 50+. Решение — внедрять минимально достаточным комплектом.</div>
+      <div class="meta-row"><strong>Как проверить:</strong> В первые 90 дней — минимальный сервисный пакет. Замер: % сделок через рассрочку (если &gt;20% — гипотеза подтверждается), % клиентов с повторной покупкой через 3–6 мес. (если &gt;15% — сервис работает на удержание), органические упоминания в Telegram-каналах про интерьер.</div>
+    </div>
+
+    <!-- O3 -->
+    <div class="bet-card fade-up">
+      <span class="num">Гипотеза O3</span>
+      <h3>Ценовое позиционирование 35–70 тыс. ₽ как ядро + лакшери-якорь от 100 тыс. ₽</h3>
+      <div class="thesis"><strong>Суть.</strong> Ядро — 45–70 тыс. ₽, входной чек — 35 тыс., якорь — 1–2 модели от 100 тыс. ₽ как авторский лимит. Не дешевле — иначе зона Catsby. Не дороже без шоурума и истории — иначе теряешь доверие.</div>
+      <div class="meta-row"><strong>На чём основана:</strong> Ценовая матрица: Catsby 20–30, Teddy Room 30–50, Komod-Pet — крафт без бренда, M&amp;W от 100+. Между Teddy Room и M&amp;W — пустота. Себестоимость Alien Cat 7–10 тыс. ₽ + ручной труд → маржа на 45–70 тыс. ₽ в коридоре 60–75%.</div>
+      <div class="meta-row"><strong>Почему сработает:</strong> Якорь сверху делает ядро 45–70 тыс. визуально «нормальной серединой», а не «дорогим краем». Контекст «есть и за 150, и за 35» делает 60 — комфортным выбором. Финансово якорь может вообще не продаваться часто — он работает на восприятие ядра.</div>
+      <div class="meta-row"><strong>Что подтверждает:</strong> Цены конкурентов в матрице. Структура «вход — ядро — флагман» у M&amp;W (от мраморных мисок до коллекций), у Pettel (рассрочка как драйвер чека). У Teddy Room — акция «второе изделие за полцены».</div>
+      <div class="meta-row"><strong>Что неясно / риски:</strong> Лакшери-якорь требует особой работы — авторский тираж, история, фото в дизайн-медиа, возможно отдельный лендинг. Якорь должен быть концептуальным, не масштабным: коллаб с художником, лимит «ваби-саби 1/10», подписанные изделия. Это работа на 60–90 дней, не на старт.</div>
+      <div class="meta-row"><strong>Как проверить:</strong> Запустить одну авторскую модель с историей и подачей в Sobaka.ru, myDecor. Замер не продаж якоря (1–2 в квартал — нормально), а влияния на конверсию ядра до и через 60 дней после запуска.</div>
+    </div>
+
+    <!-- O4 -->
+    <div class="bet-card fade-up">
+      <span class="num">Гипотеза O4</span>
+      <h3>Обязательный сервисный пакет для выживания в премиуме</h3>
+      <div class="thesis"><strong>Суть.</strong> Пять элементов, без которых премиум-позиционирование не считается рынком. Внедрить ДО активного выхода в Instagram и Telegram — иначе высокий ценник не защищён, и таргет будет сливаться.</div>
+      <div class="meta-row"><strong>5 элементов:</strong> 1) Рассрочка через Долями / Сбер / Тинькофф. 2) Юр. оформление — ИП + договор + чек. 3) Гарантия 6 месяцев + платная перетяжка через 2–3 года. 4) Эталонная упаковка под крупногабарит + видеоинструкция (3–5 мин, ASMR). 5) Доставка под ключ в Москве как платная опция (5–8 тыс. ₽).</div>
+      <div class="meta-row"><strong>На чём основана:</strong> Catsby — 0-0-10, AR, кастомизация. Pettel — рассрочка через банки + бесплатная кастомизация цвета. Teddy Room — индивидуальные заказы. M&amp;W — концепция «на века», перетяжка через 5–10 лет. У Авито-мастеров ничего из этого нет.</div>
+      <div class="meta-row"><strong>Почему сработает:</strong> В премиальной категории сервис — не приятная добавка, а барьер входа. Каждый элемент закрывает конкретный страх: рассрочка снимает «дорого сразу», договор и ИП — «а вы вообще кто», гарантия — «а если сломается», упаковка — «а если повредят», доставка — «а как я это втащу».</div>
+      <div class="meta-row"><strong>Что подтверждает:</strong> Цитаты ЦА — «не химия ли пахнет», «зайдёт ли коту», «как привезут», «не сломается ли под кошкой 12 кг». Это рациональные страхи, которые снимаются сервисом, а не маркетингом.</div>
+      <div class="meta-row"><strong>Что неясно / риски:</strong> Доставка под ключ в Москве — партнёрство с курьерскими/мебельными сервисами. На старте 15–20% клиентов согласятся, на масштабе — стандартный оффер. Регионы — Деловые Линии или ПЭК с инструкцией.</div>
+      <div class="meta-row"><strong>Как проверить:</strong> Через 30 дней замер: % сделок через рассрочку (&gt;20% — подтверждение), % выбравших платную доставку (15–25% — работает), вопросы «а вы ИП?» / «есть ли гарантия?» в директе должны резко упасть. Если рассрочка &lt;10% — пересмотр условий (возможно, 0-0-12 вместо 0-0-6).</div>
+    </div>
+
+    <!-- O5 -->
+    <div class="bet-card fade-up">
+      <span class="num">Гипотеза O5</span>
+      <h3>Канальная стратегия: Авито + маркетплейс-крючок + Instagram/Telegram-ядро</h3>
+      <div class="thesis"><strong>Суть.</strong> Не отказываться от Авито (тёплые лиды), но не делать витриной. 1–2 дешёвых SKU на Ozon/WB как продуктовый крючок (полочка / лежанка из эко-меха за 1500–3000 ₽). Премиум-продажи — через Instagram, Telegram, сайт + B2B дизайнеров.</div>
+      <div class="meta-row"><strong>На чём основана:</strong> Авито — канал тёплого спроса, но не премиум. Маркетплейсы у Teddy Room — воронка (отзывы → переход на сайт). Премиум-ЦА живёт в Instagram, Telegram-каналах про интерьер, у дизайнеров. Ни Catsby, ни Pettel, ни M&amp;W не используют Авито как ключевой канал — структурно несовместимо.</div>
+      <div class="meta-row"><strong>Почему сработает:</strong> Авито — мгновенные деньги, нижний чек от 35 тыс. ₽. Маркетплейс — отзывы, узнаваемость, продаётся в ноль или с минимальной маржой. Instagram + Telegram — ядро бренда, где живут pet-мамы и дизайн-пары. B2B — длинный цикл, высокий чек, пассивный поток. Один работающий дизайнер = 3–6 продаж в год без рекламного бюджета.</div>
+      <div class="meta-row"><strong>Что подтверждает:</strong> Teddy Room на маркетплейсах с акциями. Catsby с системным сайтом. Pettel с дизайн-блогом. M&amp;W с AD-публикациями. Каждый работает в своей канальной комбинации — Alien Cat собирает комбинированный с учётом старта без больших ресурсов.</div>
+      <div class="meta-row"><strong>Что неясно / риски:</strong> МП-SKU требует логистики — может отъесть ресурс. Решение: 1–2 SKU, минимум вариантов, FBO. Instagram в РФ — VPN, упавший охват. Решение: компенсировать Telegram-каналами про интерьер + Pinterest как референс-слой.</div>
+      <div class="meta-row"><strong>Как проверить:</strong> За 4 недели параллельно — 3 reels/нед + таргет, 5 размещений в Telegram-каналах, 20 outreach дизайнерам, 1 SKU на Ozon/WB. Цель: ≥3 сделки из новых каналов в первые 30 дней + 1 системный дизайнер. Если за 60 дней цель не достигнута — пересмотр канальной структуры.</div>
+    </div>
+
+    <!-- O6 -->
+    <div class="bet-card fade-up">
+      <span class="num">Гипотеза O6</span>
+      <h3>Системная отстройка от Авито-мастеров через бренд и доказательность</h3>
+      <div class="thesis"><strong>Суть.</strong> Перестать быть «такой же мастерской, но дороже». Лицо мастера (если Света готова), видео процесса, юр. лицо, договор, гарантия, упаковка как кейс, доставка под ключ, фото клиентов в реальных интерьерах, история каждого экземпляра.</div>
+      <div class="meta-row"><strong>На чём основана:</strong> У Авито-мастеров правильный продукт, провальный CX. Премиальный клиент в первый раз обязательно спросит — открыто или мысленно: «а чем вы отличаетесь от мастера за 18 тысяч?» Если ответа нет — сделки нет.</div>
+      <div class="meta-row"><strong>Почему сработает:</strong> Премиум — это про доверие, а не про продукт. Сам по себе продукт у мастера может быть идентичным. Но премиум-клиент покупает уверенность: что привезут целой, есть гарантия, есть кому позвонить, у бренда имя и репутация. Авито-мастер не может предъявить ничего из этого. Alien Cat — может, и должен показать в первой касательной.</div>
+      <div class="meta-row"><strong>Что подтверждает:</strong> Цитаты ЦА — «лоток теперь не видно», «не стыдно перед гостями», «вписался в интерьер» — все они про обещание, которое нужно подкрепить доказательствами. M&amp;W в AD — пример, как медийность работает на доверие при цене €700. Catsby с гарантийной страницей — пример системного снятия страхов.</div>
+      <div class="meta-row"><strong>Что неясно / риски:</strong> Главное — готова ли Света быть лицом бренда. От этого зависит вся коммуникационная стратегия. Если категорически нет — нужна альтернативная конструкция: видео производства без лица, фокус на технологии и интерьерах клиентов. Работает, но медленнее. Tuft+Paw в США начинался именно с истории основателя.</div>
+      <div class="meta-row"><strong>Как проверить:</strong> В первые 30 дней — 3–5 коротких видео процесса (с лицом или без — на выбор Светы). Опубликовать на сайте, в Instagram, в Telegram. Замер: время на странице товара (&gt;60 секунд — видео работает), вопросы «а кто это делает» в директе, конверсия из просмотра в заявку. Параллельно — пресс-релиз и фото в Sobaka.ru, myDecor, Interior+Design, AD Russia. Цель: одна публикация в первые 60 дней.</div>
+    </div>
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- 4. ALT BETS -->
+<section class="section" id="alt-bets" style="padding-top:0">
+  <div class="container">
+    <h2 class="fade-up">4. Альтернативные гипотезы — 4</h2>
+    <p class="lead fade-up">Четыре направления с хорошим потенциалом, но требующие отдельных ресурсов. Не должны конкурировать с основными за внимание в первые 90 дней — это «второй слой решений».</p>
+
+    <div class="alt-card fade-up">
+      <span class="num">Гипотеза A1</span>
+      <h3>B2B через дизайнеров интерьеров с 3D/BIM-моделями</h3>
+      <div class="thesis"><strong>Суть.</strong> Системная B2B-программа: 3D-модели коряг для библиотек дизайнеров (Pro100, ArchiCAD, SketchUp), комиссия 10–15%, приоритетные сроки изготовления (2 недели вместо 3–4), образцы материалов для шоурумов, выездные презентации, закрытый прайс-лист.</div>
+      <div class="meta-row"><strong>На чём основана:</strong> B2B — слепая зона рынка. Дизайнер в премиум-ремонте — главный агент влияния. Если Alien Cat в библиотеке моделей — попадает в проект на этапе рендера.</div>
+      <div class="meta-row"><strong>Почему сработает:</strong> Длинный цикл (2–4 мес до первой сделки), но высокий чек и пассивный поток. 1 дизайнер = 3–6 продаж в год. 10 = 30–60 продаж — половина годового плана при 50 изделий в месяц.</div>
+      <div class="meta-row"><strong>Риски:</strong> На outreach + поддержку — 20–30% времени основателя в первые 90 дней. Если ресурс невозможен — гипотеза в парковку.</div>
+      <div class="meta-row"><strong>Как проверить:</strong> 20 точечных outreach за 30 дней с офером «3D + 10–15% комиссии + образцы». Цель — 1–2 системных партнёрства, 5–7 «тёплых» контактов. Если за 60 дней не закрылось ни одной B2B-сделки — пересмотр условий.</div>
+    </div>
+
+    <div class="alt-card fade-up">
+      <span class="num">Гипотеза A2</span>
+      <h3>Породная специализация — heavy duty для крупных пород</h3>
+      <div class="thesis"><strong>Суть.</strong> Подлинейка «несокрушимая природная база для 12–15 кг мейн-куна / саванны / бенгала». Усиленная конструкция (сечение коряги от 12 см, доп. крепления к полу/стене), толстая коряга, прочный мех, гарантия 12 месяцев вместо 6.</div>
+      <div class="meta-row"><strong>На чём основана:</strong> Никто не специализируется. У Catsby, Teddy Room, Pettel — стандартные конструкции на 4–6 кг. Обычные комплексы ломаются под весом активного 12 кг кота за 2–6 месяцев.</div>
+      <div class="meta-row"><strong>Почему сработает:</strong> Узкий, но крайне лояльный сегмент. Заводчики — закрытое сообщество, информация распространяется быстро. Чек выше среднего: для владельца это «один раз на 10 лет». Маржа выше — материала больше, но цена растёт +30–40% при росте себестоимости на 15–20%.</div>
+      <div class="meta-row"><strong>Риски:</strong> Толстые тяжёлые коряги, сложнее логистика, тестирование на нагрузку. Не все владельцы мейн-кунов готовы платить премиум.</div>
+      <div class="meta-row"><strong>Как проверить:</strong> Один прототип heavy duty + 5 публикаций в каналах заводчиков и Telegram «Мейн-куны России». Цель — 2 заявки за 60 дней. CR &gt;10% — гипотеза подтверждается.</div>
+    </div>
+
+    <div class="alt-card fade-up">
+      <span class="num">Гипотеза A3</span>
+      <h3>Подписка-сервис «обновим ваш комплекс через 2–3 года»</h3>
+      <div class="thesis"><strong>Суть.</strong> Платная замена эко-меха или перетяжка как сервис лояльности. Стоимость — 30–40% от первоначальной цены. Опционально: апгрейд (модули, замена деталей, реставрация).</div>
+      <div class="meta-row"><strong>На чём основана:</strong> Концепция M&amp;W «вещь на века». Слабый LTV у всей категории. Перетяжка — параллельный трек к расширению, закрывает «вещь потёрлась, кот её любит, не хочется выбрасывать».</div>
+      <div class="meta-row"><strong>Почему сработает:</strong> 1 клиент за 5 лет = 1 покупка (60 тыс.) + 2 перетяжки (по 20 тыс.) + 1 второй продукт (60 тыс.) = 160 тыс. ₽ LTV вместо 60. На базе 200 клиентов через 2 года — 4–8 млн ₽ доп. выручки в год без новых клиентов.</div>
+      <div class="meta-row"><strong>Риски:</strong> Срабатывает только через 2–3 года. На старте денег не даёт. Часть клиентов может не воспользоваться — индустриальной статистики по ретеншну в категории нет.</div>
+      <div class="meta-row"><strong>Как проверить:</strong> Заложить в договор гарантии возможность платного обновления через 2 года. Через 24 мес — замер. Сейчас — закладывать в коммуникацию как «вещь на годы».</div>
+    </div>
+
+    <div class="alt-card fade-up">
+      <span class="num">Гипотеза A4</span>
+      <h3>Стеновые модули из коряг как вторая флагманская линейка</h3>
+      <div class="thesis"><strong>Суть.</strong> Настенные «кошачьи тропы» из природных изогнутых ветвей с эко-мехом. Отдельная категория с высокой маржой и модульной логикой (1–6–8 элементов в композиции).</div>
+      <div class="meta-row"><strong>На чём основана:</strong> Стеновые системы — малоконкурентная подниша. Решает боль малых квартир (студии, однушки 35–45 м²). На Западе — Catastrophic Creations, но геометрические доски, не природные коряги. В РФ системно никто не делает.</div>
+      <div class="meta-row"><strong>Почему сработает:</strong> Меньше материала на изделие — выше маржа (себестоимость 2–4 тыс. ₽, цена 12–25 тыс. ₽ за модуль, чек композиции из 4–6 модулей — 60–120 тыс. ₽). Решает реальную боль (площадь). Дизайн-пары 28–38 без детей часто живут в небольших квартирах.</div>
+      <div class="meta-row"><strong>Риски:</strong> Сложнее монтаж — сверлить стены, рассчитывать нагрузку, согласовывать. Требует консультации по интерьеру. Может конкурировать за ресурс с основной линейкой.</div>
+      <div class="meta-row"><strong>Как проверить:</strong> Один прототип (3–4 элемента) + 5 фото в реальных интерьерах. Запуск через дизайнерский канал и Pinterest. Цель — 3 заявки за 60 дней.</div>
+    </div>
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- 5. EARLY -->
+<section class="section" id="early" style="padding-top:0">
+  <div class="container">
+    <h2 class="fade-up">5. Что пока рано обсуждать без дополнительной проверки — 6</h2>
+    <p class="lead fade-up">Гипотезы, для которых данных конкурентного ресёрча недостаточно. Закроются в следующих исследованиях или MVP-тестах.</p>
+
+    <div class="early-card fade-up">
+      <span class="num badge-neutral">P1</span><h4>Конкретный продуктовый микс линейки</h4>
+      <div class="desc">Сколько SKU на старте, какие именно габариты, какие цены внутри 35–70. Конкурентный ресёрч даёт границы, не точку. Нужен профиль E (продукт) — глубинные интервью с ЦА, прототипы и тестовые карточки на сайте.</div>
+    </div>
+
+    <div class="early-card fade-up">
+      <span class="num badge-neutral">P2</span><h4>Готовность ЦА к рассрочке именно в этой категории</h4>
+      <div class="desc">Гипотеза O4 опирается на конкурентов (Catsby), но не на прямые цитаты ЦА «я бы оформил рассрочку, но Авито-мастер её не предлагает». Закрывается профилем A (ЦА) — поиском прямых речевых маркеров через глубинные интервью.</div>
+    </div>
+
+    <div class="early-card fade-up">
+      <span class="num badge-neutral">P3</span><h4>Конверсия дизайнеров в реальных партнёров</h4>
+      <div class="desc">Сколько из 20 outreach действительно конвертируются в системную работу. Нужен полевой тест за 4–8 недель — но это уже не ресёрч, а MVP-этап.</div>
+    </div>
+
+    <div class="early-card fade-up">
+      <span class="num badge-neutral">P4</span><h4>Эластичность цены в коридоре 45–70 тыс. ₽</h4>
+      <div class="desc">Где конкретно «удобный» чек для ЦА — 50, 60 или 70. Нужны живые касания с лидами через Instagram-таргет и сайт-аналитику. Ресёрч даёт только границы.</div>
+    </div>
+
+    <div class="early-card fade-up">
+      <span class="num badge-neutral">P5</span><h4>Реальная сила лакшери-якоря 100+ тыс. ₽</h4>
+      <div class="desc">Поднимает ли он конверсию в ядре или просто стоит на витрине. Закрывается через 60 дней работы с реальным якорем и сравнения конверсий ядра до/после.</div>
+    </div>
+
+    <div class="early-card fade-up">
+      <span class="num badge-neutral">P6</span><h4>Региональный фокус</h4>
+      <div class="desc">Нужно ли Alien Cat сразу строить продажи на всю Россию или сосредоточиться на Москве/СПб первые 6 месяцев. Закрывается через первые 30–50 продаж и анализ географии заявок.</div>
+    </div>
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- 6. QUESTIONS -->
+<section class="section" id="questions" style="padding-top:0">
+  <div class="container">
+    <h2 class="fade-up">6. Вопросы Свете для обсуждения — 14</h2>
+    <p class="lead fade-up">Четырнадцать вопросов, на которые ответ есть только у Светы. От них зависит выбор между гипотезами и развилками.</p>
+
+    <div class="dev-card fade-up"><div class="head"><span class="num">1</span><div class="head-text">
+      <span class="text">Производственная мощность. Сколько изделий в месяц ты реально можешь произвести при текущем формате — не «в теории», а с учётом твоего времени, поставок дерева и сушки коряг? Где твой потолок без найма?</span>
+      <span class="why">Зачем спрашиваем: определяет, можно ли вообще выходить в активный маркетинг в первые 90 дней или сначала нужен системный найм. Без этого ответа все остальные вопросы — в пустоту.</span>
+    </div></div></div>
+
+    <div class="dev-card fade-up"><div class="head"><span class="num">2</span><div class="head-text">
+      <span class="text">Лицо бренда. Готова ли ты быть публичным лицом — самой говорить на камеру в reels, показывать процесс работы с корягой, рассказывать историю продукта? Или категорически нет?</span>
+      <span class="why">Зачем спрашиваем: от этого зависит вся коммуникационная стратегия. Лицо основателя в премиум-категории — мощный инструмент отстройки от Авито-мастеров, но насилие над собой не работает.</span>
+    </div></div></div>
+
+    <div class="dev-card fade-up"><div class="head"><span class="num">3</span><div class="head-text">
+      <span class="text">Дизайнеры как канал. Готова ли ты системно выделить 20–30% рабочего времени на B2B — outreach, 3D-модели, выездные презентации, обработка заявок от дизайнеров? Это другой темп и другой язык.</span>
+      <span class="why">Зачем спрашиваем: B2B-канал даёт высокую маржу и пассивный поток, но требует постоянного включения. Если ресурс не выделяется — гипотеза A1 в парковку.</span>
+    </div></div></div>
+
+    <div class="dev-card fade-up"><div class="head"><span class="num">4</span><div class="head-text">
+      <span class="text">Тип линейки. Твой интерес — только авторские арт-объекты, или ты готова делать функциональную линейку: модульные стеновые системы, тумбы со скрытым лотком, более «прикладные» вещи? Это разные смысловые миры.</span>
+      <span class="why">Зачем спрашиваем: чисто авторская линейка ограничивает рынок. Гибрид (флагман-арт + функциональные модули) даёт больше каналов и сегментов.</span>
+    </div></div></div>
+
+    <div class="dev-card fade-up"><div class="head"><span class="num">5</span><div class="head-text">
+      <span class="text">Авито. Готова ли сознательно снизить долю продаж через Авито на 30–50% в ближайшие 2 месяца, чтобы освободить ресурс на Instagram, Telegram и B2B?</span>
+      <span class="why">Зачем спрашиваем: Авито приносит сейчас живые деньги. Отказ от него ради «премиум-каналов» — рискованное решение, нужно явное согласие.</span>
+    </div></div></div>
+
+    <div class="dev-card fade-up"><div class="head"><span class="num">6</span><div class="head-text">
+      <span class="text">Ценовая политика. Готова ли поднять цены до 45–70 тыс. ₽ как стандарта, оставив 35 тыс. как минимум? Или 35 — твой базовый коммерческий якорь?</span>
+      <span class="why">Зачем спрашиваем: это решение по позиционированию. Если ядро 35 тыс. — Alien Cat сидит у Catsby. Если 45–70 — занимает свободное место.</span>
+    </div></div></div>
+
+    <div class="dev-card fade-up"><div class="head"><span class="num">7</span><div class="head-text">
+      <span class="text">Лакшери-якорь. Интересно ли тебе делать одну-две модели от 100 тыс. ₽ — авторский тираж с историей, фото в AD-стиле, попадание в дизайн-медиа? Это работа на имидж, не на объём.</span>
+      <span class="why">Зачем спрашиваем: якорь требует отдельной работы и денег, и его эффект непрямой (на конверсию ядра). Если нет интереса — гипотеза O3 урезается.</span>
+    </div></div></div>
+
+    <div class="dev-card fade-up"><div class="head"><span class="num">8</span><div class="head-text">
+      <span class="text">Сервис и упаковка. Насколько ты готова инвестировать в премиальную упаковку, ключ в коробке, инструкцию в стиле AD, WOW-эффект распаковки? Это прямо влияет на чек и повтор.</span>
+      <span class="why">Зачем спрашиваем: упаковка стоит денег, и эта статья видна не сразу. Многие основатели экономят — и теряют повторные продажи.</span>
+    </div></div></div>
+
+    <div class="dev-card fade-up"><div class="head"><span class="num">9</span><div class="head-text">
+      <span class="text">Породная специализация. Хочешь ли ты работать с конкретной породой (мейн-куны, бенгалы, саванны) как с плацдармом? Это отдельный продуктовый трек.</span>
+      <span class="why">Зачем спрашиваем: породная линейка даёт лояльный сегмент и сарафан, но требует отдельных моделей и тестов на нагрузку.</span>
+    </div></div></div>
+
+    <div class="dev-card fade-up"><div class="head"><span class="num">10</span><div class="head-text">
+      <span class="text">Стеновые модули. Готова ли расширять формат на настенные системы? Это другая логистика, другой монтаж, потенциально — другой сегмент клиентов (студии и однушки).</span>
+      <span class="why">Зачем спрашиваем: стеновые модули открывают сегмент малых квартир и дают высокую маржу, но это вторая линейка со своими сложностями.</span>
+    </div></div></div>
+
+    <div class="dev-card fade-up"><div class="head"><span class="num">11</span><div class="head-text">
+      <span class="text">Маркетплейсы. Готова ли заводить дешёвый SKU-крючок на Ozon/WB (полочка или лежанка за 1500–3000 ₽) для генерации отзывов и трафика?</span>
+      <span class="why">Зачем спрашиваем: маркетплейсный SKU — отдельная логистика и операционка. Не все основатели готовы заводить эту историю на старте.</span>
+    </div></div></div>
+
+    <div class="dev-card fade-up"><div class="head"><span class="num">12</span><div class="head-text">
+      <span class="text">Найм. Кого нанимаешь первым — плотника (масштабировать производство) или маркетолога/SMM (масштабировать спрос)? От этого зависит, где у проекта узкое горло на ближайшие 6 месяцев.</span>
+      <span class="why">Зачем спрашиваем: типичная развилка ранней стадии. Ответ зависит от данных за 90 дней и от внутреннего ощущения, где «затыкается».</span>
+    </div></div></div>
+
+    <div class="dev-card fade-up"><div class="head"><span class="num">13</span><div class="head-text">
+      <span class="text">Доставка под ключ. Готова ли договариваться с курьерскими сервисами по Москве на доставку с распаковкой и базовой сборкой как платную премиум-опцию (5–8 тыс. ₽)?</span>
+      <span class="why">Зачем спрашиваем: конкретная операционная задача. Без неё гипотеза O4 (сервисный пакет) теряет один из ключевых элементов.</span>
+    </div></div></div>
+
+    <div class="dev-card fade-up"><div class="head"><span class="num">14</span><div class="head-text">
+      <span class="text">Какие конкуренты тебя самой удивили или разочаровали в ресёрче? Это вопрос на проверку — где у тебя расходится картина с реальностью, и какие игроки попали в твоё внимание сильнее всего.</span>
+      <span class="why">Зачем спрашиваем: личное восприятие конкурентов часто отличается от их реальной угрозы. Полезно сверить.</span>
+    </div></div></div>
+
+    <h3 class="fade-up" style="margin-top:40px">Таблица фиксации реакции клиента</h3>
+    <p class="fade-up" style="font-size:14px;color:var(--n500);margin-bottom:16px">Заполняется на стратсессии — реакция Светы по каждой гипотезе.</p>
+
+    <div class="table-wrap fade-up">
+      <table class="table-brandos">
+        <thead>
+          <tr>
+            <th style="width:5%">№</th>
+            <th style="width:24%">Гипотеза</th>
+            <th>Реакция Светы</th>
+            <th>Комментарий</th>
+            <th>Статус</th>
+            <th>Что делаем дальше</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td><strong>O1</strong></td><td>Природный эко-люкс / Wabi-Sabi</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+          <tr><td><strong>O2</strong></td><td>Гибрид «продукт Авито + сервис Catsby»</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+          <tr><td><strong>O3</strong></td><td>Цена 35–70 + лакшери-якорь 100+</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+          <tr><td><strong>O4</strong></td><td>Сервисный пакет для премиума</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+          <tr><td><strong>O5</strong></td><td>Каналы: Авито + МП-крючок + IG/TG-ядро</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+          <tr><td><strong>O6</strong></td><td>Отстройка от Авито-мастеров через бренд</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+          <tr><td><strong>A1</strong></td><td>B2B-программа для дизайнеров</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+          <tr><td><strong>A2</strong></td><td>Линейка для крупных пород</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+          <tr><td><strong>A3</strong></td><td>Подписка «обновим через 2–3 года»</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+          <tr><td><strong>A4</strong></td><td>Стеновые модули как вторая линейка</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3 class="fade-up" style="margin-top:32px">Таблица фиксации развилок</h3>
+    <div class="table-wrap fade-up">
+      <table class="table-brandos">
+        <thead>
+          <tr>
+            <th style="width:5%">№</th>
+            <th style="width:18%">Развилка</th>
+            <th>Вариант А</th>
+            <th>Вариант Б</th>
+            <th>Выбор Светы</th>
+            <th>Комментарий</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>1</td><td>Авито</td><td>Канал тёплых лидов с прайсом от 35 тыс.</td><td>Полностью отключаем за 60 дней</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+          <tr><td>2</td><td>Лицо бренда</td><td>Света — публичное лицо в reels и видео</td><td>Бренд без лица: фокус на продукте и процессе</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+          <tr><td>3</td><td>Лакшери-якорь от 100 тыс. ₽</td><td>Делаем 1–2 авторские модели</td><td>Первые 6 месяцев не делаем</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+          <tr><td>4</td><td>Породная специализация</td><td>Запускаем подлинейку для крупных пород</td><td>Универсальная линейка без породного акцента</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+          <tr><td>5</td><td>Стеновые модули</td><td>Запускаем как вторую линейку в 90 дней</td><td>В парковку до подтверждения базовой воронки</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+          <tr><td>6</td><td>Маркетплейсный SKU-крючок</td><td>Запускаем 1 SKU на Ozon/WB в 60 дней</td><td>Маркетплейсы не используем в первый год</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+          <tr><td>7</td><td>Первый найм</td><td>Плотник (масштабируем производство)</td><td>Маркетолог / SMM (масштабируем спрос)</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- 7. NEXT STAGES -->
+<section class="section" id="stages" style="padding-top:0">
+  <div class="container">
+    <h2 class="fade-up">7. Что брать в следующие этапы</h2>
+    <p class="lead fade-up">Конкретные данные, которые должны перекочевать в дальнейшую работу — следующие исследования, финальный синтез, стратсессию.</p>
+
+    <h3 class="fade-up">Для исследования ЦА (профиль A)</h3>
+    <div class="grid-2">
+      <div class="tier-block fade-up">
+        <span class="tier-label">Приоритеты сегментов</span>
+        <h4>Три ядра ЦА</h4>
+        <ul>
+          <li><strong>Pet-мамы 30–45</strong> — эмоциональное ядро, генерируют UGC, доход 200–400 тыс. ₽/мес</li>
+          <li><strong>Дизайн-пары 28–38</strong> — эстетическое ядро, эталонные клиенты в дизайн-медиа</li>
+          <li><strong>Владельцы крупных пород</strong> — рациональное ядро, лояльность и сарафан</li>
+          <li><strong>Дизайнеры интерьеров</strong> — B2B-агенты влияния</li>
+        </ul>
+      </div>
+      <div class="tier-block fade-up">
+        <span class="tier-label">Что закрыть в профиле A</span>
+        <h4>Минимум 15–20 глубинных интервью</h4>
+        <ul>
+          <li>Прямые цитаты по рассрочке («я бы оформил, но...»)</li>
+          <li>По доверию к мастеру vs бренду («чем вы отличаетесь от...»)</li>
+          <li>По логике дизайнерского канала («когда дизайнер предложил...»)</li>
+          <li>Pinterest-доски с биофильным дизайном и ваби-саби, форумы заводчиков, Telegram-каналы про дизайн квартир</li>
+        </ul>
+      </div>
+    </div>
+
+    <h3 class="fade-up">Для продукта (профиль E)</h3>
+    <div class="tier-block fade-up">
+      <span class="tier-label">Линейка</span>
+      <h4>Состав ассортимента</h4>
+      <ul>
+        <li><strong>Флагман-комплекс из коряги</strong> — 45–70 тыс. ₽, ядро линейки, до 80% продаж в выручке</li>
+        <li><strong>Стеновой модуль</strong> (если развилка 5 = «да») — 12–25 тыс. ₽ за элемент, композиции 60–120 тыс. ₽</li>
+        <li><strong>Продукт-крючок до 3 тыс. ₽</strong> для маркетплейса — полочка или лежанка из эко-меха</li>
+        <li><strong>Лакшери-якорь от 100 тыс. ₽</strong> (если развилка 3 = «да») — 1–2 модели лимитированного авторского тиража</li>
+      </ul>
+      <p style="margin-top:12px"><strong>Чего точно не делаем:</strong> не повторяем геометрию Catsby, не уходим в тёмный лофт Teddy Room, не делаем лежанки с подогревом и умные датчики на старте. В профиле E нужно закрыть: реальные габариты под российские квартиры (новостройки 35–60 м² и сталинки/высотки 80–120 м²), эластичность цены в коридоре 45–70 тыс. ₽, готовность ЦА к стеновым системам.</p>
+    </div>
+
+    <h3 class="fade-up">Для мирового рынка (Western-аналоги и экспорт)</h3>
+    <div class="tier-block fade-up">
+      <span class="tier-label">Бенчмарки и потенциал</span>
+      <h4>Природная форма как УТП не занята даже на Западе</h4>
+      <ul>
+        <li><strong>Tuft+Paw (США)</strong> — натуральные материалы, скандинавская геометрия. Начинался с истории основателя</li>
+        <li><strong>MiaCara (Германия)</strong> — натуральные материалы, скандинавская геометрия</li>
+        <li><strong>LucyBalu (Германия)</strong> — натуральные материалы, скандинавская геометрия</li>
+        <li><strong>Goldtatze (Германия)</strong> — кастомные комплексы под потолок, обработанное дерево, не коряги</li>
+        <li><strong>Catastrophic Creations</strong> — стеновые системы, но геометрические доски</li>
+        <li><strong>Окно может быть не только локальным, но и потенциально экспортным через 1–2 года</strong></li>
+      </ul>
+    </div>
+
+    <h3 class="fade-up">Для позиционирования</h3>
+    <div class="tier-block fade-up">
+      <span class="tier-label">Свободная позиция</span>
+      <h4>«Природный эко-люкс / ваби-саби» в коридоре 45–70 тыс. ₽</h4>
+      <p><strong>Дифференциация:</strong></p>
+      <ul>
+        <li>от <strong>Catsby</strong> — природной формой и асимметрией против фабричной геометрии</li>
+        <li>от <strong>Teddy Room</strong> — светлой природной эстетикой против тёмного лофта</li>
+        <li>от <strong>Murr &amp; Woof</strong> — локальным фокусом и доступностью против международного люкса</li>
+        <li>от <strong>Авито-мастеров</strong> — системным сервисом, брендом, гарантиями и упаковкой</li>
+      </ul>
+      <p style="margin-top:12px"><strong>Для теста на лендинге — два варианта H1:</strong></p>
+      <ul>
+        <li>«Мебель из природной коряги — каждая уникальна»</li>
+        <li>«Дом, в котором красиво обоим»</li>
+      </ul>
+      <p style="margin-top:8px;font-size:13px;color:var(--n500)"><em>Запасной вариант:</em> «Уникальная мебель для кошек с сервисом премиум-салона» — уступает первым двум по тёплости тона.</p>
+    </div>
+
+    <h3 class="fade-up">Дорожная карта 30 / 60 / 90 дней</h3>
+    <div class="grid-3">
+      <div class="tier-block fade-up">
+        <span class="tier-label">30 дней</span>
+        <h4>Запуск базы</h4>
+        <ul>
+          <li>Сервисный пакет (рассрочка, договор, гарантия 6 мес., упаковка)</li>
+          <li>Сайт с двумя H1 для A/B</li>
+          <li>Instagram: 3 reels/нед</li>
+          <li>Avito с обновлёнными карточками от 35 тыс. ₽</li>
+          <li>5–10 outreach дизайнерам</li>
+          <li>3–5 видео процесса</li>
+          <li><strong>Цель: 5–8 продаж по системному пайплайну</strong></li>
+        </ul>
+      </div>
+      <div class="tier-block fade-up">
+        <span class="tier-label">60 дней</span>
+        <h4>Расширение</h4>
+        <ul>
+          <li>Запуск Telegram-канала Alien Cat</li>
+          <li>5 размещений в TG-каналах про интерьер</li>
+          <li>20 outreach дизайнерам с 3D-моделями</li>
+          <li>Первая публикация в Sobaka.ru / myDecor / AD</li>
+          <li>Первый замер сервисного пакета</li>
+          <li><strong>Цель: 10–15 продаж, 1 системный B2B-партнёр</strong></li>
+        </ul>
+      </div>
+      <div class="tier-block fade-up">
+        <span class="tier-label">90 дней</span>
+        <h4>Масштаб</h4>
+        <ul>
+          <li>1 SKU на Ozon/WB (если развилка 6 = «да»)</li>
+          <li>1–2 системных дизайнера на регулярной работе</li>
+          <li>Запуск лакшери-якоря (если развилка 3 = «да»)</li>
+          <li>Решение по найму (плотник или SMM)</li>
+          <li>Первый прототип стенового модуля (если 5 = «да»)</li>
+          <li><strong>Цель: 25–30 продаж/мес, маржа ≥60%</strong></li>
+        </ul>
+      </div>
+    </div>
+
+    <h3 class="fade-up" style="margin-top:32px">6 / 12 месяцев</h3>
+    <div class="grid-2">
+      <div class="tier-block fade-up">
+        <span class="tier-label">6 месяцев</span>
+        <h4>Стабилизация</h4>
+        <p>Решение по второму найму на основе данных. Программа лояльности (платная перетяжка через 2 года). Сбор обратной связи от первых 50–80 клиентов. <strong>Цель: 40–50 продаж/мес, выручка 1,5–2 млн ₽, прибыль 600–800 тыс. ₽.</strong></p>
+      </div>
+      <div class="tier-block fade-up">
+        <span class="tier-label">12 месяцев</span>
+        <h4>Полная команда</h4>
+        <p>Света (стратегия + продукт), плотник, декоратор, SMM, логист/упаковщик, B2B-менеджер. <strong>50+ продаж/мес.</strong> 5–10 системных B2B-партнёров. Минимум 3 публикации в дизайн-медиа. Запуск второй линейки. Возможный первый шоурум в Москве.</p>
+      </div>
+    </div>
+
+    <h3 class="fade-up">Что остаётся неясным</h3>
+    <div class="info-card fade-up">
+      <ol style="padding-left:22px;font-size:14px;line-height:1.7;color:var(--n700)">
+        <li><strong>Готовность Светы быть лицом бренда</strong> — определяющий вопрос для гипотез O1, O6 и всей контент-стратегии. Закрывается на первой стратсессии.</li>
+        <li><strong>Реальная производственная мощность.</strong> Если физически 15–20 изделий в месяц, а маркетинг приведёт 50 заявок — это не рост, это кризис. Закрывается через 30 дней наблюдения.</li>
+        <li><strong>Эластичность цены в ядре 45–70 тыс. ₽</strong> — какая точка оптимальна. Закрывается через таргет в Instagram и сайт-аналитику.</li>
+        <li><strong>Сила лакшери-якоря 100+ тыс. ₽.</strong> Закрывается через 60 дней работы с реальным якорем.</li>
+        <li><strong>Готовность дизайнеров системно работать.</strong> Закроется только полевым тестом за 60 дней. Если из 20 outreach закрывается 0–1 — гипотеза в парковку.</li>
+        <li><strong>Реальный спрос на стеновые модули.</strong> Закрывается через прототип и 60 дней рекламы.</li>
+        <li><strong>Скорость копирования концепции.</strong> Успеет ли Alien Cat закрепить ассоциацию «природная коряга = Alien Cat» за первые 6 месяцев. Мониторинг рынка раз в 30 дней.</li>
+      </ol>
+    </div>
+
+    <div class="highlight-box fade-up" style="margin-top:32px">
+      <div class="label">Финальный месседж</div>
+      <div class="text">
+        Конкурентное поле Alien Cat — не «занятая ниша», а <em>полу-пустое поле с двумя крайностями</em>. Между технологичным масс-премиумом (Catsby) и недосягаемым люксом (Murr &amp; Woof) — пустота, в которую не зашёл никто, потому что никто не объединил уникальный продукт мастера с Авито и системный сервис премиум-бренда. Это окно, и оно не вечное. У Alien Cat есть преимущество первого хода — но только на ближайшие <em>6–12 месяцев</em>, пока более крупные игроки не увидели возможность.
+      </div>
+    </div>
+
+    <h3 class="fade-up" style="margin-top:32px">Минимально необходимые решения на сессии</h3>
+    <div class="info-card fade-up">
+      <ol style="padding-left:22px;font-size:15px;line-height:1.7;color:var(--n700)">
+        <li><strong>Позиционирование</strong> (выбор формулировки H1 для тестирования) — определяет визуальный код, язык, контент.</li>
+        <li><strong>Ценовое решение по ядру и якорю</strong> (развилка 3) — определяет уровень сервиса и каналы коммуникации.</li>
+        <li><strong>Решение по лицу бренда</strong> (развилка 2) — определяет всю контент-стратегию первых 6 месяцев.</li>
+        <li><strong>Решение по Авито</strong> (развилка 1) — определяет, насколько свободен ресурс на премиум-каналы.</li>
+        <li><strong>Первый найм</strong> (развилка 7) — определяет узкое горло проекта.</li>
+        <li><strong>Готовность к B2B-программе</strong> (вопрос 3) — определяет наличие системного канала с пассивным потоком.</li>
+        <li><strong>Стеновые модули в первую линейку или в парковку</strong> (развилка 5) — определяет ширину продуктовой линейки на 6 месяцев.</li>
+      </ol>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<!-- FOOTER -->
+<footer>
+  <div class="container">
+    <div class="f-top">
+      <div>
+        <div class="f-title">BrandOS <span>·</span> Нейроупаковка 2.0</div>
+        <div class="f-sub">alian-cat | M2 СИНТЕЗ КОНКУРЕНТЫ | 2026-04-25</div>
+      </div>
+      <div style="text-align:right">
+        <div class="f-sub">Синтез R4 · 6 + 4 + 6 + 14</div>
+        <div class="f-sub">Мост между ресёрчем и стратсессией со Светой</div>
+      </div>
+    </div>
+    <div class="f-line"></div>
+    <div class="f-bottom">© 2026 Alien Cat · alian-cat · Документ для прямой передачи Свете или модератору стратегической сессии.</div>
+  </div>
+</footer>
+
+<script>
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(e => { if(e.isIntersecting) e.target.classList.add('visible'); });
+}, { threshold: 0.1 });
+document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
+</script>
+
+</body>
+</html>
