@@ -436,6 +436,65 @@
       color: #94a3b8;
     }
 
+    /* Hero actions: MD download + PDF print */
+    .hero-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 14px;
+      margin-top: 20px;
+    }
+
+    .hero-action {
+      display: inline-flex;
+      align-items: center;
+      gap: 14px;
+      padding: 14px 22px;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(125,211,252,0.28);
+      border-radius: 14px;
+      color: #fff;
+      text-decoration: none;
+      font-family: var(--font-sans);
+      font-size: 14px;
+      cursor: pointer;
+      backdrop-filter: blur(8px);
+      transition: background 200ms, border-color 200ms, transform 150ms;
+    }
+    .hero-action:hover {
+      background: rgba(255,255,255,0.12);
+      border-color: #38bdf8;
+      transform: translateY(-1px);
+    }
+    .hero-action svg { color: #7dd3fc; flex-shrink: 0; }
+
+    .hero-action--primary {
+      background: rgba(14,165,233,0.16);
+      border-color: rgba(125,211,252,0.45);
+    }
+    .hero-action--primary:hover {
+      background: rgba(14,165,233,0.24);
+    }
+
+    .ha-text {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+      text-align: left;
+    }
+    .ha-main {
+      font-size: 14px;
+      font-weight: 600;
+      line-height: 1.2;
+      color: #fff;
+    }
+    .ha-sub {
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: #94a3b8;
+    }
+
     .hero-cover-progress small {
       display: block;
       margin-top: 6px;
@@ -1314,29 +1373,73 @@
        Print Styles (DIRECTIVE 7)
        ============================== */
     @media print {
+      /* Hide interactive */
       .nav, .modal-overlay, .nav-toggle, .btn-cta,
-      .btn-next, .card-arrow, .modal-close-btn { display: none !important; }
+      .btn-next, .card-arrow, .modal-close-btn,
+      .hero-actions, .hero-cover-dot, .pulse-dot { display: none !important; }
 
-      body { font-size: 12px; }
-      .hero { padding: 24px 0 0; }
-      .hero-name { font-size: 48px !important; }
-      .hero-brand { font-size: 28px !important; }
-      .hero-trajectory { gap: 12px; }
-      .traj-from, .traj-to, .traj-arrow { font-size: 38px !important; }
-      .hero-cover-foot { padding: 18px 0; }
-      .hero-cover-progress { font-size: 18px; }
+      body { font-size: 11pt; color: #0f172a; background: #fff; }
 
+      /* Hero — ВСЁ на белом, синий градиент в PDF не читается */
+      .hero {
+        background: #fff !important;
+        color: #0f172a !important;
+        padding: 24px 0 16px !important;
+        border-bottom: 2px solid #0ea5e9;
+      }
+      .hero::before, .hero::after { display: none !important; }
+      .hero-name { font-size: 42pt !important; color: #020617 !important; text-shadow: none !important; }
+      .hero-brand { font-size: 20pt !important; color: #0369a1 !important; }
+      .hero-role, .traj-meta { color: #475569 !important; }
+      .hero-supertitle {
+        background: transparent !important;
+        border: 1px solid #0ea5e9 !important;
+        color: #0369a1 !important;
+      }
+      .hero-supertitle::before { background: #0ea5e9 !important; box-shadow: none !important; animation: none !important; }
+      .hero-trajectory { gap: 10px; }
+      .traj-from { color: #94a3b8 !important; font-size: 28pt !important; }
+      .traj-to   { color: #0f172a !important; font-size: 28pt !important; }
+      .traj-arrow { color: #0ea5e9 !important; font-size: 28pt !important; }
+      .hero-epigraph { color: #1e293b !important; font-size: 13pt !important; }
+      .hero-epigraph cite { color: #0369a1 !important; }
+      .hero-progress-band {
+        background: #f0f9ff !important;
+        border-color: #bae6fd !important;
+        backdrop-filter: none !important;
+      }
+      .hpb-phase, .hpb-counter strong { color: #0369a1 !important; }
+      .hpb-counter, .hpb-sub { color: #0f172a !important; }
+      .hpb-bar { background: #e2e8f0 !important; }
+      .hpb-fill { box-shadow: none !important; }
+
+      /* Layout */
       .cards-grid       { grid-template-columns: repeat(2, 1fr) !important; }
-      .card-featured    { grid-column: span 1 !important; }
+      .card-featured    { grid-column: span 2 !important; }
       .dr-grid          { grid-template-columns: repeat(2, 1fr) !important; }
       .about-grid, .next-grid { grid-template-columns: 1fr !important; gap: 24px; }
-      .card             { break-inside: avoid; min-height: 0 !important; }
+
+      /* Cards — flat for PDF */
+      .card {
+        break-inside: avoid; min-height: 0 !important;
+        box-shadow: none !important;
+        transform: none !important;
+      }
+      .card:hover { box-shadow: none !important; transform: none !important; }
+
+      /* Page breaks per module */
+      .module-block { page-break-inside: avoid; }
+      .module-block + .module-block { page-break-before: always; }
+      .about-section, .next-section, .footer { page-break-before: always; }
+
       .progress-track   { overflow: visible; flex-wrap: wrap; gap: 8px; }
       .footer-inner     { flex-direction: column; align-items: flex-start; }
 
-      a[href]::after    { content: ' (' attr(href) ')'; font-size: 9px; color: #888; }
-      .card[href]::after { display: none; }
-      .mbtn-open[href]::after { display: none; }
+      a[href]::after    { content: ' (' attr(href) ')'; font-size: 8pt; color: #64748b; }
+      .card[href]::after, .mbtn-open[href]::after,
+      .progress-item[href]::after { display: none; }
+
+      @page { size: A4; margin: 16mm 14mm; }
     }
 
     /* ==============================
@@ -1476,6 +1579,32 @@
       </div>
       <div class="hpb-bar"><div class="hpb-fill" style="width: 4%;"></div></div>
       <div class="hpb-sub">Запуск нейроупаковки — после предоплаты</div>
+    </div>
+
+    <!-- Hero actions: download MD sources + print PDF -->
+    <div class="hero-actions fadein">
+      <a href="sources.zip" download class="hero-action hero-action--primary">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+          <polyline points="7 10 12 15 17 10"/>
+          <line x1="12" y1="15" x2="12" y2="3"/>
+        </svg>
+        <span class="ha-text">
+          <span class="ha-main">Все материалы в Markdown</span>
+          <span class="ha-sub">Для работы с ChatGPT · Claude · Perplexity</span>
+        </span>
+      </a>
+      <button type="button" class="hero-action" onclick="window.print()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="6 9 6 2 18 2 18 9"/>
+          <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/>
+          <rect x="6" y="14" width="12" height="8"/>
+        </svg>
+        <span class="ha-text">
+          <span class="ha-main">Сохранить как PDF</span>
+          <span class="ha-sub">Печать или экспорт</span>
+        </span>
+      </button>
     </div>
 
   </div>
