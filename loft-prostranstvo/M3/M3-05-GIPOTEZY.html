@@ -1,0 +1,802 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BrandOS · M3-05 Гипотезы — Лофт-пространство</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --brand: #0ea5e9; --brand-dark: #0284c7; --brand-light: #7dd3fc; --brand-bg: #e0f2fe;
+  --surface: #f8fafc;
+  --n50: #f8fafc; --n100: #f1f5f9; --n200: #e2e8f0; --n300: #cbd5e1; --n400: #94a3b8;
+  --n500: #64748b; --n600: #475569; --n700: #334155; --n800: #1e293b; --n900: #0f172a;
+  --success: #10b981; --success-bg: #d1fae5; --success-dark: #065f46;
+  --warning: #f59e0b; --warning-bg: #fef3c7; --warning-dark: #92400e;
+  --error: #ef4444; --error-bg: #fee2e2; --error-dark: #991b1b;
+  --gold: #b45309; --gold-bg: #fef3c7;
+  --font: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  --shadow-card: 0 1px 3px 0 rgba(0,0,0,.05), 0 1px 2px -1px rgba(0,0,0,.05);
+  --shadow-hover: 0 10px 25px -5px rgba(0,0,0,.08), 0 8px 10px -6px rgba(0,0,0,.04);
+  --shadow-pop: 0 20px 40px -12px rgba(2,8,23,.18);
+  --radius-sm: 8px; --radius: 14px; --radius-lg: 20px;
+}
+body { font-family: var(--font); font-size: 16px; line-height: 1.65; color: var(--n700); background: var(--n100); -webkit-font-smoothing: antialiased; }
+.container { max-width: 1180px; margin: 0 auto; padding: 0 28px; }
+.section { padding: 80px 0; }
+.section--tight { padding: 56px 0; }
+@keyframes fade-up { 0%{opacity:0;transform:translateY(24px)} 100%{opacity:1;transform:translateY(0)} }
+.fade-up { opacity:0; transform:translateY(24px); transition:opacity .6s ease-out, transform .6s ease-out; }
+.fade-up.visible { opacity:1; transform:translateY(0); }
+
+.nav { position: fixed; top:0; left:0; right:0; z-index:300; height: 64px; background: rgba(255,255,255,.92); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); border-bottom: 1px solid var(--n200); }
+.nav-inner { height:100%; display:flex; align-items:center; justify-content:space-between; }
+.nav-logo { font-size:17px; font-weight:700; color:var(--n900); letter-spacing:-.01em; }
+.nav-logo span { color:var(--brand); }
+.nav-links { display:flex; gap:22px; }
+.nav-links a { font-size:13px; font-weight:500; color:var(--n600); text-decoration:none; transition:color .2s; }
+.nav-links a:hover { color:var(--brand); }
+.nav-tag { font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.06em; color:var(--brand); background:var(--brand-bg); padding:5px 12px; border-radius:9999px; }
+@media (max-width: 720px) { .nav-links { display:none; } }
+
+.hero { background: var(--surface); padding: 132px 0 80px; position: relative; overflow: hidden; border-bottom: 1px solid var(--n200); }
+.hero::before { content:''; position:absolute; top:-180px; right:-160px; width:520px; height:520px; background: radial-gradient(circle, rgba(14,165,233,.10) 0%, transparent 70%); border-radius:50%; pointer-events:none; }
+.hero::after { content:''; position:absolute; bottom:-200px; left:-160px; width:480px; height:480px; background: radial-gradient(circle, rgba(125,211,252,.10) 0%, transparent 70%); border-radius:50%; pointer-events:none; }
+.hero-inner { position:relative; z-index:2; display:grid; grid-template-columns: 1.4fr 1fr; gap: 56px; align-items: start; }
+.hero-pill { display:inline-flex; align-items:center; gap:8px; padding:7px 14px; background: var(--brand-bg); color: var(--brand-dark); border-radius: 9999px; font-size:12px; font-weight:600; text-transform:uppercase; letter-spacing:.08em; margin-bottom:22px; }
+.hero h1 { font-size: 52px; font-weight: 800; line-height: 1.06; color: var(--n900); letter-spacing:-.025em; margin-bottom: 22px; }
+.hero h1 span { color: var(--brand); }
+.hero p.lead { font-size: 19px; color: var(--n600); line-height: 1.55; max-width: 640px; margin-bottom: 24px; }
+.hero-meta { display:flex; gap: 18px; flex-wrap: wrap; font-size: 13px; color: var(--n500); }
+.hero-meta strong { color: var(--n700); font-weight: 600; }
+
+.tldr-card { background:#fff; border: 1px solid var(--n200); border-radius: var(--radius-lg); padding: 26px 28px; box-shadow: var(--shadow-pop); }
+.tldr-card .tldr-title { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing:.1em; color: var(--brand); margin-bottom: 16px; }
+.tldr-card ol { list-style: none; counter-reset: tldr-counter; display: flex; flex-direction: column; gap: 12px; }
+.tldr-card li { counter-increment: tldr-counter; padding-left: 36px; position: relative; font-size: 14px; color: var(--n700); line-height: 1.5; }
+.tldr-card li::before { content: counter(tldr-counter); position: absolute; left: 0; top: 0; width: 26px; height: 26px; background: var(--brand-bg); color: var(--brand-dark); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 12px; }
+.tldr-card li b { color: var(--n900); font-weight: 600; }
+@media (max-width: 920px) { .hero-inner { grid-template-columns: 1fr; } .hero h1 { font-size: 38px; } }
+
+.section-eyebrow { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing:.12em; color: var(--brand); margin-bottom: 10px; }
+.section-title { font-size: 36px; font-weight: 700; color: var(--n900); letter-spacing:-.02em; margin-bottom: 14px; line-height: 1.18; }
+.section-lead { font-size: 18px; color: var(--n600); max-width: 820px; line-height: 1.6; }
+.section-head { margin-bottom: 44px; }
+
+/* principles 6 cards */
+.princ-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+.princ-card { background: #fff; border: 1px solid var(--n200); border-radius: var(--radius); padding: 22px 24px; box-shadow: var(--shadow-card); }
+.princ-card .p-num { width: 28px; height: 28px; background: var(--brand-bg); color: var(--brand-dark); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 13px; margin-bottom: 12px; }
+.princ-card h4 { font-size: 15px; font-weight: 700; color: var(--n900); margin-bottom: 8px; line-height: 1.35; }
+.princ-card p { font-size: 13px; color: var(--n600); line-height: 1.55; }
+@media (max-width: 920px) { .princ-grid { grid-template-columns: 1fr 1fr; } }
+@media (max-width: 600px) { .princ-grid { grid-template-columns: 1fr; } }
+
+/* axes table */
+.axes-table { background: #fff; border: 1px solid var(--n200); border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow-card); }
+.axes-table table { width: 100%; border-collapse: collapse; font-size: 14px; }
+.axes-table thead { background: var(--n50); }
+.axes-table th { padding: 14px 18px; text-align: left; font-weight: 700; color: var(--n700); border-bottom: 2px solid var(--n200); font-size: 12px; text-transform: uppercase; letter-spacing:.04em; }
+.axes-table td { padding: 14px 18px; border-bottom: 1px solid var(--n100); color: var(--n700); }
+.axes-table tr:last-child td { border-bottom: none; }
+.axes-table tr:hover td { background: var(--n50); }
+.axes-table td:first-child { font-weight: 600; color: var(--n900); }
+.axes-table td.cnt { text-align: center; font-weight: 700; color: var(--brand-dark); font-size: 16px; }
+.axes-table td.hyps a { color: var(--brand-dark); text-decoration: none; font-weight: 600; border-bottom: 1px dashed var(--brand-light); }
+.axes-table td.hyps a:hover { color: var(--brand); }
+
+/* axis header */
+.axis-block { margin-bottom: 40px; }
+.axis-head { display: flex; align-items: center; gap: 14px; margin-bottom: 22px; padding-bottom: 12px; border-bottom: 1px solid var(--n200); }
+.axis-num { width: 36px; height: 36px; background: var(--brand-bg); color: var(--brand-dark); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 15px; }
+.axis-title { font-size: 22px; font-weight: 700; color: var(--n900); letter-spacing:-.01em; }
+.axis-count { margin-left: auto; font-size: 13px; color: var(--n500); }
+
+/* hyp-card — канонический компонент BrandOS v1.2 */
+.hyp-card { background: #fff; border: 1px solid var(--n200); border-radius: var(--radius); padding: 26px 28px; margin-bottom: 20px; box-shadow: var(--shadow-card); border-left: 4px solid var(--brand); transition: box-shadow .2s, transform .2s; }
+.hyp-card:hover { box-shadow: var(--shadow-hover); transform: translateY(-2px); }
+.hyp-card.status-green { border-left-color: var(--success); }
+.hyp-card.status-red { border-left-color: var(--error); }
+.hyp-card.status-blue { border-left-color: var(--brand); }
+.hyp-card.status-amber { border-left-color: var(--warning); }
+.hyp-card.status-gray { border-left-color: var(--n400); }
+
+.hyp-head { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; flex-wrap: wrap; }
+.hyp-num { font-size: 11px; font-weight: 700; color: var(--brand-dark); background: var(--brand-bg); padding: 5px 12px; border-radius: var(--radius-sm); letter-spacing: 0.04em; }
+.hyp-prio { font-size: 11px; font-weight: 700; padding: 5px 12px; border-radius: var(--radius-sm); letter-spacing: 0.04em; }
+.hyp-prio.prio-a { background: #dbeafe; color: #1d4ed8; }
+.hyp-prio.prio-b { background: #ede9fe; color: #6d28d9; }
+.hyp-prio.prio-c { background: var(--n100); color: var(--n600); }
+.hyp-prio.prio-na { background: var(--n50); color: var(--n500); }
+
+.badge { display: inline-flex; align-items: center; padding: 5px 12px; border-radius: 9999px; font-size: 11px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; line-height: 1.2; white-space: nowrap; }
+.badge--green { background: var(--success-bg); color: var(--success-dark); }
+.badge--red { background: var(--error-bg); color: var(--error-dark); }
+.badge--blue { background: var(--brand-bg); color: var(--brand-dark); }
+.badge--amber { background: var(--warning-bg); color: var(--warning-dark); }
+.badge--gray { background: var(--n200); color: var(--n600); }
+
+.hyp-title { font-size: 20px; font-weight: 700; color: var(--n900); line-height: 1.3; margin-bottom: 14px; letter-spacing:-.01em; }
+.hyp-desc { font-size: 14px; color: var(--n600); line-height: 1.6; margin-bottom: 16px; }
+
+.hyp-meta { display: grid; grid-template-columns: 1fr 1fr; gap: 10px 18px; font-size: 13px; color: var(--n700); padding: 16px 18px; background: var(--n50); border-radius: var(--radius-sm); margin-bottom: 14px; }
+.hyp-meta-row strong { color: var(--n900); font-weight: 700; display: block; margin-bottom: 2px; font-size: 11px; text-transform: uppercase; letter-spacing:.06em; color: var(--n500); }
+.hyp-meta-row span { line-height: 1.5; }
+@media (max-width: 720px) { .hyp-meta { grid-template-columns: 1fr; } }
+
+.hyp-next { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; font-size: 13px; }
+.hyp-next-cell { padding: 12px 14px; border-radius: var(--radius-sm); line-height: 1.55; }
+.hyp-next-cell.yes { background: var(--success-bg); border-left: 3px solid var(--success); color: var(--n800); }
+.hyp-next-cell.no { background: var(--n50); border-left: 3px solid var(--n400); color: var(--n800); }
+.hyp-next-cell strong { display: block; margin-bottom: 4px; font-size: 11px; text-transform: uppercase; letter-spacing:.06em; }
+.hyp-next-cell.yes strong { color: var(--success-dark); }
+.hyp-next-cell.no strong { color: var(--n600); }
+@media (max-width: 720px) { .hyp-next { grid-template-columns: 1fr; } }
+
+/* closed positions tables */
+.closed-block { background: #fff; border: 1px solid var(--n200); border-radius: var(--radius); padding: 28px 30px; box-shadow: var(--shadow-card); margin-bottom: 22px; }
+.closed-block.refuted { border-left: 4px solid var(--error); }
+.closed-block.blocked { border-left: 4px solid var(--warning); }
+.closed-block.postponed { border-left: 4px solid var(--n400); }
+.closed-block h3 { font-size: 18px; font-weight: 700; color: var(--n900); margin-bottom: 16px; }
+.closed-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.closed-table th { padding: 10px 12px; text-align: left; font-weight: 700; color: var(--n700); border-bottom: 2px solid var(--n200); font-size: 11px; text-transform: uppercase; letter-spacing:.04em; }
+.closed-table td { padding: 12px; border-bottom: 1px solid var(--n100); color: var(--n700); vertical-align: top; line-height: 1.5; }
+.closed-table tr:last-child td { border-bottom: none; }
+.closed-table td:first-child { font-weight: 600; color: var(--n900); }
+
+/* priority tables */
+.prio-block { background: #fff; border: 1px solid var(--n200); border-radius: var(--radius); padding: 24px 28px; box-shadow: var(--shadow-card); margin-bottom: 22px; }
+.prio-block h3 { font-size: 19px; font-weight: 700; color: var(--n900); margin-bottom: 6px; }
+.prio-block .prio-sub { font-size: 13px; color: var(--n500); margin-bottom: 18px; }
+.prio-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.prio-table th { padding: 12px 14px; text-align: left; font-weight: 700; color: var(--n700); border-bottom: 2px solid var(--n200); font-size: 11px; text-transform: uppercase; letter-spacing:.04em; background: var(--n50); }
+.prio-table td { padding: 14px; border-bottom: 1px solid var(--n100); color: var(--n700); vertical-align: top; line-height: 1.5; }
+.prio-table tr:last-child td { border-bottom: none; }
+.prio-table tr:hover td { background: var(--n50); }
+.prio-table td.h-num a { color: var(--brand-dark); font-weight: 700; text-decoration: none; border-bottom: 1px dashed var(--brand-light); font-size: 13px; }
+.prio-table td.h-num a:hover { color: var(--brand); }
+.prio-table td.h-name { font-weight: 600; color: var(--n900); }
+
+/* deps graph (simplified — list) */
+.deps-list { display: flex; flex-direction: column; gap: 12px; }
+.deps-row { background: #fff; border: 1px solid var(--n200); border-radius: var(--radius-sm); padding: 14px 18px; font-size: 14px; color: var(--n700); line-height: 1.6; box-shadow: var(--shadow-card); }
+.deps-row b { color: var(--n900); font-weight: 700; }
+
+/* next-modules */
+.nm-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 14px; }
+.nm-card { background: #fff; border: 1px solid var(--n200); border-radius: var(--radius); padding: 20px 18px; box-shadow: var(--shadow-card); transition: box-shadow .2s, transform .2s; }
+.nm-card:hover { box-shadow: var(--shadow-hover); transform: translateY(-2px); }
+.nm-card .nm-code { font-size: 11px; font-weight: 700; color: var(--brand); margin-bottom: 6px; letter-spacing:.05em; }
+.nm-card h4 { font-size: 15px; font-weight: 700; color: var(--n900); margin-bottom: 8px; line-height: 1.3; }
+.nm-card p { font-size: 13px; color: var(--n600); line-height: 1.55; }
+@media (max-width: 1000px) { .nm-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 600px) { .nm-grid { grid-template-columns: 1fr; } }
+
+.unc-list { display: flex; flex-direction: column; gap: 14px; }
+.unc-card { background: var(--warning-bg); border: 1px solid #fde68a; border-radius: var(--radius); padding: 20px 24px; }
+.unc-card .unc-mark { display: inline-flex; align-items: center; gap: 8px; padding: 4px 10px; border-radius: 9999px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing:.06em; background: #fff; color: var(--warning); margin-bottom: 10px; }
+.unc-card h3 { font-size: 16px; font-weight: 700; color: var(--n900); margin-bottom: 6px; }
+.unc-card p { font-size: 13px; color: var(--n700); line-height: 1.6; }
+
+.footer { background: var(--n900); color: var(--n300); padding: 56px 0 40px; }
+.footer-inner { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 24px; align-items: flex-end; }
+.footer h4 { color: #fff; font-size: 18px; font-weight: 700; margin-bottom: 10px; }
+.footer p { font-size: 14px; line-height: 1.6; color: var(--n400); max-width: 580px; }
+.footer .footer-meta { font-size: 12px; color: var(--n500); text-align: right; }
+@media (max-width: 720px) { .footer-inner { flex-direction: column; align-items: stretch; } .footer .footer-meta { text-align: left; } }
+
+section[id], .anchor { scroll-margin-top: 90px; }
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="container nav-inner">
+    <div class="nav-logo">Brand<span>OS</span> · Лофт-пространство</div>
+    <div class="nav-links">
+      <a href="#prolog">О чём</a>
+      <a href="#axes">Оси</a>
+      <a href="#registry">Реестр H1-H14</a>
+      <a href="#confirmed">Закрыто</a>
+      <a href="#priority-a">Priority A</a>
+      <a href="#deps">Зависимости</a>
+    </div>
+    <div class="nav-tag">M3-05 · v1.0</div>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="container">
+    <div class="hero-inner">
+      <div>
+        <div class="hero-pill">🔬 Реестр гипотез · 2026-05-19</div>
+        <h1>Гипотезы <span>v1.0</span></h1>
+        <p class="lead">Управляемый реестр 14 продуктовых гипотез. У каждой 9 полей: статус, приоритет, метрика, окно проверки, действие на оба исхода.</p>
+        <div class="hero-meta">
+          <div><strong>Клиент:</strong> Юлия Лофте (Лофт-пространство)</div>
+          <div><strong>Статус:</strong> рабочая v1.0</div>
+        </div>
+      </div>
+      <aside class="tldr-card">
+        <div class="tldr-title">⚙ Главное в пяти пунктах</div>
+        <ol>
+          <li><b>14 гипотез</b> по 7 каноническим осям.</li>
+          <li><b>2 подтверждены</b>: матрица «событие × вариант» и молодёжный самотёк.</li>
+          <li><b>8 Priority A</b> — запуск проверки май-июнь 2026, окна до февраля 2027.</li>
+          <li><b>4 Priority B</b> — второе полугодие 2026 / начало 2027.</li>
+          <li><b>9 закрытых позиций</b>: 4 опровергнуты + 5 отложены до 2027.</li>
+        </ol>
+      </aside>
+    </div>
+  </div>
+</header>
+
+<!-- §1 Что решает + 6 принципов -->
+<section id="prolog" class="section">
+  <div class="container">
+    <div class="section-head">
+      <div class="section-eyebrow">§1-§2 · Что решает + принципы реестра</div>
+      <h2 class="section-title">Управляемый реестр, не кладбище вопросов</h2>
+      <p class="section-lead">M3-05 — не реестр всего открытого. Это инструмент работы команды: каждая гипотеза описана как «как проверяем → порог подтверждения → что делаем, если да / если нет». Без этой структуры реестр превращается в свалку «надо подумать».</p>
+    </div>
+
+    <div class="princ-grid">
+      <div class="princ-card fade-up"><div class="p-num">1</div><h4>Каждая прослеживается до источника</h4><p>Конкретный модуль и раздел проекта. Если не прослеживается — она новая (с явной пометкой) либо не должна быть в реестре.</p></div>
+      <div class="princ-card fade-up"><div class="p-num">2</div><h4>У каждой 5 возможных статусов</h4><p>Подтверждена / опровергнута / требует проверки / заблокирована данными / отложена. По канону.</p></div>
+      <div class="princ-card fade-up"><div class="p-num">3</div><h4>У каждой приоритет A/B/C</h4><p>A — проверка с мая-июня 2026. B — второе полугодие. C — 2027.</p></div>
+      <div class="princ-card fade-up"><div class="p-num">4</div><h4>У каждой измеримая метрика</h4><p>«Конверсия повысится» — не метрика. «Доля повторов ≥18% за 6 мес» — метрика.</p></div>
+      <div class="princ-card fade-up"><div class="p-num">5</div><h4>У каждой окно проверки</h4><p>Срок, после которого мы говорим «да / нет / недостаточно данных». Без окна гипотеза висит вечно.</p></div>
+      <div class="princ-card fade-up"><div class="p-num">6</div><h4>У каждой действие на оба исхода</h4><p>«Если да — делаем X. Если нет — делаем Y». Это превращает гипотезу в управляемое решение.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- §3 Оси -->
+<section id="axes" class="section" style="background:#fff;">
+  <div class="container">
+    <div class="section-head">
+      <div class="section-eyebrow">§3 · Канонические оси</div>
+      <h2 class="section-title">7 осей реестра</h2>
+      <p class="section-lead">По канону: продукт / ЦА / позиционирование / каналы / цены и монетизация / формат и сервис / потенциал роста.</p>
+    </div>
+
+    <div class="axes-table">
+      <table>
+        <thead><tr><th>Ось</th><th style="text-align:center;">Сколько H</th><th>Гипотезы</th></tr></thead>
+        <tbody>
+          <tr><td>1. Продукт</td><td class="cnt">3</td><td class="hyps"><a href="#h1">H1</a>, <a href="#h2">H2</a>, <a href="#h3">H3</a></td></tr>
+          <tr><td>2. ЦА</td><td class="cnt">2</td><td class="hyps"><a href="#h4">H4</a>, <a href="#h5">H5</a></td></tr>
+          <tr><td>3. Позиционирование</td><td class="cnt">1</td><td class="hyps"><a href="#h6">H6</a></td></tr>
+          <tr><td>4. Каналы</td><td class="cnt">1</td><td class="hyps"><a href="#h7">H7</a></td></tr>
+          <tr><td>5. Цены и монетизация</td><td class="cnt">4</td><td class="hyps"><a href="#h8">H8</a>, <a href="#h9">H9</a>, <a href="#h10">H10</a>, <a href="#h11">H11</a></td></tr>
+          <tr><td>6. Формат и сервис</td><td class="cnt">2</td><td class="hyps"><a href="#h12">H12</a>, <a href="#h13">H13</a></td></tr>
+          <tr><td>7. Потенциал роста</td><td class="cnt">1</td><td class="hyps"><a href="#h14">H14</a></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- §4 Реестр H1-H14 -->
+<section id="registry" class="section">
+  <div class="container">
+    <div class="section-head">
+      <div class="section-eyebrow">§4 · Реестр</div>
+      <h2 class="section-title">14 гипотез — карточки H1..H14</h2>
+      <p class="section-lead">Каждая карточка по канону BrandOS: статус, приоритет, источник, метрика, окно проверки, порог «да», порог «нет», действие на оба исхода.</p>
+    </div>
+
+    <!-- Ось 1 — Продукт -->
+    <div class="axis-block">
+      <div class="axis-head">
+        <div class="axis-num">1</div>
+        <h3 class="axis-title">Продукт</h3>
+        <span class="axis-count">3 гипотезы</span>
+      </div>
+
+      <article class="hyp-card status-green fade-up" id="h1">
+        <div class="hyp-head"><span class="hyp-num">H1</span><span class="badge badge--green">Подтверждена</span><span class="hyp-prio prio-na">— (закрыта)</span></div>
+        <h3 class="hyp-title">Матрица «событие × вариант» побеждает уровневую сетку</h3>
+        <p class="hyp-desc">Линейка строится по типу события, а не по уровням Light/Standard/Premium. В исследовании 15 лидеров рынка Москвы ни один не строит вертикальную сетку.</p>
+        <div class="hyp-meta">
+          <div class="hyp-meta-row"><strong>Источник</strong><span>Архитектура линейки §3; исследование лидеров рынка (45 продуктов у 15 лидеров)</span></div>
+          <div class="hyp-meta-row"><strong>Метрика</strong><span>Доля кейсов вертикальной сетки в выборке 15 лидеров</span></div>
+          <div class="hyp-meta-row"><strong>Окно проверки</strong><span>Закрыта на этапе исследования</span></div>
+          <div class="hyp-meta-row"><strong>Порог «да» / «нет»</strong><span>Не более 1 из 15 / 3+ из 15</span></div>
+        </div>
+        <div class="hyp-next">
+          <div class="hyp-next-cell yes"><strong>При «да»</strong>Закрепить матрицу 5×2=10 SKU в следующем модуле проекта как решение</div>
+          <div class="hyp-next-cell no"><strong>При «нет»</strong>Не применимо — гипотеза подтверждена</div>
+        </div>
+      </article>
+
+      <article class="hyp-card status-blue fade-up" id="h2">
+        <div class="hyp-head"><span class="hyp-num">H2</span><span class="badge badge--blue">Требует проверки</span><span class="hyp-prio prio-a">Priority A</span></div>
+        <h3 class="hyp-title">Корпоратив Под ключ от 75 000 ₽ × 8 событий/мес × 5 объектов = до 3 млн ₽/мес</h3>
+        <p class="hyp-desc">Фундамент экономики 2026 года. Якорная цена B2B-материалов от 75 000 ₽.</p>
+        <div class="hyp-meta">
+          <div class="hyp-meta-row"><strong>Источник</strong><span>Стратегическая картина проекта (якорь экономики), архитектура линейки §5, ценовая модель §3</span></div>
+          <div class="hyp-meta-row"><strong>Метрика</strong><span>Закрытых сделок Корпоратив Под ключ в месяц × средний чек</span></div>
+          <div class="hyp-meta-row"><strong>Окно проверки</strong><span>Q3-Q4 2026 (3-6 мес после запуска линии)</span></div>
+          <div class="hyp-meta-row"><strong>Порог «да» / «нет»</strong><span>5+ сделок/мес при чеке ≥75К к сентябрю / Менее 2 сделок/мес</span></div>
+        </div>
+        <div class="hyp-next">
+          <div class="hyp-next-cell yes"><strong>При «да»</strong>Якорь подтверждён → масштабируем B2B-канал, запускаем годовой контракт (H10)</div>
+          <div class="hyp-next-cell no"><strong>При «нет»</strong>Якорь не работает → пересматриваем структуру B2B-предложения, корректируем в v1.1</div>
+        </div>
+      </article>
+
+      <article class="hyp-card status-blue fade-up" id="h3">
+        <div class="hyp-head"><span class="hyp-num">H3</span><span class="badge badge--blue">Требует проверки</span><span class="hyp-prio prio-a">Priority A</span></div>
+        <h3 class="hyp-title">Памятка для родительского чата повышает конверсию выпускных в Под ключ</h3>
+        <p class="hyp-desc">Уникальный материал линии выпускных. Сезонное окно — март-июнь 2026.</p>
+        <div class="hyp-meta">
+          <div class="hyp-meta-row"><strong>Источник</strong><span>Ядро продукта (родители подростков), архитектура линейки §5, лестница продуктов §4</span></div>
+          <div class="hyp-meta-row"><strong>Метрика</strong><span>Доля переходов Базовый → Под ключ у группы с памяткой vs контрольная</span></div>
+          <div class="hyp-meta-row"><strong>Окно проверки</strong><span>Май-июнь 2026 (один сезон)</span></div>
+          <div class="hyp-meta-row"><strong>Порог «да» / «нет»</strong><span>Конверсия выше контрольной на 25%+ / Разница менее 10% или отрицательная</span></div>
+        </div>
+        <div class="hyp-next">
+          <div class="hyp-next-cell yes"><strong>При «да»</strong>Памятка фиксируется как стандарт, расширяем механику на детские ДР</div>
+          <div class="hyp-next-cell no"><strong>При «нет»</strong>Памятка остаётся как информация (закрывает страхи), но не как драйвер конверсии. Ищем другой механизм апсейла</div>
+        </div>
+      </article>
+    </div>
+
+    <!-- Ось 2 — ЦА -->
+    <div class="axis-block">
+      <div class="axis-head">
+        <div class="axis-num">2</div>
+        <h3 class="axis-title">ЦА</h3>
+        <span class="axis-count">2 гипотезы</span>
+      </div>
+
+      <article class="hyp-card status-blue fade-up" id="h4">
+        <div class="hyp-head"><span class="hyp-num">H4</span><span class="badge badge--blue">Требует проверки</span><span class="hyp-prio prio-a">Priority A</span></div>
+        <h3 class="hyp-title">Семейный сегмент: одна удачная сделка → 2-3 новых семьи за 6 месяцев</h3>
+        <p class="hyp-desc">Фундамент семейного маркетинга. Реферал важнее повтора.</p>
+        <div class="hyp-meta">
+          <div class="hyp-meta-row"><strong>Источник</strong><span>Лестница продуктов §4 (реферал важнее повтора), ядро продукта (семейный сегмент)</span></div>
+          <div class="hyp-meta-row"><strong>Метрика</strong><span>Среднее число новых клиентов по рекомендации семейного клиента за 6 мес</span></div>
+          <div class="hyp-meta-row"><strong>Окно проверки</strong><span>6-9 мес после первых 20 семейных сделок Q2 2026 (~конец 2026)</span></div>
+          <div class="hyp-meta-row"><strong>Порог «да» / «нет»</strong><span>Коэффициент рефералов ≥1.5 / Коэффициент &lt;0.5</span></div>
+        </div>
+        <div class="hyp-next">
+          <div class="hyp-next-cell yes"><strong>При «да»</strong>Усиливаем механику «касание + просьба о рекомендации», сарафан как главный канал</div>
+          <div class="hyp-next-cell no"><strong>При «нет»</strong>Семейный сегмент работает на повтор, не на реферал. Перенастраиваем маркетинг ветки на удержание</div>
+        </div>
+      </article>
+
+      <article class="hyp-card status-blue fade-up" id="h5">
+        <div class="hyp-head"><span class="hyp-num">H5</span><span class="badge badge--blue">Требует проверки</span><span class="hyp-prio prio-b">Priority B</span></div>
+        <h3 class="hyp-title">10-20% корпоративных клиентов готовы на годовой контракт после 2-3 сделок</h3>
+        <p class="hyp-desc">Второе полугодие 2026, после накопления базы B2B-клиентов.</p>
+        <div class="hyp-meta">
+          <div class="hyp-meta-row"><strong>Источник</strong><span>Стратегическая картина проекта (B2B-контракт), лестница продуктов §3 (Ступень 4), ценовая модель §5</span></div>
+          <div class="hyp-meta-row"><strong>Метрика</strong><span>Доля клиентов с 3+ сделками, согласившихся на годовой контракт</span></div>
+          <div class="hyp-meta-row"><strong>Окно проверки</strong><span>Q4 2026 — Q1 2027 (6-9 мес работы линии)</span></div>
+          <div class="hyp-meta-row"><strong>Порог «да» / «нет»</strong><span>Доля 10%+ подписали контракт / Доля менее 3%</span></div>
+        </div>
+        <div class="hyp-next">
+          <div class="hyp-next-cell yes"><strong>При «да»</strong>Годовой контракт как продукт, инвестиции в B2B-материалы и обучение менеджера</div>
+          <div class="hyp-next-cell no"><strong>При «нет»</strong>Пересматриваем условия (4 события могут быть много, тестируем 2-3)</div>
+        </div>
+      </article>
+    </div>
+
+    <!-- Ось 3 — Позиционирование -->
+    <div class="axis-block">
+      <div class="axis-head">
+        <div class="axis-num">3</div>
+        <h3 class="axis-title">Позиционирование</h3>
+        <span class="axis-count">1 гипотеза</span>
+      </div>
+
+      <article class="hyp-card status-blue fade-up" id="h6">
+        <div class="hyp-head"><span class="hyp-num">H6</span><span class="badge badge--blue">Требует проверки</span><span class="hyp-prio prio-a">Priority A</span></div>
+        <h3 class="hyp-title">Позиция «сервисный средний+» удерживает средний чек выше Memory Place 22К</h3>
+        <p class="hyp-desc">Фиксированная цена + администратор на объекте как главные дифференциаторы.</p>
+        <div class="hyp-meta">
+          <div class="hyp-meta-row"><strong>Источник</strong><span>Ядро продукта (позиционная карта), архитектура линейки §1, ценовая модель §2</span></div>
+          <div class="hyp-meta-row"><strong>Метрика</strong><span>Средний чек ДР Базовый в первые 3 месяца запуска</span></div>
+          <div class="hyp-meta-row"><strong>Окно проверки</strong><span>Май-июль 2026</span></div>
+          <div class="hyp-meta-row"><strong>Порог «да» / «нет»</strong><span>Средний чек ≥32К при заполнении ≥60% / Чек ниже 28К или массовый отказ</span></div>
+        </div>
+        <div class="hyp-next">
+          <div class="hyp-next-cell yes"><strong>При «да»</strong>Удерживаем позицию, не двигаем нижнюю границу</div>
+          <div class="hyp-next-cell no"><strong>При «нет»</strong>Анализируем причину: слабая коммуникация или продукт не отличается. Корректируем</div>
+        </div>
+      </article>
+    </div>
+
+    <!-- Ось 4 — Каналы -->
+    <div class="axis-block">
+      <div class="axis-head">
+        <div class="axis-num">4</div>
+        <h3 class="axis-title">Каналы</h3>
+        <span class="axis-count">1 гипотеза</span>
+      </div>
+
+      <article class="hyp-card status-green fade-up" id="h7">
+        <div class="hyp-head"><span class="hyp-num">H7</span><span class="badge badge--green">Подтверждена</span><span class="hyp-prio prio-na">— (закрыта)</span></div>
+        <h3 class="hyp-title">Молодёжный сегмент 18-25 идёт самотёком через Авито без активного маркетинга</h3>
+        <p class="hyp-desc">Подтверждена анализом ЦА в ядре продукта. Не таргетируется.</p>
+        <div class="hyp-meta">
+          <div class="hyp-meta-row"><strong>Источник</strong><span>Ядро продукта (сегменты вне фокуса 2026), архитектура линейки §8, лестница продуктов §5</span></div>
+          <div class="hyp-meta-row"><strong>Метрика</strong><span>Доля бронирований молодёжного формата без затрат маркетинга</span></div>
+          <div class="hyp-meta-row"><strong>Окно проверки</strong><span>Закрыта на этапе ядра продукта</span></div>
+          <div class="hyp-meta-row"><strong>Порог «да» / «нет»</strong><span>Сегмент догружает периферийные слоты без затрат / —</span></div>
+        </div>
+        <div class="hyp-next">
+          <div class="hyp-next-cell yes"><strong>При «да»</strong>Молодёжь не таргетируется. Периферийные слоты Лофт Овертон, Лофт Индастриал — самотёк, без регулярных акций</div>
+          <div class="hyp-next-cell no"><strong>При «нет»</strong>Не применимо — подтверждена</div>
+        </div>
+      </article>
+    </div>
+
+    <!-- Ось 5 — Цены и монетизация -->
+    <div class="axis-block">
+      <div class="axis-head">
+        <div class="axis-num">5</div>
+        <h3 class="axis-title">Цены и монетизация</h3>
+        <span class="axis-count">4 гипотезы</span>
+      </div>
+
+      <article class="hyp-card status-blue fade-up" id="h8">
+        <div class="hyp-head"><span class="hyp-num">H8</span><span class="badge badge--blue">Требует проверки</span><span class="hyp-prio prio-a">Priority A</span></div>
+        <h3 class="hyp-title">Welcome-блок повышает конверсию в Под ключ vs пакет без welcome</h3>
+        <p class="hyp-desc">Базовый welcome от 30К, расширенный от 75К. Состав v1.0 — гипотеза.</p>
+        <div class="hyp-meta">
+          <div class="hyp-meta-row"><strong>Источник</strong><span>Ценовая модель §4 (welcome-блок)</span></div>
+          <div class="hyp-meta-row"><strong>Метрика</strong><span>Доля апсейлов Базовый → Под ключ с welcome vs контроль (A/B-тест)</span></div>
+          <div class="hyp-meta-row"><strong>Окно проверки</strong><span>Май-август 2026 (3 месяца)</span></div>
+          <div class="hyp-meta-row"><strong>Порог «да» / «нет»</strong><span>Конверсия с welcome выше на 15%+ / Одинаковая или ниже</span></div>
+        </div>
+        <div class="hyp-next">
+          <div class="hyp-next-cell yes"><strong>При «да»</strong>Welcome как стандарт пакетов, расширяем состав расширенного welcome</div>
+          <div class="hyp-next-cell no"><strong>При «нет»</strong>Базовый остаётся как функциональная встреча гостей, расширенный пересматриваем (возможно, замена компонентов)</div>
+        </div>
+      </article>
+
+      <article class="hyp-card status-blue fade-up" id="h9">
+        <div class="hyp-head"><span class="hyp-num">H9</span><span class="badge badge--blue">Требует проверки</span><span class="hyp-prio prio-a">Priority A</span></div>
+        <h3 class="hyp-title">Шкала повторов 5/7/10% повышает повторы в 1.3-1.8 раза</h3>
+        <p class="hyp-desc">Видимая награда за лояльность, не массовая распродажа.</p>
+        <div class="hyp-meta">
+          <div class="hyp-meta-row"><strong>Источник</strong><span>Ценовая модель §5, стратегическая картина проекта (повторы как недоиспользованный актив)</span></div>
+          <div class="hyp-meta-row"><strong>Метрика</strong><span>Доля повторных сделок в потоке через 9 мес vs рыночные ~10%</span></div>
+          <div class="hyp-meta-row"><strong>Окно проверки</strong><span>Декабрь 2026 — февраль 2027</span></div>
+          <div class="hyp-meta-row"><strong>Порог «да» / «нет»</strong><span>Доля повторов ≥18% (1.8×) или ≥13% (1.3×) / ≤12% (на уровне рынка)</span></div>
+        </div>
+        <div class="hyp-next">
+          <div class="hyp-next-cell yes"><strong>При «да»</strong>Шкала фиксируется. При 1.8× — углубление (12% на 5-ю+ сделку)</div>
+          <div class="hyp-next-cell no"><strong>При «нет»</strong>Шкала недостаточна. Тестируем альтернативы: касание + сезонное напоминание</div>
+        </div>
+      </article>
+
+      <article class="hyp-card status-blue fade-up" id="h10">
+        <div class="hyp-head"><span class="hyp-num">H10</span><span class="badge badge--blue">Требует проверки</span><span class="hyp-prio prio-b">Priority B</span></div>
+        <h3 class="hyp-title">B2B-15% на годовой контракт даёт рабочую маржу</h3>
+        <p class="hyp-desc">После первых 3-5 годовых контрактов в Q4 2026.</p>
+        <div class="hyp-meta">
+          <div class="hyp-meta-row"><strong>Источник</strong><span>Ценовая модель §5, стратегическая картина проекта (годовой контракт как ключевая гипотеза)</span></div>
+          <div class="hyp-meta-row"><strong>Метрика</strong><span>Маржа Корпоратива Под ключ с учётом партнёрских комиссий и скидки 15%</span></div>
+          <div class="hyp-meta-row"><strong>Окно проверки</strong><span>Январь-март 2027</span></div>
+          <div class="hyp-meta-row"><strong>Порог «да» / «нет»</strong><span>Маржа ≥25% / Маржа &lt;15% или отрицательная</span></div>
+        </div>
+        <div class="hyp-next">
+          <div class="hyp-next-cell yes"><strong>При «да»</strong>15% фиксируется, продолжаем масштабирование B2B</div>
+          <div class="hyp-next-cell no"><strong>При «нет»</strong>Корректируем скидку (10% или пересмотр партнёрских комиссий до 5-10%)</div>
+        </div>
+      </article>
+
+      <article class="hyp-card status-blue fade-up" id="h11">
+        <div class="hyp-head"><span class="hyp-num">H11</span><span class="badge badge--blue">Требует проверки</span><span class="hyp-prio prio-b">Priority B</span></div>
+        <h3 class="hyp-title">Декабрьский коэффициент +20-25% поглощается спросом без отказов</h3>
+        <p class="hyp-desc">Только для линий Вечеринка Под ключ и Корпоратив Под ключ.</p>
+        <div class="hyp-meta">
+          <div class="hyp-meta-row"><strong>Источник</strong><span>Ценовая модель §3 (декабрьский коэффициент в линиях Под ключ)</span></div>
+          <div class="hyp-meta-row"><strong>Метрика</strong><span>Заполнение календаря декабря на ключевых объектах</span></div>
+          <div class="hyp-meta-row"><strong>Окно проверки</strong><span>Ноябрь-декабрь 2026</span></div>
+          <div class="hyp-meta-row"><strong>Порог «да» / «нет»</strong><span>Заполнение 21-31 декабря ≥85% при +20-25% / &lt;60% или массовые отказы</span></div>
+        </div>
+        <div class="hyp-next">
+          <div class="hyp-next-cell yes"><strong>При «да»</strong>Коэффициент фиксируется. На 2027 — дифференциация: +30-35% для 25-31 декабря, +10-15% для 1-15 декабря</div>
+          <div class="hyp-next-cell no"><strong>При «нет»</strong>Снижаем коэффициент до +10-15% или вводим декабрьскую раннюю бронь</div>
+        </div>
+      </article>
+    </div>
+
+    <!-- Ось 6 — Формат и сервис -->
+    <div class="axis-block">
+      <div class="axis-head">
+        <div class="axis-num">6</div>
+        <h3 class="axis-title">Формат и сервис</h3>
+        <span class="axis-count">2 гипотезы</span>
+      </div>
+
+      <article class="hyp-card status-blue fade-up" id="h12">
+        <div class="hyp-head"><span class="hyp-num">H12</span><span class="badge badge--blue">Требует проверки</span><span class="hyp-prio prio-a">Priority A</span></div>
+        <h3 class="hyp-title">Депозит 10К + 6 явных причин удержания покрывают 95% инцидентов</h3>
+        <p class="hyp-desc">Без споров с клиентом, с фактическим основанием для каждого случая.</p>
+        <div class="hyp-meta">
+          <div class="hyp-meta-row"><strong>Источник</strong><span>Ценовая модель §7 (политика депозита)</span></div>
+          <div class="hyp-meta-row"><strong>Метрика</strong><span>Доля споров по депозиту (запросы возврата с эскалацией)</span></div>
+          <div class="hyp-meta-row"><strong>Окно проверки</strong><span>Май-октябрь 2026</span></div>
+          <div class="hyp-meta-row"><strong>Порог «да» / «нет»</strong><span>≤5% споров, закрываются ссылкой на одну из 6 причин / ≥15% или регулярные ситуации вне 6 причин</span></div>
+        </div>
+        <div class="hyp-next">
+          <div class="hyp-next-cell yes"><strong>При «да»</strong>Структура депозита фиксируется и публикуется на сайте</div>
+          <div class="hyp-next-cell no"><strong>При «нет»</strong>Расширяем список причин. Возможна 7-я — «иные подтверждённые инциденты с фактическим основанием»</div>
+        </div>
+      </article>
+
+      <article class="hyp-card status-blue fade-up" id="h13">
+        <div class="hyp-head"><span class="hyp-num">H13</span><span class="badge badge--blue">Требует проверки</span><span class="hyp-prio prio-a">Priority A</span></div>
+        <h3 class="hyp-title">Партнёрские комиссии 10-20% реалистичны для пяти ключевых категорий</h3>
+        <p class="hyp-desc">Кейтеринг, бар, DJ, декор, кондитер. Период формализации — май-июль 2026.</p>
+        <div class="hyp-meta">
+          <div class="hyp-meta-row"><strong>Источник</strong><span>Ценовая модель §6 (меню допуслуг), стратегическая картина проекта (партнёрская экосистема +30-40%)</span></div>
+          <div class="hyp-meta-row"><strong>Метрика</strong><span>Доля партнёров, согласных на 10-20%, от числа партнёров в переговорах</span></div>
+          <div class="hyp-meta-row"><strong>Окно проверки</strong><span>Май-июль 2026 (формализация партнёрств)</span></div>
+          <div class="hyp-meta-row"><strong>Порог «да» / «нет»</strong><span>80%+ партнёров (4 из 5 категорий) на 10-20% / &lt;50% или требуют 5-7%</span></div>
+        </div>
+        <div class="hyp-next">
+          <div class="hyp-next-cell yes"><strong>При «да»</strong>Партнёрские договоры фиксируются, комиссии в следующем модуле проекта</div>
+          <div class="hyp-next-cell no"><strong>При «нет»</strong>Пересматриваем бизнес-модель: снижаем нашу долю и компенсируем объёмом или фиксированная плата за «приведённого клиента»</div>
+        </div>
+      </article>
+    </div>
+
+    <!-- Ось 7 — Потенциал роста -->
+    <div class="axis-block">
+      <div class="axis-head">
+        <div class="axis-num">7</div>
+        <h3 class="axis-title">Потенциал роста</h3>
+        <span class="axis-count">1 гипотеза</span>
+      </div>
+
+      <article class="hyp-card status-blue fade-up" id="h14">
+        <div class="hyp-head"><span class="hyp-num">H14</span><span class="badge badge--blue">Требует проверки</span><span class="hyp-prio prio-b">Priority B</span></div>
+        <h3 class="hyp-title">Программа повторных продаж даёт +20-30% годовой выручки vs только новые лиды</h3>
+        <p class="hyp-desc">Касание + сезонное напоминание + пакетная экономика.</p>
+        <div class="hyp-meta">
+          <div class="hyp-meta-row"><strong>Источник</strong><span>Стратегическая картина проекта (стратегический ориентир), лестница продуктов §7 (3 механики)</span></div>
+          <div class="hyp-meta-row"><strong>Метрика</strong><span>Доля выручки от повторов и рефералов в общей выручке</span></div>
+          <div class="hyp-meta-row"><strong>Окно проверки</strong><span>Q1 2027 (после года CRM)</span></div>
+          <div class="hyp-meta-row"><strong>Порог «да» / «нет»</strong><span>Доля ≥25% / &lt;12%</span></div>
+        </div>
+        <div class="hyp-next">
+          <div class="hyp-next-cell yes"><strong>При «да»</strong>Программа повторов как ключевая механика бренда, инвестиции в Telegram-рассылки и работу с базой</div>
+          <div class="hyp-next-cell no"><strong>При «нет»</strong>Лидогенерация как основной фокус, повторы — поддерживающая механика без приоритета</div>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- §5 + §6 Закрытые позиции -->
+<section id="confirmed" class="section" style="background:#fff;">
+  <div class="container">
+    <div class="section-head">
+      <div class="section-eyebrow">§5-§6 · Закрытые позиции</div>
+      <h2 class="section-title">Подтверждённые, опровергнутые, отложенные</h2>
+      <p class="section-lead">2 подтверждены, 4 опровергнуты, 3 заблокированы данными, 5 отложены до 2027. Эти позиции не возвращаются в работу 2026.</p>
+    </div>
+
+    <div class="closed-block">
+      <h3>§5 · Подтверждённые на момент v1.0</h3>
+      <table class="closed-table">
+        <thead><tr><th style="width:30%;">Гипотеза</th><th style="width:35%;">Источник подтверждения</th><th>Решение для следующего модуля</th></tr></thead>
+        <tbody>
+          <tr><td><a href="#h1" style="color:var(--brand-dark);text-decoration:none;">H1. Матрица «событие × вариант»</a></td><td>Исследование лидеров рынка (0 из 15 строят уровни)</td><td>Линейка как 5 событий × 2 варианта = 10 SKU</td></tr>
+          <tr><td><a href="#h7" style="color:var(--brand-dark);text-decoration:none;">H7. Молодёжь — самотёк</a></td><td>Ядро продукта (сегменты вне фокуса 2026)</td><td>Молодёжный сегмент не таргетируется</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="closed-block refuted">
+      <h3>§6.1 · Опровергнутые</h3>
+      <table class="closed-table">
+        <thead><tr><th style="width:30%;">Гипотеза</th><th style="width:35%;">Источник опровержения</th><th>Замена</th></tr></thead>
+        <tbody>
+          <tr><td>Готовая сетка по уровням Light / Standard / Premium</td><td>Исследование лидеров рынка, архитектура линейки §3</td><td>Матрица «событие × вариант» (H1)</td></tr>
+          <tr><td>Молодёжный сегмент 18-25 как маркетинговый фокус</td><td>Ядро продукта (сегменты вне фокуса 2026)</td><td>Самотёк через Авито на периферийных площадках (H7)</td></tr>
+          <tr><td>WhatsApp как активный канал коммуникации</td><td>Решение Юли, anti-regression проекта</td><td>Telegram + Max как основные каналы (в следующем модуле — воронка и каналы)</td></tr>
+          <tr><td>«90% возвратности» как маркетинговая метрика бренда</td><td>Ядро продукта (нельзя обещать без подтверждения данными)</td><td>Природу повторов разбираем в M4 на массиве + интервью; здесь — H14 как гипотеза</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="closed-block blocked">
+      <h3>§6.2 · Заблокированные данными (нет фактической базы для проверки)</h3>
+      <table class="closed-table">
+        <thead><tr><th style="width:40%;">Гипотеза</th><th>Что блокирует</th></tr></thead>
+        <tbody>
+          <tr><td>Точная маржинальность сетки v1.0 по каждому SKU и объекту</td><td>Нет выгрузки CRM за 2-3 месяца. Разблокируется при появлении массива сделок. Уходит в финрасчёт</td></tr>
+          <tr><td>Реальные циклы повтора клиентов Лофт-пространства</td><td>Нет правильно ведённой CRM. Разблокируется к Q1 2027</td></tr>
+          <tr><td>Реальная структура каналов лидогенерации в денежном выражении</td><td>Нет CRM-фиксации источника заявки. Разблокируется при настройке CRM</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="closed-block postponed">
+      <h3>§6.3 · Отложенные (не цель 2026)</h3>
+      <table class="closed-table">
+        <thead><tr><th style="width:50%;">Гипотеза</th><th>Когда возвращаемся</th></tr></thead>
+        <tbody>
+          <tr><td>Свадьба как отдельная продуктовая линия</td><td>v1.1 в 2027, если в массиве CRM 2026 свадебных запросов окажется ≥5%</td></tr>
+          <tr><td>Премиум-линия от 100 тыс. ₽ за вечер</td><td>2027, при появлении премиум-инфраструктуры или агентских отношений</td></tr>
+          <tr><td>Обучение «как открыть лофт»</td><td>2027</td></tr>
+          <tr><td>Франшиза 2.0</td><td>Конец 2026 / начало 2027</td></tr>
+          <tr><td>Многоуровневая программа лояльности</td><td>2027, после того как H9 даст видимую базу постоянных клиентов</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- §7 Priority A -->
+<section id="priority-a" class="section">
+  <div class="container">
+    <div class="section-head">
+      <div class="section-eyebrow">§7 · Priority A</div>
+      <h2 class="section-title">Что проверяем в первую очередь</h2>
+      <p class="section-lead">Восемь гипотез запускаются на проверку в мае-июне 2026, потому что от их результатов зависят решения второго полугодия. Окна проверки длятся от мая 2026 до февраля 2027 — конкретное окно указано в карточке каждой гипотезы.</p>
+    </div>
+
+    <div class="prio-block">
+      <table class="prio-table">
+        <thead><tr><th style="width:60px;">H</th><th>Гипотеза</th><th>Окно проверки</th><th>Что даёт результат</th></tr></thead>
+        <tbody>
+          <tr><td class="h-num"><a href="#h2">H2</a></td><td class="h-name">Корпоратив Под ключ × 8 × 5 = до 3 млн ₽/мес</td><td>Q3-Q4 2026</td><td>Фундамент экономики 2026 года</td></tr>
+          <tr><td class="h-num"><a href="#h3">H3</a></td><td class="h-name">Памятка для родительского чата повышает конверсию выпускных</td><td>Май-июнь 2026</td><td>Решение по упаковке выпускных и расширению механики</td></tr>
+          <tr><td class="h-num"><a href="#h4">H4</a></td><td class="h-name">Один удачный семейный клиент → 2-3 рефералов за полгода</td><td>Q2-Q4 2026</td><td>Решение по приоритету реферала vs повтор в семейной ветке</td></tr>
+          <tr><td class="h-num"><a href="#h6">H6</a></td><td class="h-name">Позиция «сервисный средний+» удерживает чек выше Memory Place</td><td>Май-июль 2026</td><td>Подтверждение или коррекция нижней границы пакета</td></tr>
+          <tr><td class="h-num"><a href="#h8">H8</a></td><td class="h-name">Welcome-блок повышает конверсию в Под ключ</td><td>Май-август 2026</td><td>Решение о составе welcome и масштабировании</td></tr>
+          <tr><td class="h-num"><a href="#h9">H9</a></td><td class="h-name">Шкала повторов 5/7/10% даёт повышение в 1.3-1.8×</td><td>Декабрь 2026 — февраль 2027</td><td>Решение о механике поощрения повторов</td></tr>
+          <tr><td class="h-num"><a href="#h12">H12</a></td><td class="h-name">Депозит + 6 причин удержания покрывают 95% инцидентов</td><td>Май-октябрь 2026</td><td>Подтверждение публикации структуры депозита на сайте</td></tr>
+          <tr><td class="h-num"><a href="#h13">H13</a></td><td class="h-name">Партнёрские комиссии 10-20% реалистичны</td><td>Май-июль 2026</td><td>Бизнес-модель партнёрств, без которой не работают Под ключ</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- §8 Priority B -->
+<section class="section section--tight" style="background:#fff;">
+  <div class="container">
+    <div class="section-head">
+      <div class="section-eyebrow">§8 · Priority B</div>
+      <h2 class="section-title">Второе полугодие 2026 и начало 2027</h2>
+      <p class="section-lead">Четыре Priority B запускаются по мере накопления базы. H5 и H10 зависят от H2. H14 зависит от H9 и H4.</p>
+    </div>
+
+    <div class="prio-block">
+      <table class="prio-table">
+        <thead><tr><th style="width:60px;">H</th><th>Гипотеза</th><th>Окно проверки</th></tr></thead>
+        <tbody>
+          <tr><td class="h-num"><a href="#h5">H5</a></td><td class="h-name">10-20% корпоративных клиентов готовы к годовому контракту</td><td>Q4 2026 — Q1 2027</td></tr>
+          <tr><td class="h-num"><a href="#h10">H10</a></td><td class="h-name">B2B-15% даёт рабочую маржу</td><td>Январь-март 2027</td></tr>
+          <tr><td class="h-num"><a href="#h11">H11</a></td><td class="h-name">Декабрьский коэффициент +20-25% поглощается спросом</td><td>Ноябрь-декабрь 2026</td></tr>
+          <tr><td class="h-num"><a href="#h14">H14</a></td><td class="h-name">Программа повторных продаж даёт +20-30% выручки</td><td>Q1 2027</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p style="margin-top:24px;font-size:14px;color:var(--n500);line-height:1.6;"><strong>Priority C — пусто на момент v1.0.</strong> Все позиции 2027 года находятся в §6.3 «Отложенные» и пересматриваются при подведении итогов 2026 года.</p>
+  </div>
+</section>
+
+<!-- §10 Зависимости -->
+<section id="deps" class="section">
+  <div class="container">
+    <div class="section-head">
+      <div class="section-eyebrow">§10 · Зависимости</div>
+      <h2 class="section-title">Что блокирует или ускоряет что</h2>
+      <p class="section-lead">Несколько гипотез зависят друг от друга. Эту карту нужно держать в голове при планировании проверок.</p>
+    </div>
+
+    <div class="deps-list">
+      <div class="deps-row"><b>H2 (якорь корпоратива)</b> → блокирует <b>H5</b> (без 5+ сделок Корпоратив Под ключ нет данных для проверки годового контракта)</div>
+      <div class="deps-row"><b>H2 + H10 (B2B-маржа)</b> → блокируют <b>H5</b> (опровержение H10 пересматривает условия H5)</div>
+      <div class="deps-row"><b>H4 (семейный реферал) + H9 (шкала повторов)</b> → определяют действие на <b>H14</b> (если H4 даёт сильный реферал, а H9 слабый эффект — программу повторов смещаем в сторону рефералов)</div>
+      <div class="deps-row"><b>H6 (нижняя граница позиции) + H8 (welcome)</b> → совместно формируют решение о пакетной экономике. Подтверждение обеих закрепляет архитектуру</div>
+      <div class="deps-row"><b>H12 (депозит) + H13 (партнёры)</b> → независимы, проверяются параллельно</div>
+      <div class="deps-row"><b>H3 (памятка)</b> → влияет на маркетинговый календарь линии выпускных на 2027</div>
+    </div>
+  </div>
+</section>
+
+<!-- §11 Маршрут -->
+<section class="section" style="background:#fff;">
+  <div class="container">
+    <div class="section-head">
+      <div class="section-eyebrow">§11 · Маршрут</div>
+      <h2 class="section-title">Что уходит в следующие модули</h2>
+      <p class="section-lead">M3-05 — операционный документ управления гипотезами. Реализация — в смежных блоках работы.</p>
+    </div>
+
+    <div class="nm-grid">
+      <div class="nm-card fade-up">
+        <div class="nm-code">M3-06</div>
+        <h4>Запись решений</h4>
+        <p>H1 и H7 как подтверждённые. 4 опровергнутых и 5 отложенных позиций как anti-regression. Структура реестра M3-05 как операционный документ.</p>
+      </div>
+      <div class="nm-card fade-up">
+        <div class="nm-code">M4</div>
+        <h4>Аудитория</h4>
+        <p>H4 (реферальный эффект) — рабочая гипотеза для интервью с 5-10 семейными клиентами. H7 — фиксируется без таргетинга. Природа повторов — на массиве.</p>
+      </div>
+      <div class="nm-card fade-up">
+        <div class="nm-code">M7</div>
+        <h4>Воронка и каналы</h4>
+        <p>Протоколы Priority A — операционно в CRM и регламентах. H3 (памятка) — как материал воронки выпускных. H8 (welcome) — как стандарт пакета.</p>
+      </div>
+      <div class="nm-card fade-up">
+        <div class="nm-code">Операционка</div>
+        <h4>Регламенты и CRM</h4>
+        <p>Регламент A/B-теста по H8. Регламент фото-фиксации депозита (H12). Поля CRM для источника реферала (H4) — без них H4 не проверяется.</p>
+      </div>
+      <div class="nm-card fade-up">
+        <div class="nm-code">Финрасчёт</div>
+        <h4>Маржинальность и финмодель</h4>
+        <p>Заблокированные данными позиции из §6.2. Маржинальность B2B-15% (H10). Юнит-экономика на сетке v1.0 после 2-3 месяцев CRM.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- §12 Открытые точки -->
+<section class="section section--tight">
+  <div class="container">
+    <div class="section-head">
+      <div class="section-eyebrow">§12 · Открытые точки реестра</div>
+      <h2 class="section-title">Что станет ясно к Q3 2026</h2>
+    </div>
+
+    <div class="unc-list">
+      <div class="unc-card">
+        <div class="unc-mark">⚠ Реестр v1.0 — не финальный</div>
+        <h3>Будут новые гипотезы</h3>
+        <p>После 2-3 месяцев Priority A добавятся гипотезы, которые сейчас не очевидны. Пример: «Время первого ответа ≤15 мин повышает конверсию в 1.5×», «Бот первого ответа сокращает потерю лидов ночью». Это относится к воронке и каналам, не вошло в M3-05 v1.0.</p>
+      </div>
+      <div class="unc-card">
+        <div class="unc-mark">⚠ Контрольные группы для A/B-тестов</div>
+        <h3>H3, H8 требуют точной фиксации</h3>
+        <p>Часть Priority A предполагает A/B-тестирование. Операционная реализация контрольных групп требует регламента и CRM. Если контрольную группу выделить не получится — переходим на сравнение «до / после» с менее точным результатом.</p>
+      </div>
+      <div class="unc-card">
+        <div class="unc-mark">⚠ Пересмотр в Q3 2026</div>
+        <h3>Формальный пересмотр приоритетов</h3>
+        <p>После первых результатов Priority A (август-сентябрь 2026) — формальный пересмотр реестра. Возможен сдвиг приоритетов B → A или A → C в зависимости от того, что фактически работает.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="container footer-inner">
+    <div>
+      <h4>M3-05 · Гипотезы v1.0</h4>
+      <p>Управляемый реестр 14 продуктовых гипотез. После согласования Юлей и Дмитрием — дальнейшая работа по модулям: M3-06 Запись продуктовых решений → M4 Аудитория → M6 Позиционирование → M7 Воронка и каналы. Параллельно — операционный запуск Priority A с мая 2026 и финансовый расчёт.</p>
+    </div>
+    <div class="footer-meta">
+      <div>BrandOS · 2026-05-19</div>
+      <div>Лофт-пространство · Юлия Лофте</div>
+    </div>
+  </div>
+</footer>
+
+<script>
+const io = new IntersectionObserver(entries => {
+  entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); io.unobserve(e.target); } });
+}, { threshold: 0.1, rootMargin: '0px 0px -60px 0px' });
+document.querySelectorAll('.fade-up').forEach(el => io.observe(el));
+</script>
+
+</body>
+</html>

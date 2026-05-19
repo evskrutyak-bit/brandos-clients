@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BrandOS · M3-07 Риски и ограничения продукта — Лофт-пространство</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --brand: #0ea5e9; --brand-dark: #0284c7; --brand-light: #7dd3fc; --brand-bg: #e0f2fe;
+  --surface: #f8fafc;
+  --n50: #f8fafc; --n100: #f1f5f9; --n200: #e2e8f0; --n300: #cbd5e1; --n400: #94a3b8;
+  --n500: #64748b; --n600: #475569; --n700: #334155; --n800: #1e293b; --n900: #0f172a;
+  --success: #10b981; --success-bg: #d1fae5; --success-dark: #065f46;
+  --warning: #f59e0b; --warning-bg: #fef3c7; --warning-dark: #92400e;
+  --error: #ef4444; --error-bg: #fee2e2; --error-dark: #991b1b;
+  --gold: #b45309; --gold-bg: #fef3c7;
+  --purple: #7c3aed; --purple-bg: #ede9fe;
+  --font: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  --shadow-card: 0 1px 3px 0 rgba(0,0,0,.05), 0 1px 2px -1px rgba(0,0,0,.05);
+  --shadow-hover: 0 10px 25px -5px rgba(0,0,0,.08), 0 8px 10px -6px rgba(0,0,0,.04);
+  --shadow-pop: 0 20px 40px -12px rgba(2,8,23,.18);
+  --radius-sm: 8px; --radius: 14px; --radius-lg: 20px;
+}
+body { font-family: var(--font); font-size: 16px; line-height: 1.65; color: var(--n700); background: var(--n100); -webkit-font-smoothing: antialiased; }
+.container { max-width: 1180px; margin: 0 auto; padding: 0 28px; }
+.section { padding: 80px 0; }
+.section--tight { padding: 56px 0; }
+@keyframes fade-up { 0%{opacity:0;transform:translateY(24px)} 100%{opacity:1;transform:translateY(0)} }
+.fade-up { opacity:0; transform:translateY(24px); transition:opacity .6s ease-out, transform .6s ease-out; }
+.fade-up.visible { opacity:1; transform:translateY(0); }
+
+.nav { position: fixed; top:0; left:0; right:0; z-index:300; height: 64px; background: rgba(255,255,255,.92); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); border-bottom: 1px solid var(--n200); }
+.nav-inner { height:100%; display:flex; align-items:center; justify-content:space-between; }
+.nav-logo { font-size:17px; font-weight:700; color:var(--n900); letter-spacing:-.01em; }
+.nav-logo span { color:var(--brand); }
+.nav-links { display:flex; gap:22px; }
+.nav-links a { font-size:13px; font-weight:500; color:var(--n600); text-decoration:none; transition:color .2s; }
+.nav-links a:hover { color:var(--brand); }
+.nav-tag { font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.06em; color:var(--brand); background:var(--brand-bg); padding:5px 12px; border-radius:9999px; }
+@media (max-width: 720px) { .nav-links { display:none; } }
+
+.hero { background: var(--surface); padding: 132px 0 80px; position: relative; overflow: hidden; border-bottom: 1px solid var(--n200); }
+.hero::before { content:''; position:absolute; top:-180px; right:-160px; width:520px; height:520px; background: radial-gradient(circle, rgba(239,68,68,.10) 0%, transparent 70%); border-radius:50%; pointer-events:none; }
+.hero::after { content:''; position:absolute; bottom:-200px; left:-160px; width:480px; height:480px; background: radial-gradient(circle, rgba(245,158,11,.10) 0%, transparent 70%); border-radius:50%; pointer-events:none; }
+.hero-inner { position:relative; z-index:2; display:grid; grid-template-columns: 1.4fr 1fr; gap: 56px; align-items: start; }
+.hero-pill { display:inline-flex; align-items:center; gap:8px; padding:7px 14px; background: var(--error-bg); color: var(--error-dark); border-radius: 9999px; font-size:12px; font-weight:600; text-transform:uppercase; letter-spacing:.08em; margin-bottom:22px; }
+.hero h1 { font-size: 48px; font-weight: 800; line-height: 1.06; color: var(--n900); letter-spacing:-.025em; margin-bottom: 22px; }
+.hero h1 span { color: var(--error); }
+.hero p.lead { font-size: 19px; color: var(--n600); line-height: 1.55; max-width: 640px; margin-bottom: 24px; }
+.hero-meta { display:flex; gap: 18px; flex-wrap: wrap; font-size: 13px; color: var(--n500); }
+.hero-meta strong { color: var(--n700); font-weight: 600; }
+
+.tldr-card { background:#fff; border: 1px solid var(--n200); border-radius: var(--radius-lg); padding: 26px 28px; box-shadow: var(--shadow-pop); }
+.tldr-card .tldr-title { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing:.1em; color: var(--error); margin-bottom: 16px; }
+.tldr-card ol { list-style: none; counter-reset: tldr-counter; display: flex; flex-direction: column; gap: 12px; }
+.tldr-card li { counter-increment: tldr-counter; padding-left: 36px; position: relative; font-size: 14px; color: var(--n700); line-height: 1.5; }
+.tldr-card li::before { content: counter(tldr-counter); position: absolute; left: 0; top: 0; width: 26px; height: 26px; background: var(--error-bg); color: var(--error-dark); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 12px; }
+.tldr-card li b { color: var(--n900); font-weight: 600; }
+@media (max-width: 920px) { .hero-inner { grid-template-columns: 1fr; } .hero h1 { font-size: 36px; } }
+
+.section-eyebrow { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing:.12em; color: var(--brand); margin-bottom: 10px; }
+.section-title { font-size: 36px; font-weight: 700; color: var(--n900); letter-spacing:-.02em; margin-bottom: 14px; line-height: 1.18; }
+.section-lead { font-size: 18px; color: var(--n600); max-width: 820px; line-height: 1.6; }
+.section-head { margin-bottom: 44px; }
+
+.badge { display: inline-flex; align-items: center; padding: 5px 12px; border-radius: 9999px; font-size: 11px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; line-height: 1.2; white-space: nowrap; }
+.badge--green { background: var(--success-bg); color: var(--success-dark); }
+.badge--red { background: var(--error-bg); color: var(--error-dark); }
+.badge--blue { background: var(--brand-bg); color: var(--brand-dark); }
+.badge--amber { background: var(--warning-bg); color: var(--warning-dark); }
+.badge--gray { background: var(--n200); color: var(--n600); }
+.badge--purple { background: var(--purple-bg); color: var(--purple); }
+.badge--gold { background: var(--gold-bg); color: var(--gold); }
+
+/* prolog 3 cards */
+.prolog-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px; }
+.prolog-card { background:#fff; border: 1px solid var(--n200); border-radius: var(--radius); padding: 28px; box-shadow: var(--shadow-card); }
+.prolog-card .num { font-size: 12px; font-weight: 700; color: var(--brand); text-transform: uppercase; letter-spacing:.1em; margin-bottom: 14px; }
+.prolog-card h3 { font-size: 19px; font-weight: 700; color: var(--n900); margin-bottom: 12px; line-height: 1.35; }
+.prolog-card p { font-size: 15px; color: var(--n600); line-height: 1.6; }
+@media (max-width: 920px) { .prolog-grid { grid-template-columns: 1fr; } }
+
+/* principles grid 6 */
+.princ-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+.princ-card { background: #fff; border: 1px solid var(--n200); border-radius: var(--radius); padding: 22px 24px; box-shadow: var(--shadow-card); }
+.princ-card .p-num { width: 28px; height: 28px; background: var(--brand-bg); color: var(--brand-dark); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 13px; margin-bottom: 12px; }
+.princ-card h4 { font-size: 15px; font-weight: 700; color: var(--n900); margin-bottom: 8px; line-height: 1.35; }
+.princ-card p { font-size: 13px; color: var(--n600); line-height: 1.55; }
+@media (max-width: 920px) { .princ-grid { grid-template-columns: 1fr 1fr; } }
+@media (max-width: 600px) { .princ-grid { grid-template-columns: 1fr; } }
+
+/* category header */
+.cat-header { display: flex; align-items: center; gap: 18px; padding: 26px 30px; border-radius: var(--radius-lg); margin-bottom: 28px; }
+.cat-header.cat71 { background: linear-gradient(135deg, var(--brand-bg) 0%, transparent 100%); border-left: 5px solid var(--brand); }
+.cat-header.cat72 { background: linear-gradient(135deg, var(--purple-bg) 0%, transparent 100%); border-left: 5px solid var(--purple); }
+.cat-header.cat73 { background: linear-gradient(135deg, var(--gold-bg) 0%, transparent 100%); border-left: 5px solid var(--gold); }
+.cat-num { width: 56px; height: 56px; border-radius: 14px; background: #fff; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 18px; color: var(--n900); box-shadow: var(--shadow-card); }
+.cat-header h2 { font-size: 26px; font-weight: 700; color: var(--n900); letter-spacing:-.02em; line-height: 1.2; margin-bottom: 4px; }
+.cat-header p { font-size: 14px; color: var(--n600); }
+.cat-count { margin-left: auto; font-size: 13px; color: var(--n500); font-weight: 600; padding: 6px 14px; background: #fff; border-radius: 9999px; }
+
+/* risk-card */
+.risk-card { background: #fff; border: 1px solid var(--n200); border-radius: var(--radius); padding: 26px 28px; margin-bottom: 20px; box-shadow: var(--shadow-card); border-left: 4px solid var(--brand); transition: box-shadow .2s, transform .2s; }
+.risk-card:hover { box-shadow: var(--shadow-hover); transform: translateY(-2px); }
+.risk-card.active { border-left-color: var(--error); }
+.risk-card.watch { border-left-color: var(--warning); }
+.risk-card.defer { border-left-color: var(--n400); }
+
+.risk-head { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; flex-wrap: wrap; }
+.risk-num { font-size: 11px; font-weight: 700; color: var(--n800); background: var(--n200); padding: 5px 12px; border-radius: var(--radius-sm); letter-spacing: 0.04em; }
+.risk-card.active .risk-num { background: var(--error-bg); color: var(--error-dark); }
+.risk-card.watch .risk-num { background: var(--warning-bg); color: var(--warning-dark); }
+.risk-card.defer .risk-num { background: var(--n200); color: var(--n600); }
+
+.risk-title { font-size: 20px; font-weight: 700; color: var(--n900); line-height: 1.3; margin-bottom: 14px; letter-spacing:-.01em; }
+.risk-cause { font-size: 14px; color: var(--n600); line-height: 1.6; margin-bottom: 16px; }
+
+.risk-meta { display: grid; grid-template-columns: 1fr 1fr; gap: 10px 18px; font-size: 13px; color: var(--n700); padding: 16px 18px; background: var(--n50); border-radius: var(--radius-sm); margin-bottom: 14px; }
+.risk-meta-row strong { display: block; margin-bottom: 4px; font-size: 11px; text-transform: uppercase; letter-spacing:.06em; color: var(--n500); font-weight: 700; }
+.risk-meta-row span { line-height: 1.5; color: var(--n800); }
+@media (max-width: 720px) { .risk-meta { grid-template-columns: 1fr; } }
+
+.risk-action { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; font-size: 13px; }
+.risk-action-cell { padding: 14px 16px; border-radius: var(--radius-sm); line-height: 1.55; }
+.risk-action-cell.signal { background: var(--warning-bg); border-left: 3px solid var(--warning); }
+.risk-action-cell.mitig { background: var(--success-bg); border-left: 3px solid var(--success); color: var(--n800); }
+.risk-action-cell strong { display: block; margin-bottom: 4px; font-size: 11px; text-transform: uppercase; letter-spacing:.06em; }
+.risk-action-cell.signal strong { color: var(--warning-dark); }
+.risk-action-cell.mitig strong { color: var(--success-dark); }
+@media (max-width: 720px) { .risk-action { grid-template-columns: 1fr; } }
+
+/* summary table */
+.summary-block { background: #fff; border: 1px solid var(--n200); border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow-card); }
+.summary-block table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.summary-block th { padding: 14px 16px; text-align: left; font-weight: 700; color: var(--n700); border-bottom: 2px solid var(--n200); font-size: 11px; text-transform: uppercase; letter-spacing:.04em; background: var(--n50); }
+.summary-block td { padding: 13px 16px; border-bottom: 1px solid var(--n100); color: var(--n700); vertical-align: top; }
+.summary-block tr:last-child td { border-bottom: none; }
+.summary-block tr:hover td { background: var(--n50); }
+.summary-block td.r-num a { color: var(--brand-dark); font-weight: 700; text-decoration: none; border-bottom: 1px dashed var(--brand-light); }
+.summary-block td.r-num a:hover { color: var(--brand); }
+.summary-block td.r-name { font-weight: 600; color: var(--n900); }
+
+/* deps list */
+.deps-list { display: flex; flex-direction: column; gap: 12px; }
+.deps-row { background: #fff; border: 1px solid var(--n200); border-radius: var(--radius-sm); padding: 14px 18px; font-size: 14px; color: var(--n700); line-height: 1.6; box-shadow: var(--shadow-card); }
+.deps-row b { color: var(--n900); font-weight: 700; }
+
+/* next modules */
+.nm-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+.nm-card { background: #fff; border: 1px solid var(--n200); border-radius: var(--radius); padding: 20px 18px; box-shadow: var(--shadow-card); transition: box-shadow .2s, transform .2s; }
+.nm-card:hover { box-shadow: var(--shadow-hover); transform: translateY(-2px); }
+.nm-card .nm-code { font-size: 11px; font-weight: 700; color: var(--brand); margin-bottom: 6px; letter-spacing:.05em; }
+.nm-card h4 { font-size: 15px; font-weight: 700; color: var(--n900); margin-bottom: 8px; line-height: 1.3; }
+.nm-card p { font-size: 13px; color: var(--n600); line-height: 1.55; }
+@media (max-width: 1000px) { .nm-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 600px) { .nm-grid { grid-template-columns: 1fr; } }
+
+.unc-list { display: flex; flex-direction: column; gap: 14px; }
+.unc-card { background: var(--warning-bg); border: 1px solid #fde68a; border-radius: var(--radius); padding: 20px 24px; }
+.unc-card .unc-mark { display: inline-flex; align-items: center; gap: 8px; padding: 4px 10px; border-radius: 9999px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing:.06em; background: #fff; color: var(--warning); margin-bottom: 10px; }
+.unc-card h3 { font-size: 16px; font-weight: 700; color: var(--n900); margin-bottom: 6px; }
+.unc-card p { font-size: 13px; color: var(--n700); line-height: 1.6; }
+
+.footer { background: var(--n900); color: var(--n300); padding: 56px 0 40px; }
+.footer-inner { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 24px; align-items: flex-end; }
+.footer h4 { color: #fff; font-size: 18px; font-weight: 700; margin-bottom: 10px; }
+.footer p { font-size: 14px; line-height: 1.6; color: var(--n400); max-width: 580px; }
+.footer .footer-meta { font-size: 12px; color: var(--n500); text-align: right; }
+@media (max-width: 720px) { .footer-inner { flex-direction: column; align-items: stretch; } .footer .footer-meta { text-align: left; } }
+
+section[id], .anchor { scroll-margin-top: 90px; }
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="container nav-inner">
+    <div class="nav-logo">Brand<span>OS</span> · Лофт-пространство</div>
+    <div class="nav-links">
+      <a href="#prolog">О чём</a>
+      <a href="#cat71">7.1 Запуск</a>
+      <a href="#cat72">7.2 Сегмент</a>
+      <a href="#cat73">7.3 Масштаб</a>
+      <a href="#summary">Карта</a>
+      <a href="#deps">Зависимости</a>
+    </div>
+    <div class="nav-tag">M3-07 · v1.0</div>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="container">
+    <div class="hero-inner">
+      <div>
+        <div class="hero-pill">⚠ Реестр рисков · 2026-05-19</div>
+        <h1>Риски <span>и ограничения</span> продукта · v1.0</h1>
+        <p class="lead">Управляемый реестр 13 продуктовых рисков по трём категориям канона. Каждая карточка: источник → причина → ранний сигнал → порог тревоги → митигация → связь.</p>
+        <div class="hero-meta">
+          <div><strong>Клиент:</strong> Юлия Лофте (Лофт-пространство)</div>
+          <div><strong>Статус:</strong> рабочая v1.0</div>
+        </div>
+      </div>
+      <aside class="tldr-card">
+        <div class="tldr-title">⚠ Главное в пяти пунктах</div>
+        <ol>
+          <li><b>13 рисков</b> по канону: 7.1 запуск · 7.2 сегмент · 7.3 масштаб.</li>
+          <li><b>6 Active</b> — активное наблюдение с мая 2026, готовность к митигации.</li>
+          <li><b>6 Watch</b> — плановое наблюдение, сигнал во втором полугодии.</li>
+          <li><b>1 Defer</b> — мониторинг по запросу для решений 2027 (премиум-инфраструктура).</li>
+          <li><b>Принцип:</b> риск с понятным сигналом и митигацией → управляем; всё остальное — вне реестра.</li>
+        </ol>
+      </aside>
+    </div>
+  </div>
+</header>
+
+<!-- §1+§2 Prolog -->
+<section id="prolog" class="section">
+  <div class="container">
+    <div class="section-head">
+      <div class="section-eyebrow">§1-§2 · Что решает + 6 принципов</div>
+      <h2 class="section-title">Управляемый реестр, не «всё, что может пойти не так»</h2>
+      <p class="section-lead">Каждый риск имеет 6 рабочих полей и привязан к источнику в предыдущих модулях или к решению команды. Реестр не покрывает форс-мажоры — только то, на что команда может повлиять.</p>
+    </div>
+
+    <div class="prolog-grid">
+      <div class="prolog-card fade-up">
+        <div class="num">Граница</div>
+        <h3>Только продуктовые риски</h3>
+        <p>Что может пойти не так с продуктом: запуск SKU, сегменты, масштабирование. Не CRM-регламенты, не GTM, не финмодель.</p>
+      </div>
+      <div class="prolog-card fade-up">
+        <div class="num">vs M3-06</div>
+        <h3>Требование → риск</h3>
+        <p>M3-06 «администратор присутствует по стандарту» — требование. R9 «узкий круг администраторов — стандарт не масштабируется» — риск.</p>
+      </div>
+      <div class="prolog-card fade-up">
+        <div class="num">vs M3-05</div>
+        <h3>Гипотеза → последствие</h3>
+        <p>M3-05 «H8 welcome повышает конверсию» — гипотеза. R3 «welcome не даёт прироста — что делаем» — риск с действием на опровержение.</p>
+      </div>
+    </div>
+
+    <h3 style="font-size:20px;font-weight:700;color:var(--n900);margin:48px 0 18px;">6 принципов реестра рисков</h3>
+    <div class="princ-grid">
+      <div class="princ-card fade-up"><div class="p-num">1</div><h4>Управляемый, не свалка</h4><p>Каждый риск имеет 6 рабочих полей. Без сигнала и митигации — недозрелый, переформулируем.</p></div>
+      <div class="princ-card fade-up"><div class="p-num">2</div><h4>Прослеживается до источника</h4><p>Модуль и раздел проекта или зафиксированное решение команды.</p></div>
+      <div class="princ-card fade-up"><div class="p-num">3</div><h4>Приоритет наблюдения</h4><p>Active — активно с мая. Watch — плановое наблюдение. Defer — по запросу.</p></div>
+      <div class="princ-card fade-up"><div class="p-num">4</div><h4>Порог — конкретное число / ситуация</h4><p>«Если конверсия упадёт» — не порог. «Доля апсейлов за 3 мес ≤ контрольной» — порог.</p></div>
+      <div class="princ-card fade-up"><div class="p-num">5</div><h4>Митигация — конкретное действие</h4><p>Не «обсудим, когда возникнет». А «вот что делаем».</p></div>
+      <div class="princ-card fade-up"><div class="p-num">6</div><h4>Реестр ≠ страховой полис</h4><p>Только управляемые риски. Форс-мажоры и события вне зоны контроля — вне реестра.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- §3 7.1 Где продукт может не взлететь -->
+<section id="cat71" class="section" style="background:#fff;">
+  <div class="container">
+    <div class="cat-header cat71">
+      <div class="cat-num">7.1</div>
+      <div>
+        <h2>Где продукт может не взлететь</h2>
+        <p>Запуск SKU, провалы гипотез M3-05 с продуктовыми последствиями</p>
+      </div>
+      <div class="cat-count">5 рисков · 3 Active</div>
+    </div>
+
+    <article class="risk-card active fade-up" id="r1">
+      <div class="risk-head"><span class="risk-num">R1 · 7.1 Запуск</span><span class="badge badge--red">Active</span></div>
+      <h3 class="risk-title">Корпоратив Под ключ не запускается в Q3 — якорь экономики не работает</h3>
+      <p class="risk-cause">Корпоратив Под ключ — сделка с длинным циклом, требует B2B-документов и выделенного ресурса B2B-сопровождения (отдельной роли для ведения корпоративных сделок). Если запуск откладывается, экономика года 75К × 8 × 5 = до 3 млн ₽/мес не достигается.</p>
+      <div class="risk-meta">
+        <div class="risk-meta-row"><strong>Источник</strong><span>Архитектура линейки §7 (приоритет Q3), гипотеза H2 в реестре (якорь экономики 2026)</span></div>
+        <div class="risk-meta-row"><strong>Порог тревоги</strong><span>К 15 сентября 2026 — менее 2 закрытых сделок Корпоратив Под ключ за месяц</span></div>
+      </div>
+      <div class="risk-action">
+        <div class="risk-action-cell signal"><strong>Ранний сигнал</strong>К концу июля 2026 нет ни одной закрытой сделки Корпоратив Под ключ. Нет B2B-материалов (PDF-предложение). Выделенный ресурс B2B-сопровождения не сформирован или не справляется с потоком.</div>
+        <div class="risk-action-cell mitig"><strong>Митигация</strong>Пересмотр приоритета — масштабирование Корпоратива Базового как переходного звена, отсрочка полноценного Под ключ до Q4 с корректной упаковкой. Альтернатива — личные продажи Юли по якорной модели.</div>
+      </div>
+      <div style="margin-top:12px;font-size:12px;color:var(--n500);"><b>Связь:</b> H2 в реестре гипотез (опровержение H2 = проявление R1)</div>
+    </article>
+
+    <article class="risk-card active fade-up" id="r2">
+      <div class="risk-head"><span class="risk-num">R2 · 7.1 Запуск</span><span class="badge badge--red">Active</span><span style="font-size:11px;color:var(--n500);">окно закрывается в июне</span></div>
+      <h3 class="risk-title">Линия выпускных пропускает сезонное окно март-июнь 2026</h3>
+      <p class="risk-cause">Пик выпускных — март-июнь. Часть текущего сезона уже потрачена (на дату сборки реестра — 2026-05-19). Если упаковка линии (карточки на сайте, памятка для родительского чата, скрипт первого ответа в M7) не готова к концу мая, оставшаяся часть текущего сезона тоже закрывается. Следующее окно — март 2027.</p>
+      <div class="risk-meta">
+        <div class="risk-meta-row"><strong>Источник</strong><span>Архитектура линейки §7 (приоритет 2 Q2), гипотеза H3 в реестре (памятка для родительского чата)</span></div>
+        <div class="risk-meta-row"><strong>Порог тревоги</strong><span>К 1 июля 2026 — менее 2 проведённых выпускных через пакетную модель за текущий сезон</span></div>
+      </div>
+      <div class="risk-action">
+        <div class="risk-action-cell signal"><strong>Ранний сигнал</strong>К концу мая 2026 — нет карточек выпускных на сайте, нет публичной версии памятки для родительского чата, нет сегментации в CRM по типу события «Выпускной».</div>
+        <div class="risk-action-cell mitig"><strong>Митигация</strong>Если окно текущего сезона потеряно — фокус на подростковые ДР круглогодично + переупаковка к март 2027. Если часть сезона доступна — упрощённая упаковка (минимум памятка) запускается в течение 2 недель.</div>
+      </div>
+      <div style="margin-top:12px;font-size:12px;color:var(--n500);"><b>Связь:</b> H3 в реестре гипотез, архитектура линейки §5.7 «уникальный материал линии»</div>
+    </article>
+
+    <article class="risk-card watch fade-up" id="r3">
+      <div class="risk-head"><span class="risk-num">R3 · 7.1 Запуск</span><span class="badge badge--amber">Watch</span></div>
+      <h3 class="risk-title">Welcome-блок не даёт прироста конверсии в Под ключ</h3>
+      <p class="risk-cause">Welcome-блок v1.0 — гипотеза о том, что 4 элемента базового и 4 элемента расширенного welcome повышают воспринимаемую ценность пакета. Если конкретные компоненты не попадают в ценность клиента — пакетная модель не оправдывает наценку 20-40% к голой почасовке.</p>
+      <div class="risk-meta">
+        <div class="risk-meta-row"><strong>Источник</strong><span>Гипотеза H8 в реестре (welcome-блок), ценовая модель §4 (состав welcome v1.0)</span></div>
+        <div class="risk-meta-row"><strong>Порог тревоги</strong><span>К концу августа 2026 — конверсия в Под ключ выше контрольной менее чем на 10%, или отрицательная</span></div>
+      </div>
+      <div class="risk-action">
+        <div class="risk-action-cell signal"><strong>Ранний сигнал</strong>После 2-3 месяцев работы — конверсия Базовый → Под ключ в группе с welcome не превышает контрольную группу. Клиенты массово отказываются от Под ключ в пользу Базового + ручной сборки.</div>
+        <div class="risk-action-cell mitig"><strong>Митигация</strong>Пересмотр состава welcome — замена компонентов, не отказ от механики. Базовый welcome остаётся как функциональная часть встречи. Расширенный пересматривается до v1.1 на основе фактического восприятия.</div>
+      </div>
+      <div style="margin-top:12px;font-size:12px;color:var(--n500);"><b>Связь:</b> H8 в реестре гипотез, требование M3-06 §5.2 SLA v1.0 «полнота welcome-блока»</div>
+    </article>
+
+    <article class="risk-card watch fade-up" id="r4">
+      <div class="risk-head"><span class="risk-num">R4 · 7.1 Запуск</span><span class="badge badge--amber">Watch</span></div>
+      <h3 class="risk-title">B2B-15% сжигает маржу, годовой контракт становится убыточным</h3>
+      <p class="risk-cause">Скидка 15% на годовой контракт корпоратива — гипотеза. Реальная маржинальность зависит от партнёрских комиссий: если кейтеринг и DJ берут 15-20% сверху, а нам остаётся минус-15% от чека, маржа на годовом контракте падает ниже рабочей.</p>
+      <div class="risk-meta">
+        <div class="risk-meta-row"><strong>Источник</strong><span>Гипотеза H10 в реестре (B2B-15%), ценовая модель §5.2</span></div>
+        <div class="risk-meta-row"><strong>Порог тревоги</strong><span>Маржа годового контракта падает ниже 15% или становится отрицательной</span></div>
+      </div>
+      <div class="risk-action">
+        <div class="risk-action-cell signal"><strong>Ранний сигнал</strong>После первого годового контракта — фактическая маржа Корпоратива Под ключ с учётом скидки и партнёрских комиссий ниже 20%. Стандарт «без потерь маржи на повторности» не выполняется.</div>
+        <div class="risk-action-cell mitig"><strong>Митигация</strong>Корректировка процента скидки до 10% или пересмотр партнёрских комиссий (5-10% вместо 15-20% при объёме контракта). Возможен вариант с фиксированной платой за «приведённого клиента» вместо процента.</div>
+      </div>
+      <div style="margin-top:12px;font-size:12px;color:var(--n500);"><b>Связь:</b> H10 в реестре гипотез</div>
+    </article>
+
+    <article class="risk-card active fade-up" id="r5">
+      <div class="risk-head"><span class="risk-num">R5 · 7.1 Запуск</span><span class="badge badge--red">Active</span><span style="font-size:11px;color:var(--n500);">формализация партнёрств май-июль 2026</span></div>
+      <h3 class="risk-title">Партнёрские комиссии 10-20% нереалистичны для ключевых партнёров</h3>
+      <p class="risk-cause">Партнёрские комиссии 10-20% — гипотеза. Часть партнёров (особенно зрелые кейтеринги и DJ) может потребовать ставку 5-7% или фиксированную плату «за приведённого клиента» вместо процента. Без рабочей партнёрской модели линии Под ключ собирать нечем.</p>
+      <div class="risk-meta">
+        <div class="risk-meta-row"><strong>Источник</strong><span>Гипотеза H13 в реестре (партнёрские комиссии), ценовая модель §6 (меню допуслуг)</span></div>
+        <div class="risk-meta-row"><strong>Порог тревоги</strong><span>К 15 июля 2026 — менее 4 из 5 ключевых партнёрских категорий согласились на 10-20%</span></div>
+      </div>
+      <div class="risk-action">
+        <div class="risk-action-cell signal"><strong>Ранний сигнал</strong>На переговорах с 2-3 партнёрами 50% отказываются от 10-20%, требуют 5-7% или фиксированную плату. Кейтеринг готов работать только без эксклюзива.</div>
+        <div class="risk-action-cell mitig"><strong>Митигация</strong>Пересмотр бизнес-модели: снижение нашей доли и компенсация объёмом, или замена процента фиксированной платой за приведённого клиента. Альтернатива — наработка собственных партнёров без премиум-репутации.</div>
+      </div>
+      <div style="margin-top:12px;font-size:12px;color:var(--n500);"><b>Связь:</b> H13 в реестре гипотез</div>
+    </article>
+  </div>
+</section>
+
+<!-- §4 7.2 Какие сегменты могут не купить -->
+<section id="cat72" class="section">
+  <div class="container">
+    <div class="cat-header cat72">
+      <div class="cat-num">7.2</div>
+      <div>
+        <h2>Какие сегменты могут не купить</h2>
+        <p>Сегменты с заведомо низкой конверсией или с риском убыточности</p>
+      </div>
+      <div class="cat-count">3 риска · все Watch</div>
+    </div>
+
+    <article class="risk-card watch fade-up" id="r6">
+      <div class="risk-head"><span class="risk-num">R6 · 7.2 Сегмент</span><span class="badge badge--amber">Watch</span></div>
+      <h3 class="risk-title">Премиум 100+ тыс. ₽ — соблазн вернуться без премиум-инфраструктуры</h3>
+      <p class="risk-cause">Премиум-сегмент работает через event-агентства, отзывы закрыты, нужна реконструированная инфраструктура. Соблазн обещать «премиум-пакет от 150 тыс. ₽» возникает естественно — клиенты приходят с такими запросами. Без премиум-инфраструктуры обещание не выполняется → негативный отзыв → закрытие сегмента надолго.</p>
+      <div class="risk-meta">
+        <div class="risk-meta-row"><strong>Источник</strong><span>Ядро продукта блок 7.2, требования M3-06 §4.2 «не должно иметь премиум без инфраструктуры»</span></div>
+        <div class="risk-meta-row"><strong>Порог тревоги</strong><span>Зафиксированный случай ведения сделки с обещанием «премиум-сервис» без премиум-инфраструктуры</span></div>
+      </div>
+      <div class="risk-action">
+        <div class="risk-action-cell signal"><strong>Ранний сигнал</strong>Менеджер начинает использовать слово «премиум» в коммуникации. На сайте появляется «премиум-пакет». В команде вопрос «а почему не возьмём этот корпоратив за 200 тыс. ₽».</div>
+        <div class="risk-action-cell mitig"><strong>Митигация</strong>Менеджер на запросы «премиум от 100 тыс.» отвечает: «У нас пакет Корпоратив Под ключ от 75 тыс. с X, Y, Z. Если нужна премиум-инфраструктура — рекомендую Soxspace или BankaBanka». Не отказ от клиента, а отказ от невыполнимого обещания.</div>
+      </div>
+      <div style="margin-top:12px;font-size:12px;color:var(--n500);"><b>Связь:</b> требование M3-06 §4.2, ядро продукта блок 7.2</div>
+    </article>
+
+    <article class="risk-card watch fade-up" id="r7">
+      <div class="risk-head"><span class="risk-num">R7 · 7.2 Сегмент</span><span class="badge badge--amber">Watch</span></div>
+      <h3 class="risk-title">Авито-охотники за минимальной ценой — отток без возврата</h3>
+      <p class="risk-cause">Часть клиентов выбирает по единственному критерию — минимальная цена за час. Они не реагируют на упаковку и сервис, уходят к конкуренту при разнице +100 ₽. Если на них фокусироваться — нижняя граница пакета двигается вниз, экономика ломается. Если их игнорировать — теряем часть голой почасовой загрузки в неполные дни.</p>
+      <div class="risk-meta">
+        <div class="risk-meta-row"><strong>Источник</strong><span>Ядро продукта блок 7.3, ценовая модель §8 (антипринцип «не двигать нижнюю границу»)</span></div>
+        <div class="risk-meta-row"><strong>Порог тревоги</strong><span>Более 20% сделок ДР за месяц с чеком ниже опорной нижней границы 28 000 ₽</span></div>
+      </div>
+      <div class="risk-action">
+        <div class="risk-action-cell signal"><strong>Ранний сигнал</strong>Доля сделок с чеком ниже опорной нижней границы растёт. Менеджер начинает регулярно давать скидку «потому что нашли дешевле».</div>
+        <div class="risk-action-cell mitig"><strong>Митигация</strong>Удержание принципа «скидки только за поведение, не за торг». Менеджер не корректирует цену под «нашли дешевле». Авито-сегмент обслуживается голой почасовой на периферийных площадках без активного маркетинга.</div>
+      </div>
+      <div style="margin-top:12px;font-size:12px;color:var(--n500);"><b>Связь:</b> ценовая модель §2.3 (нижняя граница), §8 (антипринципы)</div>
+    </article>
+
+    <article class="risk-card watch fade-up" id="r8">
+      <div class="risk-head"><span class="risk-num">R8 · 7.2 Сегмент</span><span class="badge badge--amber">Watch</span></div>
+      <h3 class="risk-title">Крупные корпоративы 60+ человек уходят к Soxspace / BankaBanka</h3>
+      <p class="risk-cause">Запрос на корпоратив 60+ человек обычно идёт через event-агентства. У нас нет агентских отношений и нет «премиум»-восприятия. Лофт Хьюдж даёт инфраструктуру до 200 человек, но без агентских связей и без премиум-кейтеринга клиенты с бюджетом 200+ тыс. ₽ выбирают Soxspace или BankaBanka.</p>
+      <div class="risk-meta">
+        <div class="risk-meta-row"><strong>Источник</strong><span>Ядро продукта блок 7.2 (премиум-сегмент), архитектура линейки §6 (Лофт Хьюдж до 200 чел.)</span></div>
+        <div class="risk-meta-row"><strong>Порог тревоги</strong><span>Из 10 запросов на корпоратив 60+ за квартал — менее 2 закрывается в сделку</span></div>
+      </div>
+      <div class="risk-action">
+        <div class="risk-action-cell signal"><strong>Ранний сигнал</strong>Запросы на корпоратив 60+ приходят, но конверсия в подписание менее 30%. Клиенты при отказе ссылаются на «более премиальные альтернативы».</div>
+        <div class="risk-action-cell mitig"><strong>Митигация</strong>Не пытаться выйти в премиум 60+ без инфраструктуры (см. R6). Фокус — корпоративы 25-50 человек, где наша инфраструктура побеждает (Лофт Панорамный, Лофт Кастом, Лофт Семеновский). Запросы 60+ — на Лофт Хьюдж как опция «хорошо для нашей цены».</div>
+      </div>
+      <div style="margin-top:12px;font-size:12px;color:var(--n500);"><b>Связь:</b> R6 (взаимно усиливают), ядро продукта блок 7.2</div>
+    </article>
+  </div>
+</section>
+
+<!-- §5 7.3 Какие факторы влияют на масштабирование -->
+<section id="cat73" class="section" style="background:#fff;">
+  <div class="container">
+    <div class="cat-header cat73">
+      <div class="cat-num">7.3</div>
+      <div>
+        <h2>Какие факторы влияют на масштабирование</h2>
+        <p>Узкие места при росте потока заявок и сети объектов</p>
+      </div>
+      <div class="cat-count">5 рисков · 3 Active · 1 Defer</div>
+    </div>
+
+    <article class="risk-card active fade-up" id="r9">
+      <div class="risk-head"><span class="risk-num">R9 · 7.3 Масштаб</span><span class="badge badge--red">Active</span></div>
+      <h3 class="risk-title">Узкий круг администраторов / технического ресурса как точка отказа сети</h3>
+      <p class="risk-cause">Текущий администраторский ресурс ограничен по числу одновременно обслуживаемых объектов. Стандарт присутствия «Под ключ» (на весь период события) на крупных событиях нескольких объектов в один день требует более широкого круга администраторов и технического ресурса.</p>
+      <div class="risk-meta">
+        <div class="risk-meta-row"><strong>Источник</strong><span>Требования M3-06 §3.1 «Стандарт присутствия администратора», встреча 13.05.2026 (операционная нагрузка)</span></div>
+        <div class="risk-meta-row"><strong>Порог тревоги</strong><span>Зафиксированный случай нарушения стандарта уровня «Под ключ» или 2+ таких случая за месяц на разных объектах</span></div>
+      </div>
+      <div class="risk-action">
+        <div class="risk-action-cell signal"><strong>Ранний сигнал</strong>На пиковых датах (пт/сб вечер, праздники, выпускные) возникают ситуации «администратор разрывается между двумя объектами», или клиент Под ключ остаётся без выделенного администратора весь период.</div>
+        <div class="risk-action-cell mitig"><strong>Митигация</strong>Расширение круга администраторов и технического ресурса до того, как одновременная нагрузка превысит ёмкость. Возможен вариант с сменными администраторами на пиковых датах. Альтернатива — ограничение числа событий «Под ключ» в один день в пиковые даты.</div>
+      </div>
+      <div style="margin-top:12px;font-size:12px;color:var(--n500);"><b>Связь:</b> требование M3-06 §3.1 становится риском при нехватке ресурса</div>
+    </article>
+
+    <article class="risk-card active fade-up" id="r10">
+      <div class="risk-head"><span class="risk-num">R10 · 7.3 Масштаб</span><span class="badge badge--red">Active</span></div>
+      <h3 class="risk-title">Сервисная модель не выдерживает рост заявок</h3>
+      <p class="risk-cause">При росте потока заявок стандарт сопровождения M3-06 (4 этапа сервисного стандарта + стандарт присутствия администратора + время первого ответа) перестаёт выдерживаться. Клиенты получают задержки ответа, администратор не успевает на все встречи и закрытия, фото-фиксация проседает. Спецификация продукта по факту нарушается, продукт деградирует до уровня «голой почасовки + люди».</p>
+      <div class="risk-meta">
+        <div class="risk-meta-row"><strong>Источник</strong><span>Требования M3-06 §3.1 + §6, лестница продуктов §3.4 и §4.5 (где лестница рвётся)</span></div>
+        <div class="risk-meta-row"><strong>Порог тревоги</strong><span>Более 10% сделок за месяц с нарушением одного из ключевых параметров стандарта сопровождения (этапы 1-4)</span></div>
+      </div>
+      <div class="risk-action">
+        <div class="risk-action-cell signal"><strong>Ранний сигнал</strong>Медиана времени первого ответа в рабочее время превышает SLA v1.0 ≤15 минут. Доля заявок без ответа более 6 часов перестаёт быть нулевой. Жалобы «администратор не дошёл / уборка не была проведена».</div>
+        <div class="risk-action-cell mitig"><strong>Митигация</strong>Управляющее решение в управлении продуктом: либо расширение операционной ёмкости (роли обработки заявок, администраторский ресурс), либо ограничение числа одновременных событий до уровня, на котором стандарт выдерживается. Корректировка SLA v1.0 невозможна — иначе теряется ценностное предложение.</div>
+      </div>
+      <div style="margin-top:12px;font-size:12px;color:var(--n500);"><b>Связь:</b> требования M3-06 §3.1, §6 (нарушение стандарта = риск); R9 (взаимно усиливают)</div>
+    </article>
+
+    <article class="risk-card active fade-up" id="r11">
+      <div class="risk-head"><span class="risk-num">R11 · 7.3 Масштаб</span><span class="badge badge--red">Active</span><span style="font-size:11px;color:var(--n500);">до запуска первой сделки Под ключ</span></div>
+      <h3 class="risk-title">Отсутствие готовых партнёрских договоров на старте запуска линий Под ключ</h3>
+      <p class="risk-cause">Линии Под ключ (ДР, Вечеринка, Корпоратив, Выпускной) предполагают сборку события через 5 категорий партнёров. Без готовых типовых договоров каждая сделка пересогласовывается с партнёрами заново, цены плавают, сроки реакции непредсказуемы. Менеджер не может назвать цену в первом сообщении.</p>
+      <div class="risk-meta">
+        <div class="risk-meta-row"><strong>Источник</strong><span>Ценовая модель §6 (меню допуслуг), гипотеза H13 (партнёрские комиссии), лестница продуктов §3.2</span></div>
+        <div class="risk-meta-row"><strong>Порог тревоги</strong><span>К запуску первой сделки Под ключ нет ни одного типового партнёрского договора с фиксированной ценовой сеткой. На дату сборки реестра (2026-05-19) формализация — открытая задача.</span></div>
+      </div>
+      <div class="risk-action">
+        <div class="risk-action-cell signal"><strong>Ранний сигнал</strong>На первых 5 сделках Под ключ менеджер потратил больше 2 часов на согласование партнёров для одной сделки. Цены партнёров для одной сделки отличаются на 30%+ между запросами.</div>
+        <div class="risk-action-cell mitig"><strong>Митигация</strong>Формализация партнёрских договоров до первой сделки Под ключ. Минимум — кейтеринг + DJ + декор + бар. Кондитер — желательно. Если к концу мая базовый набор не сформирован — активная упаковка ДР Под ключ откладывается до готовности.</div>
+      </div>
+      <div style="margin-top:12px;font-size:12px;color:var(--n500);"><b>Связь:</b> H13 в реестре гипотез, R5 (зависят друг от друга)</div>
+    </article>
+
+    <article class="risk-card watch fade-up" id="r12">
+      <div class="risk-head"><span class="risk-num">R12 · 7.3 Масштаб</span><span class="badge badge--amber">Watch</span></div>
+      <h3 class="risk-title">Продуктовая линейка не создаёт прямой спрос без упаковки каналов</h3>
+      <p class="risk-cause">Продуктовая модель 10 SKU работает как ответ на уже пришедшего клиента — упаковывает событие, повышает чек, удерживает повторы. Но сама по себе линейка не генерирует первичный поток клиентов. Без упаковки каналов (M7 — сайт, B2B-материалы, реферальная механика, локальное SEO) рост ограничен входящим потоком от агрегаторов.</p>
+      <div class="risk-meta">
+        <div class="risk-meta-row"><strong>Источник</strong><span>Ядро продукта блок 1.3 «сарафан только в своей сети», лестница продуктов §6 (мосты)</span></div>
+        <div class="risk-meta-row"><strong>Порог тревоги</strong><span>После 6 месяцев работы — рост входящего потока менее 10%, доля прямого канала не превышает 15%</span></div>
+      </div>
+      <div class="risk-action">
+        <div class="risk-action-cell signal"><strong>Ранний сигнал</strong>Поток входящих заявок не растёт даже после запуска новых SKU и линий. Доля прямого канала (сайт, рекомендации, B2B-входящие) остаётся низкой.</div>
+        <div class="risk-action-cell mitig"><strong>Митигация</strong>Основная работа по каналам — в M7 (сайт, B2B-материалы, реферальная механика, локальное SEO). В M3-07 фиксируется как продуктовый риск, потому что без упаковки каналов продуктовая модель не реализует свой потенциал. Решение — в M7, а не «делаем в M3».</div>
+      </div>
+      <div style="margin-top:12px;font-size:12px;color:var(--n500);"><b>Связь:</b> M7 — главный получатель этой работы; M3-07 фиксирует только продуктовое последствие</div>
+    </article>
+
+    <article class="risk-card defer fade-up" id="r13">
+      <div class="risk-head"><span class="risk-num">R13 · 7.3 Масштаб</span><span class="badge badge--gray">Defer</span></div>
+      <h3 class="risk-title">Отсутствие премиум-инфраструктуры блокирует верхний сегмент</h3>
+      <p class="risk-cause">Премиум-сегмент 100+ тыс. ₽ требует реконструированных площадок (или одной флагманской), премиум-кейтеринга в штате, агентских отношений и закрытого клиентского круга. У Лофт-пространства этого нет в 2026. Верхняя граница масштабирования сейчас — корпоратив 25-50 человек с чеком 75-130 тыс. ₽.</p>
+      <div class="risk-meta">
+        <div class="risk-meta-row"><strong>Источник</strong><span>Ядро продукта блок 7.2 (премиум), реестр гипотез §6.3 (премиум отложен), требования M3-06 §4.2</span></div>
+        <div class="risk-meta-row"><strong>Порог тревоги</strong><span>Не применимо в 2026. Возвращаемся к риску в 2027 при обсуждении инвестиций в премиум-инфраструктуру.</span></div>
+      </div>
+      <div class="risk-action">
+        <div class="risk-action-cell signal"><strong>Ранний сигнал</strong>После 6 месяцев работы запросы из премиум-сегмента продолжают идти, но конверсия 0-10%. Потенциал выручки от премиум упёрся в отсутствие инфраструктуры.</div>
+        <div class="risk-action-cell mitig"><strong>Митигация</strong>В 2026 — не инвестировать в премиум-инфраструктуру. Фокус на «сервисный средний+» как нашем поле. В 2027 — возможный план реконструкции одного флагманского объекта или агентских отношений с event-агентствами.</div>
+      </div>
+      <div style="margin-top:12px;font-size:12px;color:var(--n500);"><b>Связь:</b> R6 (близкие, разные горизонты), R8 (крупные корпоративы как следствие)</div>
+    </article>
+  </div>
+</section>
+
+<!-- §6 Сводная карта -->
+<section id="summary" class="section">
+  <div class="container">
+    <div class="section-head">
+      <div class="section-eyebrow">§6 · Сводная карта рисков</div>
+      <h2 class="section-title">13 рисков по 3 категориям</h2>
+      <p class="section-lead">6 Active — операционная нагрузка наблюдения на май-сентябрь 2026. 6 Watch — плановое наблюдение. 1 Defer — мониторинг для решений 2027.</p>
+    </div>
+
+    <div class="summary-block">
+      <table>
+        <thead><tr><th style="width:60px;">#</th><th>Категория</th><th>Приоритет</th><th>Риск</th><th>Связь</th></tr></thead>
+        <tbody>
+          <tr><td class="r-num"><a href="#r1">R1</a></td><td>7.1 Запуск</td><td><span class="badge badge--red">Active</span></td><td class="r-name">Корпоратив Под ключ не запускается в Q3</td><td>H2</td></tr>
+          <tr><td class="r-num"><a href="#r2">R2</a></td><td>7.1 Запуск</td><td><span class="badge badge--red">Active</span></td><td class="r-name">Линия выпускных пропускает сезонное окно</td><td>H3</td></tr>
+          <tr><td class="r-num"><a href="#r3">R3</a></td><td>7.1 Запуск</td><td><span class="badge badge--amber">Watch</span></td><td class="r-name">Welcome-блок не даёт прироста конверсии</td><td>H8</td></tr>
+          <tr><td class="r-num"><a href="#r4">R4</a></td><td>7.1 Запуск</td><td><span class="badge badge--amber">Watch</span></td><td class="r-name">B2B-15% сжигает маржу</td><td>H10</td></tr>
+          <tr><td class="r-num"><a href="#r5">R5</a></td><td>7.1 Запуск</td><td><span class="badge badge--red">Active</span></td><td class="r-name">Партнёрские комиссии 10-20% нереалистичны</td><td>H13</td></tr>
+          <tr><td class="r-num"><a href="#r6">R6</a></td><td>7.2 Сегмент</td><td><span class="badge badge--amber">Watch</span></td><td class="r-name">Премиум 100+ — соблазн вернуться</td><td>M3-06 §4.2</td></tr>
+          <tr><td class="r-num"><a href="#r7">R7</a></td><td>7.2 Сегмент</td><td><span class="badge badge--amber">Watch</span></td><td class="r-name">Авито-охотники за дешёвой ценой</td><td>M3-04 §8</td></tr>
+          <tr><td class="r-num"><a href="#r8">R8</a></td><td>7.2 Сегмент</td><td><span class="badge badge--amber">Watch</span></td><td class="r-name">Крупные корпоративы 60+ уходят к премиум-конкурентам</td><td>Ядро 7.2</td></tr>
+          <tr><td class="r-num"><a href="#r9">R9</a></td><td>7.3 Масштаб</td><td><span class="badge badge--red">Active</span></td><td class="r-name">Узкий круг администраторов / технического ресурса</td><td>M3-06 §3.1</td></tr>
+          <tr><td class="r-num"><a href="#r10">R10</a></td><td>7.3 Масштаб</td><td><span class="badge badge--red">Active</span></td><td class="r-name">Сервисная модель не выдерживает рост заявок</td><td>M3-06 §6</td></tr>
+          <tr><td class="r-num"><a href="#r11">R11</a></td><td>7.3 Масштаб</td><td><span class="badge badge--red">Active</span></td><td class="r-name">Отсутствие готовых партнёрских договоров на старте</td><td>H13</td></tr>
+          <tr><td class="r-num"><a href="#r12">R12</a></td><td>7.3 Масштаб</td><td><span class="badge badge--amber">Watch</span></td><td class="r-name">Линейка не создаёт прямой спрос без упаковки каналов</td><td>M7</td></tr>
+          <tr><td class="r-num"><a href="#r13">R13</a></td><td>7.3 Масштаб</td><td><span class="badge badge--gray">Defer</span></td><td class="r-name">Отсутствие премиум-инфраструктуры блокирует верхний сегмент</td><td>Реестр §6.3</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- §7 Зависимости -->
+<section id="deps" class="section" style="background:#fff;">
+  <div class="container">
+    <div class="section-head">
+      <div class="section-eyebrow">§7 · Зависимости</div>
+      <h2 class="section-title">Какие риски усиливают друг друга</h2>
+      <p class="section-lead">Несколько рисков структурно связаны. Эту карту нужно держать в голове при планировании митигаций.</p>
+    </div>
+
+    <div class="deps-list">
+      <div class="deps-row"><b>R1 + R5 + R11</b> — все три про запуск Корпоратива Под ключ. R5 (партнёрские комиссии) и R11 (договоры на старте) — операционные условия для R1 (запуск якоря). Проявление R5 или R11 → R1 проявляется почти автоматически.</div>
+      <div class="deps-row"><b>R3 + R4 + R5</b> — все три про экономику пакетов Под ключ. Каждое опровержение связанной гипотезы (H8, H10, H13) сжимает маржу пакета. Совместное проявление двух из трёх делает Под ключ убыточным.</div>
+      <div class="deps-row"><b>R9 + R10</b> — две стороны одной операционной проблемы. R9 — узкий круг администраторов, R10 — нагрузка превышает сервисную модель. R9 ускоряет R10, R10 проявляет R9.</div>
+      <div class="deps-row"><b>R6 + R8</b> — оба про премиум-сегмент. R8 — текущая потеря клиентов в премиум. R6 — соблазн уйти в премиум без инфраструктуры. Решение по обоим одно: «не идём в премиум 100+ без инфраструктуры».</div>
+      <div class="deps-row"><b>R12 + R13</b> — оба про масштабирование. R12 — текущий потолок без упаковки каналов. R13 — структурный потолок без премиум-инфраструктуры. Решение R12 — в M7. R13 — в 2027.</div>
+      <div class="deps-row"><b>R7</b> — структурно независим, проявляется при нарушении ценовой дисциплины менеджеров.</div>
+      <div class="deps-row"><b>R2</b> — структурно сезонный, не зависит от других рисков, имеет жёсткое окно март-июнь 2026.</div>
+    </div>
+  </div>
+</section>
+
+<!-- §8 Маршрут -->
+<section class="section">
+  <div class="container">
+    <div class="section-head">
+      <div class="section-eyebrow">§8 · Маршрут</div>
+      <h2 class="section-title">Что уходит в смежные блоки</h2>
+      <p class="section-lead">M3-07 описывает риски. Действия по митигации частично реализуются в смежных блоках работы.</p>
+    </div>
+
+    <div class="nm-grid">
+      <div class="nm-card fade-up">
+        <div class="nm-code">M4</div>
+        <h4>Аудитория</h4>
+        <p>Углубление R6, R7, R8 на массиве и в интервью. Природа повторов — влияет на R10 и R12.</p>
+      </div>
+      <div class="nm-card fade-up">
+        <div class="nm-code">M7</div>
+        <h4>Воронка и каналы</h4>
+        <p>Реализация митигации R12 — упаковка каналов. Скрипт ответа на премиум-запросы (R6). Регламент на «нашли дешевле» (R7). B2B-материалы для R1.</p>
+      </div>
+      <div class="nm-card fade-up">
+        <div class="nm-code">Операционка</div>
+        <h4>Регламенты и CRM</h4>
+        <p>Расширение круга администраторов (R9). Мониторинг времени ответа (R10). Партнёрские договоры (R5, R11). Регламент фото-фиксации (часть R10).</p>
+      </div>
+      <div class="nm-card fade-up">
+        <div class="nm-code">Финрасчёт</div>
+        <h4>Количественная оценка</h4>
+        <p>Маржинальность Корпоратива Под ключ (R4). Стоимость расширения администраторского ресурса (R9). ROI премиум-инфраструктуры на горизонте 2027 (R13).</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- §9 Открытые точки -->
+<section class="section section--tight" style="background:#fff;">
+  <div class="container">
+    <div class="section-head">
+      <div class="section-eyebrow">§9 · Открытые точки реестра</div>
+      <h2 class="section-title">Что станет ясно к Q3 2026</h2>
+    </div>
+
+    <div class="unc-list">
+      <div class="unc-card">
+        <div class="unc-mark">⚠ Реестр v1.0 — не финальный</div>
+        <h3>Появятся новые риски</h3>
+        <p>После 2-3 месяцев работы по Active-рискам появятся новые риски, сейчас не очевидные. Возможные кандидаты v1.1: «сезонность июль-август» (если станет видна как продуктовая яма), «зависимость от одного агрегатора» (если структура каналов изменится), «риск ребрендинга названия» при нормализации публичных имён объектов сети.</p>
+      </div>
+      <div class="unc-card">
+        <div class="unc-mark">⚠ Пересмотр в Q3 2026</div>
+        <h3>Формальный пересмотр приоритетов</h3>
+        <p>После 4-5 месяцев работы по Active-рискам — формальный пересмотр приоритетов. Часть Active может перейти в Watch (если митигация сработала), часть Watch — в Active (если сигналы проявились).</p>
+      </div>
+      <div class="unc-card">
+        <div class="unc-mark">⚠ Граница</div>
+        <h3>Продуктовый риск vs операционный риск</h3>
+        <p>R9, R10, R11 — на границе продукта и операционки. M3-07 фиксирует их как продуктовые риски, потому что они прямо влияют на выполнимость спецификации M3-06. Их операционная реализация — в смежном блоке. Если при сборке операционного блока часть рисков перепроверится как чисто операционные — они переедут туда.</p>
+      </div>
+      <div class="unc-card">
+        <div class="unc-mark">⚠ Финансовая сторона</div>
+        <h3>R4 и R13 — не количественная оценка</h3>
+        <p>Эти риски имеют сильную финансовую составляющую, которая в M3-07 описана только в продуктовых терминах. Полная количественная оценка — в отдельном финансовом расчёте.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="container footer-inner">
+    <div>
+      <h4>M3-07 · Риски и ограничения продукта · v1.0</h4>
+      <p>Управляемый реестр 13 продуктовых рисков по канону 7.1 / 7.2 / 7.3. Дальнейшая работа: M4 Аудитория → M6 Позиционирование → M7 Воронка и каналы. Параллельно — операционный блок (регламенты митигации R9, R10, R11) и отдельный финансовый расчёт (количественная оценка R4, R13).</p>
+    </div>
+    <div class="footer-meta">
+      <div>BrandOS · 2026-05-19</div>
+      <div>Лофт-пространство · Юлия Лофте</div>
+    </div>
+  </div>
+</footer>
+
+<script>
+const io = new IntersectionObserver(entries => {
+  entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); io.unobserve(e.target); } });
+}, { threshold: 0.1, rootMargin: '0px 0px -60px 0px' });
+document.querySelectorAll('.fade-up').forEach(el => io.observe(el));
+</script>
+
+</body>
+</html>
