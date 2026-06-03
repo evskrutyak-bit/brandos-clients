@@ -1,4 +1,4 @@
-# DEPLOY-NOTES — Loft M3 Hub
+# DEPLOY-NOTES — Loft Hub
 
 Дата: 2026-06-03
 
@@ -9,6 +9,32 @@
 - Deploy commit: commit containing this file. Exact hash is reported in the handoff after push and live QC.
 
 ## Scope
+
+### M2 v1.3 wave
+
+Published the M2 client-facing synthesis layer v1.3 and kept the paired Deep Research originals as the source layer. Source MD artifacts were not changed.
+
+Files:
+
+- `loft-prostranstvo/M2/M2-01-RYNOK-RF-GIPOTEZY-v1.3.html`
+- `loft-prostranstvo/M2/M2-02-RYNOK-MIR-GIPOTEZY-v1.3.html`
+- `loft-prostranstvo/M2/M2-03-TSA-GIPOTEZY-v1.3.html`
+- `loft-prostranstvo/M2/M2-04-PRODUKT-GIPOTEZY-v1.3.html`
+- `loft-prostranstvo/M2/M2-05-KONKURENTY-GIPOTEZY-v1.3.html`
+- `loft-prostranstvo/M2/M2-01-RYNOK-RF-DR.html`
+- `loft-prostranstvo/M2/M2-02-RYNOK-MIR-DR.html`
+- `loft-prostranstvo/M2/M2-03-TSA-DR.html`
+- `loft-prostranstvo/M2/M2-04-PRODUKT-DR.html`
+- `loft-prostranstvo/M2/M2-05-KONKURENTY-DR.html`
+- `loft-prostranstvo/index.html`
+
+The Hub index now points the five M2 synthesis cards to the v1.3 files and keeps a separate Deep Research sub-grid for the five paired DR pages.
+
+Because the deployed synthesis files live at `loft-prostranstvo/M2/*.html`, Hub return links in the deployed copies use `../index.html`. DR links are sibling file names.
+
+M2-06 KARTINA is not included in this wave. It remains linked as the existing M2 apex artifact and will move to v1.3 as a separate task after the content pass is accepted.
+
+### M3 wave
 
 Published only the HTML layer for M3. Source MD artifacts were not changed.
 
@@ -30,6 +56,18 @@ The Hub uses a flat module directory:
 ```text
 loft-prostranstvo/
 ├── index.html
+├── M2/
+│   ├── M2-01-RYNOK-RF-GIPOTEZY-v1.3.html
+│   ├── M2-01-RYNOK-RF-DR.html
+│   ├── M2-02-RYNOK-MIR-GIPOTEZY-v1.3.html
+│   ├── M2-02-RYNOK-MIR-DR.html
+│   ├── M2-03-TSA-GIPOTEZY-v1.3.html
+│   ├── M2-03-TSA-DR.html
+│   ├── M2-04-PRODUKT-GIPOTEZY-v1.3.html
+│   ├── M2-04-PRODUKT-DR.html
+│   ├── M2-05-KONKURENTY-GIPOTEZY-v1.3.html
+│   ├── M2-05-KONKURENTY-DR.html
+│   └── M2-06-KARTINA.html
 └── M3/
     ├── M3-01-YADRO-PRODUKTA.html
     ├── M3-02-ARKHITEKTURA-LINEYKI.html
@@ -40,22 +78,20 @@ loft-prostranstvo/
     └── M3-07-RISKI.html
 ```
 
-Because the deployed files live at `loft-prostranstvo/M3/*.html`, Hub return links in the deployed copies use `../index.html`.
+Because the deployed module files live at `loft-prostranstvo/M2/*.html` and `loft-prostranstvo/M3/*.html`, Hub return links in the deployed copies use `../index.html`.
 
 ## Index
 
 The Hub index contains the M3 module block with 7 cards and links to `M3/*.html`.
 
-The public hero slogan `Без хаоса, по уму` was removed from the Hub main page because it is banned as a client-facing slogan. M2 was not changed.
+The public hero slogan `Без хаоса, по уму` was removed from the Hub main page because it is banned as a client-facing slogan. During the M3 wave, M2 was not changed; the later M2 v1.3 wave updated only the five synthesis cards and left KARTINA for a separate pass.
 
-## M2 Migration Plan
+## Remaining M2 Plan
 
-M2 remains on the old HTML generation. This deploy intentionally allows a temporary mixed Hub: old M0-M2 plus new M3 v1.3.
+M2-01..05 synthesis pages are now v1.3 on the Hub. The paired DR pages intentionally remain on the old research template as source originals.
 
-Separate M2 migration wave:
+Remaining M2 work:
 
-1. Inventory live M2 HTML and source files.
-2. Rebuild only the HTML shell to v1.3, without changing artifact content.
-3. Normalize Hub paths for `loft-prostranstvo/M2/*.html`.
-4. Run the same live QC: 200 responses, Hub navigation, artifact navigation, `hero-loft`, print smoke.
-5. Deploy M2 as a separate commit and record notes.
+1. Finish and accept M2-06 KARTINA v1.3 content and HTML.
+2. Add the KARTINA v1.3 card/link when the separate wave is ready.
+3. Optionally migrate DR pages to v1.3 later if the source layer also needs visual unification.

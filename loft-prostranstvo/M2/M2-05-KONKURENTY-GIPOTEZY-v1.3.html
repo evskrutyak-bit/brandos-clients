@@ -1,0 +1,1325 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex,nofollow">
+  <title>M2-05 · Конкуренты · Лофт-пространство</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+
+  <style>
+  /* ============================================================
+     :root — токены BrandOS Artifacts (полный набор из 01-tokens.md)
+     ============================================================ */
+  :root {
+    --primary: #0ea5e9;
+    --primary-dark: #0369a1;
+    --primary-soft: #e0f2fe;
+
+    --fg: #0f172a;
+    --bg: #ffffff;
+    --surface: #f8fafc;
+    --border: #e2e8f0;
+    --muted: #64748b;
+
+    --success: #10b981;
+    --warning: #f59e0b;
+    --error:   #ef4444;
+    --info:    #3b82f6;
+
+    --phase-1: #f59e0b;
+    --phase-1-soft: #fef3c7;
+    --phase-2: #0ea5e9;
+    --phase-2-soft: #e0f2fe;
+    --phase-3: #10b981;
+    --phase-3-soft: #d1fae5;
+    --phase-4: #8b5cf6;
+    --phase-4-soft: #ede9fe;
+    --phase-pre: #94a3b8;
+
+    --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+    --font-serif: 'Instrument Serif', Georgia, serif;
+
+    --fz-hero-name: clamp(56px, 8vw, 120px);
+    --fz-hero-title: 44px;
+    --fz-hero-sub: 18px;
+    --fz-hero-eyebrow: 13px;
+    --fz-h1: 36px;
+    --fz-h2: 30px;
+    --fz-h3: 24px;
+    --fz-h4: 20px;
+    --fz-body-lg: 18px;
+    --fz-body: 16px;
+    --fz-body-sm: 14px;
+    --fz-caption: 12px;
+
+    --space-1:  4px;
+    --space-2:  8px;
+    --space-3:  12px;
+    --space-4:  16px;
+    --space-5:  20px;
+    --space-6:  24px;
+    --space-8:  32px;
+    --space-10: 40px;
+    --space-12: 48px;
+    --space-16: 64px;
+    --space-20: 80px;
+    --space-24: 96px;
+    --section-sm: 56px;
+    --section-md: 80px;
+    --section-lg: 112px;
+
+    --r-sm:   4px;
+    --r-md:   6px;
+    --r-lg:   8px;
+    --r-xl:   12px;
+    --r-2xl:  16px;
+    --r-3xl:  24px;
+    --r-full: 9999px;
+
+    --shadow-card:       0 1px 3px rgba(15, 23, 42, 0.04);
+    --shadow-card-hover: 0 8px 24px -8px rgba(15, 23, 42, 0.12), 0 2px 4px rgba(15, 23, 42, 0.04);
+    --shadow-btn:        0 4px 14px rgba(14, 165, 233, 0.30);
+    --shadow-glow:       0 0 40px rgba(14, 165, 233, 0.30);
+
+    --ease: cubic-bezier(0.16, 1, 0.3, 1);
+    --dur-fast:   150ms;
+    --dur-normal: 300ms;
+    --dur-slow:   600ms;
+
+    --bp-mobile:  375px;
+    --bp-tablet:  768px;
+    --bp-desktop: 1024px;
+    --bp-wide:    1280px;
+    --bp-ultra:   1440px;
+
+    --container-max: 1280px;
+    --container-padding: 24px;
+  }
+
+  /* ============================================================
+     Reset / base (02-base.md)
+     ============================================================ */
+  *, *::before, *::after { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    font-family: var(--font-sans);
+    font-size: var(--fz-body);
+    line-height: 1.6;
+    color: var(--fg);
+    background: var(--bg);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+  img, svg, video { max-width: 100%; height: auto; display: block; }
+  a { color: inherit; text-decoration: none; }
+  p { margin: 0 0 var(--space-4); }
+  p:last-child { margin-bottom: 0; }
+  h1, h2, h3, h4, h5, h6 {
+    margin: 0 0 var(--space-4);
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    color: var(--fg);
+  }
+  h1 { font-size: var(--fz-h1); line-height: 1.2; }
+  h2 { font-size: var(--fz-h2); line-height: 1.25; }
+  h3 { font-size: var(--fz-h3); line-height: 1.3; }
+  h4 { font-size: var(--fz-h4); line-height: 1.4; }
+  ul, ol { margin: 0 0 var(--space-4); padding-left: var(--space-6); }
+  li { margin-bottom: var(--space-2); }
+  ::selection { background: var(--primary); color: #fff; }
+  a:focus-visible, button:focus-visible, .nav-pill:focus-visible, .btn:focus-visible {
+    outline: 2px solid var(--primary);
+    outline-offset: 2px;
+    border-radius: var(--r-sm);
+  }
+
+  .container {
+    max-width: var(--container-max);
+    margin: 0 auto;
+    padding: 0 var(--container-padding);
+  }
+  @media (max-width: 768px) { .container { padding: 0 16px; } }
+
+  section { padding: var(--section-md) 0; }
+  @media (max-width: 768px) { section { padding: var(--section-sm) 0; } }
+
+  .section-eyebrow {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--primary);
+    margin-bottom: var(--space-3);
+  }
+  .section-title {
+    font-size: var(--fz-h2);
+    font-weight: 600;
+    margin-bottom: var(--space-3);
+    letter-spacing: -0.01em;
+  }
+  .section-sub {
+    font-size: var(--fz-body-lg);
+    color: var(--muted);
+    margin-bottom: var(--space-10);
+    max-width: 760px;
+  }
+  .section--alt { background: var(--surface); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+
+  /* Анимации (02-base.md) */
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+  .fade-up { opacity: 0; transform: translateY(24px); transition: opacity 0.6s var(--ease), transform 0.6s var(--ease); }
+  .fade-up.is-visible { opacity: 1; transform: translateY(0); }
+  @media (prefers-reduced-motion: reduce) { .fade-up { opacity: 1; transform: none; transition: none; } }
+
+  /* ============================================================
+     v1.3 — toplink / nav-loft / hero-loft (03-hero.md, эталон Picnic M2-03)
+     ============================================================ */
+  .toplink {
+    position: sticky; top: 0; z-index: 60;
+    background: #f8fafc; border-bottom: 1px solid #e2e8f0;
+  }
+  .toplink-in {
+    min-height: 38px; display: flex; align-items: center;
+    justify-content: space-between; gap: 16px;
+    font-size: 13px; color: #475569;
+    max-width: 1180px; margin: 0 auto; padding: 0 24px;
+  }
+  .toplink strong { color: #0f172a; }
+  .toplink a {
+    color: var(--primary-dark); text-decoration: none; font-weight: 700;
+    border-bottom: 1px dotted var(--primary); white-space: nowrap;
+  }
+  .nav-loft {
+    position: sticky; top: 38px; z-index: 55;
+    background: rgba(255,255,255,.9);
+    backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+    border-bottom: 1px solid rgba(226,232,240,.9);
+  }
+  .nav-loft-in {
+    min-height: 68px; display: flex; align-items: center;
+    justify-content: space-between; gap: 22px;
+    max-width: 1180px; margin: 0 auto; padding: 0 24px;
+  }
+  .nav-loft .logo {
+    font-size: 17px; font-weight: 700; color: #0f172a; white-space: nowrap;
+  }
+  .nav-loft .logo span { color: var(--primary); }
+  .nav-pills {
+    display: flex; gap: 8px; align-items: center;
+    justify-content: flex-end; flex-wrap: wrap;
+  }
+  .nav-pill {
+    display: inline-flex; align-items: center; height: 34px;
+    padding: 0 13px; border-radius: 999px;
+    background: #f1f5f9; border: 1px solid #e2e8f0;
+    color: #475569; font-size: 13px; font-weight: 700;
+    text-decoration: none;
+    transition: transform .18s ease, background .18s ease, border-color .18s ease, color .18s ease;
+  }
+  .nav-pill:hover {
+    transform: translateY(-1px);
+    background: var(--primary-soft);
+    border-color: #7dd3fc;
+    color: var(--primary-dark);
+  }
+  .hero-loft {
+    position: relative; overflow: hidden;
+    padding: 84px 0 76px;
+    background: linear-gradient(135deg, #0f172a 0%, #102f50 56%, #075985 100%);
+  }
+  .hero-loft::before, .hero-loft::after {
+    content: ""; position: absolute; border-radius: 50%; pointer-events: none;
+  }
+  .hero-loft::before {
+    right: -130px; top: -170px; width: 540px; height: 540px;
+    background: radial-gradient(circle, rgba(14,165,233,.28), transparent 68%);
+  }
+  .hero-loft::after {
+    left: -170px; bottom: -220px; width: 470px; height: 470px;
+    background: radial-gradient(circle, rgba(125,211,252,.16), transparent 72%);
+  }
+  .hero-loft-in {
+    position: relative; z-index: 1;
+    max-width: 1180px; margin: 0 auto; padding: 0 24px;
+  }
+  .hero-loft .badge {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: rgba(14,165,233,.15);
+    border: 1px solid rgba(125,211,252,.34);
+    color: #bae6fd;
+    padding: 7px 15px; border-radius: 999px;
+    font-size: 12px; font-weight: 700; letter-spacing: .08em;
+    text-transform: uppercase;
+    margin-bottom: 22px;
+  }
+  .hero-loft .badge-dot {
+    width: 7px; height: 7px; border-radius: 50%;
+    background: var(--primary);
+    box-shadow: 0 0 0 5px rgba(14,165,233,.18);
+  }
+  .hero-loft h1 {
+    max-width: 980px;
+    font-size: clamp(34px, 5vw, 56px);
+    line-height: 1.08; color: #fff; font-weight: 600;
+    letter-spacing: 0; margin: 0 0 18px;
+  }
+  .hero-loft p.hero-lede {
+    max-width: 820px;
+    color: #cbd5e1;
+    font-size: 18px; line-height: 1.62;
+    margin: 0;
+  }
+  .hero-actions {
+    display: flex; gap: 12px; flex-wrap: wrap; margin-top: 30px;
+  }
+  .btn {
+    display: inline-flex; align-items: center; justify-content: center;
+    min-height: 42px; padding: 0 18px;
+    border-radius: 999px; text-decoration: none;
+    font-size: 14px; font-weight: 600;
+    transition: .18s ease; cursor: pointer;
+    border: none;
+  }
+  .btn-primary {
+    background: var(--primary); color: #fff;
+    box-shadow: 0 8px 24px rgba(14,165,233,.32);
+  }
+  .btn-primary:hover {
+    background: var(--primary-dark); transform: translateY(-1px);
+  }
+  .btn-ghost {
+    border: 1px solid rgba(255,255,255,.24);
+    color: #e0f2fe;
+    background: rgba(255,255,255,.06);
+  }
+  .btn-ghost:hover { background: rgba(255,255,255,.1); }
+  .hero-meta-loft {
+    display: flex; gap: 26px; flex-wrap: wrap;
+    margin-top: 28px; color: #94a3b8; font-size: 14px;
+  }
+  .hero-meta-loft strong { color: #38bdf8; font-weight: 600; }
+  .stat-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 16px; margin-top: 34px;
+  }
+  .stat-card {
+    min-height: 116px;
+    background: rgba(255,255,255,.08);
+    border: 1px solid rgba(255,255,255,.13);
+    border-radius: 16px; padding: 18px;
+  }
+  .stat-label {
+    font-size: 11px; text-transform: uppercase;
+    letter-spacing: .08em; font-weight: 600;
+    color: #bae6fd; margin-bottom: 10px;
+  }
+  .stat-value {
+    font-size: 26px; line-height: 1.05;
+    font-weight: 600; color: #fff; margin-bottom: 8px;
+  }
+  .stat-desc {
+    font-size: 12px; line-height: 1.45; color: #cbd5e1;
+  }
+  @media (max-width: 920px) {
+    .toplink { display: none; }
+    .nav-loft { top: 0; }
+    .nav-loft-in {
+      min-height: 64px; padding: 12px 24px;
+      align-items: flex-start; flex-direction: column;
+    }
+    .nav-pills { justify-content: flex-start; }
+    .stat-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  }
+  @media (max-width: 640px) {
+    .hero-loft { padding: 58px 0 50px; }
+    .hero-loft p.hero-lede { font-size: 16px; }
+    .nav-pills { display: none; }
+    .stat-grid { grid-template-columns: 1fr; }
+  }
+
+  /* ============================================================
+     summary-grid / summary-card (сцена «Главное за 5 минут»)
+     ============================================================ */
+  .summary-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-5);
+    margin: var(--space-6) 0 var(--space-10);
+  }
+  @media (min-width: 768px) { .summary-grid { grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); } }
+  .summary-card {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: var(--r-xl);
+    padding: var(--space-6);
+    box-shadow: var(--shadow-card);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    transition: all var(--dur-normal) var(--ease);
+  }
+  .summary-card:hover { border-color: var(--primary); box-shadow: var(--shadow-card-hover); transform: translateY(-2px); }
+  .summary-num {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 36px; height: 36px;
+    background: var(--phase-2-soft); color: var(--primary-dark);
+    font-weight: 700; border-radius: var(--r-lg); font-size: var(--fz-body-sm);
+  }
+  .summary-thesis { font-size: var(--fz-body-lg); line-height: 1.35; margin: 0; color: var(--fg); font-weight: 600; }
+  .summary-body { margin: 0; font-size: var(--fz-body); color: var(--muted); line-height: 1.55; }
+
+  /* recap-card (резюме раздела) */
+  .recap-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-2xl); padding: var(--space-8); margin: var(--space-10) 0 0; }
+  .recap-label { display: inline-block; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: var(--primary); margin-bottom: var(--space-3); }
+  .recap-card h3 { font-size: 22px; margin-bottom: var(--space-4); }
+  .recap-card ul { font-size: 16px; line-height: 1.8; padding-left: var(--space-6); margin: 0; }
+
+  /* ============================================================
+     observation-card (N) / metric-card (A) / alerts (E) / badges (F)
+     tables (G) / decision / bridge / hypothesis-card
+     ============================================================ */
+  .observations-list { display: flex; flex-direction: column; gap: var(--space-3); margin-bottom: var(--space-10); }
+  .observation-card { display: flex; gap: var(--space-5); padding: var(--space-5) var(--space-6); background: #fff; border: 1px solid var(--border); border-radius: var(--r-xl); transition: all var(--dur-normal) var(--ease); }
+  .observation-card:hover { box-shadow: var(--shadow-card); border-color: var(--primary); }
+  .obs-num { font-family: var(--font-serif); font-style: italic; font-size: 32px; color: var(--primary); flex-shrink: 0; line-height: 1; padding-top: 4px; min-width: 56px; font-variant-numeric: tabular-nums; }
+  .obs-body { flex: 1; }
+  .obs-thesis { font-size: 16px; font-weight: 600; color: var(--fg); margin: 0 0 var(--space-2); line-height: 1.4; }
+  .obs-implication { font-size: 14px; color: var(--muted); margin: 0; line-height: 1.6; }
+  .obs-implication strong { color: var(--fg); font-weight: 600; }
+  @media (min-width: 768px) { .obs-num { font-size: 40px; min-width: 72px; } }
+
+  .stat-grid-light { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: var(--space-5); margin-bottom: var(--space-10); }
+  .metric-card { background: #fff; border: 1px solid var(--border); border-radius: var(--r-2xl); padding: var(--space-6); display: flex; flex-direction: column; gap: 8px; transition: all var(--dur-normal) var(--ease); }
+  .metric-card:hover { box-shadow: var(--shadow-card-hover); transform: translateY(-2px); }
+  .metric-card--accent { border-top: 3px solid var(--primary); }
+  .metric-label { font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); }
+  .metric-value { font-size: 36px; font-weight: 600; color: var(--fg); letter-spacing: -0.02em; line-height: 1.1; font-variant-numeric: tabular-nums; }
+  .metric-card--text .metric-value { font-size: 19px; letter-spacing: -0.01em; line-height: 1.25; }
+  .metric-delta { font-size: 14px; color: var(--muted); line-height: 1.55; }
+
+  .alert { display: flex; gap: var(--space-3); padding: var(--space-5) var(--space-6); border-radius: var(--r-xl); border-left: 4px solid; margin-bottom: var(--space-5); align-items: flex-start; }
+  .alert-icon { font-size: 20px; line-height: 1; flex-shrink: 0; }
+  .alert-body { flex: 1; font-size: 15px; line-height: 1.6; }
+  .alert--info { background: #eff6ff; border-color: var(--info); }
+  .alert--info .alert-icon { color: var(--info); }
+  .alert--warn { background: #fffbeb; border-color: var(--warning); }
+  .alert--warn .alert-icon { color: var(--warning); }
+  .alert--ok { background: #ecfdf5; border-color: var(--success); }
+  .alert--ok .alert-icon { color: var(--success); }
+
+  .highlight-box { background: linear-gradient(135deg, var(--primary-soft) 0%, #fff 100%); border: 1px solid var(--primary); border-radius: var(--r-2xl); padding: var(--space-8); margin-bottom: var(--space-6); position: relative; }
+  .highlight-label { display: inline-block; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: var(--primary-dark); margin-bottom: var(--space-3); }
+  .highlight-box .promise { font-size: 22px; line-height: 1.4; font-weight: 600; color: var(--fg); margin: 0; }
+  @media (min-width: 768px) { .highlight-box .promise { font-size: 26px; } }
+
+  .badge { display: inline-flex; align-items: center; padding: 4px 10px; border-radius: var(--r-full); font-size: 11px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; line-height: 1.2; white-space: nowrap; }
+  .badge--amber { background: var(--phase-1-soft); color: #92400e; }
+  .badge--green { background: #d1fae5; color: #065f46; }
+  .badge--blue { background: var(--primary-soft); color: var(--primary-dark); }
+  .badge--slate { background: #e2e8f0; color: #475569; }
+  .badge--red { background: #fee2e2; color: #991b1b; }
+
+  .table-wrap { overflow-x: auto; border-radius: var(--r-xl); border: 1px solid var(--border); margin-bottom: var(--space-10); -webkit-overflow-scrolling: touch; }
+  .table-brandos { width: 100%; border-collapse: collapse; font-size: 14px; }
+  .table-brandos thead { background: var(--surface); }
+  .table-brandos th { padding: var(--space-4); text-align: left; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); border-bottom: 1px solid var(--border); }
+  .table-brandos td { padding: var(--space-4); border-bottom: 1px solid var(--border); vertical-align: top; }
+  .table-brandos tbody tr:last-child td { border-bottom: none; }
+  .table-brandos tbody tr:hover { background: var(--surface); }
+  .table-brandos .row-head { font-weight: 600; color: var(--fg); background: var(--surface); white-space: nowrap; }
+  .cell-empty { color: var(--phase-pre); }
+
+  .bridge-card { background: linear-gradient(135deg, var(--primary-soft) 0%, transparent 100%); border-left: 4px solid var(--primary); padding: var(--space-6); border-radius: var(--r-md); margin: var(--space-10) 0; }
+  .bridge-label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: var(--primary); }
+  .bridge-title { font-size: 20px; font-weight: 600; margin: var(--space-2) 0; }
+  .bridge-copy { font-size: 16px; color: var(--fg); margin: 0; }
+
+  .decision-box { background: var(--fg); color: #fff; padding: var(--space-8); border-radius: var(--r-2xl); margin: var(--space-6) 0 0; }
+  .decision-label { display: inline-block; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: var(--primary); background: rgba(14, 165, 233, 0.15); padding: 4px 12px; border-radius: var(--r-full); margin-bottom: var(--space-4); }
+  .decision-box p { font-size: 20px; line-height: 1.5; margin: 0; color: #fff; }
+  @media (min-width: 768px) { .decision-box p { font-size: 22px; } }
+
+  .note { font-size: 14px; color: var(--muted); max-width: 820px; }
+
+  /* tier-block (стратификация по лигам) */
+  .tier-block { background: #fff; border: 1px solid var(--border); border-radius: var(--r-2xl); padding: var(--space-6) var(--space-8); margin-bottom: var(--space-5); box-shadow: var(--shadow-card); border-left: 4px solid var(--phase-pre); }
+  .tier-block--direct { border-left-color: var(--primary); }
+  .tier-block--giant { border-left-color: var(--phase-4); }
+  .tier-block--niche { border-left-color: var(--warning); }
+  .tier-head { display: flex; align-items: baseline; gap: var(--space-3); flex-wrap: wrap; margin-bottom: var(--space-4); }
+  .tier-name { font-size: 19px; font-weight: 600; margin: 0; }
+  .tier-block ul { margin: 0; padding-left: var(--space-6); font-size: 15px; line-height: 1.7; }
+  .tier-block ul li strong { color: var(--fg); }
+
+  /* model-card (3 премиум-модели) */
+  .model-card { background: #fff; border: 1px solid var(--border); border-radius: var(--r-2xl); padding: var(--space-6) var(--space-8); margin-bottom: var(--space-5); box-shadow: var(--shadow-card); }
+  .model-card h4 { font-size: 18px; margin-bottom: var(--space-3); }
+  .model-take { display: grid; grid-template-columns: 1fr; gap: var(--space-2); margin-top: var(--space-4); }
+  @media (min-width: 768px) { .model-take { grid-template-columns: 1fr; } }
+  .model-take .mt-row { display: grid; grid-template-columns: 130px 1fr; gap: var(--space-3); font-size: 14px; line-height: 1.55; }
+  @media (max-width: 640px) { .model-take .mt-row { grid-template-columns: 1fr; gap: 2px; } }
+  .mt-label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; padding-top: 2px; }
+  .mt-take { color: var(--success); }
+  .mt-bypass { color: var(--warning); }
+  .mt-drop { color: var(--error); }
+
+  /* hypothesis-card (Часть 2 — гипотезы) */
+  .hyp-group { margin-bottom: var(--space-12); }
+  .hyp-group:last-child { margin-bottom: 0; }
+  .hyp-group-title { font-size: var(--fz-h3); font-weight: 600; margin-bottom: var(--space-2); }
+  .hyp-group-sub { font-size: 15px; color: var(--muted); margin-bottom: var(--space-6); max-width: 820px; }
+  .hyp-card { background: #fff; border: 1px solid var(--border); border-radius: var(--r-2xl); padding: var(--space-6) var(--space-8); margin-bottom: var(--space-5); box-shadow: var(--shadow-card); transition: all var(--dur-normal) var(--ease); }
+  .hyp-card:hover { border-color: var(--primary); box-shadow: var(--shadow-card-hover); }
+  .hyp-head { display: flex; align-items: baseline; gap: var(--space-3); flex-wrap: wrap; margin-bottom: var(--space-4); }
+  .hyp-code { font-family: var(--font-serif); font-style: italic; font-size: 26px; color: var(--primary); line-height: 1; flex-shrink: 0; font-variant-numeric: tabular-nums; }
+  .hyp-title { font-size: 18px; font-weight: 600; color: var(--fg); margin: 0; line-height: 1.35; flex: 1; min-width: 240px; }
+  .hyp-strength { margin-left: auto; }
+  .hyp-rows { display: grid; grid-template-columns: 1fr; gap: var(--space-3); }
+  .hyp-row { display: grid; grid-template-columns: 1fr; gap: 2px; }
+  @media (min-width: 768px) { .hyp-row { grid-template-columns: 150px 1fr; gap: var(--space-4); } }
+  .hyp-row-label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: var(--primary-dark); padding-top: 3px; }
+  .hyp-row-body { font-size: 15px; color: var(--fg); line-height: 1.6; }
+  .hyp-row-body.muted { color: var(--muted); }
+
+  /* prio-grid (Часть 3 — приоритизация) */
+  .prio-list { display: flex; flex-direction: column; gap: var(--space-3); margin-bottom: var(--space-8); }
+  .prio-item { display: flex; gap: var(--space-5); padding: var(--space-5) var(--space-6); background: #fff; border: 1px solid var(--border); border-radius: var(--r-xl); }
+  .prio-item--alt { background: var(--surface); }
+  .prio-num { font-family: var(--font-serif); font-style: italic; font-size: 28px; color: var(--primary); flex-shrink: 0; line-height: 1; min-width: 40px; padding-top: 2px; }
+  .prio-num--alt { color: var(--muted); }
+  .prio-body { flex: 1; }
+  .prio-body h4 { font-size: 16px; font-weight: 600; margin: 0 0 var(--space-1); }
+  .prio-body p { font-size: 14px; color: var(--muted); margin: 0; line-height: 1.55; }
+  .early-list { display: grid; grid-template-columns: 1fr; gap: var(--space-3); }
+  @media (min-width: 768px) { .early-list { grid-template-columns: 1fr 1fr; } }
+  .early-item { padding: var(--space-5); background: var(--surface); border: 1px solid var(--border); border-left: 3px solid var(--phase-pre); border-radius: var(--r-md); }
+  .early-item h4 { font-size: 15px; font-weight: 600; margin: 0 0 var(--space-1); }
+  .early-item p { font-size: 14px; color: var(--muted); margin: 0; line-height: 1.55; }
+
+  /* decision-list (Часть 4) */
+  .dl-list { display: flex; flex-direction: column; gap: var(--space-3); margin-bottom: var(--space-8); }
+  .dl-item { padding: var(--space-5) var(--space-6); background: #fff; border: 1px solid var(--border); border-radius: var(--r-xl); border-left: 3px solid var(--primary); }
+  .dl-item p { margin: 0; font-size: 15px; line-height: 1.6; }
+  .dl-item.dl-cut { border-left-color: var(--error); }
+  .dl-item.dl-need { border-left-color: var(--warning); }
+
+  /* ============================================================
+     Footer (02-base.md)
+     ============================================================ */
+  .footer {
+    background: var(--fg);
+    color: rgba(255, 255, 255, 0.72);
+    padding: var(--space-12) 0;
+    font-size: var(--fz-body-sm);
+  }
+  .footer-row { display: flex; justify-content: space-between; align-items: center; gap: var(--space-6); flex-wrap: wrap; }
+  .footer-brand { color: #fff; font-weight: 500; }
+  .footer-meta { font-variant-numeric: tabular-nums; }
+
+  /* ============================================================
+     Print (02-base.md)
+     ============================================================ */
+  @media print {
+    .toplink, .nav-loft, .hero-actions { display: none !important; }
+    .fade-up { opacity: 1 !important; transform: none !important; transition: none !important; }
+    body { background: #fff; color: #000; }
+    .metric-card, .summary-card, .observation-card, .alert, .decision-box,
+    .highlight-box, .recap-card, .hyp-card, .prio-item, .early-item,
+    .tier-block, .model-card, .dl-item {
+      page-break-inside: avoid; break-inside: avoid;
+    }
+    .table-wrap { overflow: visible; border: none; }
+    .table-brandos thead { background: #f1f5f9 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .hero-loft { padding: 32px 0 24px; break-after: avoid; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    body { font-size: 11pt; }
+    h1, .hero-loft h1 { font-size: 22pt; }
+    h2, .section-title { font-size: 16pt; }
+    h3 { font-size: 13pt; }
+    .badge, .alert, .decision-box, .highlight-box, .stat-card {
+      -webkit-print-color-adjust: exact; print-color-adjust: exact;
+    }
+    .footer { break-before: avoid; }
+  }
+  </style>
+</head>
+<body data-artefact="M2-05" data-client="loft-prostranstvo" data-version="1.3">
+
+  <div class="toplink">
+    <div class="toplink-in">
+      <strong>Синтез после глубокого исследования</strong>
+      <a href="M2-05-KONKURENTY-DR.html">Глубокое исследование →</a>
+      <a href="../index.html">К хабу клиента →</a>
+    </div>
+  </div>
+
+  <nav class="nav-loft" aria-label="Навигация по документу">
+    <div class="nav-loft-in">
+      <div class="logo">BrandOS <span>·</span> M2-05 Исследования · Конкуренты</div>
+      <div class="nav-pills">
+        <a class="nav-pill" href="#findings">Главное</a>
+        <a class="nav-pill" href="#map">Карта поля</a>
+        <a class="nav-pill" href="#leagues">Лиги</a>
+        <a class="nav-pill" href="#premium">3 модели</a>
+        <a class="nav-pill" href="#hypotheses">Гипотезы</a>
+        <a class="nav-pill" href="#priority">Приоритеты</a>
+        <a class="nav-pill" href="#decisions">Решения</a>
+        <a class="nav-pill" href="#status">Статусы</a>
+        <a class="nav-pill" href="#bridge">Мост</a>
+        <a class="nav-pill" href="M2-05-KONKURENTY-DR.html">Глубокое исследование</a>
+      </div>
+    </div>
+  </nav>
+
+  <header class="hero-loft">
+    <div class="hero-loft-in fade-up">
+      <div class="badge"><span class="badge-dot"></span> Нейроупаковка · M2-05 · Синтез · Конкуренты</div>
+      <h1>Конкурентное поле: не 2 300 лофтов, а 14 игроков и 6 прямых соперников Юлии</h1>
+      <p class="hero-lede">Разбор конкурентного поля Москвы к стратегической сессии: кто реально задаёт правила на рынке аренды лофтов под мероприятия, какие практики стоит забрать, а какие копировать не нужно. В первой части — картина поля. Во второй — гипотезы на проверку и обсуждение.</p>
+      <div class="hero-actions">
+        <a class="btn btn-primary" href="#hypotheses">Перейти к гипотезам →</a>
+        <a class="btn btn-ghost" href="M2-05-KONKURENTY-DR.html">Глубокое исследование →</a>
+      </div>
+      <div class="hero-meta-loft">
+        <div><strong>Клиент:</strong> Лофт-пространство (Юлия Лофте)</div>
+        <div><strong>Модуль:</strong> M2-05 · Конкуренты</div>
+        <div><strong>Обновлено:</strong> 3 июня 2026</div>
+        <div><strong>Версия:</strong> v1.3</div>
+        <div><strong>Статус:</strong> К обсуждению</div>
+      </div>
+      <div class="stat-grid">
+        <div class="stat-card">
+          <div class="stat-label">Реальных игроков</div>
+          <div class="stat-value">14, не 2 300</div>
+          <div class="stat-desc">из 70+ брендов власть на рынке имеют только 14 игроков Кластера A</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Прямых конкурентов</div>
+          <div class="stat-value">6</div>
+          <div class="stat-desc">Юля сравнивается с шестёркой среднего-плюс, не со всеми 14</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Маржа лидера модели</div>
+          <div class="stat-value">30–46 %</div>
+          <div class="stat-desc">Soxspace — единственный с открытой маржой, за счёт вертикальной интеграции</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Цель по каналам</div>
+          <div class="stat-value">70 / 30</div>
+          <div class="stat-desc">в пользу прямых каналов за 18 месяцев — не уход от агрегаторов, а диверсификация</div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+
+  <!-- ===================== FINDINGS ===================== -->
+  <section id="findings" class="section fade-up">
+    <div class="container">
+      <span class="section-eyebrow">01 · Часть 1 · Что мы теперь понимаем</span>
+      <h2 class="section-title">Главное о конкурентном поле</h2>
+      <p class="section-sub">Шесть выводов, на которых держится вся повестка сессии по конкурентам. Контекст: 11 активных лофтов, сильная зависимость от агрегаторов, позиционная рамка «Герой-проводник» и обещание «без хаоса».</p>
+
+      <div class="summary-grid">
+        <article class="summary-card fade-up">
+          <span class="summary-num">01</span>
+          <h4 class="summary-thesis">Поля из «2 300 лофтов» не существует — реальную власть имеют 14 игроков</h4>
+          <p class="summary-body">Это миф, который агрегаторы продают владельцам. Из 70+ брендов исходного пула правила задают 14 игроков Кластера A: они формируют цену и ожидания, инвестируют в цифровые каналы, продают упакованные эмоции. Остальные 1 500–1 800 одиночек — ценовой шум на первых экранах Авито. Конкурировать с ними = идти в кассовый разрыв.</p>
+        </article>
+        <article class="summary-card fade-up">
+          <span class="summary-num">02</span>
+          <h4 class="summary-thesis">Эти 14 играют в трёх разных лигах — «делать как Loft Hall» = провал</h4>
+          <p class="summary-body">Loft Hall с 12+ залами на 800 человек, собственным кейтерингом и 1 575 отзывами — другая лига. Soxspace с 23 помещениями, маржой 30–46% и 12 франшизами — третья лига по другой бизнес-модели. Юля по объёмам ближе к Кластеру B или нижней части Кластера A. У неё нет такой капиталоёмкости — и не должно быть.</p>
+        </article>
+        <article class="summary-card fade-up">
+          <span class="summary-num">03</span>
+          <h4 class="summary-thesis">Маржа рождается от продажи сценария, а не часов</h4>
+          <p class="summary-body">Soxspace берёт 50 тыс. с пакета и снимает 30–46% через вертикальную интеграцию. Multiroom продаёт час за 5 499 ₽, но монетизирует звукорежиссёра за 15 тыс. и иллюзиониста за 8 тыс. Campus Loft — «Бар под ключ за 50 000 ₽». CinemaSecret — готовое шоу за 31 990 ₽. Кто продаёт часы — теряет, кто продаёт сценарий — зарабатывает. Юля сейчас продаёт часы.</p>
+        </article>
+        <article class="summary-card fade-up">
+          <span class="summary-num">04</span>
+          <h4 class="summary-thesis">Уход от агрегаторов — не отстройка, а иллюзия</h4>
+          <p class="summary-body">Все 14 игроков Кластера A в той или иной форме сидят на агрегаторах, кроме Soxspace и CinemaSecret. Уход от агрегаторов в чистом виде в Кластере A не случился. Реальная отстройка — получить второй и третий канал (контекст, прямой бренд, работа с компаниями), которых у Юли пока нет в системном виде.</p>
+        </article>
+        <article class="summary-card fade-up">
+          <span class="summary-num">05</span>
+          <h4 class="summary-thesis">Ниша «формат под ключ × средний-плюс» уже занята четырьмя</h4>
+          <p class="summary-body">Четыре стратегии рынка: демпинг / сторителлинг / формат под ключ / статусный премиум. Позиционирование Юли «без хаоса» — чистый формат под ключ. Но в этой клетке × среднем-плюс ярусе уже сидят BankaBanka, Multiroom, Let's Party, Campus Loft. Юле нужен дополнительный угол: либо ярче-человечнее, либо для другой аудитории, либо в другой географии.</p>
+        </article>
+        <article class="summary-card fade-up">
+          <span class="summary-num">06</span>
+          <h4 class="summary-thesis">Повторные клиенты — актив, но его природа не подтверждена цифрами</h4>
+          <p class="summary-body">Нельзя строить стратегию на ощущении «частых повторов»: нужно проверить, что именно повторяется — клиент, лофт, администратор, привычка, рекомендация или бренд. Это закрывается аудитом AmoCRM и интервью, без предзаявленной цифры.</p>
+        </article>
+      </div>
+
+      <div class="alert alert--info fade-up">
+        <span class="alert-icon">ℹ</span>
+        <div class="alert-body"><strong>Норма входа в Кластер A — это не преимущество, а базовый билет:</strong> активная карточка Яндекс.Карт с 100+ отзывов и рейтингом ≥4.8 (у Юли нет), контекст в Яндекс.Директе (нет), собственный сайт (нет), базовые пакеты услуг (только частично), 2–3 ключевых агрегатора с премиум-тарифами (есть, но это почти весь входящий трафик), администратор на месте и чистота (есть). Дифференциация — это уже отдельный слой: такси на просмотр (Империя), динамика цен по дням (Multiroom), шоу-формат (CinemaSecret), вертикальная интеграция (Soxspace), собственный кейтеринг (Loft Hall), мессенджер-маркетинг (Campus), эксклюзивные КП (AG Loft), структурированные презентации (BankaBanka).</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== MAP ===================== -->
+  <section id="map" class="section section--alt fade-up">
+    <div class="container">
+      <span class="section-eyebrow">02 · Карта поля 1.2</span>
+      <h2 class="section-title">14 игроков по двум осям: стратегия × ярус</h2>
+      <p class="section-sub">Что важно увидеть: рынок раскладывается не по размеру, а по выбранной стратегии и ценовому ярусу. Юля сейчас — по чеку средний, по стратегии ближе к игроку с сильной зависимостью от агрегаторов и недостаточной упаковкой. По плану она движется в «формат под ключ × средний-плюс». Но эта клетка занята четырьмя сильными игроками — без дополнительного угла Юля войдёт пятой.</p>
+
+      <div class="table-wrap">
+        <table class="table-brandos">
+          <thead>
+            <tr>
+              <th>Стратегия → / Ярус ↓</th>
+              <th>Демпинг</th>
+              <th>Сторителлинг</th>
+              <th>Формат под ключ</th>
+              <th>Статусный премиум</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="row-head">Премиум<br><span class="note">от 50 тыс. за пакет</span></td>
+              <td class="cell-empty">—</td>
+              <td>Casa Picassa (арт, 6-ч пакеты до 180 тыс.)</td>
+              <td><strong>Soxspace</strong> (50 тыс., вертикаль); Loft Hall (собственный кейтеринг); AG Loft (КП для корпоративного сегмента)</td>
+              <td>Империя Скай (от 100 тыс., такси на просмотр); Pravda Event (концертный 750 м²)</td>
+            </tr>
+            <tr>
+              <td class="row-head">Средний-плюс<br><span class="note">15–50 тыс. за пакет</span></td>
+              <td class="cell-empty">—</td>
+              <td>Let's Party (Бали/Гавайи, 45–75 тыс.); CinemaSecret (шоу 31 990 ₽)</td>
+              <td><strong>BankaBanka</strong> (всё включено, 13–14 тыс./час); <strong>Campus Loft</strong> (Бар под ключ 50 тыс.); <strong>Multiroom</strong> (5,5–8,5 тыс./час + апселлы); My Loft (2–5 тыс./час)</td>
+              <td class="cell-empty">—</td>
+            </tr>
+            <tr>
+              <td class="row-head">Средний<br><span class="note">5–15 тыс./час</span></td>
+              <td class="cell-empty">—</td>
+              <td class="cell-empty">—</td>
+              <td>Юля сейчас здесь по чеку — застряла без пакетной упаковки</td>
+              <td class="cell-empty">—</td>
+            </tr>
+            <tr>
+              <td class="row-head">Демпинг / эконом</td>
+              <td><strong>Loft Blackout</strong> (от 1 499 ₽/час); <strong>B69</strong> (от 600 ₽/чел, рейтинг 4.3)</td>
+              <td class="cell-empty">—</td>
+              <td class="cell-empty">—</td>
+              <td class="cell-empty">—</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>14 ключевых наблюдений из исследования</h3>
+      <p class="note" style="margin-bottom: var(--space-6);">Каждое наблюдение — это либо практика, которую можно забрать, либо урок, который не стоит повторять.</p>
+      <div class="observations-list">
+        <article class="observation-card fade-up"><span class="obs-num">01</span><div class="obs-body"><h4 class="obs-thesis">В Кластер A прошли только 14 из 70+ брендов</h4><p class="obs-implication">Те, у кого одновременно сеть 3+ объектов или один масштабный, активный Яндекс.Директ, карточка Яндекс.Карт ≥4.8 при 100+ отзывах и комплексная продуктовая матрица.</p></div></article>
+        <article class="observation-card fade-up"><span class="obs-num">02</span><div class="obs-body"><h4 class="obs-thesis">Soxspace — единственный с открытой франшизой и открытой маржой</h4><p class="obs-implication">12 франшиз продано, маржа 30–46%. Модель готового арендного бизнеса (ГАП — инвестиционная арендная модель).</p></div></article>
+        <article class="observation-card fade-up"><span class="obs-num">03</span><div class="obs-body"><h4 class="obs-thesis">Loft Hall — лидер по социальному доказательству</h4><p class="obs-implication">1 575 отзывов и рейтинг 5.0. Цены не публикуются, всё через индивидуальные сметы.</p></div></article>
+        <article class="observation-card fade-up"><span class="obs-num">04</span><div class="obs-body"><h4 class="obs-thesis">Демпинг не убил клиентский опыт</h4><p class="obs-implication">Loft Blackout: 580 отзывов и 5.0 при ставке от 1 499 ₽/час. У этого сегмента свой довольный клиент.</p></div></article>
+        <article class="observation-card fade-up"><span class="obs-num">05</span><div class="obs-body"><h4 class="obs-thesis">Multiroom — «лоукостер с дорогими апселлами»</h4><p class="obs-implication">Дешёвый час, высокие надбавки. Точная инверсия текущей модели Юли.</p></div></article>
+        <article class="observation-card fade-up"><span class="obs-num">06</span><div class="obs-body"><h4 class="obs-thesis">Campus Loft открыто опирается на мессенджер-маркетинг</h4><p class="obs-implication">Единственный из Кластера A, кто поддерживает контакт базы через мессенджер. Для Юли это конкурентный факт и референс механики; её активный канал — Telegram + Max.</p></div></article>
+        <article class="observation-card fade-up"><span class="obs-num">07</span><div class="obs-body"><h4 class="obs-thesis">Империя Скай: «такси за наш счёт» на просмотр</h4><p class="obs-implication">Снятие барьера логистики через статусный жест на премиум-локацию.</p></div></article>
+        <article class="observation-card fade-up"><span class="obs-num">08</span><div class="obs-body"><h4 class="obs-thesis">Let's Party — самый плотный пример формата под ключ + сторителлинг</h4><p class="obs-implication">Тематические концепции (Бали, Гавайи) пакетами 45–75 тыс. с включёнными 5 часами, уборкой, проектором, кикером, кальянами.</p></div></article>
+        <article class="observation-card fade-up"><span class="obs-num">09</span><div class="obs-body"><h4 class="obs-thesis">CinemaSecret продаёт готовое шоу, не лофт</h4><p class="obs-implication">4 часа = 2 ч ведущий + 2 ч караоке/Xbox за 31 990 ₽. Самая нестандартная продуктовая модель.</p></div></article>
+        <article class="observation-card fade-up"><span class="obs-num">10</span><div class="obs-body"><h4 class="obs-thesis">BankaBanka — феноменальные коммерческие документы</h4><p class="obs-implication">PDF-презентации с фиксированными ценами на каждую позицию (бар, барбекю, фотозоны, казино), 50% предоплата, депозит 30 000 ₽.</p></div></article>
+        <article class="observation-card fade-up"><span class="obs-num">11</span><div class="obs-body"><h4 class="obs-thesis">B69 — единственный с упавшим рейтингом</h4><p class="obs-implication">4.3 при 2 276 отзывов. Классический урок: масштаб без удержания качества.</p></div></article>
+        <article class="observation-card fade-up"><span class="obs-num">12</span><div class="obs-body"><h4 class="obs-thesis">Casa Picassa — техника обязательного апсейла</h4><p class="obs-implication">Арт-сторителлинг с обязательным минимальным заказом по кухне (60 000 ₽ для зала Микеланджело).</p></div></article>
+        <article class="observation-card fade-up"><span class="obs-num">13</span><div class="obs-body"><h4 class="obs-thesis">AG Loft — индивидуальный подход к корпоративному сегменту как фишка</h4><p class="obs-implication">Единственный, кто открыто транслирует «Составим эксклюзивное КП».</p></div></article>
+        <article class="observation-card fade-up"><span class="obs-num">14</span><div class="obs-body"><h4 class="obs-thesis">Сегмент «формат под ключ × премиум-семейный» не занят никем убедительно</h4><p class="obs-implication">Четыре стратегии — готовый каркас для отстройки. Это потенциальная пустая ниша.</p></div></article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== LEAGUES ===================== -->
+  <section id="leagues" class="section fade-up">
+    <div class="container">
+      <span class="section-eyebrow">03 · Стратификация 1.5</span>
+      <h2 class="section-title">С кем Юля реально конкурирует</h2>
+      <p class="section-sub">Что важно увидеть: Юля сравнивается с группой из 6 прямых конкурентов, не со всеми 14. Soxspace, Loft Hall, AG Loft — источники практик, а не противники в одной схеме продаж.</p>
+
+      <div class="tier-block tier-block--giant fade-up">
+        <div class="tier-head"><h3 class="tier-name">Лига гигантов</h3><span class="badge badge--slate">не конкуренты в прямом смысле</span></div>
+        <ul>
+          <li><strong>Soxspace</strong> — готовый арендный бизнес, инвестпродукт, 12 франшиз. Дальний референс масштабирования, не конкурент и не ближайший продукт.</li>
+          <li><strong>Loft Hall</strong> — премиум для корпоративного сегмента, собственный кейтеринг. Другая часть рынка.</li>
+          <li><strong>B69</strong> — массовый эконом, рейтинг 4.3. Не конкурент по позиционированию.</li>
+          <li><strong>AG Loft</strong> — крупный корпоративный сегмент до 200 человек. Не конкурент по аудитории.</li>
+          <li><strong>Pravda Event</strong> — концерт-холл 750 м². Другой формат.</li>
+        </ul>
+      </div>
+
+      <div class="tier-block tier-block--direct fade-up">
+        <div class="tier-head"><h3 class="tier-name">Лига прямых конкурентов</h3><span class="badge badge--blue">с этими шестью Юля сравнивается</span></div>
+        <ul>
+          <li><strong>BankaBanka</strong> — 6 залов, 7,5–14 тыс./час, формат под ключ, прозрачные документы. Главный референс по корпоративным документам.</li>
+          <li><strong>Multiroom</strong> — 5 локаций, 5,5–8,5 тыс./час, динамика, апселлы. Главный референс по продуктовой монетизации.</li>
+          <li><strong>Campus Loft</strong> — формат под ключ-пакеты, мессенджер-маркетинг. Главный референс по прямому маркетингу.</li>
+          <li><strong>Let's Party</strong> — 6 крупных + 4 малых, тематические концепции. Главный референс по тематической упаковке.</li>
+          <li><strong>My Loft</strong> — 6 залов, 2–5 тыс./час. Главный антиреференс — что бывает без уникального торгового предложения.</li>
+          <li><strong>Casa Picassa</strong> — арт-сторителлинг, частичное пересечение в среднем сегменте.</li>
+        </ul>
+      </div>
+
+      <div class="tier-block tier-block--niche fade-up">
+        <div class="tier-head"><h3 class="tier-name">Лига нишевых</h3><span class="badge badge--amber">не пересекаются в одной схеме продаж</span></div>
+        <ul>
+          <li><strong>Loft Blackout</strong> — демпинг для молодёжи.</li>
+          <li><strong>Империя Скай</strong> — Москва-Сити, статусный премиум.</li>
+          <li><strong>CinemaSecret</strong> — шоу для дней рождения.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== PREMIUM MODELS ===================== -->
+  <section id="premium" class="section section--alt fade-up">
+    <div class="container">
+      <span class="section-eyebrow">04 · Разбор 1.6</span>
+      <h2 class="section-title">Soxspace и три пути в премиум</h2>
+      <p class="section-sub">Это три разных пути в премиум, и Юле нужно осознанно выбрать (или не выбрать) каждый. Для 2026 она берёт не франшизную модель Soxspace, а только конкурентные принципы, которые усиливают текущую сеть.</p>
+
+      <div class="model-card fade-up">
+        <h4>Модель A — Soxspace: вертикальная интеграция через готовый арендный бизнес</h4>
+        <p class="note" style="margin-bottom: var(--space-4); color: var(--fg);">Покупает и реконструирует исторические особняки, продаёт готовый арендный бизнес инвестору. Маржа 30–46%, 12 франшиз, чек 50 тыс., отказ от массовых агрегаторов. Архетип — Эксперт-Инвестор.</p>
+        <div class="model-take">
+          <div class="mt-row"><span class="mt-label mt-take">Взять</span><span>Идею «франшиза как инвестпродукт», не «купи бренд и инструкции».</span></div>
+          <div class="mt-row"><span class="mt-label mt-bypass">Обойти</span><span>Капиталоёмкость. Юлина франшиза должна быть на порядок легче по входу.</span></div>
+          <div class="mt-row"><span class="mt-label mt-drop">Отбросить</span><span>Позиционирование «инвестиционный актив для сверхпремиального инвестора». Не Юлин клиент.</span></div>
+        </div>
+      </div>
+
+      <div class="model-card fade-up">
+        <h4>Модель B — Loft Hall: премиум через масштаб + собственная вертикаль</h4>
+        <p class="note" style="margin-bottom: var(--space-4); color: var(--fg);">Централизованное управление 12+ залами, собственный кейтеринг (1 500 позиций), вышколенный персонал (контроль чистоты бокалов фонариками), индивидуальные сметы. Не масштабируется через франшизу.</p>
+        <div class="model-take">
+          <div class="mt-row"><span class="mt-label mt-take">Взять</span><span>Идею прозрачного партнёрского кейтеринга с фиксированными ценами. Не свой шеф — партнёрство с одним проверенным.</span></div>
+          <div class="mt-row"><span class="mt-label mt-bypass">Обойти</span><span>Масштаб 12+ залов. Это сильная сторона Loft Hall, не Юли.</span></div>
+          <div class="mt-row"><span class="mt-label mt-drop">Отбросить</span><span>«Индивидуальные сметы» как основную модель. Не масштабируется в франшизу.</span></div>
+        </div>
+      </div>
+
+      <div class="model-card fade-up">
+        <h4>Модель C — AG Loft: премиум через индивидуальные КП для корпоративного сегмента</h4>
+        <p class="note" style="margin-bottom: var(--space-4); color: var(--fg);">12 залов до 350 м², эксклюзивные КП, презентации авто, до 200 человек.</p>
+        <div class="model-take">
+          <div class="mt-row"><span class="mt-label mt-take">Взять</span><span>Навык быстрой подготовки КП под корпоративный сегмент. Не капитал, а навык.</span></div>
+          <div class="mt-row"><span class="mt-label mt-bypass">Обойти</span><span>Ставку только на крупный корпоративный сегмент. Юля сильна в частных клиентах, не теряем.</span></div>
+          <div class="mt-row"><span class="mt-label mt-drop">Отбросить</span><span>Большие залы 200+. Другая лига.</span></div>
+        </div>
+      </div>
+
+      <div class="decision-box fade-up">
+        <span class="decision-label">Сводное по премиуму</span>
+        <p>Для 2026 Юля берёт партнёрский кейтеринг вместо собственного, быстрые КП для корпоративного сегмента, прозрачные апселлы и стандарты клиентского опыта. Франшизная логика остаётся дальним контуром после упаковки действующей сети.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== CONTRADICTIONS ===================== -->
+  <section id="contradictions" class="section fade-up">
+    <div class="container">
+      <span class="section-eyebrow">05 · Противоречия и находки 1.7</span>
+      <h2 class="section-title">Что разворачивает привычные гипотезы</h2>
+      <p class="section-sub">Три противоречия снимают ложные ожидания, четыре находки добавляют опору. Это слой, который меняет приоритеты, а не подтверждает их.</p>
+
+      <h3>Три противоречия</h3>
+      <div class="alert alert--warn fade-up"><span class="alert-icon">⚠</span><div class="alert-body"><strong>Противоречие 1: «уйти от агрегаторов = радикальная отстройка».</strong> На деле все 14 в Кластере A сидят на агрегаторах, кроме Soxspace и CinemaSecret. Реальная отстройка — диверсификация каналов, не уход.</div></div>
+      <div class="alert alert--warn fade-up"><span class="alert-icon">⚠</span><div class="alert-body"><strong>Противоречие 2: «премиум перспективнее среднего».</strong> Премиум перенасыщен ещё хуже: 5 сильных игроков с разными моделями. Юлин путь — средний-плюс с премиум-сервисом и премиум-упаковкой, чек 25–50 тыс. за пакет.</div></div>
+      <div class="alert alert--warn fade-up"><span class="alert-icon">⚠</span><div class="alert-body"><strong>Противоречие 3: «частые повторы — наше уникальное преимущество».</strong> Если это правда — сильный актив. Если ошибка измерения — актив всё равно может быть полезным, но не уникальным. Аудит AmoCRM обязателен до выводов.</div></div>
+
+      <h3>Четыре находки</h3>
+      <div class="alert alert--ok fade-up"><span class="alert-icon">✓</span><div class="alert-body"><strong>Находка 1.</strong> Multiroom публикует точные ценники на каждую допуслугу прямо в карточке Яндекс.Карт — на рынке, где обычно цены прячутся, это сильный ход на доверие.</div></div>
+      <div class="alert alert--ok fade-up"><span class="alert-icon">✓</span><div class="alert-body"><strong>Находка 2.</strong> B69 при 2 276 отзывов упал до 4.3. Урок: при росте до 15+ точек удержание операционного контроля = главная задача, не лидогенерация. Контраргумент против быстрого масштабирования без жёстких стандартов.</div></div>
+      <div class="alert alert--ok fade-up"><span class="alert-icon">✓</span><div class="alert-body"><strong>Находка 3.</strong> Loft Blackout с демпингом 1 499 ₽/час имеет 580 отзывов и 5.0. Демпинг не убивает клиентский опыт, если схема продаж под него выстроена. Loft Blackout выигрывает свою игру.</div></div>
+      <div class="alert alert--ok fade-up"><span class="alert-icon">✓</span><div class="alert-body"><strong>Находка 4.</strong> Ни один из 14 не делает явный обучающий продукт «как открыть лофт». Soxspace делает инвестпродукт — это другое. Обучающая ниша пустая — тема для справки, не для 2026 (отложено до 2027).</div></div>
+
+      <div class="recap-card fade-up">
+        <span class="recap-label">Что не потерять на следующих этапах</span>
+        <h3>Восемь опор синтеза</h3>
+        <ul>
+          <li>Реальное поле — 14 игроков, не 2 300.</li>
+          <li>Эти 14 — три лиги. Юля играет с 6 прямыми, не со всеми 14.</li>
+          <li>Маржа на рынке = от продажи сценария, не часов.</li>
+          <li>Soxspace, Loft Hall, AG Loft — три модели премиума. Юля комбинирует, не копирует.</li>
+          <li>Уход с агрегаторов — не цель, диверсификация — цель.</li>
+          <li>«Без хаоса» = формат под ключ × средний-плюс. Эта клетка занята четырьмя. Нужен дополнительный угол.</li>
+          <li>Прямой маркетинг по примеру Campus Loft, но через Telegram + Max — самый дешёвый первый канал прямых продаж.</li>
+          <li>Повторные клиенты — суперактив или ошибка измерения. Проверить через AmoCRM и интервью.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== HYPOTHESES ===================== -->
+  <section id="hypotheses" class="section section--alt fade-up">
+    <div class="container">
+      <span class="section-eyebrow">06 · Часть 2 · Гипотезы для обсуждения</span>
+      <h2 class="section-title">Восемь блоков гипотез на проверку</h2>
+      <p class="section-sub">Формат каждой гипотезы: суть → основание → сила → почему сработает → сквозная проверка → риски → как проверить. Это рабочая повестка стратегической сессии, а не готовые решения.</p>
+
+      <!-- 2.1 -->
+      <div class="hyp-group">
+        <h3 class="hyp-group-title">2.1 · Позиционные разрывы и пустые ниши</h3>
+        <p class="hyp-group-sub">Где на карте есть свободные клетки и какие из них реально доступны Юле.</p>
+
+        <article class="hyp-card fade-up">
+          <div class="hyp-head"><span class="hyp-code">2.1.1</span><h4 class="hyp-title">Позиция «премиум-семейный формат под ключ» — реально пустая клетка</h4><span class="hyp-strength"><span class="badge badge--amber">Сила: средняя</span></span></div>
+          <div class="hyp-rows">
+            <div class="hyp-row"><span class="hyp-row-label">Суть</span><span class="hyp-row-body">Пересечение формат под ключ × средний-плюс × семейный/детский премиум — никем не занято.</span></div>
+            <div class="hyp-row"><span class="hyp-row-label">Основание</span><span class="hyp-row-body">CinemaSecret — шоу до 25 чел. Casa Picassa — арт, не семьи. Let's Party — Бали/Гавайи для шумных. BankaBanka — корпоратив. Никто не делает «семейный праздник на 30–60 чел с премиум-сервисом без шоу-кричалок и без корпоративной сухости».</span></div>
+            <div class="hyp-row"><span class="hyp-row-label">Почему сработает</span><span class="hyp-row-body">«Герой-проводник» × «без хаоса» идеально ложится на родителя. По данным аудиторного исследования сегменты «Молодые пары 25–35» и психотип «Перестраховщик» — точное попадание.</span></div>
+            <div class="hyp-row"><span class="hyp-row-label">Сквозная проверка</span><span class="hyp-row-body muted">Аудиторное исследование — Молодые пары (чек 12–20 тыс.) + Родители подростков (15–25 тыс.) = семейные частные клиенты. Психотип «Перестраховщик» = главный целевой архетип.</span></div>
+            <div class="hyp-row"><span class="hyp-row-label">Риски</span><span class="hyp-row-body muted">Пробел в данных по корпоративному/частному сплиту. Возможно, корпоративный сегмент даёт больше выручки на тот же ресурс. Возможно, семейный сегмент имеет высокое удержание при низкой частоте.</span></div>
+            <div class="hyp-row"><span class="hyp-row-label">Как проверить</span><span class="hyp-row-body muted">(1) Разобрать активные лофты сети по типам мероприятий за 12 мес — доля семейных и средний чек; (2) пилот пакета «Семейный формат под ключ 30–60 чел, всё включено, 50 тыс.» на 1–2 точках на квартал.</span></div>
+          </div>
+        </article>
+
+        <article class="hyp-card fade-up">
+          <div class="hyp-head"><span class="hyp-code">2.1.2</span><h4 class="hyp-title">Региональная франшиза с форматом под ключ — отложенная гипотеза, не фокус 2026</h4><span class="hyp-strength"><span class="badge badge--slate">Сила: средняя по пустоте</span></span></div>
+          <div class="hyp-rows">
+            <div class="hyp-row"><span class="hyp-row-label">Суть</span><span class="hyp-row-body">Soxspace в Москве, Loft Hall централизован, B69 в Москве. В регионах сильных сетевых игроков формата под ключ по данным исследования не видно — но это не доказательство готовности к выходу.</span></div>
+            <div class="hyp-row"><span class="hyp-row-label">Основание</span><span class="hyp-row-body">Все 20 источников исследования — на московских игроков.</span></div>
+            <div class="hyp-row"><span class="hyp-row-label">Почему позже</span><span class="hyp-row-body">Одна проданная франшиза показывает, что интерес к модели возможен. Но это кейс, а не масштабируемый продукт.</span></div>
+            <div class="hyp-row"><span class="hyp-row-label">Риски</span><span class="hyp-row-body muted">Ёмкость спроса в Екатеринбурге/Казани/Новосибирске неизвестна. Возможны локальные лидеры. Масштабирование требует жёстких стандартов клиентского опыта (риск B69-сценария).</span></div>
+            <div class="hyp-row"><span class="hyp-row-label">Как проверить</span><span class="hyp-row-body muted">Не раньше 2027: кабинетное исследование по топ-5 миллионникам, интервью с уже проданной франшизой Юли, аудит стандартов и экономики.</span></div>
+          </div>
+        </article>
+
+        <article class="hyp-card fade-up">
+          <div class="hyp-head"><span class="hyp-code">2.1.3</span><h4 class="hyp-title">Премиум камерный корпоративный сегмент — окно</h4><span class="hyp-strength"><span class="badge badge--amber">Сила: средняя</span></span></div>
+          <div class="hyp-rows">
+            <div class="hyp-row"><span class="hyp-row-label">Суть</span><span class="hyp-row-body">Loft Hall и AG Loft закрывают крупный корпоративный сегмент на 100+ человек. Камерный корпоративный сегмент на 30–60 чел — ниша между BankaBanka и AG Loft, систематически не закрытая.</span></div>
+            <div class="hyp-row"><span class="hyp-row-label">Основание</span><span class="hyp-row-body">Все корпоративные игроки заточены либо под массовые корпоративы, либо под средний корпоративный сегмент без премиум-упаковки.</span></div>
+            <div class="hyp-row"><span class="hyp-row-label">Почему сработает</span><span class="hyp-row-body">Подтверждённые повторные брони могут стать корпоративным активом. Топ-менеджер с удачным мероприятием возвращается.</span></div>
+            <div class="hyp-row"><span class="hyp-row-label">Сквозная проверка</span><span class="hyp-row-body muted">Аудиторное исследование, сегмент «Небольшие компании 25–45» (чек 20–30 тыс.) + психотип «Рациональный организатор».</span></div>
+            <div class="hyp-row"><span class="hyp-row-label">Риски</span><span class="hyp-row-body muted">Пробел в данных — реальный корпоративный/частный сплит у Кластера A неизвестен. Может потребоваться выделенный отдел продаж.</span></div>
+            <div class="hyp-row"><span class="hyp-row-label">Как проверить</span><span class="hyp-row-body muted">(1) Подсчитать долю корпоративных заказов в текущей выручке; (2) одну корпоративную сделку с упаковкой в духе AG Loft.</span></div>
+          </div>
+        </article>
+      </div>
+
+      <!-- 2.2 -->
+      <div class="hyp-group">
+        <h3 class="hyp-group-title">2.2 · Модель Soxspace и три премиум-модели</h3>
+        <p class="hyp-group-sub">Что из премиум-практик переносимо без капитала, а что остаётся дальним контуром.</p>
+
+        <article class="hyp-card fade-up">
+          <div class="hyp-head"><span class="hyp-code">2.2.1</span><h4 class="hyp-title">Франшиза Юли и Soxspace — разные траектории, но обе вне ближайшего фокуса</h4><span class="hyp-strength"><span class="badge badge--blue">Сила: средняя-сильная</span></span></div>
+          <div class="hyp-rows">
+            <div class="hyp-row"><span class="hyp-row-label">Суть</span><span class="hyp-row-body">Soxspace продаёт сверхпремиальному инвестору готовый арендный бизнес. Потенциальная модель Юли — предпринимателю одиночный лофт под управление. Разные клиенты, разные воронки. Для 2026 это не продукт запуска, а контур будущей проверки.</span></div>
+            <div class="hyp-row"><span class="hyp-row-label">Основание</span><span class="hyp-row-body">Soxspace — 12 франшиз за всю историю, премиум. Юля — 1 франшиза, средний предприниматель с капиталом 3–5 млн = другой сегмент.</span></div>
+            <div class="hyp-row"><span class="hyp-row-label">Почему позже</span><span class="hyp-row-body">«Герой-проводник» резонирует с предпринимателем-новичком. Soxspace — «купи инвестицию». Юля — «приди в бизнес с готовой системой и наставником».</span></div>
+            <div class="hyp-row"><span class="hyp-row-label">Риски</span><span class="hyp-row-body muted">Пробел в данных — нет данных о пожизненной ценности клиента (LTV) франчайзи Soxspace. Возможна функция (платформа, CRM), которой у Юли нет.</span></div>
+            <div class="hyp-row"><span class="hyp-row-label">Как проверить</span><span class="hyp-row-body muted">Не раньше 2027: глубинное интервью с проданной франшизой Юли, тайный покупатель Soxspace по теме франшизы, аудит готовности стандартов.</span></div>
+          </div>
+        </article>
+
+        <article class="hyp-card fade-up">
+          <div class="hyp-head"><span class="hyp-code">2.2.2</span><h4 class="hyp-title">Партнёрский кейтеринг с фиксированными ценами вместо собственного</h4><span class="hyp-strength"><span class="badge badge--green">Сила: сильная</span></span></div>
+          <div class="hyp-rows">
+            <div class="hyp-row"><span class="hyp-row-label">Суть</span><span class="hyp-row-body">Собственный кейтеринг Loft Hall — вертикальная инвестиция, которую Юля не должна делать. Партнёрство с одним надёжным кейтерингом и продажа этого пакета как своего — то же самое для клиента, без капитала.</span></div>
+            <div class="hyp-row"><span class="hyp-row-label">Основание</span><span class="hyp-row-body">Loft Hall (собственный) и Let's Party («фуршет от 2000 ₽/чел» — фактически тоже партнёрский). Продуктовое исследование — у CaterMe фуршеты от 467 ₽/час.</span></div>
+            <div class="hyp-row"><span class="hyp-row-label">Почему сработает</span><span class="hyp-row-body">Закрывает «а еду где брать?», убирает трение в схеме продаж, +15–25% к среднему чеку.</span></div>
+            <div class="hyp-row"><span class="hyp-row-label">Сквозная проверка</span><span class="hyp-row-body muted">Аудиторное исследование — «Перестраховщик» и «Рациональный организатор» хотят «всё включено».</span></div>
+            <div class="hyp-row"><span class="hyp-row-label">Риски</span><span class="hyp-row-body muted">Меньшая маржа против своего. Качество от партнёра — нужны жёсткие договорённости о качестве (SLA).</span></div>
+            <div class="hyp-row"><span class="hyp-row-label">Как проверить</span><span class="hyp-row-body muted">Пакет «лофт + фуршет 30 чел + админ» на одной точке на квартал. Считаем долю сделок с пакетом, доп. выручку, индекс готовности рекомендовать (NPS).</span></div>
+          </div>
+        </article>
+
+        <article class="hyp-card fade-up">
+          <div class="hyp-head"><span class="hyp-code">2.2.3</span><h4 class="hyp-title">Структурированные коммерческие документы как у BankaBanka — точка наименьшего сопротивления</h4><span class="hyp-strength"><span class="badge badge--green">Сила: сильная</span></span></div>
+          <div class="hyp-rows">
+            <div class="hyp-row"><span class="hyp-row-label">Суть</span><span class="hyp-row-body">PDF-презентация с фиксированными ценами на каждую услугу + индивидуальные КП для корпоративного сегмента (как AG Loft) — не дорого, но огромный сигнал доверия.</span></div>
+            <div class="hyp-row"><span class="hyp-row-label">Основание</span><span class="hyp-row-body">BankaBanka («феноменальная коммерческая документация — главная сила») + AG Loft («эксклюзивное КП» как уникальное торговое предложение).</span></div>
+            <div class="hyp-row"><span class="hyp-row-label">Почему сработает</span><span class="hyp-row-body">Один дизайнер + один контент-менеджер = недорогая инвестиция при огромной отдаче. Премиум-упаковка без премиум-инфраструктуры.</span></div>
+            <div class="hyp-row"><span class="hyp-row-label">Сквозная проверка</span><span class="hyp-row-body muted">Аудиторное исследование — Наталья «Рациональный организатор» получает документ для руководства; Марина «Перестраховщик» получает прозрачные правила.</span></div>
+            <div class="hyp-row"><span class="hyp-row-label">Риски</span><span class="hyp-row-body muted">PDF сами не продают — нужна схема продаж к ним. Без CRM и обработки лидов вложение пропадёт.</span></div>
+            <div class="hyp-row"><span class="hyp-row-label">Как проверить</span><span class="hyp-row-body muted">PDF на пакет «Семейный формат под ключ 50 тыс.» + замер конверсии лида в бронь.</span></div>
+          </div>
+        </article>
+      </div>
+
+      <!-- 2.3 -->
+      <div class="hyp-group">
+        <h3 class="hyp-group-title">2.3 · Ценовое поле и переход в премиум</h3>
+        <p class="hyp-group-sub">Где Юле закрепиться по цене и как поднять выручку без капитальных вложений.</p>
+
+        <article class="hyp-card fade-up">
+          <div class="hyp-head"><span class="hyp-code">2.3.1</span><h4 class="hyp-title">Не прыгать в Премиум, а закрепиться в среднем-плюс с премиум-сервисом</h4><span class="hyp-strength"><span class="badge badge--green">Сила: сильная</span></span></div>
+          <div class="hyp-rows">
+            <div class="hyp-row"><span class="hyp-row-label">Суть</span><span class="hyp-row-body">Премиум занят пятью сильными игроками. Юлин чек 8–15 тыс./час даёт пакет 40–75 тыс. — это уже средний-плюс, нужна только упаковка. Прыгать выше преждевременно.</span></div>
+            <div class="hyp-row"><span class="hyp-row-label">Основание</span><span class="hyp-row-body">Карта 1.2 — клетки Премиум × формат под ключ/сторителлинг/статусный премиум заняты. Свободного места без жёсткой конкуренции нет.</span></div>
+            <div class="hyp-row"><span class="hyp-row-label">Почему сработает</span><span class="hyp-row-body">Не требует капитальных инвестиций. Чек 25–50 тыс. за пакет на 30–50 чел = самый ёмкий сегмент частных клиентов.</span></div>
+            <div class="hyp-row"><span class="hyp-row-label">Риски</span><span class="hyp-row-body muted">Возможно, средний-плюс уже насыщен — четыре игрока делят клиента. Тогда «закрепиться» = вытеснить.</span></div>
+            <div class="hyp-row"><span class="hyp-row-label">Как проверить</span><span class="hyp-row-body muted">(1) Бенчмарк по 4 игрокам на тестовых запросах; (2) пилот пакета 35 тыс. на 1 точке на месяц.</span></div>
+          </div>
+        </article>
+
+        <article class="hyp-card fade-up">
+          <div class="hyp-head"><span class="hyp-code">2.3.2</span><h4 class="hyp-title">Динамическое ценообразование по дням как у Multiroom</h4><span class="hyp-strength"><span class="badge badge--green">Сила: сильная</span></span></div>
+          <div class="hyp-rows">
+            <div class="hyp-row"><span class="hyp-row-label">Суть</span><span class="hyp-row-body">Разделение тарифов на Будни / Вс / Пт-Сб даёт +30–50% выручки в пиковые слоты без потери в непиковое время.</span></div>
+            <div class="hyp-row"><span class="hyp-row-label">Основание</span><span class="hyp-row-body">Multiroom: Будни 5 499 / Вс 6 499 / Пт-Сб 8 499. Мастер «логичного обоснования цены».</span></div>
+            <div class="hyp-row"><span class="hyp-row-label">Почему сработает</span><span class="hyp-row-body">Не требует изменений в продукте, только в прайсе.</span></div>
+            <div class="hyp-row"><span class="hyp-row-label">Сквозная проверка</span><span class="hyp-row-body muted">Рынок — наценка пятнично-субботнего слота +30–50% — норма отрасли.</span></div>
+            <div class="hyp-row"><span class="hyp-row-label">Риски</span><span class="hyp-row-body muted">Часть постоянных клиентов может реагировать негативно. Нужна аккуратная коммуникация.</span></div>
+            <div class="hyp-row"><span class="hyp-row-label">Как проверить</span><span class="hyp-row-body muted">Ввести на 1 точке на квартал, замерить выручку и заполняемость.</span></div>
+          </div>
+        </article>
+      </div>
+
+      <!-- 2.4 -->
+      <div class="hyp-group">
+        <h3 class="hyp-group-title">2.4 · Продуктовые разрывы</h3>
+        <p class="hyp-group-sub">Самые быстрые рычаги роста среднего чека внутри текущего продукта.</p>
+
+        <article class="hyp-card fade-up">
+          <div class="hyp-head"><span class="hyp-code">2.4.1</span><h4 class="hyp-title">Прозрачное меню апселлов с фиксированными ценами как у Multiroom — самый быстрый рост среднего чека</h4><span class="hyp-strength"><span class="badge badge--green">Сила: сильная</span></span></div>
+          <div class="hyp-rows">
+            <div class="hyp-row"><span class="hyp-row-label">Суть</span><span class="hyp-row-body">База за разумные деньги + открытое меню допуслуг с понятными ценами: фотограф, ведущий, бар, аниматор, декор.</span></div>
+            <div class="hyp-row"><span class="hyp-row-label">Основание</span><span class="hyp-row-body">Multiroom (явные ценники в карточке Яндекс.Карт), Campus («Бар под ключ 50 тыс.»), Let's Party (пакетная система).</span></div>
+            <div class="hyp-row"><span class="hyp-row-label">Почему сработает</span><span class="hyp-row-body">Если AmoCRM подтвердит повторные брони и их природу, клиентская база станет хорошей точкой для апселлов: «к следующему разу добавьте фотографа за 8 тыс.».</span></div>
+            <div class="hyp-row"><span class="hyp-row-label">Сквозная проверка</span><span class="hyp-row-body muted">Продуктовое исследование — 45+ продуктов конкурентов имеют структуру «база + допы», норма для среднего-плюс.</span></div>
+            <div class="hyp-row"><span class="hyp-row-label">Риски</span><span class="hyp-row-body muted">Нужна работающая партнёрская сеть и контроль качества. Без этого апселл — репутационный риск.</span></div>
+            <div class="hyp-row"><span class="hyp-row-label">Как проверить</span><span class="hyp-row-body muted">Прайс-лист 10 допуслуг, внедрить на 1 точке, замерить долю заказов с допами.</span></div>
+          </div>
+        </article>
+
+        <article class="hyp-card fade-up">
+          <div class="hyp-head"><span class="hyp-code">2.4.2</span><h4 class="hyp-title">Повторные клиенты — потенциальный апселл-актив после аудита</h4><span class="hyp-strength"><span class="badge badge--blue">Сила: сильная при условии</span></span></div>
+          <div class="hyp-rows">
+            <div class="hyp-row"><span class="hyp-row-label">Суть</span><span class="hyp-row-body">Если данные AmoCRM подтвердят частые повторы, минимальная программа лояльности (10% постоянным, «5+1 час» или «приведи друга — фотограф в подарок») усилит уже работающий механизм.</span></div>
+            <div class="hyp-row"><span class="hyp-row-label">Основание</span><span class="hyp-row-body">Контекст Юли + исследование рынка. Программ лояльности у Кластера A почти нет (исключение — Loft Blackout).</span></div>
+            <div class="hyp-row"><span class="hyp-row-label">Почему сработает</span><span class="hyp-row-body">Даёт инструмент CRM и базы клиентов. Программа лояльности = причина собрать базу.</span></div>
+            <div class="hyp-row"><span class="hyp-row-label">Риски</span><span class="hyp-row-body muted">Главный риск — если повторность окажется ошибкой измерения, гипотеза рушится.</span></div>
+            <div class="hyp-row"><span class="hyp-row-label">Как проверить</span><span class="hyp-row-body muted">Аудит повторных сделок в AmoCRM и 10 интервью; затем пилот программы лояльности на 3 месяца.</span></div>
+          </div>
+        </article>
+      </div>
+
+      <!-- 2.5 -->
+      <div class="hyp-group">
+        <h3 class="hyp-group-title">2.5 · Каналы продаж</h3>
+        <p class="hyp-group-sub">Как уйти от зависимости от агрегаторов реалистично, а не одним прыжком.</p>
+
+        <article class="hyp-card fade-up">
+          <div class="hyp-head"><span class="hyp-code">2.5.1</span><h4 class="hyp-title">Уход от агрегаторов = диверсификация, не отказ</h4><span class="hyp-strength"><span class="badge badge--green">Сила: сильная</span></span></div>
+          <div class="hyp-rows">
+            <div class="hyp-row"><span class="hyp-row-label">Суть</span><span class="hyp-row-body">Мгновенный отказ = смерть. Реалистичный путь: за 6–9 мес построить три новых канала до совокупных 50%, агрегаторы — 50%. На горизонте 18 мес — 70/30 в пользу прямых.</span></div>
+            <div class="hyp-row"><span class="hyp-row-label">Основание</span><span class="hyp-row-body">По данным исследования только Soxspace и CinemaSecret в Кластере A открыто отказались от агрегаторов; остальные используют как один из каналов.</span></div>
+            <div class="hyp-row"><span class="hyp-row-label">Почему сработает</span><span class="hyp-row-body">Реалистично по ресурсам, без скачков инвестиций.</span></div>
+            <div class="hyp-row"><span class="hyp-row-label">Сквозная проверка</span><span class="hyp-row-body muted">Аудиторное исследование — психотипы используют разные каналы (Эстет — Instagram, Перестраховщик — Яндекс.Карты, Рациональный — поиск + рейтинги).</span></div>
+            <div class="hyp-row"><span class="hyp-row-label">Риски</span><span class="hyp-row-body muted">Пробел в данных — нет Similarweb по Кластеру A, соотношение 70/30 — оценочное.</span></div>
+            <div class="hyp-row"><span class="hyp-row-label">Как проверить</span><span class="hyp-row-body muted">Три канала параллельно на 1 точке: контекст, Telegram + Max по схеме Campus, прямой бренд (карточка Яндекс.Карт с упаковкой). Через квартал — доля каждого.</span></div>
+          </div>
+        </article>
+
+        <article class="hyp-card fade-up">
+          <div class="hyp-head"><span class="hyp-code">2.5.2</span><h4 class="hyp-title">Прямой маркетинг через Telegram + Max — самый быстрый и дешёвый первый шаг</h4><span class="hyp-strength"><span class="badge badge--blue">Сила: средняя-сильная</span></span></div>
+          <div class="hyp-rows">
+            <div class="hyp-row"><span class="hyp-row-label">Суть</span><span class="hyp-row-body">Campus Loft публично использует мессенджер как канал поддержания контакта — это факт о конкуренте. Никто из остальных 13 в Кластере A не делает прямого маркетинга по базе. Для Юли аналог — Telegram + Max, база контактов уже там.</span></div>
+            <div class="hyp-row"><span class="hyp-row-label">Основание</span><span class="hyp-row-body">Campus считает это своим преимуществом; механика переносима на Telegram + Max.</span></div>
+            <div class="hyp-row"><span class="hyp-row-label">Почему сработает</span><span class="hyp-row-body">База есть, нужна систематизация. Психотипы «Спонтанный тусовщик» и «Перестраховщик» активны в мессенджерах.</span></div>
+            <div class="hyp-row"><span class="hyp-row-label">Сквозная проверка</span><span class="hyp-row-body muted">Если повторные брони подтвердятся, база лояльна. Telegram + Max = прямой контакт без посредников.</span></div>
+            <div class="hyp-row"><span class="hyp-row-label">Риски</span><span class="hyp-row-body muted">Массовые рассылки могут раздражать без правил частоты и сегментации. Нужно согласие на рассылку (закон о персданных).</span></div>
+            <div class="hyp-row"><span class="hyp-row-label">Как проверить</span><span class="hyp-row-body muted">Систематизировать базу в простую CRM (даже Excel), сегментировать «недавние / постоянные / спящие», 3 разных сообщения через Telegram + Max, замер отклика.</span></div>
+          </div>
+        </article>
+      </div>
+
+      <!-- 2.6 -->
+      <div class="hyp-group">
+        <h3 class="hyp-group-title">2.6 · Сервис и операционная модель</h3>
+        <p class="hyp-group-sub">Как сделать сильный сервис видимым и не потерять его при масштабировании.</p>
+
+        <article class="hyp-card fade-up">
+          <div class="hyp-head"><span class="hyp-code">2.6.1</span><h4 class="hyp-title">Повторные клиенты и отзывы — «тихий» сервис, без упаковки не преимущество</h4><span class="hyp-strength"><span class="badge badge--green">Сила: сильная</span></span></div>
+          <div class="hyp-rows">
+            <div class="hyp-row"><span class="hyp-row-label">Суть</span><span class="hyp-row-body">Клиенты могут возвращаться, но внешний рынок этого не видит. Без отзывов, кейсов и сайта актив не работает на схему продаж.</span></div>
+            <div class="hyp-row"><span class="hyp-row-label">Основание</span><span class="hyp-row-body">Loft Hall с 1 575 отзывов имеет видимое социальное доказательство. У Юли — ни сайта, ни 1 500 отзывов на Яндекс.Картах.</span></div>
+            <div class="hyp-row"><span class="hyp-row-label">Почему сработает</span><span class="hyp-row-body">Простой и быстрый ход — собрать отзывы, оформить кейсы, разместить на Яндекс.Картах и в коммерческой документации.</span></div>
+            <div class="hyp-row"><span class="hyp-row-label">Сквозная проверка</span><span class="hyp-row-body muted">Аудиторное исследование — «Перестраховщик» и «Рациональный организатор» читают отзывы перед бронированием.</span></div>
+            <div class="hyp-row"><span class="hyp-row-label">Риски</span><span class="hyp-row-body muted">Сбор отзывов требует инфраструктуры (стимул, упрощение).</span></div>
+            <div class="hyp-row"><span class="hyp-row-label">Как проверить</span><span class="hyp-row-body muted">Механика запроса отзыва в течение 24 часов после события. Цель — 200 отзывов на Яндекс.Картах за квартал.</span></div>
+          </div>
+        </article>
+
+        <article class="hyp-card fade-up">
+          <div class="hyp-head"><span class="hyp-code">2.6.2</span><h4 class="hyp-title">Стандарт сервиса между точками — главный риск при масштабировании</h4><span class="hyp-strength"><span class="badge badge--green">Сила: сильная</span></span></div>
+          <div class="hyp-rows">
+            <div class="hyp-row"><span class="hyp-row-label">Суть</span><span class="hyp-row-body">B69 при росте просел до 4.3 — операционная катастрофа. Loft Hall держит планку через централизованное управление. При любом масштабировании главный риск — не лидогенерация, а удержание стандарта клиентского опыта.</span></div>
+            <div class="hyp-row"><span class="hyp-row-label">Основание</span><span class="hyp-row-body">B69 (урок), Loft Hall (пример).</span></div>
+            <div class="hyp-row"><span class="hyp-row-label">Почему как защита</span><span class="hyp-row-body">Обязательно к проработке, иначе масштабирование разрушает бренд.</span></div>
+            <div class="hyp-row"><span class="hyp-row-label">Риски</span><span class="hyp-row-body muted">Пока неясно, какие именно элементы сервиса формируют повторы у Юли. Это нужно вытащить и формализовать до любых шагов масштабирования.</span></div>
+            <div class="hyp-row"><span class="hyp-row-label">Как проверить</span><span class="hyp-row-body muted">Самоаудит 11 активных лофтов — что общего в сервисе (люди, процессы, моменты «вау»). Стандарт-документ для будущего масштабирования.</span></div>
+          </div>
+        </article>
+      </div>
+
+      <!-- 2.7 -->
+      <div class="hyp-group">
+        <h3 class="hyp-group-title">2.7 · Визуал, тон коммуникации и общение</h3>
+        <p class="hyp-group-sub">Где у Юли свободная визуальная позиция и почему отсутствие медийности — норма.</p>
+
+        <article class="hyp-card fade-up">
+          <div class="hyp-head"><span class="hyp-code">2.7.1</span><h4 class="hyp-title">Визуальная пустота — «спокойная уверенность взрослого профессионала»</h4><span class="hyp-strength"><span class="badge badge--amber">Сила: средняя</span></span></div>
+          <div class="hyp-rows">
+            <div class="hyp-row"><span class="hyp-row-label">Суть</span><span class="hyp-row-body">Четыре стратегии. Свободна позиция «мягкая, человеческая, не кричащая, на личной истории и опыте» = «без хаоса».</span></div>
+            <div class="hyp-row"><span class="hyp-row-label">Основание</span><span class="hyp-row-body">Типология + визуал-коды: «розничный агрессивный» (Blackout), «киберпанк-неон» (B69), «искусствоведческий» (Casa Picassa), «отпускной» (Let's Party), «корпоративно-надёжный» (BankaBanka), «уютный инстаграмный» (Multiroom), «брутальный индустриальный» (AG Loft).</span></div>
+            <div class="hyp-row"><span class="hyp-row-label">Почему сработает</span><span class="hyp-row-body">«Не делать вид, а делать дело» × отказ от медийности → бренд через сервис, отзывы и сдержанный визуал.</span></div>
+            <div class="hyp-row"><span class="hyp-row-label">Сквозная проверка</span><span class="hyp-row-body muted">Тон коммуникации (TOV) и визуал-коды Аудитории — нужна сверка с финальной версией.</span></div>
+            <div class="hyp-row"><span class="hyp-row-label">Риски</span><span class="hyp-row-body muted">«Спокойная уверенность» сложно продавать на холодного — работает там, где есть рекомендация. Совпадает с моделью Юли при подтверждённых повторах, но сужает входной канал.</span></div>
+            <div class="hyp-row"><span class="hyp-row-label">Как проверить</span><span class="hyp-row-body muted">2–3 визуальных направления (спокойная уверенность / мягкий сторителлинг / корпоративная надёжность как BankaBanka), малые рекламные кампании, замер кликабельности (CTR) и конверсии.</span></div>
+          </div>
+        </article>
+
+        <article class="hyp-card fade-up">
+          <div class="hyp-head"><span class="hyp-code">2.7.2</span><h4 class="hyp-title">Отказ Юли от медийности = норма рынка, не слабость</h4><span class="hyp-strength"><span class="badge badge--green">Сила: сильная</span></span></div>
+          <div class="hyp-rows">
+            <div class="hyp-row"><span class="hyp-row-label">Суть</span><span class="hyp-row-body">У всех 14 игроков нет фронтального медийного персонажа. Юля без своей медийности попадает в норму, не в исключение.</span></div>
+            <div class="hyp-row"><span class="hyp-row-label">Основание</span><span class="hyp-row-body">Карточки 14 игроков — никакого медийного владельца.</span></div>
+            <div class="hyp-row"><span class="hyp-row-label">Почему сработает</span><span class="hyp-row-body">Убирает «стать медийной» из чек-листа, освобождает ресурс на инфраструктуру (сайт, CRM, упаковка).</span></div>
+            <div class="hyp-row"><span class="hyp-row-label">Риски</span><span class="hyp-row-body muted">При выходе в обучающий продукт (не ранее 2027) отсутствие медийности — слабость: ученикам нужна личность преподавателя.</span></div>
+            <div class="hyp-row"><span class="hyp-row-label">Как проверить</span><span class="hyp-row-body muted">Вернуться к вопросу после 2027, когда решение по обучающему продукту будет принято.</span></div>
+          </div>
+        </article>
+      </div>
+
+      <!-- 2.8 -->
+      <div class="hyp-group">
+        <h3 class="hyp-group-title">2.8 · Франшиза, регионы и обучение как отложенный контур</h3>
+        <p class="hyp-group-sub">Направления вне фокуса 2026 — фиксируем как контур будущего, не как задачу.</p>
+
+        <article class="hyp-card fade-up">
+          <div class="hyp-head"><span class="hyp-code">2.8.1</span><h4 class="hyp-title">Лёгкая франшиза с управляющей компанией Юли — другая ниша от Soxspace, но не фокус 2026</h4><span class="hyp-strength"><span class="badge badge--amber">Сила: средняя</span></span></div>
+          <div class="hyp-rows">
+            <div class="hyp-row"><span class="hyp-row-label">Суть</span><span class="hyp-row-body">Soxspace — сверхпремиальному инвестору «купи бизнес». Юля — предпринимателю «вступи в систему с управлением и наставничеством». Цена входа кратно меньше, поддержка плотнее.</span></div>
+            <div class="hyp-row"><span class="hyp-row-label">Основание</span><span class="hyp-row-body">Soxspace + 1 проданная франшиза Юли.</span></div>
+            <div class="hyp-row"><span class="hyp-row-label">Почему сработает</span><span class="hyp-row-body">Соответствует «Герой-проводник». Управляющая компания = инфраструктура наставничества во франшизном продукте.</span></div>
+            <div class="hyp-row"><span class="hyp-row-label">Сквозная проверка</span><span class="hyp-row-body muted">Исходные данные проекта фиксируют франшизу и обучение как желаемые направления, но текущий канон M2 переносит их за пределы фокуса 2026.</span></div>
+            <div class="hyp-row"><span class="hyp-row-label">Риски</span><span class="hyp-row-body muted">Пробел в данных — нет данных о реальной экономике франшизы Юли. Возможно, поддержка отнимает больше ресурса, чем приносит роялти.</span></div>
+            <div class="hyp-row"><span class="hyp-row-label">Как проверить</span><span class="hyp-row-body muted">Не раньше 2027: глубинное интервью с проданной франшизой, аудит экономики, стандартов и поддержки.</span></div>
+          </div>
+        </article>
+
+        <article class="hyp-card fade-up">
+          <div class="hyp-head"><span class="hyp-code">2.8.2</span><h4 class="hyp-title">Обучающий продукт «Как открыть лофт» — пустая ниша, не приоритет 2026, отложено до 2027</h4><span class="hyp-strength"><span class="badge badge--slate">Сила: слабая по приоритету</span></span></div>
+          <div class="hyp-rows">
+            <div class="hyp-row"><span class="hyp-row-label">Суть</span><span class="hyp-row-body">Ни один из 14 не делает обучающий продукт. Soxspace — инвестпродукт, это другое. Ниша открыта — для справки, не для действия сейчас.</span></div>
+            <div class="hyp-row"><span class="hyp-row-label">Основание</span><span class="hyp-row-body">Нет упоминаний в исследовании.</span></div>
+            <div class="hyp-row"><span class="hyp-row-label">Риски</span><span class="hyp-row-body muted">Обучение требует медийности. Слабая повторная выручка, высокие затраты на сопровождение.</span></div>
+            <div class="hyp-row"><span class="hyp-row-label">Как проверить</span><span class="hyp-row-body muted">Не ранее 2027 — отдельный продукт или часть франшизного пакета.</span></div>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== PRIORITY ===================== -->
+  <section id="priority" class="section fade-up">
+    <div class="container">
+      <span class="section-eyebrow">07 · Часть 3 · Приоритизация</span>
+      <h2 class="section-title">Что выносим на сессию, что на следующую итерацию</h2>
+      <p class="section-sub">Гипотезы разложены по очереди обсуждения: основная повестка, альтернативы и то, что пока рано трогать.</p>
+
+      <h3>Основные гипотезы (5–7) — повестка стратегической сессии</h3>
+      <div class="prio-list">
+        <div class="prio-item fade-up"><span class="prio-num">1</span><div class="prio-body"><h4>2.4.1 — Прозрачное меню апселлов (Multiroom + Campus)</h4><p>Самый быстрый рост среднего чека за 1–2 месяца.</p></div></div>
+        <div class="prio-item fade-up"><span class="prio-num">2</span><div class="prio-body"><h4>2.2.3 — Структурированная PDF-презентация (BankaBanka + AG Loft)</h4><p>Закрытие премиум-восприятия и корпоративного канала без капитала.</p></div></div>
+        <div class="prio-item fade-up"><span class="prio-num">3</span><div class="prio-body"><h4>2.5.2 — Прямой маркетинг по схеме Campus через Telegram + Max</h4><p>Самый дешёвый первый шаг диверсификации, использует существующую базу.</p></div></div>
+        <div class="prio-item fade-up"><span class="prio-num">4</span><div class="prio-body"><h4>2.3.1 — Закрепление в среднем-плюс с премиум-сервисом, без прыжка в Премиум</h4><p>Стратегическое решение, определяющее весь продукт.</p></div></div>
+        <div class="prio-item fade-up"><span class="prio-num">5</span><div class="prio-body"><h4>2.6.1 — Сделать повторные брони и отзывы видимыми через кейсы</h4><p>Тихий актив → маркетинговый.</p></div></div>
+        <div class="prio-item fade-up"><span class="prio-num">6</span><div class="prio-body"><h4>2.6.2 — Формализовать стандарт сервиса до любых шагов масштабирования</h4><p>Защита бренда.</p></div></div>
+        <div class="prio-item fade-up"><span class="prio-num">7</span><div class="prio-body"><h4>2.4.2 — Программа лояльности (после аудита повторов)</h4><p>Превращает удержание клиентов в систему.</p></div></div>
+      </div>
+
+      <h3>Альтернативные гипотезы (3–5) — на следующую итерацию</h3>
+      <div class="prio-list">
+        <div class="prio-item prio-item--alt fade-up"><span class="prio-num prio-num--alt">1</span><div class="prio-body"><h4>2.1.1 — Премиум-семейный формат под ключ</h4><p>Требует пилота и проверки спроса.</p></div></div>
+        <div class="prio-item prio-item--alt fade-up"><span class="prio-num prio-num--alt">2</span><div class="prio-body"><h4>2.2.2 — Партнёрский кейтеринг</h4><p>Нужен партнёр с подходящим качеством.</p></div></div>
+        <div class="prio-item prio-item--alt fade-up"><span class="prio-num prio-num--alt">3</span><div class="prio-body"><h4>2.3.2 — Динамическое ценообразование</h4><p>Простая механика, нужна подготовка клиентов.</p></div></div>
+        <div class="prio-item prio-item--alt fade-up"><span class="prio-num prio-num--alt">4</span><div class="prio-body"><h4>2.1.3 — Премиум камерный корпоративный сегмент</h4><p>Требует выделенного навыка продаж.</p></div></div>
+        <div class="prio-item prio-item--alt fade-up"><span class="prio-num prio-num--alt">5</span><div class="prio-body"><h4>2.7.1 — Визуальная позиция «спокойная уверенность»</h4><p>Требует тестирования направлений.</p></div></div>
+      </div>
+
+      <h3>Что пока рано обсуждать</h3>
+      <div class="early-list">
+        <div class="early-item fade-up"><h4>2.1.2 — Региональная франшиза</h4><p>Преждевременно до стабилизации модели и стандартов клиентского опыта в Москве. Иначе риск B69 в каждом регионе.</p></div>
+        <div class="early-item fade-up"><h4>2.8.2 — Обучающий продукт</h4><p>Отложено до 2027. В 2026 не обсуждаем.</p></div>
+        <div class="early-item fade-up"><h4>Количественные сравнения юнит-экономики</h4><p>Пробел в данных — нет данных по марже 14 игроков (кроме Soxspace). Спекуляция без глубинных интервью с клиентами (CustDev) / тайного покупателя.</p></div>
+        <div class="early-item fade-up"><h4>Корпоративный сегмент с делением корпоратив vs свадьба</h4><p>Пробел в данных — нет данных по корпоративному/частному сплиту у конкурентов.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== DECISIONS ===================== -->
+  <section id="decisions" class="section section--alt fade-up">
+    <div class="container">
+      <span class="section-eyebrow">08 · Часть 4 · Что фиксируем</span>
+      <h2 class="section-title">Решения, отсечённое и недостающие данные</h2>
+      <p class="section-sub">Конкурентный синтез — не список острых вопросов, а карта того, какие практики забрать у рынка, где не копировать лидеров и какие старые гипотезы снять.</p>
+
+      <h3>Решения по конкурентному полю</h3>
+      <div class="dl-list">
+        <div class="dl-item fade-up"><p><strong>Реальная конкуренция — не 2 300 лофтов, а 5–6 прямых игроков среднего-плюс.</strong> Soxspace, Loft Hall, AG Loft и Pravda Event — источники практик, но не прямые противники в одной схеме продаж.</p></div>
+        <div class="dl-item fade-up"><p><strong>Юлин путь — не прыжок в премиум, а средний-плюс с премиум-сервисом.</strong> Премиум занят игроками с капиталом, инфраструктурой и каналами.</p></div>
+        <div class="dl-item fade-up"><p><strong>Агрегаторы не нужно «выключать».</strong> Цель — диверсификация: сайт, карты, Telegram, корпоративный сегмент, повторные продажи.</p></div>
+        <div class="dl-item fade-up"><p><strong>Campus Loft — референс механики прямого маркетинга, не канала.</strong> Для Юли канал — Telegram + Max.</p></div>
+        <div class="dl-item fade-up"><p><strong>BankaBanka и AG Loft — референсы документов и КП.</strong> Это быстрый путь поднять доверие без капитальных вложений.</p></div>
+        <div class="dl-item fade-up"><p><strong>Multiroom — референс меню допуслуг и динамического прайса.</strong> Не копировать цены, а перенести принцип прозрачности.</p></div>
+      </div>
+
+      <h3>Что отсечено</h3>
+      <div class="dl-list">
+        <div class="dl-item dl-cut fade-up"><p><strong>Заявления о почти полной возвратности как преимущество без аудита</strong> — не использовать. Нужно проверить природу повторов.</p></div>
+        <div class="dl-item dl-cut fade-up"><p><strong>Франшиза как ближайший конкурентный ход</strong> — преждевременно. До неё нужны стандарты клиентского опыта, продуктовая матрица, CRM и каналы.</p></div>
+        <div class="dl-item dl-cut fade-up"><p><strong>Обучающий продукт</strong> — не приоритет 2026, возможен не раньше 2027.</p></div>
+        <div class="dl-item dl-cut fade-up"><p><strong>Медийность Юлии как обязательное условие</strong> — не подтверждена конкурентами. В Кластере A почти никто не строит продажи на публичной личности владельца.</p></div>
+      </div>
+
+      <h3>Данные, которые нужны</h3>
+      <div class="dl-list">
+        <div class="dl-item dl-need fade-up"><p>Кто реально конкурирует с Юлей по заявкам: BankaBanka, Multiroom, Campus, Let's Party, My Loft, Casa Picassa — проверить через тайного покупателя и выдачу по каналам.</p></div>
+        <div class="dl-item dl-need fade-up"><p>Какие активные лофты сети могут занять средний-плюс формат под ключ без капитальных вложений.</p></div>
+        <div class="dl-item dl-need fade-up"><p>Какие допуслуги можно сделать прозрачным меню уже сейчас.</p></div>
+        <div class="dl-item dl-need fade-up"><p>Какие отзывы/кейсы можно собрать и показать на сайте и в коммерческих материалах.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== STATUS ===================== -->
+  <section id="status" class="section fade-up">
+    <div class="container">
+      <span class="section-eyebrow">09 · Часть 5 · Статусы</span>
+      <h2 class="section-title">Статус гипотез после сверки с каноном M2</h2>
+      <p class="section-sub">Сводная таблица: что подтверждено и фиксируется, что остаётся гипотезой на проверку, что отложено.</p>
+
+      <div class="table-wrap">
+        <table class="table-brandos">
+          <thead>
+            <tr><th>Гипотеза</th><th>Статус</th><th>Что делаем дальше</th></tr>
+          </thead>
+          <tbody>
+            <tr><td class="row-head">Прозрачное меню апселлов</td><td><span class="badge badge--green">Подтверждено</span></td><td>Зафиксировать как быстрый рост среднего чека</td></tr>
+            <tr><td class="row-head">Структурированная PDF/КП</td><td><span class="badge badge--green">Подтверждено</span></td><td>Использовать как корпоративную инфраструктуру</td></tr>
+            <tr><td class="row-head">Прямой маркетинг через Telegram + Max</td><td><span class="badge badge--green">Подтверждено как механика</span></td><td>Использовать как активный канал Юли</td></tr>
+            <tr><td class="row-head">Средний-плюс, не премиум-прыжок</td><td><span class="badge badge--green">Подтверждено</span></td><td>Зафиксировать как стратегическую рамку M2</td></tr>
+            <tr><td class="row-head">Видимость отзывов и кейсов</td><td><span class="badge badge--green">Подтверждено</span></td><td>Собирать без неподтверждённых цифр повторности</td></tr>
+            <tr><td class="row-head">Стандарт сервиса до масштабирования</td><td><span class="badge badge--green">Подтверждено</span></td><td>Передать как условие будущего масштабирования</td></tr>
+            <tr><td class="row-head">Программа лояльности</td><td><span class="badge badge--blue">Гипотеза</span></td><td>Проверять после AmoCRM и природы повторов</td></tr>
+            <tr><td class="row-head">Премиум-семейный формат под ключ</td><td><span class="badge badge--blue">Гипотеза</span></td><td>Проверять через сегменты и лофты</td></tr>
+            <tr><td class="row-head">Партнёрский кейтеринг</td><td><span class="badge badge--green">Подтверждено как практика</span></td><td>Проверить партнёров и договорённости о качестве</td></tr>
+            <tr><td class="row-head">Динамическое ценообразование</td><td><span class="badge badge--green">Подтверждено</span></td><td>Проверять после данных по загрузке</td></tr>
+            <tr><td class="row-head">Региональная франшиза</td><td><span class="badge badge--slate">Отложено</span></td><td>Не фокус 2026</td></tr>
+            <tr><td class="row-head">Обучающий продукт</td><td><span class="badge badge--slate">Отложено</span></td><td>2027</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== BRIDGE ===================== -->
+  <section id="bridge" class="section section--alt fade-up">
+    <div class="container">
+      <span class="section-eyebrow">10 · Часть 6 · Мост к следующим этапам</span>
+      <h2 class="section-title">Куда это уходит дальше</h2>
+      <p class="section-sub">Как конкурентный синтез накладывается на остальные исследования, какие игроки идут в углублённый разбор и какие выводы меняют модель.</p>
+
+      <h3>6.1 · Для финального мегасинтеза</h3>
+      <p class="note" style="margin-bottom: var(--space-6);">Что обязательно наложить на исследования Рынка, Мирового рынка, Аудитории и Продукта.</p>
+      <div class="observations-list">
+        <article class="observation-card fade-up"><span class="obs-num">01</span><div class="obs-body"><h4 class="obs-thesis">Стратификацию по лигам (1.5) — наложить на Рынок и Аудиторию</h4><p class="obs-implication">Ёмкость среднего-плюс яруса в Москве (Рынок) × психотипы «Перестраховщик» + «Рациональный организатор» (Аудитория) → количественная оценка ёмкости Юлиного рынка (TAM). Без этого все приоритеты — спекуляция.</p></div></article>
+        <article class="observation-card fade-up"><span class="obs-num">02</span><div class="obs-body"><h4 class="obs-thesis">Карту конкурентного поля (1.2) — наложить на Продуктовое исследование</h4><p class="obs-implication">Где продуктовый разрыв Юли (часы вместо сценариев) совпадает с продуктовыми трендами отрасли. Совпадает — надёжная ставка; расходится — нужно решать, кому верить.</p></div></article>
+        <article class="observation-card fade-up"><span class="obs-num">03</span><div class="obs-body"><h4 class="obs-thesis">Гипотезы 2.4.1 (апселлы) и 2.4.2 (лояльность) — наложить на Продукт</h4><p class="obs-implication">Там есть данные по структуре пакетов и допуслугам у конкурентов. Проверить, что Юлины потенциальные апселлы конкурентоспособны по цене.</p></div></article>
+        <article class="observation-card fade-up"><span class="obs-num">04</span><div class="obs-body"><h4 class="obs-thesis">Гипотезу 2.7.1 (визуальная позиция) — наложить на Аудиторию</h4><p class="obs-implication">Если ЦА откликается на «спокойную уверенность» — гипотеза надёжна. Если требует более яркого сторителлинга — перестраивается.</p></div></article>
+        <article class="observation-card fade-up"><span class="obs-num">05</span><div class="obs-body"><h4 class="obs-thesis">Гипотезу 2.1.2 (регионы) — наложить на Рынок и Мировой рынок</h4><p class="obs-implication">Региональные данные + мировые модели региональной экспансии. Без этой проверки регионы остаются эмоциональным желанием.</p></div></article>
+      </div>
+
+      <h3>6.2 · Приоритетные игроки для углублённого разбора</h3>
+      <div class="table-wrap">
+        <table class="table-brandos">
+          <thead><tr><th>Игрок</th><th>Зачем</th><th>Метод</th></tr></thead>
+          <tbody>
+            <tr><td class="row-head">BankaBanka</td><td>Референс по корпоративным документам и упаковке среднего-плюс</td><td>Тайный покупатель с запросом КП на корпоратив 50 человек. Достать PDF, разобрать структуру, ценообразование, обработку лида.</td></tr>
+            <tr><td class="row-head">Multiroom (Bogema)</td><td>Референс по апселлам и динамическому ценообразованию</td><td>Парсинг карточки Яндекс.Карт + сайта + тестовые запросы по разным дням недели.</td></tr>
+            <tr><td class="row-head">Campus Loft</td><td>Референс по прямому маркетингу и пакету «Бар под ключ»</td><td>Тестовый запрос, замер времени отклика и качества поддержания контакта. Механика адаптируется под Telegram + Max.</td></tr>
+            <tr><td class="row-head">Soxspace</td><td>Отложенная траектория «франшиза как другой продукт» — не фокус 2026</td><td>На будущее: тестовый запрос как франчайзи, разбор воронки, стоимости входа, условий роялти, объёма поддержки.</td></tr>
+            <tr><td class="row-head">Let's Party</td><td>Референс по тематической упаковке и пакетам 45–75 тыс.</td><td>Тестовая бронь, разбор пакетной системы без копирования уровней.</td></tr>
+            <tr><td class="row-head">Loft Center B69</td><td>Антиреференс — проседание сервиса при масштабе</td><td>Парсинг 200 негативных отзывов с Яндекс.Карт, выделение паттернов. Материал для стандартов сети.</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="alert alert--info fade-up"><span class="alert-icon">ℹ</span><div class="alert-body"><strong>Методы, которые ещё не использованы и должны:</strong> тайный покупатель по 5 игрокам выше (главный недостающий метод); Similarweb Pro (закрыть пробел по структуре трафика для оценки окупаемости (ROI) прямых каналов); парсинг негативных отзывов на Яндекс.Картах у B69, Multiroom, BankaBanka (скрытые доплаты); глубинные интервью с клиентами (CustDev) и бывшими сотрудниками Loft Hall / BankaBanka (реальная юнит-экономика).</div></div>
+
+      <h3>6.3 · Для позиционирования</h3>
+      <div class="alert alert--warn fade-up"><span class="alert-icon">⚠</span><div class="alert-body"><strong>Что уже занято — не повторять:</strong> «0 рублей за всё» / перечёркнутые ценники → Loft Blackout; «чарующая атмосфера» / шоу-формат → CinemaSecret; «премиум на 43 этаже» / статусное такси → Империя Скай; «всё включено» базовый → BankaBanka, Let's Party, Campus; арт-сторителлинг / залы-картины → Casa Picassa; «эксклюзивное КП» для корпоративного сегмента → AG Loft; готовый арендный бизнес / инвестиционная франшиза → Soxspace.</div></div>
+      <div class="alert alert--ok fade-up"><span class="alert-icon">✓</span><div class="alert-body"><strong>Что в пустоте и доступно Юле:</strong> семейный/детский премиум-формат под ключ без шоу-формы (между Casa Picassa и Let's Party); «спокойная уверенность взрослого профессионала» как визуальный код; камерный корпоративный сегмент без масштаба (между AG Loft и BankaBanka); лёгкая франшиза с управляющей компанией (отличается от Soxspace, отложено за пределы 2026).</div></div>
+
+      <h3>6.4 · Для будущей стратегии масштабирования</h3>
+      <p class="note" style="margin-bottom: var(--space-6);">Что Юле обязательно проверить перед возвратом к франшизной модели в сравнении с Soxspace.</p>
+      <div class="dl-list">
+        <div class="dl-item fade-up"><p><strong>Цена входа.</strong> Soxspace продаёт инвестпродукт миллионеру. Юлин продукт — для предпринимателя с капиталом 3–5 млн. Зафиксировать чёткую разницу в позиционировании.</p></div>
+        <div class="dl-item fade-up"><p><strong>Глубина пакета.</strong> Что Юля потенциально передаёт партнёру: бренд, систему стандартов, обучение, маркетинг, поддержку, CRM. Что не передаёт. Описывать только после упаковки действующей сети.</p></div>
+        <div class="dl-item fade-up"><p><strong>Роль управляющей компании.</strong> Юля = бренд или операционный партнёр? Первое — масштабируется, но требует медиа-инвестиций. Второе — не масштабируется выше 5–10 франшиз без новой команды.</p></div>
+        <div class="dl-item fade-up"><p><strong>Регионы.</strong> Готовность к региону = готовность стандарта клиентского опыта, брендбука, поддержки. Не открывать регион до закрытия стандартов и каналов.</p></div>
+        <div class="dl-item fade-up"><p><strong>Обучение.</strong> Часть будущего франшизного пакета или отдельный продукт. Сейчас не запускать. Отдельный продукт — не ранее 2027.</p></div>
+      </div>
+
+      <h3>6.5 · Сквозные выводы для стратегии</h3>
+      <div class="observations-list">
+        <article class="observation-card fade-up"><span class="obs-num">01</span><div class="obs-body"><h4 class="obs-thesis">Юля не должна прыгать в Премиум — она закрепляется в среднем-плюс с премиум-сервисом</h4><p class="obs-implication">Это меняет цель «3 млн чистыми» из «выйти в люкс» в «упаковать существующий чек 8–15 тыс./час в пакеты 35–50 тыс. с допуслугами и корпоративным каналом».</p></div></article>
+        <article class="observation-card fade-up"><span class="obs-num">02</span><div class="obs-body"><h4 class="obs-thesis">Главный продуктовый сдвиг — переход от продажи часов к продаже сценариев</h4><p class="obs-implication">Это не маркетинговая, а продуктовая трансформация. Без неё все маркетинговые ходы — лечение симптома.</p></div></article>
+        <article class="observation-card fade-up"><span class="obs-num">03</span><div class="obs-body"><h4 class="obs-thesis">Уход от агрегаторов = диверсификация, не отказ</h4><p class="obs-implication">Реалистичный путь: 70/30 в пользу прямых каналов через 18 месяцев. Тактически: Telegram + контекст + корпоративный канал + прямой бренд на Яндекс.Картах.</p></div></article>
+        <article class="observation-card fade-up"><span class="obs-num">04</span><div class="obs-body"><h4 class="obs-thesis">Стандарт клиентского опыта — главный приоритет до любых новых шагов масштабирования</h4><p class="obs-implication">Без него B69-сценарий неизбежен. Это меняет приоритизацию: формализация стандартов > новая локация > региональная экспансия.</p></div></article>
+        <article class="observation-card fade-up"><span class="obs-num">05</span><div class="obs-body"><h4 class="obs-thesis">Повторные клиенты — либо суперактив, либо ошибка измерения</h4><p class="obs-implication">Аудит AmoCRM обязателен. Это меняет либо степень уверенности в стратегии, либо саму стратегию. Третьего не дано.</p></div></article>
+      </div>
+
+      <div class="decision-box fade-up">
+        <span class="decision-label">Следующее решение</span>
+        <p>На сессии — утвердить рамку «средний-плюс с премиум-сервисом» и три быстрых рычага (апселлы, PDF/КП, прямой маркетинг через Telegram + Max). Запустить аудит AmoCRM по природе повторов. Франшизу, регионы и обучение зафиксировать как контур после 2026 — и перенести подтверждённые ставки в M6 Позиционирование.</p>
+      </div>
+    </div>
+  </section>
+
+  </main>
+
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-row">
+        <span class="footer-brand">BrandOS · Нейроупаковка 2.0</span>
+        <span class="footer-meta">M2-05 · Конкуренты · Лофт-пространство · v1.3 · 3 июня 2026</span>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    (function () {
+      var els = document.querySelectorAll('.fade-up');
+      if (!('IntersectionObserver' in window)) {
+        els.forEach(function (el) { el.classList.add('is-visible'); });
+        return;
+      }
+      var io = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('is-visible');
+            io.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0, rootMargin: '0px 0px -40px 0px' });
+      els.forEach(function (el) { io.observe(el); });
+    })();
+  </script>
+
+</body>
+</html>
