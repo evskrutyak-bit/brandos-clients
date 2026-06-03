@@ -12,7 +12,7 @@
 
 ### M2 v1.3 wave
 
-Published the M2 client-facing synthesis layer v1.3 and kept the paired Deep Research originals as the source layer. Source MD artifacts were not changed.
+Published the M2 client-facing synthesis layer v1.3, then replaced the M2-06 KARTINA apex artifact with its v1.3 HTML. The paired Deep Research originals remain as the source layer. Source MD artifacts were not changed.
 
 Files:
 
@@ -21,6 +21,7 @@ Files:
 - `loft-prostranstvo/M2/M2-03-TSA-GIPOTEZY-v1.3.html`
 - `loft-prostranstvo/M2/M2-04-PRODUKT-GIPOTEZY-v1.3.html`
 - `loft-prostranstvo/M2/M2-05-KONKURENTY-GIPOTEZY-v1.3.html`
+- `loft-prostranstvo/M2/M2-06-KARTINA.html`
 - `loft-prostranstvo/M2/M2-01-RYNOK-RF-DR.html`
 - `loft-prostranstvo/M2/M2-02-RYNOK-MIR-DR.html`
 - `loft-prostranstvo/M2/M2-03-TSA-DR.html`
@@ -28,11 +29,9 @@ Files:
 - `loft-prostranstvo/M2/M2-05-KONKURENTY-DR.html`
 - `loft-prostranstvo/index.html`
 
-The Hub index now points the five M2 synthesis cards to the v1.3 files and keeps a separate Deep Research sub-grid for the five paired DR pages.
+The Hub index now points the five M2 synthesis cards to the v1.3 files, keeps the M2-06 KARTINA card on `M2/M2-06-KARTINA.html`, and keeps a separate Deep Research sub-grid for the five paired DR pages.
 
-Because the deployed synthesis files live at `loft-prostranstvo/M2/*.html`, Hub return links in the deployed copies use `../index.html`. DR links are sibling file names.
-
-M2-06 KARTINA is not included in this wave. It remains linked as the existing M2 apex artifact and will move to v1.3 as a separate task after the content pass is accepted.
+Because the deployed module files live at `loft-prostranstvo/M2/*.html`, Hub return links in the deployed copies use `../index.html`. DR links are sibling file names.
 
 ### M3 wave
 
@@ -84,14 +83,13 @@ Because the deployed module files live at `loft-prostranstvo/M2/*.html` and `lof
 
 The Hub index contains the M3 module block with 7 cards and links to `M3/*.html`.
 
-The public hero slogan `Без хаоса, по уму` was removed from the Hub main page because it is banned as a client-facing slogan. During the M3 wave, M2 was not changed; the later M2 v1.3 wave updated only the five synthesis cards and left KARTINA for a separate pass.
+The public hero slogan `Без хаоса, по уму` was removed from the Hub main page because it is banned as a client-facing slogan. During the M3 wave, M2 was not changed; the later M2 v1.3 waves updated the five synthesis cards and then M2-06 KARTINA.
 
 ## Remaining M2 Plan
 
-M2-01..05 synthesis pages are now v1.3 on the Hub. The paired DR pages intentionally remain on the old research template as source originals.
+M2-01..06 client-facing synthesis pages are now v1.3 on the Hub. The paired DR pages intentionally remain on the old research template as source originals.
 
 Remaining M2 work:
 
-1. Finish and accept M2-06 KARTINA v1.3 content and HTML.
-2. Add the KARTINA v1.3 card/link when the separate wave is ready.
-3. Optionally migrate DR pages to v1.3 later if the source layer also needs visual unification.
+1. Optionally migrate DR pages to v1.3 later if the source layer also needs visual unification.
+2. Run future M2 v1.1 content calibration after AmoCRM data arrives.
