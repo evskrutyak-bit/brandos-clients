@@ -1,0 +1,187 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ПИКНИК · зона пешеходной доступности</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+  <style>
+    :root {
+      --green:#006633;
+      --red:#ac120d;
+      --yellow:#f4ba3c;
+      --ink:#1d1d1b;
+      --muted:#626664;
+      --paper:#f5f3ed;
+      --gray:#7e8182;
+    }
+    html, body {
+      margin:0;
+      width:100%;
+      height:100%;
+      font-family: Arial, sans-serif;
+      color:var(--ink);
+      background:var(--paper);
+    }
+    .slide {
+      width:1440px;
+      height:900px;
+      display:grid;
+      grid-template-columns:minmax(0, 1fr) 390px;
+      overflow:hidden;
+      background:var(--paper);
+    }
+    #map { width:100%; height:100%; }
+    aside {
+      background:rgba(255,255,255,.96);
+      border-left:1px solid rgba(29,29,27,.14);
+      padding:34px 28px 24px;
+      display:flex;
+      flex-direction:column;
+      gap:20px;
+    }
+    h1 {
+      margin:0 0 10px;
+      font-size:31px;
+      line-height:1.05;
+      letter-spacing:0;
+      text-transform:uppercase;
+    }
+    .lead {
+      margin:0;
+      font-size:15px;
+      line-height:1.38;
+      color:#333;
+    }
+    .block {
+      padding-top:18px;
+      border-top:1px solid rgba(29,29,27,.14);
+    }
+    .block h2 {
+      margin:0 0 12px;
+      font-size:16px;
+      line-height:1.2;
+    }
+    .legend-row,
+    .point-row {
+      display:flex;
+      gap:10px;
+      align-items:flex-start;
+      margin:10px 0;
+      font-size:14px;
+      line-height:1.3;
+    }
+    .swatch {
+      width:20px;
+      height:20px;
+      border-radius:50%;
+      border:2px solid rgba(29,29,27,.18);
+      flex:0 0 auto;
+      margin-top:-1px;
+    }
+    .dot {
+      width:13px;
+      height:13px;
+      border-radius:50%;
+      flex:0 0 auto;
+      margin-top:3px;
+      background:var(--green);
+      box-shadow:0 0 0 3px rgba(0,102,51,.18);
+    }
+    .dot.red {
+      background:var(--red);
+      box-shadow:0 0 0 3px rgba(172,18,13,.18);
+    }
+    .dot.gray {
+      background:var(--gray);
+      box-shadow:0 0 0 3px rgba(126,129,130,.18);
+    }
+    .muted {
+      color:var(--muted);
+      font-size:12px;
+      line-height:1.35;
+    }
+    .picnic-marker {
+      width:28px;
+      height:28px;
+      border-radius:50%;
+      background:var(--red);
+      border:4px solid #fff;
+      box-shadow:0 0 0 3px rgba(172,18,13,.36);
+    }
+    .point-marker {
+      width:16px;
+      height:16px;
+      border-radius:50%;
+      background:var(--green);
+      border:3px solid #fff;
+      box-shadow:0 0 0 2px rgba(0,102,51,.28);
+    }
+    .point-marker.gray {
+      background:var(--gray);
+      box-shadow:0 0 0 2px rgba(126,129,130,.28);
+    }
+  </style>
+</head>
+<body>
+  <main class="slide">
+    <div id="map"></div>
+    <aside>
+      <section>
+        <h1>Зона пешеходной доступности</h1>
+        <p class="lead">Карта показывает, какие территории попадают в 5, 10 и 15 минут пешком от ПИКНИК с учётом перехода через Минское шоссе.</p>
+      </section>
+
+      <section class="block">
+        <h2>Пешеходная доступность</h2>
+        <div class="legend-row"><i class="swatch" style="background:#006633"></i><span>до 5 минут</span></div>
+        <div class="legend-row"><i class="swatch" style="background:#f4ba3c"></i><span>до 10 минут</span></div>
+        <div class="legend-row"><i class="swatch" style="background:#ac120d"></i><span>до 15 минут</span></div>
+      </section>
+
+      <section class="block">
+        <h2>Ключевые точки</h2>
+        <div class="point-row"><i class="dot red"></i><span><strong>ПИКНИК</strong><br><span class="muted">ТВЦ Пикник, ул. Западная, стр. 4</span></span></div>
+        <div class="point-row"><i class="dot"></i><span><strong>М1 Сколково</strong><br><span class="muted">в пределах 15 минут пешком</span></span></div>
+        <div class="point-row"><i class="dot gray"></i><span><strong>ЖК Инновация</strong><br><span class="muted">за пределами 15 минут пешком</span></span></div>
+        <div class="point-row"><i class="dot gray"></i><span><strong>Sky Skolkovo</strong><br><span class="muted">за пределами 15 минут пешком</span></span></div>
+      </section>
+
+      <section class="block">
+        <h2>Что важно</h2>
+        <p class="lead">Пешеходная зона захватывает не только сторону ТВЦ: через переход часть Новоивановского попадает в ближний пеший слой.</p>
+      </section>
+    </aside>
+  </main>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script>
+    const DATA = {"center": {"lat": 55.708446, "lon": 37.359197}, "features": {"type": "FeatureCollection", "features": [{"type": "Feature", "properties": {"duration": 900, "label": "до 15 минут", "fill": "#ac120d", "stroke": "#7f0d09", "source_note": "2GIS Isochrone API"}, "geometry": {"type": "MultiPolygon", "coordinates": [[[[37.363491, 55.701132], [37.370169, 55.702399], [37.372739, 55.70386], [37.372141, 55.706954], [37.374946, 55.707138], [37.37041, 55.708596], [37.37622, 55.711611], [37.370988, 55.713671], [37.368706, 55.712774], [37.367283, 55.713704], [37.364422, 55.7103], [37.362229, 55.71213], [37.357538, 55.710795], [37.345349, 55.702542], [37.349124, 55.701654], [37.355997, 55.703342], [37.363491, 55.701132]]]]}}, {"type": "Feature", "properties": {"duration": 600, "label": "до 10 минут", "fill": "#f4ba3c", "stroke": "#b98600", "source_note": "2GIS Isochrone API"}, "geometry": {"type": "MultiPolygon", "coordinates": [[[[37.353988, 55.703802], [37.358371, 55.705788], [37.367395, 55.705622], [37.366167, 55.707935], [37.370062, 55.710439], [37.364158, 55.710037], [37.36147, 55.71199], [37.357696, 55.710705], [37.350803, 55.706192], [37.353988, 55.703802]]]]}}, {"type": "Feature", "properties": {"duration": 300, "label": "до 5 минут", "fill": "#006633", "stroke": "#004d26", "source_note": "manual correction: учитывает пешеходный переход через Минское шоссе"}, "geometry": {"type": "MultiPolygon", "coordinates": [[[[37.35485, 55.70605], [37.3557, 55.7052], [37.35895, 55.7047], [37.36275, 55.7052], [37.36555, 55.70655], [37.3647, 55.70895], [37.36215, 55.7101], [37.3568, 55.70995], [37.35485, 55.70605]]]]}}]}, "objects": [{"label": "М1 Сколково", "point": {"lat": 55.712672, "lon": 37.369777}, "walking": 15}, {"label": "Инновация", "point": {"lat": 55.701736, "lon": 37.357666}, "walking": null}, {"label": "Sky Skolkovo", "point": {"lat": 55.713703, "lon": 37.38104}, "walking": null}]};
+    const map = L.map('map', {
+      zoomControl:false, attributionControl:false, dragging:false, scrollWheelZoom:false,
+      doubleClickZoom:false, boxZoom:false, keyboard:false, tap:false,
+      zoomSnap: 0.25,
+    }).setView([DATA.center.lat, DATA.center.lon], 14.5);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      maxZoom:19
+    }).addTo(map);
+
+    function style(feature) {
+      const duration = Number(feature.properties.duration);
+      if (duration <= 300) return { color:'#004d26', fillColor:'#006633', weight:3, opacity:.98, fillOpacity:.50 };
+      if (duration <= 600) return { color:'#b98600', fillColor:'#f4ba3c', weight:3, opacity:.98, fillOpacity:.42 };
+      return { color:'#7f0d09', fillColor:'#ac120d', weight:3, opacity:.98, fillOpacity:.32 };
+    }
+    const geoLayer = L.geoJSON(DATA.features, { style }).addTo(map);
+
+    const picnicIcon = L.divIcon({ className:'', html:'<div class="picnic-marker"></div>', iconSize:[28,28], iconAnchor:[14,14] });
+    L.marker([DATA.center.lat, DATA.center.lon], {icon: picnicIcon}).addTo(map);
+
+    DATA.objects.forEach(p => {
+      const markerClass = p.walking ? 'point-marker' : 'point-marker gray';
+      const icon = L.divIcon({ className:'', html:`<div class="${markerClass}"></div>`, iconSize:[16,16], iconAnchor:[8,8] });
+      L.marker([p.point.lat, p.point.lon], {icon}).addTo(map);
+    });
+    map.fitBounds(geoLayer.getBounds(), { padding:[48,48], maxZoom:14.55 });
+  </script>
+</body>
+</html>

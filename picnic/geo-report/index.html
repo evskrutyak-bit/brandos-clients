@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex,nofollow">
+<title>ПИКНИК · геоотчёт</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Jost:wght@500;600;700&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --green:#006633;--green-d:#004d26;--red:#ac120d;--yellow:#f4ba3c;
+    --black:#1d1d1b;--gray:#7e8182;--line:#e3e6e3;--row:#f4f6f4;--page:#dfe3df;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--page);font-family:'Roboto',Arial,sans-serif;color:var(--black);padding:40px 0}
+  .deck{display:flex;flex-direction:column;align-items:center;gap:30px;counter-reset:slide}
+  .slide{counter-increment:slide}
+  .s-foot .num::after{content:counter(slide)}
+  .note{width:1280px;font-size:13px;color:#586;background:#fff;border-left:4px solid var(--green);padding:9px 16px;border-radius:4px}
+
+  .slide{width:1280px;height:720px;background:#fff;box-shadow:0 16px 44px rgba(0,0,0,.16);
+    border-radius:6px;overflow:hidden;position:relative;display:flex;flex-direction:column}
+
+  .s-head{padding:34px 48px 0}
+  .s-head h1{font-family:'Jost',sans-serif;font-weight:700;font-size:34px;line-height:1.05;
+    color:var(--black);display:inline-block;padding-bottom:10px;border-bottom:4px solid var(--green);position:relative}
+  .s-head h1::after{content:"";position:absolute;left:0;bottom:-4px;width:62px;height:4px;background:var(--red)}
+  .s-head .sub{font-size:17px;color:var(--gray);margin-top:13px;font-weight:400}
+  .brand-logo{position:absolute;top:22px;right:40px;height:64px}
+  .brand-logo img{height:100%;display:block}
+
+  .s-foot{margin-top:auto;display:flex;justify-content:center;align-items:flex-end;
+    padding:14px 0;font-size:12px;color:var(--gray);position:relative}
+  .s-foot .num{position:absolute;right:0;bottom:0;background:var(--green);color:#fff;
+    width:48px;height:40px;display:flex;align-items:center;justify-content:center;
+    font-family:'Jost',sans-serif;font-weight:700;font-size:18px}
+  .s-foot .src{font-style:italic}
+  .footnote{padding:0 48px 4px;font-size:12px;color:var(--gray);font-style:italic;line-height:1.4}
+
+  .numcard{background:#fff;border:1px solid var(--line);border-radius:10px;
+    box-shadow:0 4px 14px rgba(0,0,0,.06);padding:22px 24px}
+  .numcard .n{font-family:'Jost',sans-serif;font-weight:700;font-size:50px;color:var(--green);line-height:1}
+  .numcard .n small{font-size:24px;font-weight:600}
+  .numcard .c{font-size:16px;color:var(--black);margin-top:13px;font-weight:500;line-height:1.3}
+  .tag{display:inline-block;font-size:11px;font-weight:700;text-transform:uppercase;
+    letter-spacing:.5px;padding:2px 8px;border-radius:3px;margin-top:11px}
+  .tag.fact{background:var(--green);color:#fff}
+  .tag.est{background:var(--yellow);color:#1d1d1b}
+
+  .map{border:1px solid var(--line);border-radius:10px;overflow:hidden;position:relative;background:#eef0ee}
+  .map img{width:100%;height:100%;object-fit:contain;display:block;background:#eef0ee}
+  .map .cap{position:absolute;left:0;right:0;bottom:0;background:rgba(0,102,51,.88);
+    color:#fff;font-size:12.5px;padding:7px 14px}
+
+  .grid-cards{flex:1;display:flex;gap:24px;padding:24px 48px 6px;min-height:0}
+  .grid-cards .cards{display:flex;flex-direction:column;gap:16px;width:34%}
+  .grid-cards .cards.wide{width:100%;flex-direction:row;flex-wrap:wrap}
+  .grid-cards .cards.wide .numcard{flex:1;min-width:230px}
+  .grid-cards .side{flex:1;min-width:0;display:flex}
+  .grid-cards .side .map{flex:1}
+
+  /* таблица (тип D / G) */
+  .tbl{padding:18px 48px 0}
+  table{width:100%;border-collapse:collapse;font-size:15.5px}
+  thead th{background:var(--green);color:#fff;text-align:left;padding:11px 16px;font-weight:600}
+  tbody td{padding:9px 16px;border-bottom:1px solid var(--line);vertical-align:top}
+  tbody tr:nth-child(even){background:var(--row)}
+  td.val{font-weight:700;text-align:right;white-space:nowrap}
+  td.val.acc{color:var(--green)}
+  .vline{padding:14px 48px 0;font-size:16px;line-height:1.5;color:var(--black)}
+  .vline b{color:var(--green)}
+  /* карта + таблица рядом */
+  .grid-tbl{flex:1;display:flex;gap:24px;padding:20px 48px 6px;min-height:0}
+  .grid-tbl .t{width:50%;font-size:15px}
+  .grid-tbl .t table{font-size:15px}
+  .grid-tbl .m{flex:1;display:flex}
+  .grid-tbl .m .map{flex:1}
+
+  /* карта доступности (визуал Codex) — целиком, крупно, по центру */
+  .access{align-items:center;justify-content:center;padding:26px}
+  .access-img{max-width:1190px;max-height:662px;width:auto;height:auto;object-fit:contain;
+    border:1px solid var(--line);border-radius:10px;box-shadow:0 6px 18px rgba(0,0,0,.08)}
+  .access .brand-logo{z-index:2}
+
+  /* полноширокая карта: заполняет (без серых полей), подпись под картой по центру */
+  .wide-map{flex:1;display:flex;flex-direction:column;padding:20px 48px 4px;min-height:0;gap:9px}
+  .wide-map .map{flex:1}
+  .wide-map .map img{object-fit:cover}
+  .under-cap{text-align:center;font-size:14px;color:var(--gray);font-style:italic;padding-bottom:2px}
+
+  /* выводы-списки (тип C) */
+  .lists{padding:22px 48px 0;font-size:18px;line-height:1.5}
+  .lists h3{font-family:'Jost',sans-serif;font-weight:600;font-size:21px;margin:14px 0 7px}
+  .lists h3.plus{color:var(--green)}
+  .lists h3.risk{color:var(--red)}
+  .lists ol{margin-left:26px}
+  .lists li{margin-bottom:3px}
+  .lists .concl{margin-top:18px;background:var(--row);border-left:5px solid var(--green);
+    padding:15px 20px;border-radius:4px;font-size:18px}
+  .lists .concl b{color:var(--green)}
+
+  /* ── Титул ── */
+  .t-title{background:var(--green);color:#fff;justify-content:center;align-items:center;text-align:center;padding:0 80px}
+  .t-title .corner-logo{position:absolute;top:30px;left:40px;height:96px}
+  .t-title .glyph{position:absolute;top:46px;right:56px;font-family:'Jost';font-weight:700;font-size:24px;letter-spacing:3px;opacity:.85}
+  .t-title .kicker{font-size:21px;letter-spacing:1px;opacity:.85}
+  .t-title .name{font-family:'Jost',sans-serif;font-weight:700;font-size:128px;letter-spacing:8px;line-height:1;margin-top:10px}
+  .t-title h2{font-family:'Jost',sans-serif;font-weight:500;font-size:38px;margin-top:16px;opacity:.95}
+  .t-title .red-rule{width:90px;height:5px;background:var(--red);border-radius:3px;margin-top:28px}
+  .t-title .addr{font-size:20px;opacity:.9;margin-top:24px;line-height:1.5}
+  .t-title .date{position:absolute;left:80px;bottom:46px;font-size:16px;opacity:.8}
+
+  /* ── Вердикт-плашка ── */
+  .t-verdict{background:var(--green);justify-content:flex-start;padding:64px 70px 0;color:#fff;position:relative}
+  .t-verdict .panel{background:rgba(255,255,255,.10);border-radius:28px;padding:50px 56px 56px;position:relative}
+  .t-verdict .check{position:absolute;top:-26px;right:40px;width:120px;height:120px;background:#fff;
+    border-radius:26px;display:flex;align-items:center;justify-content:center;font-size:74px;color:#2ecc40;line-height:1}
+  .t-verdict h2{font-family:'Jost',sans-serif;font-weight:700;font-size:90px;line-height:.98;text-transform:uppercase}
+  .t-verdict h2 .ind{margin-left:160px}
+  .t-verdict p{font-size:25px;margin-top:26px;max-width:88%;line-height:1.35;opacity:.95}
+  .t-verdict .pill{position:absolute;right:70px;bottom:42px;border:2px solid rgba(255,255,255,.75);
+    border-radius:30px;padding:13px 28px;font-size:18px}
+
+  /* ── Разделитель ── */
+  .t-divider{background:var(--green);justify-content:center;align-items:center;color:#fff;position:relative}
+  .t-divider .word{font-family:'Jost',sans-serif;font-weight:700;font-size:150px;letter-spacing:4px}
+  .t-divider .cap{position:absolute;bottom:56px;left:0;right:0;text-align:center;font-size:16px;font-style:italic;opacity:.85;padding:0 120px}
+  .t-divider .glyph{position:absolute;top:40px;right:56px;font-family:'Jost';font-weight:700;font-size:26px;letter-spacing:3px;opacity:.9}
+
+  /* ── печать / PDF: каждый слайд = страница landscape ── */
+  @media print{
+    @page{size:1280px 720px;margin:0}
+    body{background:#fff;padding:0}
+    .deck{gap:0}
+    .note{display:none}
+    .slide{box-shadow:none;border-radius:0;page-break-after:always;break-after:page}
+    .slide:last-child{page-break-after:auto}
+  }
+</style>
+</head>
+<body>
+<div class="deck">
+
+  <!-- ══ Титул ══ -->
+  <div class="slide t-title">
+    <img class="corner-logo" src="assets/picnic-logo-transparent.png" alt="ПИКНИК">
+    <div class="glyph">ГЕООТЧЁТ</div>
+    <div class="kicker">Геоаналитический отчёт по локации</div>
+    <div class="name">ПИКНИК</div>
+    <h2>Семейное гастрономическое пространство</h2>
+    <div class="red-rule"></div>
+    <div class="addr">Московская обл., Одинцово, пгт Новоивановское, ул. Западная, стр. 4</div>
+    <div class="date">2026</div>
+  </div>
+
+  <!-- ══ Вердикт ══ -->
+  <div class="slide t-verdict">
+    <div class="panel">
+      <div class="check">✔</div>
+      <h2>ЛОКАЦИЯ<br><span class="ind">ОПТИМАЛЬНА</span></h2>
+      <p>Локация отлично подойдёт как для продуктового рынка, так и для любого другого объекта, ориентированного на проживающее население и на трафик.</p>
+    </div>
+    <div class="pill">листайте ниже, чтоб узнать подробнее</div>
+  </div>
+
+  <!-- ══ Локация ══ -->
+  <div class="slide">
+    <div class="s-head"><h1>Локация</h1><div class="sub">ПИКНИК у Минского шоссе · окружение</div></div>
+    <img class="brand-logo" src="assets/picnic-logo-transparent.png" alt="ПИКНИК">
+    <div class="wide-map">
+      <div class="map"><img src="diagrams/00-обзорный-вид-локации.png" alt="Обзорный вид локации"></div>
+      <div class="under-cap">Обзорный вид ПИКНИК: севернее М-1, жилой массив (Инновация, школы, конкуренты) — южнее</div>
+    </div>
+    <div class="s-foot"><span class="src">Источник: Geointellect</span><span class="num"></span></div>
+  </div>
+
+  <!-- ══ Продуктовая конкуренция (карта + детальные сети) ══ -->
+  <div class="slide">
+    <div class="s-head"><h1>Продуктовая конкуренция рядом</h1><div class="sub">Кто продаёт продукты в зоне</div></div>
+    <img class="brand-logo" src="assets/picnic-logo-transparent.png" alt="ПИКНИК">
+    <div class="grid-tbl">
+      <div class="t"><table>
+        <thead><tr><th>Формат</th><th>Кто рядом</th></tr></thead>
+        <tbody>
+          <tr><td>Рыночный / фермерский</td><td>Каравай (экорынок); Белорусский фермер</td></tr>
+          <tr><td>Качественные сети</td><td>Азбука Вкуса; ВкусВилл</td></tr>
+          <tr><td>Массовые сети</td><td>Пятёрочка, Магнит, Перекрёсток, Лента</td></tr>
+        </tbody>
+      </table>
+      <div class="vline" style="padding:14px 0 0">ПИКНИК конкурирует не с числом рынков, а с плотной продуктовой средой. Отличие — в связке: <b>свежие продукты, готовая еда, доверие и семейный визит</b>.</div>
+      </div>
+      <div class="m"><div class="map">
+        <img src="diagrams/image_2026-06-19_10-17-33.png" alt="Продуктовые точки на карте" style="object-fit:cover">
+        <div class="cap">Продуктовые магазины в зоне · Geointellect / 2GIS</div>
+      </div></div>
+    </div>
+    <div class="s-foot"><span class="src">Источник: 2GIS · Geointellect</span><span class="num"></span></div>
+  </div>
+
+  <!-- ══ Близкие ЖК и апартаменты ══ -->
+  <div class="slide">
+    <div class="s-head"><h1>Близкие ЖК и апартаменты</h1><div class="sub">Жилой и апарт-слой рядом — считать раздельно</div></div>
+    <img class="brand-logo" src="assets/picnic-logo-transparent.png" alt="ПИКНИК">
+    <div class="tbl"><table>
+      <thead><tr><th>Объект</th><th>Что это</th><th>Как считать</th></tr></thead>
+      <tbody>
+        <tr><td>М1 Сколково</td><td>апарт-/гостиничный (1792 нежилых помещения)</td><td>отдельно, не как квартиры</td></tr>
+        <tr><td>Sky Skolkovo</td><td>апарт-/гостиничный (606 нежилых помещений)</td><td>отдельно, не как квартиры</td></tr>
+        <tr><td>УНО. Горбунова</td><td>будущий жилой комплекс (544 квартиры)</td><td>будущая база, ввод 2028</td></tr>
+        <tr><td>ЖК Инновация</td><td>близкий жилой массив</td><td>маршрут проверять отдельно, не исключать</td></tr>
+      </tbody>
+    </table></div>
+    <div class="vline">Жилой и апарт-слой рядом нельзя складывать в одну строку. М1 и Sky дают фактических жителей, но юридически это не квартиры; УНО. Горбунова — будущая база, не аудитория запуска 2026.</div>
+    <div class="s-foot"><span class="src">Источник: наш.дом.рф · 2GIS</span><span class="num"></span></div>
+  </div>
+
+  <!-- ══ Районы вокруг ПИКНИК ══ -->
+  <div class="slide">
+    <div class="s-head"><h1>Районы вокруг ПИКНИК</h1><div class="sub">Официальная численность территорий</div></div>
+    <img class="brand-logo" src="assets/picnic-logo-transparent.png" alt="ПИКНИК">
+    <div class="tbl"><table>
+      <thead><tr><th>Территория</th><th style="text-align:right">Численность</th><th>Как читать</th></tr></thead>
+      <tbody>
+        <tr><td>Новоивановское</td><td class="val acc">13 705</td><td>ближайшая официальная территория</td></tr>
+        <tr><td>Немчиновка</td><td class="val">12 648</td><td>рядом, но барьер железной дороги</td></tr>
+        <tr><td>Заречье</td><td class="val">11 609</td><td>платёжеспособный сосед, не прямая база</td></tr>
+        <tr><td>Одинцово</td><td class="val">189 797</td><td>крупный слой в авто-доступности</td></tr>
+        <tr><td>Одинцовский округ</td><td class="val">488 473</td><td>широкий районный контекст</td></tr>
+      </tbody>
+    </table></div>
+    <div class="vline">ПИКНИК — внутри крупной западной жилой зоны. Но официальная численность района ≠ аудитория точки: важны доступность, маршруты, барьеры и повод приехать.</div>
+    <div class="s-foot"><span class="src">Источник: открытые источники, перепись</span><span class="num"></span></div>
+  </div>
+
+  <!-- ══ География → аудитория и запуск ══ -->
+  <div class="slide">
+    <div class="s-head"><h1>От географии — к аудитории запуска</h1><div class="sub">Какие группы и каналы важны первыми</div></div>
+    <img class="brand-logo" src="assets/picnic-logo-transparent.png" alt="ПИКНИК">
+    <div class="tbl"><table>
+      <thead><tr><th>Геослой</th><th>Кто это</th><th>Как использовать</th></tr></thead>
+      <tbody>
+        <tr><td>Пешая зона</td><td>ближайшие жители и люди у ТВЦ</td><td>быстрые заходы, короткие покупки</td></tr>
+        <tr><td>Авто 5–15 минут</td><td>Новоивановское, Инновация, М1/Sky</td><td>закупка домой, готовая еда, семейный визит</td></tr>
+        <tr><td>Минское направление</td><td>люди, которые едут мимо</td><td>наружная реклама, навигация, понятный повод заехать</td></tr>
+        <tr><td>Продуктовая среда</td><td>сети, ВкусВилл, Азбука, Каравай</td><td>объяснить отличие ПИКНИК</td></tr>
+        <tr><td>Апарт-жилой слой</td><td>М1 / Sky</td><td>отдельная коммуникация, не обычные семьи из ЖК</td></tr>
+      </tbody>
+    </table></div>
+    <div class="vline">Геоаналитика показывает, какие группы и каналы запуска важны первыми. Внутри стартовой аудитории — несколько сегментов, а не один поток.</div>
+    <div class="s-foot"><span class="src">Источник: сводка геоаналитики</span><span class="num"></span></div>
+  </div>
+
+  <!-- ══ Зона автомобильной доступности (визуал целиком) ══ -->
+  <div class="slide access">
+    <img class="brand-logo" src="assets/picnic-logo-transparent.png" alt="ПИКНИК">
+    <img class="access-img" src="визуализации/карта-автоизохрона-ПИКНИК-5-10-15-desktop.png" alt="Зона автомобильной доступности 5/10/15 минут">
+  </div>
+
+  <!-- ══ Зона пешеходной доступности (визуал целиком) ══ -->
+  <div class="slide access">
+    <img class="brand-logo" src="assets/picnic-logo-transparent.png" alt="ПИКНИК">
+    <img class="access-img" src="визуализации/карта-пешеходная-доступность-ПИКНИК-5-10-15-desktop.png" alt="Зона пешеходной доступности 5/10/15 минут">
+  </div>
+
+  <!-- ══ Разделитель ══ -->
+  <div class="slide t-divider">
+    <div class="glyph">ПИКНИК</div>
+    <div class="word">Анализ</div>
+    <div class="cap">Подробные показатели геоаналитики по слоям: проживающие, доход, чек, выручка, трафик, возраст.</div>
+  </div>
+
+  <!-- ══ Проживающие — радиус 500 м (массив) ══ -->
+  <div class="slide">
+    <div class="s-head"><h1>Анализ проживающих</h1><div class="sub">Радиус 500 м · жилой массив южнее М-1</div></div>
+    <img class="brand-logo" src="assets/picnic-logo-transparent.png" alt="ПИКНИК">
+    <div class="grid-cards">
+      <div class="cards"><div class="numcard"><div class="n">7 963</div><div class="c">Домохозяйств в радиусе 500 м</div><span class="tag fact">Geointellect</span></div></div>
+      <div class="side"><div class="map">
+        <img src="diagrams/image_2026-06-19_10-15-32.png" alt="Квартиры в радиусе 500 м, жилой массив">
+        <div class="cap">Количество квартир в радиусе 500 м · Geointellect</div>
+      </div></div>
+    </div>
+    <div class="s-foot"><span class="src">Источник: Geointellect</span><span class="num"></span></div>
+  </div>
+
+  <!-- ══ Проживающие — радиус 500 м ══ -->
+  <div class="slide">
+    <div class="s-head"><h1>Анализ проживающих</h1><div class="sub">Радиус 500 м</div></div>
+    <img class="brand-logo" src="assets/picnic-logo-transparent.png" alt="ПИКНИК">
+    <div class="grid-cards">
+      <div class="cards"><div class="numcard"><div class="n">1 321</div><div class="c">Домохозяйств в радиусе 500 м</div><span class="tag fact">Geointellect</span></div></div>
+      <div class="side"><div class="map">
+        <img src="diagrams/image_2026-06-19_10-16-31.png" alt="Квартиры в радиусе 500 м">
+        <div class="cap">Количество квартир в радиусе 500 м · Geointellect</div>
+      </div></div>
+    </div>
+    <div class="s-foot"><span class="src">Источник: Geointellect</span><span class="num"></span></div>
+  </div>
+
+  <!-- ══ Уровень доходов ══ -->
+  <div class="slide">
+    <div class="s-head"><h1>Анализ проживающих. Уровень доходов</h1><div class="sub">Новоивановское · радиус 500 м</div></div>
+    <img class="brand-logo" src="assets/picnic-logo-transparent.png" alt="ПИКНИК">
+    <div class="grid-cards"><div class="cards wide">
+      <div class="numcard"><div class="n">368 <small>тыс ₽/мес</small></div><div class="c">Средний доход семьи из 2 чел.<sup>*</sup></div><span class="tag fact">Geointellect</span></div>
+      <div class="numcard"><div class="n">101 <small>%</small></div><div class="c">Отношение среднего дохода в зоне к среднему доходу по городу</div></div>
+    </div></div>
+    <div class="footnote"><sup>*</sup> Уровень доходов оценивается на семью без детей на основании мат-модели, которая учитывает цену аренды недвижимости и коррелирует с большими геоданными мобильных операторов. По нашим исследованиям все приведённые на слайде показатели города так или иначе отражают респектабельность локации.</div>
+    <div class="s-foot"><span class="src">Источник: Geointellect</span><span class="num"></span></div>
+  </div>
+
+  <!-- ══ Средний чек ══ -->
+  <div class="slide">
+    <div class="s-head"><h1>Анализ зоны. Средний чек</h1><div class="sub">Новоивановское · покупательная среда</div></div>
+    <img class="brand-logo" src="assets/picnic-logo-transparent.png" alt="ПИКНИК">
+    <div class="grid-cards">
+      <div class="cards"><div class="numcard"><div class="n">≈ 7 000 <small>₽</small></div><div class="c">Средний чек в зоне</div><span class="tag fact">Geointellect · ФНС</span></div></div>
+      <div class="side"><div class="map">
+        <img src="diagrams/image_2026-06-19_10-11-22.png" alt="Средний чек по ячейкам, hexbin">
+        <div class="cap">Средний чек по ячейкам (hexbin) · Geointellect</div>
+      </div></div>
+    </div>
+    <div class="s-foot"><span class="src">Источник: Geointellect · ФНС</span><span class="num"></span></div>
+  </div>
+
+  <!-- ══ Выручка объектов ══ -->
+  <div class="slide">
+    <div class="s-head"><h1>Анализ зоны. Выручка объектов</h1><div class="sub">Новоивановское · недельная выручка объектов в зоне</div></div>
+    <img class="brand-logo" src="assets/picnic-logo-transparent.png" alt="ПИКНИК">
+    <div class="grid-cards">
+      <div class="cards"><div class="numcard"><div class="n">≈ 55 <small>млн ₽/нед</small></div><div class="c">Недельная выручка объектов в зоне (красным у ПИКНИКа)</div><span class="tag fact">Geointellect</span></div></div>
+      <div class="side"><div class="map">
+        <img src="diagrams/image_2026-06-19_10-12-04.png" alt="Недельная выручка объектов по ячейкам, hexbin">
+        <div class="cap">Недельная выручка объектов по ячейкам (hexbin) · Geointellect</div>
+      </div></div>
+    </div>
+    <div class="s-foot"><span class="src">Источник: Geointellect</span><span class="num"></span></div>
+  </div>
+
+  <!-- ══ Автотрафик уникальный ══ -->
+  <div class="slide">
+    <div class="s-head"><h1>Анализ трафика. Автомобильный</h1><div class="sub">Уникальные автомобили в сутки</div></div>
+    <img class="brand-logo" src="assets/picnic-logo-transparent.png" alt="ПИКНИК">
+    <div class="grid-cards">
+      <div class="cards"><div class="numcard"><div class="n">17 896</div><div class="c">Уникальных авто в сутки в ячейке у ПИКНИК</div><span class="tag fact">Geointellect</span></div></div>
+      <div class="side"><div class="map">
+        <img src="diagrams/photo_2026-06-19_14-06-23.jpg" alt="Уникальные авто по ячейкам, hexbin">
+        <div class="cap">Уникальные авто в сутки по ячейкам (hexbin), 2025 · Geointellect</div>
+      </div></div>
+    </div>
+    <div class="s-foot"><span class="src">Источник: Geointellect</span><span class="num"></span></div>
+  </div>
+
+  <!-- ══ Автотрафик неуникальный ══ -->
+  <div class="slide">
+    <div class="s-head"><h1>Анализ трафика. Автомобильный</h1><div class="sub">Неуникальные проезды в сутки (поток по М-1)</div></div>
+    <img class="brand-logo" src="assets/picnic-logo-transparent.png" alt="ПИКНИК">
+    <div class="grid-cards">
+      <div class="cards">
+        <div class="numcard"><div class="n">120–170 <small>тыс</small></div><div class="c">Неуникальных проездов в сутки по Минскому шоссе</div><span class="tag fact">Geointellect</span></div>
+        <div class="numcard"><div class="n">25 508</div><div class="c">В ячейке у ПИКНИК</div></div>
+      </div>
+      <div class="side"><div class="map">
+        <img src="diagrams/photo_2026-06-19_14-06-29.jpg" alt="Неуникальные авто по ячейкам, hexbin">
+        <div class="cap">Неуникальные авто в сутки по ячейкам (hexbin), 2025 · Geointellect</div>
+      </div></div>
+    </div>
+    <div class="s-foot"><span class="src">Источник: Geointellect</span><span class="num"></span></div>
+  </div>
+
+  <!-- ══ Автотрафик по дорогам ══ -->
+  <div class="slide">
+    <div class="s-head"><h1>Анализ трафика. Автомобильный. По дорогам</h1><div class="sub">Как идёт автопоток по улицам</div></div>
+    <img class="brand-logo" src="assets/picnic-logo-transparent.png" alt="ПИКНИК">
+    <div class="wide-map">
+      <div class="map"><img src="diagrams/image_2026-06-19_10-13-03.png" alt="Автотрафик по дорогам"></div>
+      <div class="under-cap">Неуникальные автомобилисты в сутки по дорогам · Geointellect</div>
+    </div>
+    <div class="s-foot"><span class="src">Источник: Geointellect</span><span class="num"></span></div>
+  </div>
+
+  <!-- ══ Пешеходы уникальные ══ -->
+  <div class="slide">
+    <div class="s-head"><h1>Анализ трафика. Пеший</h1><div class="sub">Уникальные пешеходы в сутки</div></div>
+    <img class="brand-logo" src="assets/picnic-logo-transparent.png" alt="ПИКНИК">
+    <div class="grid-cards">
+      <div class="cards"><div class="numcard"><div class="n">2 286</div><div class="c">Уникальных пешеходов в сутки в ячейке у ПИКНИК</div><span class="tag fact">Geointellect</span></div></div>
+      <div class="side"><div class="map">
+        <img src="diagrams/photo_2026-06-19_14-06-03.jpg" alt="Уникальные пешеходы по ячейкам, hexbin">
+        <div class="cap">Уникальные пешеходы в сутки по ячейкам (hexbin), 2025 · Geointellect</div>
+      </div></div>
+    </div>
+    <div class="s-foot"><span class="src">Источник: Geointellect</span><span class="num"></span></div>
+  </div>
+
+  <!-- ══ Пешеходы неуникальные ══ -->
+  <div class="slide">
+    <div class="s-head"><h1>Анализ трафика. Пеший</h1><div class="sub">Неуникальные пешеходы в сутки</div></div>
+    <img class="brand-logo" src="assets/picnic-logo-transparent.png" alt="ПИКНИК">
+    <div class="grid-cards">
+      <div class="cards"><div class="numcard"><div class="n">4 588</div><div class="c">Неуникальных пешеходов в сутки в ячейке у ПИКНИК</div><span class="tag fact">Geointellect</span></div></div>
+      <div class="side"><div class="map">
+        <img src="diagrams/photo_2026-06-19_14-06-14.jpg" alt="Неуникальные пешеходы по ячейкам, hexbin">
+        <div class="cap">Неуникальные пешеходы в сутки по ячейкам (hexbin), 2025 · Geointellect</div>
+      </div></div>
+    </div>
+    <div class="s-foot"><span class="src">Источник: Geointellect</span><span class="num"></span></div>
+  </div>
+
+  <!-- ══ Пешеходы по дорожкам ══ -->
+  <div class="slide">
+    <div class="s-head"><h1>Анализ трафика. Пеший. По дорожкам</h1><div class="sub">Как идёт пеший поток по дорожкам</div></div>
+    <img class="brand-logo" src="assets/picnic-logo-transparent.png" alt="ПИКНИК">
+    <div class="wide-map">
+      <div class="map"><img src="diagrams/image_2026-06-19_10-13-40.png" alt="Пешеходы по дорожкам"></div>
+      <div class="under-cap">Неуникальные пешеходы в сутки по дорожкам · Geointellect</div>
+    </div>
+    <div class="s-foot"><span class="src">Источник: Geointellect</span><span class="num"></span></div>
+  </div>
+
+  <!-- ══ Народные тропы ══ -->
+  <div class="slide">
+    <div class="s-head"><h1>Анализ трафика. Пеший. Народные тропы</h1><div class="sub">Реальные пешеходные маршруты к точкам притяжения</div></div>
+    <img class="brand-logo" src="assets/picnic-logo-transparent.png" alt="ПИКНИК">
+    <div class="wide-map">
+      <div class="map"><img src="diagrams/image_2026-06-19_10-18-11.png" alt="Народные тропы"></div>
+      <div class="under-cap">Народные тропы — реальные пешеходные маршруты · Geointellect</div>
+    </div>
+    <div class="s-foot"><span class="src">Источник: Geointellect</span><span class="num"></span></div>
+  </div>
+
+  <!-- ══ Возраст ══ -->
+  <div class="slide">
+    <div class="s-head"><h1>Анализ проживающих. Возраст</h1><div class="sub">Доля взрослых 25–49 лет</div></div>
+    <img class="brand-logo" src="assets/picnic-logo-transparent.png" alt="ПИКНИК">
+    <div class="grid-cards">
+      <div class="cards"><div class="numcard"><div class="n">≈ 33 <small>%</small></div><div class="c">Доля взрослых 25–49 лет в зоне</div><span class="tag fact">Geointellect</span></div></div>
+      <div class="side"><div class="map">
+        <img src="diagrams/image_2026-06-19_10-18-58.png" alt="Доля взрослых 25-49, hexbin">
+        <div class="cap">Доля взрослых 25–49 лет по ячейкам (hexbin) · Geointellect</div>
+      </div></div>
+    </div>
+    <div class="s-foot"><span class="src">Источник: Geointellect</span><span class="num"></span></div>
+  </div>
+
+  <!-- ══ Выводы (финал) ══ -->
+  <div class="slide">
+    <div class="s-head"><h1>Выводы по локации</h1><div class="sub">Что геоаналитика говорит о месте ПИКНИК</div></div>
+    <img class="brand-logo" src="assets/picnic-logo-transparent.png" alt="ПИКНИК">
+    <div class="lists">
+      <h3 class="plus">Сильные стороны</h3>
+      <ol>
+        <li>Высокий доход: район в верхней части шкалы, доход семьи — на уровне среднего по Москве.</li>
+        <li>Большая жилая база рядом — Новоивановское и соседние территории, плюс новые жилые и апарт-комплексы.</li>
+        <li>Мощный автомобильный поток по Минскому шоссе — постоянные контакты с трассы.</li>
+        <li>Живой продуктовый спрос: рядом много магазинов — люди уже привыкли покупать продукты регулярно и качественно.</li>
+        <li>Район активно развивается — новое строительство и приток жителей.</li>
+      </ol>
+      <h3 class="risk">На что обратить внимание</h3>
+      <ol>
+        <li>Высокая конкуренция за регулярную покупку — нужно понятное отличие ПИКНИК.</li>
+        <li>Барьер Минского шоссе: с жилой стороны удобнее заезжать на машине.</li>
+      </ol>
+      <div class="concl"><b>Вывод:</b> локация сильная и растущая. ПИКНИК заходит в платёжеспособный, активно развивающийся район с большим трафиком. Для формата ТВЦ со свежими продуктами, готовой едой и семейным сценарием здесь хорошие перспективы — а арендаторам это даёт поток и платёжеспособного покупателя.</div>
+    </div>
+    <div class="s-foot"><span class="src">Источники: Geointellect · 2GIS · открытые источники</span><span class="num"></span></div>
+  </div>
+
+</div>
+</body>
+</html>
