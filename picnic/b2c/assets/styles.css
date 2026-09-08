@@ -1,0 +1,817 @@
+/* ============================================================
+   ПИКНИК · покупательский сайт, версия 3
+   Три экрана гейта 3. Композиция согласована владельцем 04.09.2026.
+   Токены — брендбук клиента (brand/style-guide.md), пять цветов.
+   ⛔ Палитра забракованной v2 не берётся: она была снята с
+   референса арендаторского сайта (кремовый фон, скругления 18/28).
+   ============================================================
+   1. Токены · 2. Сброс · 3. Типографика · 4. Контейнер и секции
+   5. Шапка · 6. Кнопки · 7. Первый экран · 8. Карточки направлений
+   9. Карточки блога · 10. Утилиты
+   ============================================================ */
+
+/* ---------- 1. ТОКЕНЫ ---------- */
+:root{
+  /* Пять цветов брендбука, посимвольно. Расширять набор нельзя. */
+  --c-red:    #ac120d;
+  --c-green:  #006633;
+  --c-black:  #1d1d1b;
+  --c-yellow: #f4ba3c;
+  --c-gray:   #7e8182;
+  --c-white:  #ffffff;
+
+  --bg-base:  var(--c-white);
+  --bg-dark:  var(--c-black);
+  --bg-wash:  #f8f6f2;            /* чередующийся фон секций принятой версии 1 */
+  --bg-green: var(--c-green);     /* заливка секций: лояльность, открытие */
+
+  --text-on-light:  var(--c-black);
+  --text-on-dark:   var(--c-white);
+  --muted-on-light: rgba(29,29,27,.66);
+  --muted-on-dark:  rgba(255,255,255,.86);
+
+  --line-light: rgba(29,29,27,.12);
+  --line-dark:  rgba(255,255,255,.22);
+
+  /* Скругления и тени — по принятому клиентом лендингу 22.06 */
+  --r:    4px;
+  --r-lg: 10px;
+  --sh-card: 0 8px 24px -14px rgba(29,29,27,.28);
+
+  --step: 8px;
+  --gap:  calc(var(--step) * 3);
+  --container: 1240px;
+  --pad-x: calc(var(--step) * 2);
+
+  --ff-display: 'Jost', 'Trebuchet MS', sans-serif;
+  --ff-text:    'Roboto', Arial, sans-serif;
+  --ff-logo:    'BosaNova', 'Jost', sans-serif;
+}
+
+/* ---------- 2. СБРОС ---------- */
+*,*::before,*::after{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:84px}
+/* Без scroll-padding-top переход по якорю прячет заголовок секции под липкой шапкой. */
+@media (prefers-reduced-motion: reduce){ html{scroll-behavior:auto} }
+body{margin:0;background:var(--bg-base);color:var(--text-on-light);
+  font:400 17px/1.55 var(--ff-text);-webkit-font-smoothing:antialiased}
+img{display:block;max-width:100%;height:auto}
+ul{margin:0;padding:0;list-style:none}
+a{color:inherit}
+:focus-visible{outline:3px solid var(--c-yellow);outline-offset:2px}
+
+/* ---------- 3. ТИПОГРАФИКА ---------- */
+h1,h2,h3{margin:0;font-family:var(--ff-display);font-weight:700;
+  text-transform:uppercase;line-height:1.08;letter-spacing:.01em}
+h1{font-size:clamp(32px,5.4vw,60px);letter-spacing:.01em}
+h1 em{font-style:normal;color:var(--c-yellow)}
+h2{font-size:clamp(27px,4vw,42px);letter-spacing:.02em}
+h3{font-size:clamp(15px,1.5vw,19px);letter-spacing:.04em}
+p{margin:0 0 calc(var(--step) * 2)}
+p:last-child{margin-bottom:0}
+.eyebrow{font-family:var(--ff-display);font-weight:600;text-transform:uppercase;
+  letter-spacing:.12em;font-size:13px;color:var(--c-green);margin-bottom:var(--step)}
+.eyebrow--on-dark{color:var(--c-yellow)}
+.lead{font-size:clamp(17px,1.9vw,21px);line-height:1.5;color:var(--muted-on-light)}
+.lead--on-dark{color:var(--muted-on-dark)}
+
+/* ---------- 4. КОНТЕЙНЕР И СЕКЦИИ ----------
+   Один контейнер на шапку и все секции: left у логотипа,
+   H1 и заголовков секций совпадает (свод правил, раздел 15). */
+.container{width:100%;max-width:var(--container);margin:0 auto;padding:0 var(--pad-x)}
+.section{padding:calc(var(--step) * 7) 0}
+.section--wash{background:var(--bg-wash)}
+.section__head{max-width:70ch;margin-bottom:calc(var(--step) * 4)}
+.section__head p{margin-top:calc(var(--step) * 2)}
+
+/* ---------- 5. ШАПКА ---------- */
+.site-header{position:sticky;top:0;z-index:30;background:var(--c-green);color:var(--text-on-dark)}
+.site-header__inner{display:flex;align-items:center;gap:calc(var(--step) * 2);
+  min-height:calc(var(--step) * 9)}
+.site-brand{display:flex;align-items:center;gap:calc(var(--step) * 1.5);
+  text-decoration:none;flex:none}
+.site-brand__logo{width:44px;height:44px}
+.site-brand__logo{border-radius:50%;background:var(--c-white)}
+.site-brand__word{font-family:var(--ff-display);font-weight:700;font-size:22px;line-height:1;
+  text-transform:uppercase;letter-spacing:.02em;color:var(--text-on-dark)}
+.site-brand__sub{display:block;font-family:var(--ff-text);font-size:11px;
+  letter-spacing:.06em;text-transform:uppercase;color:var(--muted-on-dark);margin-top:3px}
+.site-nav{margin-left:auto}
+.site-nav--open{position:absolute;left:0;right:0;top:100%;background:var(--c-green);
+  padding:calc(var(--step) * 2) var(--pad-x) calc(var(--step) * 3);
+  border-top:1px solid var(--line-dark);box-shadow:0 18px 32px -18px rgba(0,0,0,.6)}
+.site-nav--open .site-nav__list{display:grid;gap:0}
+.site-nav--open .site-nav__list a{display:block;padding:calc(var(--step) * 1.5) 0;
+  border-bottom:1px solid var(--line-dark);font-size:15px}
+.site-header__inner{position:relative}
+.site-header__cta[hidden],.socials[hidden]{display:none!important}
+
+.site-nav__list{display:none;gap:calc(var(--step) * 3)}
+.site-nav__list a{text-decoration:none;font-family:var(--ff-display);font-weight:600;
+  text-transform:uppercase;letter-spacing:.02em;font-size:12px;padding:6px 0;white-space:nowrap;
+  color:var(--text-on-dark);border-bottom:2px solid transparent}
+.site-nav__list a:hover{border-bottom-color:var(--c-yellow)}
+.site-header__side{display:flex;align-items:center;gap:calc(var(--step) * 1.5);margin-left:auto;flex:none}
+.socials{display:none;gap:calc(var(--step) * 1.5)}
+/* ⛔ На 360 три значка рядом с логотипом и гамбургером не влезают: шапка
+   уезжала на 112 px. Поймано прогоном 04.09. На телефоне значки живут
+   в подвале, в шапке появляются с 700 px. */
+.socials__link{display:grid;place-content:center;width:44px;height:44px;border-radius:var(--r);
+  color:var(--text-on-dark);border:1px solid var(--line-dark);text-decoration:none}
+.socials__link:hover{color:var(--c-yellow);border-color:var(--c-yellow)}
+.socials__link--text{font-family:var(--ff-display);font-weight:700;font-size:12px;
+  letter-spacing:.06em;text-decoration:none}
+.nav-toggle{width:48px;height:44px;display:grid;place-content:center;
+  gap:5px;background:none;border:1px solid var(--line-dark);border-radius:var(--r);cursor:pointer}
+.nav-toggle__bar{display:block;width:22px;height:2px;background:var(--c-white)}
+.site-header .btn{display:none}
+.site-nav{order:1}
+.site-header__side{order:2}
+
+/* ---------- 6. КНОПКИ ---------- */
+.btn{display:inline-flex;align-items:center;justify-content:center;text-align:center;
+  min-height:48px;padding:0 calc(var(--step) * 3);border-radius:var(--r);
+  font-family:var(--ff-display);font-weight:600;text-transform:uppercase;
+  letter-spacing:.04em;font-size:14px;text-decoration:none;border:2px solid transparent;
+  cursor:pointer}
+.btn--primary{background:var(--c-red);color:var(--c-white)}
+.btn--primary:hover{background:#920f0b}
+.btn--ghost-dark{border-color:var(--line-dark);color:var(--text-on-dark)}
+.btn--ghost-dark:hover{border-color:var(--c-white)}
+.btn--ghost{border-color:var(--c-black);color:var(--c-black)}
+
+/* ---------- 7. ПЕРВЫЙ ЭКРАН ----------
+   Кадр не выбран: решение владельца по кадру принимается отдельно.
+   Экран собран так, чтобы принять кадр 3:2 без переделки сетки:
+   фон уходит в .hero__media, текст лежит поверх на тёмной подложке. */
+.hero{position:relative;background:var(--bg-dark);color:var(--text-on-dark);
+  overflow:hidden}
+/* ---- База, до 900 px: раскладка М4, решение владельца 07.09 ----
+   Кадр кропом 4:5 идёт ЛЕНТОЙ НАД текстом, не подложкой. Причина: широкий
+   кадр 3:2 в высоком первом экране телефона обрезался до 23% своей ширины
+   и читался тёмной полосой — «просто тёмный экран», как это назвал владелец.
+   Лечится вторым файлом и сменой раскладки, а не прозрачностью градиента. */
+.hero{display:flex;flex-direction:column}
+.hero__media{position:relative;inset:auto;order:1;aspect-ratio:4/5;max-height:58vh}
+.hero__inner{order:2}
+.hero__media picture{display:block;height:100%}
+.hero__media img{width:100%;height:100%;object-fit:cover;object-position:center center}
+/* Подложка кадра: тёмный градиент СЛЕВА НАПРАВО — текст слева на тёмном,
+   кадр справа светлый. Приём взят с версии 1, которую принял клиент; там он
+   шёл сверху вниз. Цвет нейтрально-тёмный, НЕ зелёный: зелёный скрим на
+   ярком зале и был «зелёной мутью», за которую забракована v2.
+   Вторая строка — вуаль по низу: она уводит из читаемости ценники на
+   корзинах. Читаемая цена на первом экране это обещание цены, а своих цен
+   у рынка до открытия нет — чек-лист публичных обещаний. */
+.hero__media::after{content:"";position:absolute;inset:0;pointer-events:none;
+  background:linear-gradient(to bottom, rgba(20,20,18,0) 0%,
+    rgba(20,20,18,.10) 62%, rgba(20,20,18,.72) 100%)}
+.hero__inner{position:relative;padding-top:calc(var(--step) * 7);padding-bottom:calc(var(--step) * 6)}
+/* ⛔ Здесь стоял сокращённый padding с нулём по горизонтали — он перебивал
+   padding контейнера, и H1 вылезал к краю: left 0 против 16 у логотипа.
+   Раздел 15 свода правил, поймано прогоном 04.09. */
+.hero__grid{display:grid;gap:calc(var(--step) * 4)}
+/* Надзаголовок первого экрана — приём версии 1 `.hero__kicker`: черта,
+   затем прописные врозь. Текст «Открытие — осень 2026» добавлен решением
+   владельца 07.09.
+   ⚠️ Рядом в буллетах стоит «Открываемся 10 сентября» — две разные даты на
+   одном экране. Вынесено владельцу, сам не выбирал. */
+.hero__kicker{display:inline-flex;align-items:center;gap:10px;
+  font-family:var(--ff-display);font-weight:700;font-size:11px;
+  letter-spacing:.2em;text-transform:uppercase;color:var(--c-yellow);
+  margin-bottom:calc(var(--step) * 2)}
+.hero__kicker::before{content:"";display:block;width:30px;height:2px;
+  background:var(--c-yellow)}
+.hero__title{max-width:22ch;font-size:clamp(34px,5.4vw,70px);letter-spacing:.008em}
+/* Лид переведён на display-шрифт решением владельца 07.09: «можно более
+   интересным шрифтом». В версии 1 на этом месте стоял список тем же Jost,
+   что и заголовок, — отсюда её плотность. */
+.hero__lead{margin-top:calc(var(--step) * 2);max-width:44ch;
+  font-family:var(--ff-display);font-weight:400;
+  font-size:clamp(17px,1.5vw,21px);line-height:1.45;letter-spacing:.005em}
+.hero__facts{margin-top:calc(var(--step) * 4);display:grid;gap:var(--step);
+  font-size:16px;color:var(--muted-on-dark)}
+/* Буллеты идут с иконками того же объёмного набора, что стоит в версии 1:
+   geometka, kalendar, parkovka. Жёлтая точка снята решением владельца 07.09.
+   Иконка всегда с текстом рядом — немых иконок на странице нет. */
+/* Буллеты капсулами — приём версии 1 (`.hero__pill`): полупрозрачная подложка,
+   светлая рамка, блюр. Шрифт display, не текстовый: в версии 1 эти строки шли
+   тем же шрифтом, что заголовок, и читались плотнее. */
+.hero__facts{gap:calc(var(--step) * 1.5)}
+.hero__facts li{display:inline-flex;width:fit-content;gap:10px;align-items:center;
+  background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.18);
+  backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
+  border-radius:var(--r-md, 12px);padding:9px 14px;
+  font-family:var(--ff-display);font-weight:500;font-size:15px;
+  letter-spacing:.01em;color:rgba(255,255,255,.95)}
+.hero__facts-ico{width:22px;height:22px;flex-shrink:0;object-fit:contain}
+.hero__cta{margin-top:calc(var(--step) * 4);display:grid;gap:calc(var(--step) * 1.5)}
+.hero__badge{margin-top:calc(var(--step) * 2);display:inline-flex;align-items:center;
+  min-height:34px;padding:0 calc(var(--step) * 2);border:1px solid var(--line-dark);
+  border-radius:999px;font-size:13px;color:var(--muted-on-dark)}
+/* Панель цифр полупрозрачная — приём версии 1, которую принял клиент:
+   `rgba(0,102,51,.30)` с блюром и светлой рамкой. Решение владельца 07.09:
+   «полупрозрачный смотрится гораздо интереснее».
+   ⚠️ Две поправки против версии 1, обе по факту, а не по вкусу. Первая: альфа
+   поднята .30 → .88/.94, потому что у нас кадр под панелью светлый — градиент
+   к правому краю почти прозрачный, и на .30 подписи проваливались по контрасту
+   (замер 4.4 при пороге 4.5). Вторая: блюр снижен 10 → 3 px. В версии 1 панель
+   стояла на тёмной части кадра и блюр читался мягко; у нас под ней светлая
+   витрина, и сильный блюр давал мутные зелёные пятна вместо фактуры. */
+.stats{background:rgba(0,102,51,.30);border:1px solid rgba(255,255,255,.18);
+  backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+  border-radius:var(--r-lg);padding:calc(var(--step) * 3);align-self:start;
+  box-shadow:0 18px 44px rgba(0,0,0,.35)}
+/* ⛔ Было 12px цветом --c-yellow: контраст 4.05 при пороге 4.5 для мелкого
+   текста. Дефект стоял в принятой сборке и от кадра не зависел — одно и то же
+   число в девяти прогонах. Кегль поднят до 13 и цвет осветлён; числа панели
+   остаются жёлтыми, они кеглем 30 и проходят по своему порогу. */
+.stats__title{font-family:var(--ff-display);font-weight:700;text-transform:uppercase;letter-spacing:.1em;
+  font-size:19px;letter-spacing:.04em;color:var(--c-yellow);white-space:nowrap;
+  margin-bottom:calc(var(--step) * 2);padding-bottom:calc(var(--step) * 1.5);
+  border-bottom:1px solid rgba(255,255,255,.16)}
+/* Раскладка панели взята с версии 1: число слева, подпись справа в той же
+   строке по базовой линии. Плотнее вертикальной раскладки почти вдвое —
+   это и делало панель версии 1 компактной, за что владелец её и хвалил. */
+.stats__list{display:grid;gap:calc(var(--step) * 2)}
+.stats__list li{display:grid;grid-template-columns:auto 1fr;gap:14px;align-items:baseline}
+.stats__num{display:block;font-family:var(--ff-display);font-weight:700;font-size:30px;
+  line-height:1;color:var(--c-yellow);min-width:64px}
+.stats__label{display:block;font-size:14px;line-height:1.35;color:var(--muted-on-dark)}
+/* ⛔ Оба были inline: число и подпись слипались в «3 000м² торгового зала»,
+   margin-top на inline не действует. Это класс дефекта 5 браковки v2
+   («Мясо— четыре точки»). Поймано глазами на снимке 04.09, числа молчали. */
+
+/* ---------- 8. КАРТОЧКИ НАПРАВЛЕНИЙ ----------
+   Одиннадцать карточек. У четырёх кадр принят, у остальных кадра нет:
+   карточка живёт подписью и строкой, серого бокса не появляется. */
+.cards{display:grid;gap:var(--gap);grid-template-columns:repeat(2,1fr)}
+.card{display:flex;flex-direction:column;gap:calc(var(--step) * 1.5);
+  border:1px solid var(--line-light);border-radius:var(--r-lg);overflow:hidden;
+  background:var(--bg-base);box-shadow:var(--sh-card)}
+.card__media{aspect-ratio:1/1;background:var(--bg-wash)}
+/* Карточка продавца: портрет 4:5 по композиции 04.09. Фото реальные, из
+   принятого лендинга 22.06, провенанс — materials/assets/foto-rezidentov-lending-22-06/ */
+.card--person .card__media{aspect-ratio:4/5}
+/* Бренд-плашка резидента: знак не кадрируется под край, вокруг него воздух. */
+.card--brand .card__media img{object-fit:contain;padding:calc(var(--step) * 2);
+  background:var(--bg-wash)}
+
+/* ---- Печать «ожидаем информацию от резидента» ----
+   Решение владельца 07.09: у направления без имени резидента вместо кадра
+   стоит нарисованная печать. Это НЕ серый бокс с подписью, за который
+   забракована v2: там был пустой слот с инструкцией внутри, здесь — приём.
+   Печать делается разметкой и CSS, файлов не требует. */
+.card__media--stamp{display:flex;align-items:center;justify-content:center;
+  background:var(--bg-wash)}
+.stamp{width:76%;aspect-ratio:1/1;border-radius:50%;
+  border:3px solid var(--c-green);box-shadow:inset 0 0 0 5px var(--bg-wash),
+  inset 0 0 0 8px var(--c-green);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:.12em;transform:rotate(-7deg);color:var(--c-green);opacity:.82;
+  font-family:var(--ff-display);font-weight:700;text-transform:uppercase;
+  text-align:center;line-height:1.05;letter-spacing:.06em;padding:8%}
+.stamp__l1{font-size:clamp(11px,2.1vw,17px)}
+.stamp__l2{font-size:clamp(13px,2.6vw,21px)}
+.stamp__l3{font-size:clamp(11px,2.1vw,17px)}
+.card__media img{width:100%;height:100%;object-fit:cover}
+.card__body{padding:calc(var(--step) * 2);display:flex;flex-direction:column;
+  gap:calc(var(--step))}
+.card--no-media .card__body{padding-top:calc(var(--step) * 3)}
+
+/* ---- Раскрывающаяся карточка резидента (показательная, блок фудкорта) ----
+   Решение владельца 08.09: сделать одну карточку показательно и на ней
+   показать, как заполнятся остальные, когда резиденты дадут данные.
+   Сделано нативным <details>: раскрывается по нажатию и РАБОТАЕТ БЕЗ JS —
+   требование стека проекта. Наведение сознательно не используется: на
+   тач-устройствах его нет, а карточка должна открываться пальцем.
+   Портал в body не нужен — это не модалка, а раскрытие на месте. */
+.card--open{padding:0}
+/* Корнеры: карточки НЕ тянутся по высоте ряда. Иначе раскрытая карточка
+   резидента растягивает трёх соседей, и рядом с ней стоят пустые высокие плиты.
+   В блоке направлений растяжка наоборот нужна — поэтому класс свой. */
+.cards--corners{align-items:start}
+.corner{display:block}
+.corner__face{display:block;cursor:pointer;list-style:none;position:relative;
+  padding-bottom:calc(var(--step) * 5)}
+.corner__face::-webkit-details-marker{display:none}
+.corner__face .card__body{display:block;padding-bottom:var(--step)}
+.corner__face .card__kicker,
+.corner__face .card__title,
+.corner__face .card__text{display:block}
+.corner__more{position:absolute;left:calc(var(--step) * 2);
+  bottom:calc(var(--step) * 2);font-family:var(--ff-display);font-weight:700;
+  font-size:13px;letter-spacing:.04em;text-transform:uppercase;color:var(--c-green)}
+.corner__more::after{content:" +";font-weight:700}
+.corner[open] .corner__more::after{content:" −"}
+.corner__face:focus-visible{outline:3px solid var(--c-green);outline-offset:2px}
+.corner__panel{padding:0 calc(var(--step) * 2) calc(var(--step) * 2);
+  border-top:1px solid var(--line-light)}
+.corner__znak{display:block;width:130px;height:auto;
+  margin:calc(var(--step) * 2) 0 var(--step)}
+.corner__panel p{font-size:14px;line-height:1.5;color:var(--muted-on-light);
+  margin:0 0 var(--step)}
+.corner__panel p:last-child{margin-bottom:0}
+.card__title{font-family:var(--ff-display);font-weight:700;text-transform:uppercase;
+  font-size:15px;letter-spacing:.03em;line-height:1.2}
+.card__text{font-size:15px;color:var(--muted-on-light)}
+
+/* ---- Узкие экраны: подписи карточек не обрезаются ----
+   Базовая сетка .cards даёт две колонки, и на 375 карточка выходит ~160 px:
+   внутренняя ширина 128 px, а «МОРЕПРОДУКТЫ» прописными с разрядкой .03em
+   при кегле 15 занимает ~130. Слово не переносится, `overflow:hidden` режет
+   его молча, страничный overflow при этом ноль — своим прогоном не видно.
+   Найдено 08.09 приборoм на девяти ширинах. Лечим кеглем, а не колонкой:
+   одна колонка растянула бы двенадцать карточек блока направлений в полосу
+   больше четырёх тысяч пикселей. */
+@media (max-width: 419px){
+  .card__title{font-size:13px;letter-spacing:.01em}
+  .card__text{font-size:14px}
+  .card__kicker{letter-spacing:.02em}
+}
+/* Ниже 360 px кегля уже не хватает: внутренняя ширина карточки при двух
+   колонках падает до ~105 px. Этой полосе — одна колонка. С 360 (наша
+   нижняя проверяемая ширина) две колонки держат подписи без обрезки. */
+@media (max-width: 359px){ .cards{grid-template-columns:1fr} }
+
+/* ---------- 9. КАРТОЧКИ БЛОГА ---------- */
+.posts{display:grid;gap:var(--gap);grid-template-columns:1fr}
+.post{display:flex;flex-direction:column;gap:calc(var(--step) * 1.5);
+  text-decoration:none;border:1px solid var(--line-light);border-radius:var(--r-lg);
+  overflow:hidden;background:var(--bg-base)}
+.post__media{aspect-ratio:16/9;background:var(--bg-wash)}
+.post__media img{width:100%;height:100%;object-fit:cover}
+.post__body{padding:calc(var(--step) * 2) calc(var(--step) * 2) calc(var(--step) * 3);
+  display:flex;flex-direction:column;gap:var(--step)}
+.post__rubric{font-family:var(--ff-display);text-transform:uppercase;letter-spacing:.1em;
+  font-size:11px;color:var(--c-green)}
+.post__title{font-family:var(--ff-display);font-weight:700;font-size:19px;line-height:1.22;
+  text-transform:none;letter-spacing:0}
+.post:hover .post__title{color:var(--c-red)}
+
+/* ---------- 10. УТИЛИТЫ ---------- */
+.visually-hidden{position:absolute;width:1px;height:1px;margin:-1px;padding:0;
+  overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
+.note{font-size:14px;color:var(--muted-on-light);margin-top:calc(var(--step) * 3)}
+
+/* ============================================================
+   АДАПТИВ. Мобильная раскладка выше — базовая, дальше расширение.
+   ============================================================ */
+@media (min-width: 700px){
+  .socials{display:flex}
+  .cards{grid-template-columns:repeat(3,1fr)}
+  .posts{grid-template-columns:repeat(2,1fr)}
+  .hero__cta{grid-template-columns:auto auto;justify-content:start}
+}
+@media (min-width: 900px){
+  /* ---- От 900 px: кадр подложкой, путь версии 1 ----
+     Тёмный градиент СЛЕВА НАПРАВО: текст слева на тёмном, кадр справа светлый.
+     Приём взят с версии 1, которую принял клиент; там он шёл сверху вниз.
+     Цвет нейтрально-тёмный, НЕ зелёный: зелёный скрим на ярком зале и был
+     «зелёной мутью», за которую забракована v2.
+     Вуаль по низу — вторым слоем: она уводит из читаемости ценники на
+     корзинах. Читаемая цена на первом экране это обещание цены, а своих цен
+     у рынка до открытия нет (чек-лист публичных обещаний). */
+  /* Первый экран получает пропорцию самого кадра — тогда витрина не режется
+     ни сверху, ни снизу. Решение владельца 07.09: «сделай пошире, получается
+     обрезанная витрина». При контейнере 1440×676 кадр 1200×773 обрезался по
+     высоте на 252 px; теперь высота считается от ширины, а `max-height` держит
+     первый экран в пределах окна на широких мониторах. */
+  /* ⛔ Первая попытка стояла как `aspect-ratio:1200/773` вместе с `max-height`,
+     и это сжало САМ БЛОК: при ограничении по высоте пропорция уменьшила и
+     ширину — кадр стал 1285 px вместо 1440, то есть уже, а не шире. Замер
+     это и показал. Высота считается от ширины окна напрямую, ширина остаётся
+     полной: 100vw / 1.552 — пропорция кадра 1200×773. */
+  .hero{display:block;height:min(92vh, 64.4vw);min-height:640px}
+  .hero__media{position:absolute;inset:0;order:0;aspect-ratio:auto;max-height:none}
+  .hero__media img{object-position:center 58%}
+  .hero__inner{position:absolute;inset:0;display:flex;align-items:center}
+  /* Верх панели встаёт на линию заголовка, а не по центру блока. Надзаголовок
+     «Открытие — осень 2026» стоит выше H1, поэтому панель опускается на его
+     высоту — значение подобрано замером top(.stats) против top(.hero__title). */
+  .hero__grid{width:100%;align-items:start}
+  /* Верх панели стоит на линии, где кончается слово «ПИКНИК» — низ второй
+     строки заголовка. Решение владельца 07.09, уточнённое после двух проб:
+     на 42 px панель закрывала таблички кадра, на 290 ушла слишком низко.
+     Значение 193 получено замером: низ заголовка 349, верх панели 349 —
+     совпадение до пикселя на 1440 и 1920. */
+  .stats{margin-top:193px}
+  /* Красная полоска у правого края — деталь версии 1: 3 px, прозрачность .45.
+     Держит правый край кадра и рифмуется с фирменным красным. */
+  .hero::after{content:"";position:absolute;top:0;right:88px;width:3px;height:100%;
+    background:var(--c-red);opacity:.45;pointer-events:none;z-index:2}
+  /* Подложка кадра — градиент версии 1 ОДИН В ОДИН, решение владельца 07.09.
+     Ключевое отличие от моей прежней редакции: у версии 1 правый край держит
+     .22, а не .06, и на 64% ширины ещё .55. Именно поэтому её панель работала
+     на прозрачности .30 — под ней кадр был темнее. Второй слой — зелёная
+     вуаль сверху, тоже из версии 1. */
+  .hero__media::after{background:
+    linear-gradient(100deg, rgba(20,20,18,.96) 0%, rgba(20,20,18,.88) 34%,
+      rgba(20,20,18,.55) 64%, rgba(20,20,18,.22) 100%),
+    linear-gradient(to bottom, rgba(0,102,51,.18) 0%, transparent 45%)}
+}
+@media (min-width: 1000px){
+  /* Панель 256 px, а не 320: при 320 подписи короче колонки, и справа внутри
+   панели оставалось пустое место — визуально правый отступ читался больше
+   левого, хотя внешние отступы совпадают до пикселя (замер: 116 и 116).
+   Решение владельца 07.09: «обрежь ещё процентов на 20». Панель заодно
+   вытягивается по вертикали, как в версии 1. */
+  .hero__grid{grid-template-columns:minmax(0,1fr) 256px}
+  .hero__inner{padding-top:calc(var(--step) * 12);padding-bottom:calc(var(--step) * 11)}
+  .cards{grid-template-columns:repeat(4,1fr)}
+  .posts{grid-template-columns:repeat(4,1fr)}
+  .section{padding:calc(var(--step) * 10) 0}
+}
+
+/* ============================================================
+   БЛОКИ 3–11, FAQ, ПОДВАЛ. Ритм фонов принятой версии 1:
+   белый → #f8f6f2 → белый, зелёные секции на «с собакой»,
+   лояльности и открытии, подвал чёрный.
+   ============================================================ */
+
+.section--green{background:var(--c-green);color:var(--text-on-dark)}
+
+/* ---- Жёлтый модуль доставки на всю ширину экрана ----
+   Решение владельца 08.09: взять баннер доставки из принятого лендинга,
+   но сделать его жёлтым модулем во всю ширину. В лендинге баннер был ОДНОЙ
+   РАСТРОВОЙ КАРТИНКОЙ вместе с текстом и кнопкой — здесь он собран вёрсткой:
+   текст остаётся текстом (индексируется, масштабируется, читается
+   скринридером), а чужой логотип службы доставки не рисуется вовсе.
+   Основание не брать логотип: ТЕКСТЫ-v3:391 — «баннер доставки с чужим
+   логотипом снят, чужой знак». */
+.section--yellow{background:var(--c-yellow);color:var(--c-black)}
+.section--yellow .delivery__lead{color:var(--c-black)}
+.section--yellow .btn--primary{background:var(--c-red);color:var(--c-white);
+  border-color:var(--c-red)}
+.section--yellow .btn--primary:hover{background:var(--c-black);
+  border-color:var(--c-black)}
+
+/* ---- Блок «К нам можно с собакой»: раскладка версии 1 с хаба ----
+   Решение владельца 08.09: взять модуль один в один из принятого лендинга —
+   кадр слева, текст справа. Прежде блок стоял текстом и половина зелёной
+   полосы была пустой (замер: текст занимал 611 px из 1240, то есть 49%).
+   Кадр — из того же лендинга; верхняя полоса срезана, потому что там была
+   англоязычная вывеска MARKET & PROVISIONS. */
+.pet{display:grid;gap:var(--gap);grid-template-columns:1fr;align-items:center}
+.pet__media{display:block}
+.pet__media img{width:100%;height:auto;display:block;border-radius:var(--r-lg)}
+.pet__text h2{margin-top:0}
+@media (min-width: 900px){
+  .pet{grid-template-columns:1.15fr 1fr;gap:calc(var(--gap) * 1.5)}
+}
+.section--green h2,.section--green h3{color:var(--text-on-dark)}
+
+/* 3 · поводы */
+.reasons{display:grid;gap:var(--gap);grid-template-columns:1fr}
+.reason{border-top:2px solid var(--c-yellow);padding-top:calc(var(--step) * 2)}
+.reason__num{display:block;font-family:var(--ff-display);font-weight:700;font-size:13px;
+  letter-spacing:.1em;color:var(--c-green);margin-bottom:var(--step)}
+.reason__title{font-size:17px;margin-bottom:var(--step)}
+/* Заголовок повода держит две строки: иначе однострочные заголовки поднимают
+   свой текст выше, чем двухстрочные, и внутри ряда строки не стоят на одной
+   линии. Правка 07.09 по замечанию владельца. */
+@media (min-width: 700px){ .reason__title{min-height:2.4em} }
+.reason__text{font-size:15px;color:var(--muted-on-light);margin:0}
+
+/* 4 · карточки продавцов и корнеров */
+.card__kicker{font-family:var(--ff-display);text-transform:uppercase;letter-spacing:.08em;
+  font-size:11px;color:var(--c-green);margin:0}
+/* Продавцы: три в ряд — решение владельца 07.09 и композиция 04.09.
+   Шесть карточек ложатся двумя ровными рядами по три. */
+/* ⛔ До 700 px — ОДНА колонка, не две. Базовое правило .cards даёт две, и на
+   375 карточка продавца выходит 160 px: имя «Сахалиночка» обрезается на 19 px,
+   на 360 на 27, на 320 на 47, а страничный overflow при этом ноль — режет
+   overflow:hidden внутри карточки, и прогон документа этого не видит.
+   Тем же лечится текст печати: на 320 строка «информацию» вылезала за кольцо
+   на 21 px. Найдено дизайнером 08.09, подтверждено своим замером. */
+.cards--sellers{align-items:stretch;grid-template-columns:1fr}
+@media (min-width: 520px){ .cards--sellers{grid-template-columns:repeat(2,1fr)} }
+@media (min-width: 1000px){ .cards--sellers{grid-template-columns:repeat(3,1fr)} }
+
+/* ---- Продавцы: визуальный проход дизайнера 08.09.2026 ----
+   Слот остаётся 4:5 — решение по развилке: композиция 04.09 в силе.
+   Знаки резидентов НЕ масштабируются: след у них равен в пределах 8%,
+   а увеличение одного прочлось бы как предпочтение резиденту. */
+
+/* 1 · Ряды одной высоты: описание в одну или две строки давало 601 и 624 px. */
+@media (min-width: 700px){ .card__text{ min-height:3em } }
+
+/* 2 · Плита режет свои трансформы и не пускает их на тело карточки. */
+.card__media{ overflow:hidden }
+
+/* 3 · Знаки — на оптический центр плиты: центры массы чернил стояли
+       на 46,4% и 54,6% высоты, на 1440 это 36 px расхождения. */
+.card--brand .card__media img[src*="sahalinochka"]{ transform: translateY(3.5%) }
+.card--brand .card__media img[src*="fattoria"]{ transform: translateY(-4.5%) }
+
+/* 4 · Три плиты второго ряда читаются как один набор. */
+.card--brand .card__media,
+.card__media--stamp{ box-shadow: inset 0 0 0 1px var(--line-light) }
+
+/* 5 · Печать не ведёт ряд (след был 76%×61% против 56%×38% у знаков)
+       и уходит с границы AA: контраст текста был 4,56:1 при пороге 4,5. */
+.stamp{ width:70%; max-width:300px; opacity:.9 }
+.stamp__l1,.stamp__l3{ font-size:clamp(13px,2.1vw,17px) }
+.stamp__l2{ font-size:clamp(15px,2.6vw,21px) }
+@media (min-width: 1200px){ .cards--sellers{grid-template-columns:repeat(3,1fr)} }
+
+/* 5, 8 · факты таблицей */
+.facts{display:grid;gap:var(--gap);grid-template-columns:1fr}
+
+/* ---- Модули соседей по ТВЦ ----
+   Решение владельца 08.09: рынок стоит в торгово-выставочном центре, и
+   соседи показываются модулями с фотографией. Структура взята из принятого
+   лендинга (там она называлась tvc-card): кадр, заголовок, строка.
+   Пока с фотографиями два модуля из четырёх — зоомагазин и «Автомаг» ждут
+   кадров от владельца и живут строками ниже, без пустых слотов. */
+.tvc{display:grid;gap:var(--gap);grid-template-columns:1fr;list-style:none;
+  padding:0;margin:0 0 calc(var(--step) * 4)}
+.tvc__card{display:flex;flex-direction:column;gap:calc(var(--step) * 2);
+  border:1px solid var(--line-light);border-radius:var(--r-lg);overflow:hidden;
+  background:var(--bg-base);box-shadow:var(--sh-card)}
+.tvc__media{display:block;aspect-ratio:16/9;background:var(--bg-wash)}
+.tvc__media img{width:100%;height:100%;object-fit:cover;display:block}
+.tvc__body{padding:0 calc(var(--step) * 3) calc(var(--step) * 3)}
+.tvc__title{font-family:var(--ff-display);font-weight:700;font-size:18px;
+  text-transform:uppercase;letter-spacing:.02em;margin:0 0 var(--step)}
+.tvc__text{font-size:15px;color:var(--muted-on-light);margin:0}
+.note--wide{margin-top:calc(var(--step) * 4);max-width:none}
+@media (min-width: 700px){ .tvc{grid-template-columns:repeat(2,1fr)} }
+.fact{background:var(--bg-base);border-left:3px solid var(--c-green);
+  padding:calc(var(--step) * 2) calc(var(--step) * 2.5)}
+.section--wash .fact{background:var(--c-white)}
+.fact__title{font-size:15px;margin-bottom:calc(var(--step))}
+.fact__text{font-size:15px;color:var(--muted-on-light);margin:0}
+
+/* 7, 9 · короткие полосы на зелёном */
+.strip{max-width:64ch;display:grid;gap:calc(var(--step) * 2)}
+.strip h2{margin-bottom:0}
+
+/* 10 · маршрут */
+.route{display:grid;gap:var(--gap)}
+.route__list{margin:0;display:grid;gap:0}
+.route__row{display:grid;gap:2px;padding:calc(var(--step) * 1.5) 0;
+  border-bottom:1px solid var(--line-light)}
+.route__row dt{font-family:var(--ff-display);text-transform:uppercase;letter-spacing:.06em;
+  font-size:12px;color:var(--c-green)}
+.route__row dd{margin:0;font-size:16px}
+.route__cta{margin-top:calc(var(--step) * 3)}
+/* ⛔ Здесь стоял серый бокс с подписью «Здесь встанет карта и кадр фасада»:
+   фон-заглушка, рамка и центрированный текст. Это прямое нарушение запрета
+   раздела 8 CLAUDE.md и тот самый дефект, за который забракована v2 —
+   семнадцать серых боксов с подписями. Найдено независимой приёмкой 07.09.
+   Теперь блок держит снимок фасада от 02.09; подписи под изображением нет.
+   Интерактивная Яндекс-карта по нажатию — отдельная задача, её здесь нет. */
+/* Правая колонка блока «Как добраться»: сверху кадр здания с баннером рынка,
+   снизу карта. Раскладка первой версии сайта, решение владельца 08.09. */
+.route__side{display:grid;gap:calc(var(--step) * 3)}
+.route__main{min-width:0}
+/* У .eyebrow свой margin-top 16px — он был нужен, когда голова секции стояла
+   отдельным блоком. Внутри левой колонки этот отступ сдвигал текст вниз, и
+   верх кадра справа оказывался на 16 px выше строки «Маршрут». Снимаем. */
+.route__main .section__head .eyebrow{margin-top:0}
+.route__shot,.route__map{border-radius:var(--r-lg);overflow:hidden}
+.route__shot picture,.route__map picture{display:block}
+.route__shot img,.route__map img{width:100%;height:auto;display:block}
+
+/* 11 · открытие и форма */
+/* ---- Блок открытия: раскладка версии 1 с хаба ----
+   Решение владельца 08.09: «осень 2026 без даты, вот так же делать».
+   Слева крупная дата и три обещания, справа форма белой карточкой.
+   ⛔ В лендинге у этой формы НЕ БЫЛО чекбокса согласия — только абзац
+   «оставляя номер, вы соглашаетесь». Чекбокс сохранён: приёмка ставила
+   FAIL именно за отправку ПД без согласия (ФЗ-152, гейт 6). Абзац из
+   лендинга добавлен под кнопкой как пояснение, а не вместо согласия. */
+.eyebrow--rule{position:relative;padding-top:calc(var(--step) * 2)}
+.eyebrow--rule::before{content:"";position:absolute;top:0;left:0;
+  width:74px;height:3px;background:var(--c-yellow)}
+.opening{display:grid;gap:calc(var(--step) * 4)}
+.opening__big{font-family:var(--ff-display);font-weight:900;line-height:.92;
+  text-transform:uppercase;letter-spacing:-.01em;margin:0;
+  font-size:clamp(56px,11vw,132px)}
+.opening__kicker{font-family:var(--ff-display);font-weight:700;font-size:14px;
+  letter-spacing:.08em;text-transform:uppercase;color:var(--c-yellow);
+  margin:calc(var(--step) * 2) 0 calc(var(--step) * 3)}
+.opening__list{list-style:none;padding:0;margin:0;display:grid;
+  gap:calc(var(--step) * 2)}
+.opening__list li{position:relative;padding-left:calc(var(--step) * 4);
+  color:var(--muted-on-dark);font-size:16px}
+.opening__list li::before{content:"";position:absolute;left:0;top:.62em;
+  width:20px;height:3px;background:var(--c-yellow)}
+.form-card{background:var(--bg-base);color:var(--text-on-light);
+  border-radius:var(--r-lg);padding:calc(var(--step) * 4);
+  box-shadow:var(--sh-card)}
+.form-card__title{font-family:var(--ff-display);font-weight:700;
+  text-transform:uppercase;font-size:20px;letter-spacing:.02em;margin:0}
+.form-card__sub{color:var(--muted-on-light);font-size:15px;
+  margin:var(--step) 0 calc(var(--step) * 3)}
+.form-card .form__consent{color:var(--muted-on-light)}
+.form-card .form__consent a{color:var(--c-red)}
+.form-card__legal{font-size:13px;line-height:1.45;color:var(--muted-on-light);
+  margin:calc(var(--step) * 2) 0 0}
+.btn--wide{width:100%;justify-content:center}
+/* Форма внутри белой карточки: подписи и рамки были рассчитаны на зелёный
+   фон — на белом они пропадали (белое по белому). Переопределяем в карточке. */
+.form-card .form__label{color:var(--muted-on-light)}
+.form-card .form__input{border-color:rgba(29,29,27,.22)}
+.form-card .form__input::placeholder{color:rgba(29,29,27,.45)}
+.form-card .form{gap:calc(var(--step) * 3)}
+.form-card .form__consent input{accent-color:var(--c-green)}
+/* Сама рамка .form рассчитана на зелёный фон — внутри белой карточки она
+   лишняя: карточка уже рамка. */
+.form-card .form{background:none;border:0;padding:0}
+/* Вес селектора: `.section--green h3` (строка 462) перебивал одиночный класс,
+   и заголовок карточки шёл белым по белому. Поднимаем вес до двух классов. */
+.form-card .form-card__title{color:var(--text-on-light)}
+@media (min-width: 900px){
+  .opening{grid-template-columns:1fr 1fr;gap:calc(var(--gap) * 2);
+    align-items:center}
+}
+.form{display:grid;gap:calc(var(--step) * 2);background:rgba(255,255,255,.08);
+  border:1px solid var(--line-dark);border-radius:var(--r-lg);padding:calc(var(--step) * 3)}
+.form__field{display:grid;gap:6px}
+.form__label{font-size:14px;color:var(--muted-on-dark)}
+.form__input{min-height:48px;padding:0 calc(var(--step) * 1.5);border-radius:var(--r);
+  border:1px solid var(--line-dark);background:var(--c-white);color:var(--c-black);
+  font:16px/1.4 var(--ff-text)}
+.form__consent{display:grid;grid-template-columns:auto 1fr;gap:calc(var(--step) * 1.5);
+  align-items:start;font-size:14px;color:var(--muted-on-dark)}
+.form__consent input{width:20px;height:20px;margin-top:2px}
+.form__consent a{color:var(--c-yellow)}
+.btn--yellow{background:var(--c-yellow);color:var(--c-black)}
+
+/* ---- Форма программы лояльности (модуль на зелёном) ----
+   Решение владельца 08.09: форму взять из лендинга 22.06 и собрать модулем.
+   ⛔ В лендинге эта форма была ОДНО ПОЛЕ ТЕЛЕФОНА И КНОПКА — без согласия
+   на обработку и без ссылки на политику. Один в один брать нельзя: это тот
+   самый дефект, который независимая приёмка нашла как критичный (ФЗ-152,
+   гейт 6 руководства). Добавлены обязательный чекбокс согласия и ссылка на
+   privacy.html; блокировка нативная, через required — как у формы открытия. */
+.loyalty-form{margin-top:calc(var(--step) * 3);max-width:640px}
+.loyalty-form__row{display:grid;gap:calc(var(--step) * 1.5);
+  grid-template-columns:1fr;margin-bottom:calc(var(--step) * 2)}
+.loyalty-form .form__input{width:100%}
+.form__consent--on-dark{color:var(--muted-on-dark);font-size:14px}
+.form__consent--on-dark a{color:var(--c-yellow)}
+@media (min-width: 600px){
+  .loyalty-form__row{grid-template-columns:1fr auto;align-items:center}
+}
+.btn--yellow:hover{background:#d7a435}
+
+/* 13 · вопросы и ответы — нативный details, без JS */
+.faq{display:grid;gap:calc(var(--step) * 1.5);max-width:80ch}
+.faq__item{border-bottom:1px solid var(--line-light);padding-bottom:calc(var(--step) * 1.5)}
+.faq__q{cursor:pointer;list-style:none;font-family:var(--ff-display);font-weight:600;
+  font-size:17px;line-height:1.35;padding-right:calc(var(--step) * 4);position:relative;
+  min-height:44px;display:flex;align-items:center}
+.faq__q::-webkit-details-marker{display:none}
+.faq__q::after{content:"";position:absolute;right:6px;top:50%;width:11px;height:11px;
+  margin-top:-7px;border-right:2px solid var(--c-green);border-bottom:2px solid var(--c-green);
+  transform:rotate(45deg)}
+.faq__item[open] .faq__q::after{transform:rotate(-135deg);margin-top:-3px}
+.faq__a{padding-top:var(--step);color:var(--muted-on-light);font-size:16px}
+
+/* подвал */
+.site-footer{background:var(--c-black);color:var(--text-on-dark);
+  padding:calc(var(--step) * 7) 0 calc(var(--step) * 4)}
+.site-footer a{color:inherit}
+.site-footer__grid{display:grid;gap:calc(var(--step) * 4);grid-template-columns:1fr}
+.site-footer__title{font-family:var(--ff-display);font-weight:700;text-transform:uppercase;
+  font-size:19px;margin-bottom:var(--step)}
+.site-footer__head{font-family:var(--ff-display);text-transform:uppercase;letter-spacing:.08em;
+  font-size:12px;color:var(--c-yellow);margin-bottom:var(--step)}
+.site-footer__text{font-size:15px;color:var(--muted-on-dark);margin-bottom:var(--step)}
+.site-footer__cta{margin-top:var(--step)}
+.site-footer__nav{display:grid;gap:var(--step);font-size:15px}
+.socials--footer{display:flex;margin-top:calc(var(--step) * 2)}
+.site-footer__bottom{margin-top:calc(var(--step) * 5);padding-top:calc(var(--step) * 3);
+  border-top:1px solid var(--line-dark);display:grid;gap:var(--step);
+  font-size:13px;color:var(--muted-on-dark)}
+
+@media (min-width: 700px){
+  .reasons{grid-template-columns:repeat(2,1fr)}
+  .facts{grid-template-columns:repeat(2,1fr)}
+  .site-footer__grid{grid-template-columns:repeat(2,1fr)}
+  .opening{grid-template-columns:1fr 1fr;align-items:start}
+  /* Правая колонка тянется на всю высоту левой: верх кадра встаёт на одну
+     линию с «Маршрут», низ карты — с кнопкой «Построить маршрут».
+     Решение владельца 08.09. Карта добирает остаток высоты и режется cover. */
+  .route{grid-template-columns:1fr 1fr;align-items:stretch}
+  .route__side{grid-template-rows:auto 1fr}
+  /* Высоту тянуть надо по всей цепочке: контейнер → picture → img.
+     Без picture{height:100%} контейнер становился 637 px, а картинка внутри
+     оставалась 224 — замер по контейнеру показывал совпадение, глаз видел
+     разрыв. Поймано снимком 08.09. */
+  .route__map{height:100%}
+  .route__map picture{height:100%}
+  .route__map img{height:100%;object-fit:cover}
+}
+/* Шапка переходит в десктопный вид только с 1240 px: на 1000–1239 шесть пунктов
+   меню, три значка и кнопка маршрута не помещались — меню вылезало на 43 px.
+   Обычный замер overflow этого не ловит: внутри flex элементы обрезаются,
+   не выходя за документ. Поймано точечным замером шапки 04.09. */
+@media (min-width: 1240px){
+  .site-nav__list{display:flex;gap:calc(var(--step) * 1.75)}
+  .nav-toggle{display:none}
+  .site-header .btn:not([hidden]){display:inline-flex}
+}
+@media (min-width: 1000px){
+  .reasons{grid-template-columns:repeat(3,1fr)}
+  .site-footer__grid{grid-template-columns:1.4fr 1fr 1fr 1fr}
+  .site-footer__bottom{grid-template-columns:1fr auto}
+  .route{grid-template-columns:1.15fr .85fr}
+}
+
+/* страница политики */
+.legal{max-width:72ch}
+.legal h1{margin-bottom:calc(var(--step) * 3)}
+.legal h2{font-size:clamp(19px,2.2vw,24px);margin:calc(var(--step) * 4) 0 calc(var(--step) * 1.5)}
+.legal p{font-size:16px}
+.legal a{color:var(--c-red)}
+
+
+/* полоса доставки — жёлтый баннер принятой версии 1 */
+.delivery{background:var(--c-yellow);border-radius:var(--r-lg);overflow:hidden;
+  display:grid;gap:0;align-items:center}
+.delivery__text{padding:calc(var(--step) * 4)}
+.delivery__text h2{color:var(--c-black);margin-bottom:calc(var(--step) * 2)}
+.delivery__lead{font-size:clamp(16px,1.8vw,19px);color:var(--c-black);
+  margin-bottom:calc(var(--step) * 3);max-width:34ch}
+.delivery__media{align-self:stretch;min-height:220px}
+.delivery__media img{width:100%;height:100%;object-fit:cover}
+@media (min-width: 900px){
+  .delivery{grid-template-columns:1.05fr .95fr}
+  .delivery__text{padding:calc(var(--step) * 6)}
+}
+
+/* Кнопка в шапке компактнее обычной: на 1240–1600 не хватало 10 px до края
+   контейнера. ⛔ Первая попытка стояла ВЫШЕ правила .btn и молча им перебивалась —
+   замер не менялся от правки, это и выдало ошибку. Порядок объявлений важнее
+   специфичности, когда селекторы равны по весу. */
+.site-header__cta{padding:0 calc(var(--step) * 2);font-size:13px;letter-spacing:.02em}
+
+/* ============================================================
+   Иконки. Правило: иконка идёт с подписью или с заголовком рядом.
+   ⛔ Ряд одинаковых пиктограмм без единого слова не ставим нигде —
+   именно это было дефектом 4 браковки v2: четыре иконки подряд
+   без текста читались как эмодзи. Немыми были четыре из пятнадцати,
+   остальные одиннадцать работали с подписью и претензий не вызывали.
+   Набор — тот же, что на арендаторском сайте; новых не рисуем.
+   ============================================================ */
+.icon{width:44px;height:auto;display:block;margin-bottom:calc(var(--step) * 1.5)}
+/* Иконки поводов равняются по ВЫСОТЕ, не по ширине: kofe.png единственный
+   вертикальный в наборе (90×160), и при фиксированной ширине 48 он выходил
+   85 px высотой против 31–48 у остальных — заголовок повода съезжал вниз.
+   Правка 07.09 по замечанию владельца. */
+.reason .icon{width:auto;height:48px}
+/* Иконки фактов равняются по ВЫСОТЕ: в наборе есть и вертикальные, и
+   горизонтальные пропорции, а при фиксированной ширине заголовки съезжают —
+   та же грабля, что была в блоке поводов. */
+.fact .icon{width:auto;height:40px;margin-bottom:var(--step)}
+
+/* ---- Кадры ветеринарной лаборатории, блок «Стандарт доверия» ----
+   Четыре реальных снимка из принятого лендинга 22.06. Право полное:
+   FACTS.md:96, решение владельца 21.08 — лабораторию можно снимать и
+   публиковать полностью, отдельного разрешения не требуется.
+   Исходники 640×301. На 1440 плитка выходит 584 px шириной — меньше
+   исходника, апскейла нет. Две в ряд, а не четыре: при четырёх плитка
+   стала бы 278×131 и деталь лаборатории перестала бы читаться. */
+.labshots{display:grid;gap:var(--gap);grid-template-columns:1fr;
+  margin-top:calc(var(--step) * 4);list-style:none;padding:0}
+.labshots li{margin:0}
+.labshots picture{display:block}
+.labshots img{width:100%;height:auto;display:block;
+  border-radius:var(--r-lg);border:1px solid var(--line-light)}
+@media (min-width: 700px){ .labshots{grid-template-columns:repeat(2,1fr)} }
+.route__row dt{display:flex;align-items:center;gap:calc(var(--step) * 1.5)}
+.route__row dt .icon{width:28px;margin-bottom:0;flex:none}
+
+/* ЛЕНТА НАПРАВЛЕНИЙ — приём первой версии сайта.
+   Двенадцать кадров повторены дважды, сдвиг трека на -50% замыкает круг.
+   Подпись лежит поверх снимка на градиенте: в первой версии она стояла так же.
+   Запрет подписей от 02.09 касался карточек-направлений, где строка шла ПОД
+   кадром и объясняла его; здесь это метка категории внутри декоративной ленты.
+   Расхождение вынесено владельцу отдельным флагом. */
+.marquee{background:var(--c-black);overflow:hidden}
+.marquee__inner{overflow:hidden}
+.marquee__track{display:flex;width:max-content;margin:0;padding:0;list-style:none;
+  animation:marquee-move 48s linear infinite}
+.marquee:hover .marquee__track{animation-play-state:paused}
+.marquee__tile{position:relative;flex:none;width:150px;height:150px}
+.marquee__tile img{width:100%;height:100%;object-fit:cover;display:block}
+.marquee__label{position:absolute;left:0;right:0;bottom:0;
+  padding:calc(var(--step) * 1.25) calc(var(--step) * 1.5);
+  background:linear-gradient(to top,rgba(0,0,0,.85),rgba(0,0,0,.55) 55%,transparent);
+  color:#fff;font-family:var(--ff-display);font-weight:700;font-size:10px;
+  letter-spacing:.05em;text-transform:uppercase;line-height:1.25}
+@media (min-width: 700px){
+  .marquee__tile{width:200px;height:200px}
+  .marquee__label{font-size:11px;letter-spacing:.06em}
+}
+@media (min-width: 1000px){
+  .marquee__tile{width:220px;height:220px}
+}
+@keyframes marquee-move{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+@media (prefers-reduced-motion: reduce){
+  .marquee__track{animation:none}
+}
