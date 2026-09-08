@@ -1,0 +1,4039 @@
+/* ============================================================
+   ПИКНИК · арендаторский сайт (piknik-food.ru)
+   CSS-каркас — UX Architect, Design Studio · 31.08.2026
+   Источник токенов и ритма: SPEC-brand-2026-08-31.md (brand-guardian,
+   проверено координатором). Значения токенов и шкалы НЕ пересматривались.
+   Источник карты блоков: САЙТ-АРЕНДАТОРСКИЙ-v2.0-2026-08-21.md, разд. 4, 8.
+
+   Порядок файла:
+     0. Шрифты (self-host)
+     1. Токены
+     2. Reset
+     3. Базовая типографика
+     4. Контейнер и секции (ритм фонов)
+     5. Классы-варианты сеток (cards-2/3/4/5/8, stats-grid)
+     6. Мобильная стратегия / утилиты safety
+     7. Шапка + меню + гамбургер
+     8. Компоненты: card, digit-tile, step, media-block, render-caption,
+        media-pending, tag-list, badge
+     9. Кнопки
+    10. Форма заявки (блок 16, красный фон)
+    11. Футер
+
+   Тёмной темы нет. prefers-color-scheme не обрабатывается. Theme toggle
+   не делаем — прямой запрет постановки, действует поверх дефолта скилла.
+   ============================================================ */
+
+/* ------------------------------------------------------------
+   0. ШРИФТЫ — self-host, без Google Fonts (решение владельца, разд. 20)
+   ------------------------------------------------------------ */
+@import url('fonts/fonts.css');
+
+
+/* ------------------------------------------------------------
+   1. ТОКЕНЫ
+   ------------------------------------------------------------ */
+:root {
+  /* --- Цвет: одна роль на цвет (SPEC разд. 1, 5) --- */
+  --c-red:    #ac120d;
+  --c-green:  #006633;
+  --c-black:  #1d1d1b;
+  --c-yellow: #f4ba3c;
+  --c-gray:   #7e8182;
+  --c-white:  #ffffff;
+
+  --bg-base:     var(--c-white);
+  --bg-dark:     var(--c-black);
+  --bg-flagship: var(--c-green);   /* только блок 5 */
+  --bg-stat:     var(--c-yellow);  /* только блок 15 */
+  --bg-convert:  var(--c-red);     /* только блок 16 */
+  --bg-wash:     rgba(126, 129, 130, .10);
+
+  --text-on-light:  var(--c-black);
+  --text-on-dark:   var(--c-white);
+  --muted-on-light: rgba(29, 29, 27, .65);
+  --muted-on-dark:  rgba(255, 255, 255, .88);
+  --text-on-yellow: var(--c-black); /* блок 15: только сплошной чёрный текст */
+
+  --btn-primary-bg:       var(--c-red);
+  --btn-primary-bg-hover: #920f0b;
+  --btn-primary-text:     var(--c-white);
+  --btn-onred-bg:         var(--c-yellow);   /* исключение: кнопка внутри блока 16 */
+  --btn-onred-bg-hover:   #d7a435;
+  --btn-onred-text:       var(--c-black);
+
+  --border-hairline-light: rgba(29, 29, 27, .10);
+  --border-hairline-dark:  rgba(255, 255, 255, .16);
+
+  --tint-red-06:    rgba(172, 18, 13, .06);
+  --tint-green-06:  rgba(0, 102, 51, .06);
+  --tint-yellow-14: rgba(244, 186, 60, .14);
+  --tint-black-04:  rgba(29, 29, 27, .04);
+
+  /* --- Шрифтовые семейства --- */
+  --font-display: 'Jost', 'Arial Narrow', sans-serif;
+  --font-body:    'Roboto', Arial, sans-serif;
+
+  /* --- Типографическая шкала (SPEC разд. 6) ---
+     Desktop-значение — верхняя граница clamp; mobile-clamp взят из
+     спецификации дословно. Надзаголовок и подпись-под-цифрой НЕ
+     скейлятся через vw (SPEC: «любое сжатие даёт нечитаемые 9–10px»). */
+  --fs-h1:          clamp(28px, 7.4vw, 56px);
+  --lh-h1:          1.12;
+  --ls-h1:          0.010em;
+
+  --fs-overline:    clamp(11px, 3vw, 13px);
+  --lh-overline:    1.4;
+  --ls-overline:    0.16em;      /* mobile: 0.12em, см. .overline media */
+
+  --fs-h2:          clamp(24px, 6vw, 36px);
+  --lh-h2:          1.18;
+  --ls-h2:          0.012em;
+
+  --fs-h3:          clamp(16px, 4.4vw, 19px);
+  --lh-h3:          1.25;
+  --ls-h3:          0.020em;
+
+  --fs-digit:       clamp(30px, 9vw, 48px);
+  --lh-digit:       1.0;
+  --ls-digit:       0;
+  --fw-digit:       700;         /* поправка координатора: не 800/900 — вариативный файл 400 700 */
+
+  --fs-digit-caption: 12px;      /* не скейлится */
+  --lh-digit-caption: 1.3;
+  --ls-digit-caption: 0.06em;
+
+  --fs-body:        17px;        /* mobile: 16px, см. body media */
+  --lh-body:         1.6;        /* mobile: 1.55 */
+
+  --fs-caption:     12px;
+  --lh-caption:     1.4;
+  --ls-caption:     0.02em;
+
+  --fs-consent:     12px;
+  --lh-consent:     1.5;
+
+  /* --- Отступы: шкала 4px, используется для gap/margin/padding --- */
+  --space-1:  4px;
+  --space-2:  8px;
+  --space-3:  12px;
+  --space-4:  16px;
+  --space-5:  20px;
+  --space-6:  24px;
+  --space-8:  32px;
+  --space-10: 40px;
+  --space-12: 48px;
+  --space-16: 64px;
+  --space-20: 80px;
+  --space-24: 96px;
+  --space-32: 128px;
+
+  /* --- Контейнер и сетка (архитектурное решение UX Architect, вне SPEC) ---
+     max-width 1200px выбран как рабочий дефолт для этого проекта —
+     в SPEC не задан, UI Designer/владелец могут скорректировать одним
+     значением ниже без правки остальных файлов. */
+  --container-max: 1200px;
+  --container-pad: clamp(24px, 5vw, 64px);
+  /* На 360px: clamp даёт 24px (5vw=18px < мин.) — совпадает с расчётом
+     H1 в SPEC разд. 6 (usable width ≈312px = 360 − 2×24). Не менять
+     нижнюю границу без пересчёта H1. */
+
+  /* --- Вертикальный ритм секций --- */
+  --section-py:    clamp(48px, 8vw, 96px);
+  --section-py-lg: clamp(64px, 10vw, 128px); /* блок 2 (первый экран), блок 16 (заявка) */
+
+  /* --- Радиусы: editorial — максимум 4px, нигде не больше --- */
+  --radius-sm: 2px;
+  --radius:    4px;
+
+  /* --- Границы --- */
+  --border-w: 1px;
+  --border-w-accent: 3px; /* border-top акцентных карточек, SPEC разд. 5 */
+
+  /* --- Переходы --- */
+  --transition-fast: 150ms ease;
+  --transition-base: 220ms ease;
+
+  /* --- z-index --- */
+  --z-header: 100;
+  --z-nav-mobile: 90;
+
+  /* --- Брейкпоинты (справочно, media-запросы прописаны буквально) ---
+     640px  — переход в 2 колонки, стек-кнопки перестают растягиваться
+     768px  — cards-8 переходит в 4 колонки
+     960px  — шапка: гамбургер → строчное меню; cards-3/4/5 разворачиваются
+     1200px — контейнер выходит на max-width */
+}
+
+
+/* ------------------------------------------------------------
+   2. RESET
+   ------------------------------------------------------------ */
+*, *::before, *::after { box-sizing: border-box; }
+
+html, body {
+  overflow-x: clip; /* раздел 6 свода: горизонтальный оверфлоу режется у корня, не маскируется */
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  min-width: 0;
+  background: var(--bg-base);
+  color: var(--text-on-light);
+  font-family: var(--font-body);
+  font-size: var(--fs-body);
+  line-height: var(--lh-body);
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3, h4, p, figure, blockquote, dl, dd, ul, ol {
+  margin: 0;
+}
+
+ul, ol { padding: 0; list-style: none; }
+
+img, picture, video, canvas, svg {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+button, input, select, textarea {
+  font: inherit;
+  color: inherit;
+}
+
+button { cursor: pointer; background: none; border: none; padding: 0; }
+
+a { color: inherit; text-decoration: none; }
+
+/* Приоритет пользователя: анимации выключаются по системной настройке */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+
+/* ------------------------------------------------------------
+   3. БАЗОВАЯ ТИПОГРАФИКА
+   ------------------------------------------------------------ */
+h1, h2, h3 {
+  font-family: var(--font-display);
+  font-weight: 700;
+  text-transform: uppercase; /* SPEC разд. 6: заголовки JOST 700 прописными */
+  color: var(--text-on-light);
+}
+
+h1 {
+  font-size: var(--fs-h1);
+  line-height: var(--lh-h1);
+  letter-spacing: var(--ls-h1);
+}
+
+h2 {
+  font-size: var(--fs-h2);
+  line-height: var(--lh-h2);
+  letter-spacing: var(--ls-h2);
+}
+
+h3 {
+  font-size: var(--fs-h3);
+  line-height: var(--lh-h3);
+  letter-spacing: var(--ls-h3);
+}
+
+/* Надзаголовок — не элемент шкалы HTML, отдельный класс на span/p */
+.overline {
+  display: block;
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: var(--fs-overline);
+  line-height: var(--lh-overline);
+  letter-spacing: var(--ls-overline);
+  text-transform: uppercase;
+  color: var(--muted-on-light);
+}
+@media (max-width: 640px) {
+  .overline { letter-spacing: 0.12em; } /* SPEC: разрядка сжимается на мобильном */
+}
+.section--dark .overline,
+.section--flagship .overline,
+.section--convert .overline {
+  color: var(--c-yellow); /* «надзаголовки на тёмном» — роль жёлтого, SPEC разд. 1 */
+}
+
+p {
+  font-family: var(--font-body);
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 1.55;
+}
+@media (min-width: 640px) {
+  p { font-size: var(--fs-body); line-height: var(--lh-body); }
+}
+
+.text-muted { color: var(--muted-on-light); }
+.section--dark .text-muted,
+.section--flagship .text-muted,
+.section--convert .text-muted { color: var(--muted-on-dark); }
+
+small, .caption {
+  display: block;
+  font-size: var(--fs-caption);
+  line-height: var(--lh-caption);
+  letter-spacing: var(--ls-caption);
+  color: var(--muted-on-light);
+}
+
+strong, b { font-weight: 700; }
+
+
+/* ------------------------------------------------------------
+   4. КОНТЕЙНЕР И СЕКЦИИ (ритм фонов, SPEC разд. 2)
+   ------------------------------------------------------------ */
+
+/* Один контейнер на шапку + первый экран + все секции (свод, разд. 15).
+   Левый край логотипа, h1 и каждого h2 обязан совпадать — проверка
+   getBoundingClientRect().left на ≥1680px перед сдачей. */
+.container {
+  width: 100%;
+  max-width: var(--container-max);
+  margin-inline: auto;
+  padding-inline: var(--container-pad);
+}
+
+/* ЗАПРЕТ: Любой .container, ставший прямым ребёнком flex-секции, ОБЯЗАН
+   получить width:100% — иначе он сжимается до max-content и «уезжает»
+   вправо (свод, разд. 15, корень №1). Это уже задано выше в .container
+   самом по себе, но фиксируем ещё раз явно для flex-секций: */
+.section--flex > .container { width: 100%; }
+
+.section {
+  padding-block: var(--section-py);
+}
+.section--lg { padding-block: var(--section-py-lg); } /* блок 2, блок 16 */
+
+/* Модификаторы фона — по РОЛИ токена, не по номеру блока, чтобы
+   переиспользовались, если блок 2/6/8/9/11 и т.д. окажутся одного
+   типа фона. Ритм по 17 блокам (SPEC разд. 2):
+     white  → без модификатора (по умолчанию)
+     black  → блоки 3, 13, 17     → .section--dark
+     green  → блок 5 (единственный) → .section--flagship
+     yellow → блок 15 (единственный) → .section--stat
+     red    → блок 16 (единственный) → .section--convert
+     wash   → блоки 7, 10, 14      → .section--wash */
+.section--dark {
+  background: var(--bg-dark);
+  color: var(--text-on-dark);
+}
+.section--flagship {
+  background: var(--bg-flagship);
+  color: var(--text-on-dark);
+}
+.section--convert {
+  background: var(--bg-convert);
+  color: var(--text-on-dark);
+}
+.section--stat {
+  background: var(--bg-stat);
+  color: var(--text-on-yellow); /* только сплошной чёрный — запрет на белый текст, SPEC разд. 4 */
+}
+.section--wash {
+  background: var(--bg-wash);
+  color: var(--text-on-light);
+}
+
+/* Правило свода разд. 5: ВСЕ дети тёмных/цветных секций обязаны получить
+   цвет явно — дефолтный цвет текста не наследуется корректно на кастомных
+   тегах и часто остаётся серым по ошибке. */
+.section--dark h1, .section--dark h2, .section--dark h3,
+.section--dark p, .section--dark li, .section--dark span,
+.section--flagship h1, .section--flagship h2, .section--flagship h3,
+.section--flagship p, .section--flagship li, .section--flagship span,
+.section--convert h1, .section--convert h2, .section--convert h3,
+.section--convert p, .section--convert li, .section--convert span {
+  color: var(--text-on-dark);
+}
+.section--dark strong, .section--flagship strong, .section--convert strong {
+  color: var(--c-white);
+}
+.section--stat h1, .section--stat h2, .section--stat h3,
+.section--stat p, .section--stat li, .section--stat span,
+.section--stat strong {
+  color: var(--text-on-yellow) !important; /* жёсткий запрет на белый текст в блоке 15 */
+}
+
+
+/* ------------------------------------------------------------
+   5. КЛАССЫ-ВАРИАНТЫ СЕТОК
+   ------------------------------------------------------------
+   ЗАПРЕТ: inline style="grid-template-columns:..." запрещён (свод разд. 12).
+   Любая раскладка карточек — только этими классами.
+   Mobile-first: база = 1 колонка, media добавляет колонки.
+   Всем grid-детям задан min-width:0 (свод разд. 10/11 — без этого
+   узкий контент растягивает родителя шире viewport). */
+
+.cards-2, .cards-3, .cards-4, .cards-5, .cards-8, .stats-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-6);
+}
+.cards-2 > *, .cards-3 > *, .cards-4 > *, .cards-5 > *, .cards-8 > *,
+.stats-grid > * {
+  min-width: 0;
+}
+
+/* .cards-2 — раскладка на 2 карточки (напр. компакт-сравнение).
+   ≥640px: 2 колонки. Дальше не растёт. */
+@media (min-width: 640px) {
+  .cards-2 { grid-template-columns: repeat(2, 1fr); }
+}
+
+/* .cards-3 — блоки 4 (примеры лотов), 7 (ТВЦ), 8 (шаги), 11 (парковка).
+   ≥640px: 2 колонки (третья карточка переносится).
+   ≥960px: 3 колонки в ряд. */
+@media (min-width: 640px) {
+  .cards-3 { grid-template-columns: repeat(2, 1fr); }
+}
+@media (min-width: 960px) {
+  .cards-3 { grid-template-columns: repeat(3, 1fr); }
+}
+
+/* .cards-4 — блоки 4 (форматы мест), 12 (категории), 14 (о проекте).
+   ≥640px: 2×2. ≥960px: 4 в ряд. */
+@media (min-width: 640px) {
+  .cards-4 { grid-template-columns: repeat(2, 1fr); }
+}
+@media (min-width: 960px) {
+  .cards-4 { grid-template-columns: repeat(4, 1fr); }
+}
+
+/* .cards-5 — блоки 5 (маркетинг), 9 (пять выгод).
+   ≥640px: 2 колонки. ≥960px: 5 в ряд — карточки узкие, контент
+   держать компактным (заголовок + 1-2 короткие строки, как в блоке 9).
+   Если у блока 5 текст крупнее — UI Designer может переопределить
+   раскладку на .cards-3 (3+2) без изменения этого файла, добавив
+   .cards-5--loose с шагом ниже. */
+@media (min-width: 640px) {
+  .cards-5 { grid-template-columns: repeat(2, 1fr); }
+}
+@media (min-width: 960px) {
+  .cards-5 { grid-template-columns: repeat(5, 1fr); }
+}
+@media (min-width: 960px) {
+  .cards-5.cards-5--loose { grid-template-columns: repeat(3, 1fr); }
+}
+
+/* .cards-8 — блок 10 (что входит в место).
+   ≥480px: 2 колонки. ≥768px: 4 колонки (два ряда по 4). */
+@media (min-width: 480px) {
+  .cards-8 { grid-template-columns: repeat(2, 1fr); }
+}
+@media (min-width: 768px) {
+  .cards-8 { grid-template-columns: repeat(4, 1fr); }
+}
+
+/* .stats-grid — плитка цифр блока 3 (7 значений).
+   Mobile: 2. ≥640px: 3 (3+3+1). ≥960px: 4 (4+3). */
+@media (min-width: 640px) {
+  .stats-grid { grid-template-columns: repeat(3, 1fr); }
+}
+@media (min-width: 960px) {
+  .stats-grid { grid-template-columns: repeat(4, 1fr); }
+}
+
+
+/* ------------------------------------------------------------
+   6. МОБИЛЬНАЯ СТРАТЕГИЯ / SAFETY-УТИЛИТЫ
+   ------------------------------------------------------------ */
+
+/* Проверочные ширины: 360, 375, 414 (mobile), 1440 (desktop).
+   html,body{overflow-x:clip} задан в reset. */
+
+.min-w0 { min-width: 0; }
+
+.flex { display: flex; }
+.flex > * { min-width: 0; } /* дефолт-safety на любой flex-обёртке компонентов */
+
+/* Кнопки на узких viewport — не обрезаются, растягиваются в полную ширину */
+@media (max-width: 640px) {
+  .btn {
+    white-space: normal;
+    width: 100%;
+    text-align: center;
+  }
+  .btn--inline { width: auto; } /* явное исключение для кнопок внутри строки текста */
+}
+
+/* Длинный текст в карточках/пунктах — перенос по словам, без обрезки */
+.card, .step, .digit-tile {
+  overflow-wrap: break-word;
+}
+
+
+/* ------------------------------------------------------------
+   7. ШАПКА + МЕНЮ + ГАМБУРГЕР
+   ------------------------------------------------------------
+   Разметка (для сборщика HTML):
+
+   <header class="site-header">
+     <div class="container site-header__inner">
+       <a href="/" class="site-brand">
+         <img class="site-brand__logo" src="..." alt="ПИКНИК">
+         <span class="site-brand__text">
+           <span class="site-brand__title">ПИКНИК</span>
+           <span class="site-brand__sub">Продуктовый рынок</span>
+         </span>
+       </a>
+
+       <button
+         class="nav-toggle"
+         type="button"
+         aria-expanded="false"
+         aria-controls="site-nav"
+         aria-label="Открыть меню">
+         <span class="nav-toggle__bar"></span>
+         <span class="nav-toggle__bar"></span>
+         <span class="nav-toggle__bar"></span>
+       </button>
+
+       <nav id="site-nav" class="site-nav">
+         <ul class="site-nav__list">
+           <li><a href="#formats">Форматы мест</a></li>
+           <li><a href="#service">Сервис</a></li>
+           <li><a href="#residents">Кто уже здесь</a></li>
+           <li><a href="#about">О проекте</a></li>
+         </ul>
+         <a href="#apply" class="btn btn--primary site-nav__cta">Оставить заявку</a>
+       </nav>
+     </div>
+   </header>
+
+   JS-контракт (пишет сборщик HTML, не входит в этот файл):
+   - клик по .nav-toggle переключает aria-expanded="true"/"false"
+     на самой кнопке И добавляет/убирает класс .is-open на .site-nav
+   - Escape и клик вне .site-nav закрывают меню (aria-expanded="false")
+   - CSS ниже реагирует на класс .is-open, не на атрибут — не полагаться
+     на :has() ради поддержки на старых мобильных браузерах (свод разд. 20). */
+
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: var(--z-header);
+  background: var(--bg-base);
+  border-bottom: var(--border-w) solid var(--border-hairline-light);
+  /* ЗАПРЕТ: backdrop-filter запрещён на шапке — прямой запрет SPEC разд. 2, блок 1 */
+}
+
+.site-header__inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  height: 72px;
+  min-width: 0;
+}
+@media (max-width: 720px) {
+  .site-header__inner { height: 64px; gap: var(--space-3); }
+}
+
+.site-brand {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  min-width: 0;   /* обязателен для сжатия текста бренда на узких viewport */
+  flex: 0 1 auto;
+}
+.site-brand__logo {
+  width: 56px;
+  height: 56px;
+  flex-shrink: 0;
+}
+@media (max-width: 720px) {
+  .site-brand__logo { width: 44px; height: 44px; }
+}
+@media (max-width: 360px) {
+  .site-brand__logo { width: 40px; height: 40px; }
+}
+.site-brand__text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+.site-brand__title {
+  font-family: var(--font-display);
+  font-weight: 700;
+  text-transform: uppercase;
+  font-size: clamp(16px, 4.4vw, 20px);
+  line-height: 1.1;
+  white-space: nowrap;
+  color: var(--text-on-light);
+}
+.site-brand__sub {
+  font-family: var(--font-body);
+  font-weight: 500;
+  text-transform: uppercase;
+  font-size: clamp(9px, 2.6vw, 12px);
+  letter-spacing: clamp(0.04em, 0.6vw, 0.10em);
+  white-space: nowrap;
+  color: var(--muted-on-light);
+}
+
+/* Гамбургер — виден только <960px */
+.nav-toggle {
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 5px;
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+}
+.nav-toggle__bar {
+  width: 22px;
+  height: 2px;
+  background: var(--c-black);
+  transition: transform var(--transition-fast), opacity var(--transition-fast);
+}
+/* Состояние "открыто" — крест. Драйвер: класс .is-open на кнопке
+   (сборщик HTML вешает его синхронно с aria-expanded="true"). */
+.nav-toggle.is-open .nav-toggle__bar:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+.nav-toggle.is-open .nav-toggle__bar:nth-child(2) { opacity: 0; }
+.nav-toggle.is-open .nav-toggle__bar:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+.site-nav {
+  display: flex;
+  align-items: center;
+  gap: var(--space-8);
+}
+.site-nav__list {
+  display: flex;
+  align-items: center;
+  gap: var(--space-6);
+}
+.site-nav__list a {
+  font-size: 15px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+.site-nav__list a:hover { color: var(--c-red); }
+
+/* Граница исправлена 08.09.2026: было `max-width: 960px`, и на ровно 960px
+   работали ОБЕ ветки — мобильная (меню абсолютной панелью, гамбургер виден)
+   и настольная (`min-width: 960px` в разделах 25–27). Замер на 960 показывал
+   меню, заходящее на бренд на 211px, и вылет 48px — это было смешанное
+   состояние, а не раскладка. Остальные правила шапки в файле уже писались
+   от 959px, приводим и это к ним. */
+@media (max-width: 959px) {
+  .nav-toggle { display: flex; }
+
+  .site-nav {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0;
+    /* Фон панели = фон мобильной шапки: панель читается её продолжением,
+       и белый текст пунктов (разд. 19) остаётся читаемым.
+       ⛔ Правка 09.09: было `var(--bg-base)` — белый. Раздел 19 покрасил
+       пункты в `rgba(255,255,255,.88)` под прозрачную шапку на кадре и не
+       переопределил их здесь: на белой панели выходило 1:1, пункты были
+       физически невидимы на 360, 375, 414 и 768. */
+    background: rgb(3, 55, 28);
+    border-bottom: var(--border-w) solid rgba(255, 255, 255, .16);
+    /* ЗАПРЕТ: без backdrop-filter (тот же запрет действует на мобильное меню шапки) */
+    z-index: var(--z-nav-mobile);
+
+    /* закрыто по умолчанию — не display:none, а clip-схлопывание,
+       чтобы transition открытия был плавным без прыжка layout */
+    max-height: 0;
+    overflow: hidden;
+    visibility: hidden;
+    transition: max-height var(--transition-base), visibility 0s linear var(--transition-base);
+  }
+  .site-nav.is-open {
+    max-height: 480px;
+    visibility: visible;
+    transition: max-height var(--transition-base), visibility 0s;
+  }
+  .site-nav__list {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0;
+    padding: var(--space-4) var(--container-pad);
+  }
+  .site-nav__list a {
+    display: block;
+    padding: var(--space-3) 0;
+    /* Линия светлая с прозрачностью, а не `--border-hairline-light`:
+       та задана как rgba(29,29,27,.10) — тёмная, для светлых поверхностей.
+       Панель с 09.09 зелёная, и на ней тёмная линия не видна. */
+    border-bottom: var(--border-w) solid rgba(255, 255, 255, .16);
+  }
+  .site-nav__cta {
+    margin: 0 var(--container-pad) var(--space-4);
+  }
+}
+
+
+/* ------------------------------------------------------------
+   8. КОМПОНЕНТЫ
+   ------------------------------------------------------------ */
+
+/* --- Карточка (базовая, используется во всех .cards-N) --- */
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: var(--space-6);
+  background: var(--bg-base);
+  border: var(--border-w) solid var(--border-hairline-light);
+  border-radius: var(--radius);
+}
+/* Акцент — тонкая верхняя полоса, не заливка (SPEC разд. 5) */
+.card--accent-yellow { border-top: var(--border-w-accent) solid var(--c-yellow); }
+.card--accent-green  { border-top: var(--border-w-accent) solid var(--c-green); }
+.card--accent-red    { border-top: var(--border-w-accent) solid var(--c-red); }
+
+.card__index {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 22px;
+  color: var(--c-yellow);
+  /* Роль жёлтого «бейджи 01/02/03» (SPEC разд. 1). Точный размер —
+     на усмотрение UI Designer при вёрстке конкретной карточки. */
+}
+.card__title {
+  font-family: var(--font-display);
+  font-weight: 700;
+  text-transform: uppercase;
+  font-size: var(--fs-h3);
+  line-height: var(--lh-h3);
+  letter-spacing: var(--ls-h3);
+}
+.card__text {
+  font-size: 15.5px;
+  line-height: 1.5;
+  color: var(--muted-on-light);
+}
+.section--dark .card, .section--flagship .card, .section--convert .card {
+  background: transparent;
+  border-color: var(--border-hairline-dark);
+}
+.section--dark .card__text, .section--flagship .card__text, .section--convert .card__text {
+  color: var(--muted-on-dark);
+}
+
+/* --- Плитка цифры (блок 3, .stats-grid) --- */
+.digit-tile {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+.digit-tile__value {
+  font-family: var(--font-display);
+  font-weight: var(--fw-digit);
+  font-size: var(--fs-digit);
+  line-height: var(--lh-digit);
+  letter-spacing: var(--ls-digit);
+  color: var(--c-yellow);
+  white-space: nowrap; /* «3 000 м²» и т.п. не переносится посреди значения */
+}
+.digit-tile__label {
+  font-family: var(--font-body);
+  font-weight: 500;
+  font-size: var(--fs-digit-caption);
+  line-height: var(--lh-digit-caption);
+  letter-spacing: var(--ls-digit-caption);
+  text-transform: uppercase;
+  color: var(--muted-on-dark);
+}
+
+/* --- Шаг с номером (блок 8 «За три шага») --- */
+.step {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding-top: var(--space-4);
+  border-top: var(--border-w-accent) solid var(--c-red); /* акцент шагов — красный, SPEC разд. 5 */
+}
+.step__num {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 28px;
+  color: var(--c-red);
+}
+.step__title {
+  font-family: var(--font-display);
+  font-weight: 700;
+  text-transform: uppercase;
+  font-size: var(--fs-h3);
+}
+.step__text {
+  font-size: 15.5px;
+  line-height: 1.5;
+  color: var(--muted-on-light);
+}
+
+/* --- Блок с медиа (фото/визуализация + подпись) --- */
+.media-block {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+.media-block__frame {
+  aspect-ratio: 16/9;
+  overflow: hidden;
+  border-radius: var(--radius);
+}
+.media-block__frame img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* --- Маркировка визуализаций (SPEC разд. 7, верстка дословно) --- */
+.render-caption {
+  display: flex; align-items: center; gap: 8px;
+  padding-top: 8px;
+  border-top: 1px solid var(--border-hairline-light);
+  font: 400 12px/1.4 'Roboto', sans-serif;
+  letter-spacing: 0.02em;
+  color: var(--muted-on-light);
+}
+.render-caption::before {
+  content: ''; width: 6px; height: 6px; flex-shrink: 0;
+  background: var(--c-yellow); border-radius: 1px;
+}
+
+/* --- Заготовка под будущую съёмку (SPEC разд. 8, верстка дословно) --- */
+.media-pending {
+  aspect-ratio: 4/3;
+  background: var(--tint-black-04);
+  border: 1px solid var(--border-hairline-light);
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center; gap: 12px;
+}
+.media-pending svg { width: 32px; height: 32px; stroke: var(--c-black); stroke-width: 1.6; opacity: .55; }
+.media-pending span {
+  font: 600 12px/1.3 'Roboto';
+  text-transform: uppercase; letter-spacing: 0.08em;
+  color: var(--muted-on-light);
+}
+
+/* --- Список направлений (блок 12 «занято по направлениям») --- */
+.tag-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+.tag-list__item {
+  padding: var(--space-1) var(--space-3);
+  border: var(--border-w) solid var(--border-hairline-light);
+  border-radius: var(--radius-sm); /* editorial: без «пилюль», прямоугольная метка */
+  font-size: 13px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+/* --- Бейдж-надзаголовок вне секции (напр. в карточке) --- */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: var(--space-1) var(--space-2);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.10em;
+  text-transform: uppercase;
+  border: var(--border-w) solid currentColor;
+  border-radius: var(--radius-sm);
+}
+
+
+/* ------------------------------------------------------------
+   9. КНОПКИ
+   ------------------------------------------------------------ */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-6);
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 15px;
+  border-radius: var(--radius);
+  transition: background-color var(--transition-fast), color var(--transition-fast);
+}
+
+.btn--primary {
+  background: var(--btn-primary-bg);
+  color: var(--btn-primary-text);
+}
+.btn--primary:hover {
+  background: var(--btn-primary-bg-hover);
+}
+.btn--primary:disabled,
+.btn--primary[aria-disabled="true"] {
+  background: var(--c-gray);
+  color: var(--c-white);
+  cursor: not-allowed;
+  opacity: .6;
+}
+
+/* Исключение блока 16: красная кнопка на красном фоне невидима —
+   единственное место с жёлтой кнопкой (SPEC разд. 3) */
+.section--convert .btn--primary,
+.btn--onred {
+  background: var(--btn-onred-bg);
+  color: var(--btn-onred-text);
+}
+.section--convert .btn--primary:hover,
+.btn--onred:hover {
+  background: var(--btn-onred-bg-hover);
+}
+.section--convert .btn--primary:disabled,
+.btn--onred:disabled {
+  background: rgba(255, 255, 255, .35);
+  color: rgba(29, 29, 27, .55);
+  cursor: not-allowed;
+  opacity: 1;
+}
+
+.btn--secondary {
+  padding: 0;
+  background: none;
+  color: inherit;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  font-weight: 500;
+}
+
+
+/* ------------------------------------------------------------
+   10. ФОРМА ЗАЯВКИ (блок 16 — на красном фоне)
+   ------------------------------------------------------------
+   Поля: имя (text), телефон (tel, обязателен), формат (select).
+   Валидация телефона — общая функция клиент+сервер (свод разд. 19),
+   HTML/JS пишет сборщик; здесь только визуальные состояния. */
+
+.form { display: flex; flex-direction: column; gap: var(--space-6); }
+
+.form__row { display: flex; flex-direction: column; gap: var(--space-2); min-width: 0; }
+
+.form__label {
+  font-size: 13px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--muted-on-dark); /* метка на красном фоне — SPEC даёт muted-on-dark */
+}
+.form__label .form__required { color: var(--c-yellow); margin-left: 2px; }
+
+.form__control {
+  width: 100%;
+  min-width: 0;
+  padding: var(--space-3) var(--space-4);
+  background: rgba(255, 255, 255, .08);
+  border: var(--border-w) solid rgba(255, 255, 255, .35);
+  border-radius: var(--radius);
+  color: var(--c-white);
+}
+.form__control::placeholder { color: rgba(255, 255, 255, .55); }
+
+/* Фокус — нейтральное белое кольцо, без цветного акцента (бренд не даёт синего) */
+.form__control:focus {
+  outline: none;
+  border-color: var(--c-white);
+  box-shadow: 0 0 0 3px rgba(255, 255, 255, .25);
+}
+
+/* Ошибка — жёлтый как единственный доступный акцент-цвет на красном
+   (роль «число/бейдж», используется здесь как предупреждающая линия,
+   не как заливка — не нарушает лимит SPEC разд. 1) */
+.form__row--error .form__control {
+  border-color: var(--c-yellow);
+  background: rgba(244, 186, 60, .10);
+}
+.form__hint--error {
+  font-size: 12px;
+  color: var(--c-yellow);
+  display: none;
+}
+.form__row--error .form__hint--error { display: block; }
+
+.form__row--disabled .form__control {
+  opacity: .5;
+  cursor: not-allowed;
+}
+
+.form__consent {
+  font-size: var(--fs-consent);
+  line-height: var(--lh-consent);
+  color: var(--muted-on-dark);
+}
+.form__consent a { text-decoration: underline; }
+
+/* Согласие галочкой (правовой контур, 09.09). Тот же класс, что у строки
+   ниже кнопки, плюс модификатор: сама галочка, зазор и попадание пальцем.
+   Кегль поднят против `--fs-consent`: это не сноска, а действие, которое
+   арендатор совершает — читать его придётся. */
+.form__consent--check {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+  font-size: 14px;
+  color: var(--text-on-dark);
+  cursor: pointer;
+}
+.form__consent-box {
+  flex: 0 0 auto;
+  width: 20px;
+  height: 20px;
+  margin: 1px 0 0;
+  accent-color: var(--c-yellow);
+  cursor: pointer;
+}
+.form__consent--check span { flex: 1 1 auto; }
+
+
+/* ------------------------------------------------------------
+   11. ФУТЕР (блок 17 — чёрный фон)
+   ------------------------------------------------------------ */
+.site-footer {
+  background: var(--bg-dark);
+  color: var(--text-on-dark);
+}
+.site-footer a:hover { color: var(--c-yellow); }
+
+.footer-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-8);
+}
+@media (min-width: 640px) {
+  .footer-grid { grid-template-columns: repeat(3, 1fr); }
+}
+.footer-grid > * { min-width: 0; }
+
+.footer-logo {
+  opacity: .65;
+  width: 40px;
+  height: 40px;
+}
+
+
+/* ============================================================
+   12. UI DESIGNER — ДОРАБОТКИ ПОВЕРХ КАРКАСА (31.08.2026)
+   ------------------------------------------------------------
+   Класс-имена ниже — из боевого index.html (сборка координатора),
+   не из чернового предположения. Ничего не переименовано и не
+   удалено из разделов 0–11 выше — только новые правила и новые
+   классы. Где новое правило целится в уже существующий селектор
+   (.card__index, .digit-tile__value, .card--accent-*, .section--hero,
+   .section--convert, .section__outro и т.п.) — это ДОПИСЫВАНИЕ
+   через каскад (более специфичный или более поздний селектор),
+   а не редактирование правила из разделов 0–11.
+
+   Порядок:
+     12.1  Найденные и исправленные баги каскада (не по ТЗ, но реальные)
+     12.2  Первый экран (блок 2) — section--hero, hero__*, digit-tile--accent
+     12.3  Секционные примитивы (section__lede/subhead/outro/label/subtitle/cta)
+     12.4  Сплит-компоновка блоков 6/11/13 (split, prose, cards-1, media-pending--dark)
+     12.5  Парные визуализации (media-pair)
+     12.6  Врезки-акценты (callout, callout--light) — флагман блока 5
+     12.7  Слоты под фактуру оператора (slot, slot__body, slot--inline)
+     12.8  Индексы блоков 8/9 (steps, benefits, card__index)
+     12.9  Заявка (apply, checklist, form__submit, btn--lg)
+     12.10 Футер (footer-brand, footer-col, footer-copy)
+     12.11 Иконки-теги блока 3 (tag-list--icons)
+     12.12 Микросостояния: focus-visible, hover
+   ============================================================ */
+
+/* ------------------------------------------------------------
+   12.1 БАГИ КАСКАДА — найдены при разборе реальной разметки,
+   исправлены дописыванием (без правки разделов 0–11)
+   ------------------------------------------------------------
+
+   Баг А. .card__index красный/жёлтый текст на белом фоне.
+   .card__index в разделе 8 красит текст в var(--c-yellow) — это
+   ровно та пара «жёлтый на белом», которую SPEC разд. 4 запрещает
+   как «белый на жёлтом» (1.76:1, провал): контраст симметричен,
+   жёлтый текст на белом фоне даёт тот же провальный коэффициент.
+   Блок 9 (единственное текущее место использования) — белая секция.
+   Исправление ниже: чёрный текст + короткая жёлтая полоса вместо
+   заливки текста — роль «жёлтый = число» сохранена как маркер,
+   не как цвет текста.
+
+   Баг Б. border-top акцентных карточек гаснет внутри цветных секций.
+   `.section--dark .card, .section--flagship .card, .section--convert .card`
+   (два класса, специфичность 0,2,0) перебивает border-color совокупно —
+   в том числе border-top-color, заданный `.card--accent-*` (один класс,
+   0,1,0), даже если .card--accent-* объявлен позже: специфичность выше
+   побеждает порядок. Сейчас в разметке accent-классы внутри тёмных/
+   цветных секций не встречаются (сработать некому), но это мина для
+   следующего человека, который добавит акцентную карточку в блок 5/13/16.
+   Фикс — тем же приёмом (0,2,0), дописан ниже, стоит по цене трёх строк.
+
+   Баг В. .tag-list--icons (блок 3, section--dark) наследует бордер-чип
+   для светлого фона. `.tag-list__item` — рамка hairline-light (по сути
+   чёрная линия) и padding под «пилюлю» на белом. На чёрном фоне блока 3
+   рамка не видна, а сама «пилюля» тут не нужна — источник просит ряд
+   «иконка + подпись», не бордер-чипы. Исправлено в 12.11.
+
+   Баг Г. section--hero и section--convert должны идти с усиленным
+   вертикальным ритмом (--section-py-lg по SPEC разд. 2: блок 2 и блок 16),
+   но в разметке нет отдельного модификатора .section--lg на этих двух
+   секциях — сборщик HTML присвоил ритм самим ролевым классам. Раз
+   markup так и остался (класса .section--lg на них нет), padding-block
+   для lg-ритма дописан прямо на .section--hero/.section--convert ниже. */
+
+.section--hero,
+.section--convert {
+  padding-block: var(--section-py-lg);
+}
+
+.section--dark .card--accent-yellow,
+.section--flagship .card--accent-yellow,
+.section--convert .card--accent-yellow { border-top-color: var(--c-yellow); }
+.section--dark .card--accent-green,
+.section--flagship .card--accent-green,
+.section--convert .card--accent-green { border-top-color: var(--c-green); }
+.section--dark .card--accent-red,
+.section--flagship .card--accent-red,
+.section--convert .card--accent-red { border-top-color: var(--c-red); }
+
+/* Баг Д. .digit-tile__value рассчитан на короткое число («3 000 м²»)
+   с nowrap на клампе до 48px. На стыке 3-колоночной раскладки
+   .stats-grid (640–~1150px, до перехода на 4 колонки) колонка уже
+   строки — «3 000 м²» жирным Jost в этой полосе физически не влезает
+   с nowrap и вылезает за карточку (проверено расчётом: колонка ≈181px
+   на 640px, строка ≈230px на кегле 48px). На 360px (1 колонка) это
+   не воспроизводится — там полная ширина контейнера. Фикс — не трогая
+   токен --fs-digit (значение SPEC), сузить кламп только в этом
+   диапазоне колонок: */
+@media (min-width: 640px) and (max-width: 1199px) {
+  .stats-grid .digit-tile__value {
+    font-size: clamp(22px, 3.2vw, 38px);
+  }
+}
+
+/* Баг Е. Ни один из .cards-2/3/4/5/8/-1, .stats-grid, .split,
+   .media-pair не имеет собственного отступа сверху — в разделах 0–11
+   он нигде не задавался. Там, где перед сеткой нет .section__lede
+   (например блок 3: h2 → .stats-grid напрямую), сетка садится
+   вплотную к заголовку без просвета. Единая точка ритма — раз и
+   для всех сеток: */
+.cards-2, .cards-3, .cards-4, .cards-5, .cards-8, .stats-grid {
+  margin-top: var(--space-8);
+}
+
+
+/* ------------------------------------------------------------
+   12.2 ПЕРВЫЙ ЭКРАН (БЛОК 2)
+   ------------------------------------------------------------
+   Разметка блока 2 — одна колонка в DOM (флажок → h1 → лид →
+   статы → кнопки → строка → медиа). На ≥960px превращаем контейнер
+   в grid с именованными областями — без единой правки HTML: текст
+   в левую колонку на всю высоту, картинка — в правую, по центру.
+   На <960px порядок остаётся исходным: картинка идёт ПОСЛЕДНЕЙ,
+   после всего текста (свод разд. 2 — фото уходит в отдельный блок,
+   текст выше). При 118-знаковом H1 (SPEC разд. 6: ≈7 строк на 360px)
+   плюс 3 абзаца плюс 4 карточки первый экран неизбежно длиннее
+   одного viewport на мобильном — это не баг, а следствие объёма
+   текста, который нельзя сокращать (verbatim). */
+
+.hero__flag {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin-bottom: var(--space-4);
+  padding: var(--space-2) var(--space-3);
+  border: var(--border-w) solid var(--border-hairline-light);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--muted-on-light);
+}
+.hero__flag::before {
+  content: '';
+  width: 6px; height: 6px; flex-shrink: 0;
+  background: var(--c-red);
+}
+
+.section--hero h1 { margin-top: var(--space-3); }
+
+.hero__lede {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  margin: var(--space-6) 0;
+  max-width: 62ch;
+}
+
+/* .hero__stats переиспользует .cards-4 (сетка) и .digit-tile (базовые
+   классы блока 3), но контекст другой: там короткое число на чёрном,
+   тут целая фраза («124 000 автомобилей в сутки») на белом. Базовые
+   .digit-tile__value (nowrap, кегль до 48px, цвет жёлтый) и
+   .digit-tile__label (цвет muted-on-dark) для этого контекста не
+   подходят — жёлтый на белом проваливает контраст (см. 12.1),
+   muted-on-dard на белом фоне становится светло-серым по светлому.
+   Ниже — полный override под контекст, карточка выглядит как card
+   (источник называет их «карточки-цифры»). */
+.hero__stats .digit-tile {
+  padding: var(--space-4) var(--space-5);
+  background: var(--bg-wash);
+  border: var(--border-w) solid var(--border-hairline-light);
+}
+.hero__stats .digit-tile__value {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(16px, 2.1vw, 19px);
+  line-height: 1.3;
+  letter-spacing: 0;
+  white-space: normal;             /* база — nowrap, здесь фраза, не число */
+  color: var(--text-on-light);     /* база — c-yellow, здесь провал контраста */
+}
+.hero__stats .digit-tile__label {
+  color: var(--muted-on-light);    /* база — muted-on-dark, здесь белая секция */
+  margin-top: var(--space-1);
+}
+/* Четвёртая карточка — акцентная («Продвижение точки входит в
+   стоимость аренды»). Роль зелёного по SPEC разд. 1 — «включено на
+   стороне арендатора»: смысл карточки буквально об этом. */
+.hero__stats .digit-tile--accent {
+  background: var(--tint-green-06);
+  border-color: var(--c-green);
+}
+.hero__stats .digit-tile--accent .digit-tile__value {
+  color: var(--c-green);
+}
+
+.hero__actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--space-4);
+  margin-top: var(--space-2);
+}
+@media (max-width: 640px) {
+  .hero__actions { flex-direction: column; align-items: flex-start; gap: var(--space-3); }
+  /* .btn--secondary тут без .btn--inline — без этой строки правило
+     раздела 6 (.btn{width:100%} на ≤640px) растянет текстовую
+     ссылку «Форматы мест» на всю ширину и отцентрует её как кнопку. */
+  .hero__actions .btn--secondary { width: auto; align-self: flex-start; }
+}
+
+.hero__note { margin-top: var(--space-2); }
+
+.hero__media { margin: var(--space-10) 0 0; }
+
+@media (min-width: 960px) {
+  .section--hero .container {
+    display: grid;
+    grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
+    column-gap: var(--space-16);
+    row-gap: 0;
+    align-items: center;
+    grid-template-areas:
+      "flag    media"
+      "h1      media"
+      "lede    media"
+      "stats   media"
+      "actions media"
+      "note    media";
+  }
+  .section--hero .container > * { min-width: 0; }
+  .hero__flag    { grid-area: flag; }
+  .section--hero h1 { grid-area: h1; }
+  .hero__lede    { grid-area: lede; }
+  .hero__stats   { grid-area: stats; }
+  .hero__actions { grid-area: actions; }
+  .hero__note    { grid-area: note; }
+  .hero__media   { grid-area: media; align-self: center; margin: 0; }
+}
+
+
+/* ------------------------------------------------------------
+   12.3 СЕКЦИОННЫЕ ПРИМИТИВЫ
+   ------------------------------------------------------------ */
+
+.section__lede {
+  margin-top: var(--space-4);
+  max-width: 62ch;
+  color: var(--muted-on-light);
+}
+/* Специфичность 0,2,0 против .section--dark p (0,1,1) — лид остаётся
+   притушенным (не белым в полную силу) даже в тёмных/цветных секциях. */
+.section--dark .section__lede,
+.section--flagship .section__lede,
+.section--convert .section__lede { color: var(--muted-on-dark); }
+
+.section__subhead {
+  margin-top: var(--space-12);
+  margin-bottom: var(--space-2);
+}
+
+/* Повторяющаяся «строка-итог/акцент» — блоки 4, 6, 7, 10. Общий
+   визуальный приём: тонкая линия сверху + маркер + текст чуть крупнее
+   основного. */
+.section__outro {
+  margin-top: var(--space-8);
+  padding-top: var(--space-6);
+  border-top: var(--border-w) solid var(--border-hairline-light);
+  font-weight: 500;
+  font-size: 17px;
+  line-height: 1.5;
+}
+.section__outro::before {
+  content: '';
+  display: inline-block;
+  width: 6px; height: 6px;
+  margin-right: var(--space-2);
+  background: var(--c-red);
+  vertical-align: middle;
+}
+.section--dark .section__outro,
+.section--flagship .section__outro,
+.section--convert .section__outro { border-top-color: var(--border-hairline-dark); }
+
+/* Тот же класс переиспользован в блоке 8 как мелкая подпись под
+   кнопкой (.section__cta .section__outro) — там роль другая: не
+   «итог блока», а служебная строка про срок ответа. Контекстный
+   даунгрейд специфичностью 0,2,0. */
+.section__cta .section__outro {
+  margin-top: var(--space-3);
+  padding-top: 0;
+  border-top: none;
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--muted-on-light);
+}
+.section__cta .section__outro::before { display: none; }
+
+/* Надпись-лейбл над списком: «Что уже занято…» (блок 12), «Что будет
+   дальше» (блок 16, section--convert — нужен светлый вариант). */
+.section__label {
+  margin: var(--space-8) 0 var(--space-3);
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--muted-on-light);
+}
+.section--convert .section__label { color: var(--muted-on-dark); }
+
+/* Подзаголовок блока 16 — на красном фоне, роль «надзаголовок на
+   тёмном» = жёлтый (SPEC разд. 1). */
+.section__subtitle {
+  margin-top: var(--space-3);
+  font-family: var(--font-display);
+  font-weight: 700;
+  text-transform: uppercase;
+  font-size: 18px;
+  letter-spacing: 0.01em;
+  color: var(--c-yellow);
+}
+
+.section__cta {
+  margin-top: var(--space-8);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-3);
+}
+
+
+/* ------------------------------------------------------------
+   12.4 СПЛИТ-КОМПОНОВКА (БЛОКИ 6, 11, 13)
+   ------------------------------------------------------------
+   Список карточек/абзацев слева, .media-pending справа. 1 колонка
+   до 960px (медиа уходит вниз, после текста), 2 колонки дальше. */
+.split {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-8);
+  margin-top: var(--space-8);
+  align-items: start;
+}
+.split > * { min-width: 0; }
+@media (min-width: 960px) {
+  .split { grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr); gap: var(--space-12); }
+}
+.split__aside { display: flex; align-items: flex-start; }
+.split__aside .media-pending { width: 100%; }
+
+/* Список из одной колонки (блок 11) — сетка ещё не описана в
+   разделе 5, там только cards-2/3/4/5/8. */
+.cards-1 {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-6);
+  margin-top: var(--space-8);
+}
+.cards-1 > * { min-width: 0; }
+
+/* Три обычных абзаца (блок 13) — сброс reset обнулил margin, без
+   .prose они слипаются в один блок без просвета. */
+.prose {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+/* .media-pending на чёрном фоне (блок 13): базовый .media-pending
+   (tint-black-04 фон, чёрная иконка) на чёрной секции неразличим —
+   тёмная плашка на тёмном и чёрная иконка на чёрном. Тёмный вариант
+   зеркалит палитру на muted-on-dark / border-hairline-dark. */
+.media-pending--dark {
+  background: rgba(255, 255, 255, .06);
+  border-color: var(--border-hairline-dark);
+}
+.media-pending--dark svg { stroke: var(--c-white); }
+.media-pending--dark span { color: var(--muted-on-dark); }
+
+
+/* ------------------------------------------------------------
+   12.5 ПАРНЫЕ ВИЗУАЛИЗАЦИИ (БЛОКИ 10, 12)
+   ------------------------------------------------------------ */
+.media-pair {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-6);
+  margin: var(--space-8) 0;
+}
+.media-pair > * { min-width: 0; }
+@media (min-width: 640px) {
+  .media-pair { grid-template-columns: repeat(2, 1fr); }
+}
+/* .media-block несёт свой margin (12.4/база не задаёт его вовсе —
+   внутри пары спacing уже даёт сама .media-pair через gap). */
+.media-pair .media-block { margin: 0; }
+.media-block { margin: var(--space-8) 0; }
+
+
+/* ------------------------------------------------------------
+   12.6 ВРЕЗКИ-АКЦЕНТЫ (callout / callout--light) — ФЛАГМАН БЛОКА 5
+   ------------------------------------------------------------
+   .callout без модификатора встречается только в блоке 5
+   (section--flagship, зелёный фон) — это итоговый аргумент главного
+   блока страницы, должен читаться сильнее любой другой врезки на
+   сайте: белая карточка на зелёном поле, крупный дисплейный текст,
+   жёлтая полоса-акцент сверху. .callout--light (блоки 12, 14 —
+   светлые секции) — тот же приём в приглушённом регистре: серая
+   подложка на белом/wash, меньше кегль, без белой карточки (белое
+   на белом было бы неразличимо). */
+.callout {
+  position: relative;
+  margin-top: var(--space-8);
+  padding: var(--space-8) var(--space-10);
+  border-radius: var(--radius);
+  font-family: var(--font-display);
+  font-weight: 700;
+  text-transform: none;
+  font-size: clamp(19px, 2.6vw, 26px);
+  line-height: 1.4;
+  max-width: 68ch;
+}
+.callout::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0;
+  width: 48px; height: 4px;
+  background: var(--c-yellow);
+}
+/* Специфичность 0,2,0 — перебивает .section--flagship p (0,1,1),
+   иначе белая карточка получит белый текст. */
+.section--flagship .callout {
+  background: var(--c-white);
+  color: var(--text-on-light);
+}
+.section--flagship .callout strong { color: var(--c-red); }
+.section--flagship .card { border-top: var(--border-w-accent) solid var(--c-yellow); }
+.section--flagship .card__title { font-size: clamp(17px, 2vw, 20px); }
+
+.callout--light {
+  padding: var(--space-6) var(--space-8);
+  font-size: clamp(17px, 2vw, 20px);
+  background: var(--tint-black-04);
+  color: var(--text-on-light);
+}
+.callout--light::before { background: var(--c-red); }
+
+@media (max-width: 640px) {
+  .callout { padding: var(--space-6); }
+  .callout--light { padding: var(--space-5); }
+}
+
+
+/* ------------------------------------------------------------
+   12.7 СЛОТЫ ПОД ФАКТУРУ ОПЕРАТОРА (slot, slot__body, slot--inline)
+   ------------------------------------------------------------
+   Три места: два в блоке 12 (витринные имена, свободные ниши),
+   один в футере (slot--inline, почта для заявок). Каждый .slot несёт
+   data-slot="…" с описанием содержимого — подпись рисуется из этого
+   атрибута через content:attr(), а не хардкодится текстом. Запрет
+   источника («скоро», «появится», «уточняется») так не нарушается —
+   в CSS таких слов нет вообще, подпись — фактическое название того,
+   что здесь будет, а не статус. Визуальный язык — тот же, что у
+   .media-pending (тонкая рамка + тонированный фон + акцентная метка),
+   чтобы контейнер читался как «здесь будет содержимое», не как
+   пустое место и не как ошибка вёрстки. */
+.slot {
+  position: relative;
+  min-height: 132px;
+  margin: var(--space-6) 0;
+  padding: var(--space-5) var(--space-6) var(--space-5) calc(var(--space-6) + var(--space-3));
+  background: var(--tint-black-04);
+  border: var(--border-w) solid var(--border-hairline-light);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+.slot::before {
+  content: '';
+  position: absolute;
+  top: var(--space-5); bottom: var(--space-5); left: var(--space-4);
+  width: 3px;
+  background: var(--c-yellow);
+}
+.slot::after {
+  content: attr(data-slot);
+  order: -1;
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--muted-on-light);
+}
+.slot__body {
+  flex: 1;
+  min-height: 40px;
+}
+
+/* Инлайн-вариант в футере (чёрный фон, одна строка контактной колонки) */
+.slot--inline {
+  min-height: auto;
+  margin: var(--space-2) 0 0;
+  padding: var(--space-2) var(--space-3) var(--space-2) calc(var(--space-3) + var(--space-3));
+  background: rgba(255, 255, 255, .06);
+  border-color: var(--border-hairline-dark);
+}
+.slot--inline::before { top: var(--space-2); bottom: var(--space-2); left: var(--space-2); }
+.slot--inline::after { color: var(--muted-on-dark); font-size: 11px; }
+.slot--inline .slot__body { min-height: 20px; }
+
+
+/* ------------------------------------------------------------
+   12.8 ИНДЕКСЫ БЛОКОВ 8/9 (steps, benefits, card__index)
+   ------------------------------------------------------------
+   Номера в разметке идут с точкой — «01.», «02.» (дословно источнику).
+   .step__num (блок 8, красный) уже 28px из раздела 8 — точка не меняет
+   его ширину (обычный текст, не бейдж с фиксированной шириной).
+   .card__index (блок 9, «01.»…«05.») в разделе 8 — 22px, жёлтый ТЕКСТ
+   на белом фоне (провал контраста, см. 12.1 баг А). Ниже — осознанный
+   размер вместо случайного: 28px, тот же кегль, что у .step__num,
+   чтобы оба номерных ряда сайта читались одним весом, различаясь
+   только цветовой ролью (красный — шаг к действию, жёлтый — номер
+   выгоды). Жёлтая роль переведена в короткую полосу под номером —
+   без заливки текста, контраст больше не проблема. Фиксированной
+   ширины у .card__index нет намеренно: «01.» и «05.» — обе безопасны
+   при auto-width, в отличие от бейджа-квадрата, где лишний знак
+   потребовал бы пересчёта. */
+.card__index {
+  display: inline-flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  color: var(--text-on-light);
+  font-size: 28px;
+}
+.card__index::after {
+  content: '';
+  width: 26px; height: 3px;
+  background: var(--c-yellow);
+}
+
+.steps, .benefits { margin-top: var(--space-8); }
+
+
+/* ------------------------------------------------------------
+   12.9 ЗАЯВКА (БЛОК 16)
+   ------------------------------------------------------------ */
+.apply {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-10);
+  margin-top: var(--space-8);
+  align-items: start;
+}
+.apply > * { min-width: 0; }
+@media (min-width: 960px) {
+  .apply { grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr); }
+}
+
+.checklist {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+.checklist li {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+  padding-top: var(--space-3);
+  border-top: var(--border-w) solid var(--border-hairline-light);
+  font-size: 15.5px;
+  line-height: 1.5;
+}
+.checklist li:first-child { border-top: none; padding-top: 0; }
+.checklist li::before {
+  content: '';
+  width: 8px; height: 8px;
+  margin-top: 6px;
+  flex-shrink: 0;
+  background: var(--c-yellow);
+}
+.section--convert .checklist li { border-top-color: var(--border-hairline-dark); }
+
+.apply__form { max-width: 480px; }
+
+.form__submit { width: 100%; margin-top: var(--space-2); }
+
+/* Крупная кнопка — блоки 2, 8, 15, плюс submit блока 16. */
+.btn--lg {
+  padding: var(--space-4) var(--space-8);
+  font-size: 16px;
+}
+
+
+/* ------------------------------------------------------------
+   12.10 ФУТЕР (БЛОК 17)
+   ------------------------------------------------------------ */
+.footer-brand {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+.footer-brand__name {
+  margin-top: var(--space-2);
+  font-family: var(--font-display);
+  font-weight: 700;
+  text-transform: uppercase;
+  font-size: 22px;
+  letter-spacing: 0.01em;
+  color: var(--text-on-dark);
+}
+.footer-brand__sub {
+  font-size: 13px;
+  color: var(--muted-on-dark);
+}
+
+.footer-col__title {
+  margin-bottom: var(--space-3);
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--c-yellow); /* надзаголовок на тёмном — роль жёлтого, SPEC разд. 1 */
+}
+.footer-col p {
+  margin-bottom: var(--space-2);
+  color: var(--muted-on-dark);
+}
+.footer-col a { color: var(--text-on-dark); }
+
+/* Страховка: .site-footer{color:text-on-dark} наследуется на голые <p>
+   (в base p цвет не задан), но если в футер когда-то добавят
+   заголовок — h1/h2/h3 красят текст явно в чёрный (раздел 3). */
+.site-footer h1, .site-footer h2, .site-footer h3 { color: var(--text-on-dark); }
+
+.footer-copy {
+  margin-top: var(--space-12);
+  padding-top: var(--space-6);
+  border-top: var(--border-w) solid var(--border-hairline-dark);
+  font-size: 12px;
+  color: var(--muted-on-dark);
+}
+
+
+/* ------------------------------------------------------------
+   12.11 ИКОНКИ-ТЕГИ БЛОКА 3 (tag-list--icons)
+   ------------------------------------------------------------
+   .tag-list__item (раздел 8) — рамка-«пилюля» под светлый фон
+   (используется так в блоке 12). Блок 3 — section--dark, источник
+   просит ряд «иконка + подпись» без рамки. */
+.tag-list--icons { gap: var(--space-6); }
+.tag-list--icons .tag-list__item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  border: none;
+  padding: 0;
+  white-space: normal;
+  color: var(--muted-on-dark);
+}
+.tag-list--icons .tag-list__item svg {
+  width: 20px; height: 20px;
+  stroke: var(--c-yellow);
+  flex-shrink: 0;
+}
+
+
+/* ------------------------------------------------------------
+   12.12 МИКРОСОСТОЯНИЯ: focus-visible, hover
+   ------------------------------------------------------------
+   currentColor вместо цветного кольца — единое решение без брендового
+   синего и без per-секционных вариантов: цвет обводки = цвет текста
+   элемента в его контексте (чёрный на белом хедере, белый на красной
+   кнопке, чёрный на жёлтой кнопке блока 16 — всегда достаточный
+   контраст, потому что совпадает с уже проверенным текстом). Без
+   box-shadow-подушек — только outline, editorial. */
+a:focus-visible,
+button:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 3px;
+}
+.btn:focus-visible { border-radius: var(--radius); }
+
+.btn--secondary:hover { color: var(--c-red); }
+
+/* Найдено визуальной проверкой (playwright, 1280px, блок 5): в узкой
+   5-колоночной карточке «ПЛАН ПО ВАШЕМУ НАПРАВЛЕНИЮ» слово «НАПРАВЛЕНИЮ»
+   ломалось посреди слова («НАПРАВЛЕН» / «ИЮ»). Причина — overflow-wrap:
+   break-word наследуется от .card (раздел 6, страховка для длинных строк
+   в теле карточки) вниз на заголовок; для тела это нужно, для дисплейного
+   uppercase-заголовка — нет, там достаточно обычного переноса по словам. */
+.card__title, .step__title {
+  overflow-wrap: normal;
+  word-break: normal;
+}
+
+
+/* ------------------------------------------------------------
+   12. ПРАВКИ КООРДИНАТОРА ПО НАХОДКАМ ПРОВЕРКИ
+   ------------------------------------------------------------ */
+
+/* Находка 1 (playwright 360/375/414): кнопка «Оставить заявку» в мобильном
+   меню выходила за viewport на ширину горизонтальных margin.
+   Причина: .btn на мобильном получает width:100% (свод разд. 2), а
+   .site-nav__cta добавляет margin слева и справа по --container-pad —
+   100% ширины родителя плюс 48px margin не помещаются в родителя.
+   Родитель .site-nav — flex-колонка с align-items:stretch, поэтому
+   ширину задавать не нужно вовсе: растягивание даёт сам flex. */
+@media (max-width: 959px) {
+  .site-nav__cta {
+    width: auto;
+    align-self: stretch;
+  }
+}
+
+
+/* Находка 2 (визуальная проверка, 1440px): в двухколоночном первом экране
+   кадр центрирован по вертикали (align-self: center), из-за чего верхняя
+   треть правой колонки пустует, а кадр «висит» ниже середины. При
+   118-знаковом H1 левая колонка высокая, и центрирование разводит текст
+   и кадр по разным горизонтам — они перестают читаться как одна
+   композиция. Прижимаем кадр к верхней линии заголовка и даём ему
+   вертикальный формат, чтобы колонка была занята по всей высоте. */
+@media (min-width: 960px) {
+  .hero__media {
+    align-self: start;
+    margin-top: var(--space-12);
+  }
+  .hero__media .media-block__frame {
+    aspect-ratio: 3 / 4;
+  }
+  .hero__media .media-block__frame img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: 50% 45%;
+  }
+}
+
+
+/* Находка 3 (playwright, переход по якорям меню): на мобильном все пять
+   якорей — #formats, #marketing, #traffic, #how, #apply — приводили верх
+   заголовка секции на 48px при высоте sticky-шапки 65px, то есть заголовок
+   оказывался ПОД шапкой: человек жмёт «Маркетинг в аренду» и попадает на
+   середину первого абзаца, не увидев названия блока. На десктопе не
+   воспроизводилось (96px против шапки 73px), поэтому проверка только
+   широкого экрана эту дыру не ловит.
+   Причина: у html нет scroll-padding-top, а шапка sticky — браузер
+   доводит якорь до края viewport, не зная про перекрытие. */
+html {
+  scroll-padding-top: 88px;
+}
+@media (max-width: 959px) {
+  html { scroll-padding-top: 80px; }
+}
+
+
+/* Находка 4 (визуальная проверка): три слота под фактуру оператора выводили
+   служебную подпись прямо на страницу — «витринные имена арендаторов, давших
+   разрешение на публикацию», «перечень свободных ниш на текущий день»,
+   «почта для заявок — адрес даёт оператор». Это внутренняя кухня проекта:
+   арендатору она не адресована и на боевом сайте читается как недоделка,
+   а показывать её нельзя по тому же правилу, по которому в клиентских
+   документах не афишируется ход правок.
+   Решение — режим, а не удаление: подпись видна, только пока на <html>
+   стоит data-slots="visible". Перед публикацией атрибут снимается, слот
+   схлопывается и страница выглядит законченной. Как только фактура придёт
+   и ляжет внутрь .slot__body, слот показывается в любом режиме — блок
+   пересобирать не нужно, чего и требует постановка. */
+
+/* Боевой режим по умолчанию: пустой слот не занимает места и молчит. */
+.slot { display: none; }
+.slot:has(.slot__body:not(:empty)) { display: block; }
+.slot:has(.slot__body:not(:empty))::before { content: none; }
+
+/* Рабочий режим: слоты показаны с подписью из data-slot. */
+[data-slots="visible"] .slot { display: block; }
+
+/* Заполненный слот показывает содержимое, а не служебную подпись. */
+[data-slots="visible"] .slot:has(.slot__body:not(:empty))::before { content: none; }
+
+
+/* Находка 5 (playwright + скриншот кнопки в фокусе): кольцо фокуса на
+   кнопках с цветной заливкой не видно вообще. Правило 12.12 задаёт
+   `outline: 2px solid currentColor; outline-offset: 3px` — у красной
+   кнопки currentColor белый, а offset выносит кольцо НАРУЖУ, на белый
+   фон страницы: белое по белому. Проверено снимком — вокруг кнопки
+   «Оставить заявку» в фокусе пусто. Бьёт по всем четырём главным CTA
+   страницы, то есть по единственному действию, ради которого её собрали.
+   На текстовых ссылках чёрное кольцо на белом видно, там всё в порядке.
+   Решение — два кольца: внутреннее цветом текста (всегда контрастно
+   заливке кнопки, она же проверена по WCAG) и внешнее тёмное
+   полупрозрачное, которое видно и на белом фоне, и на цветной секции. */
+.btn:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: -4px;
+  box-shadow: 0 0 0 3px rgba(29, 29, 27, .55);
+}
+/* На красной секции блока 16 внешнее тёмное кольцо теряется — там белое. */
+.section--convert .btn:focus-visible {
+  box-shadow: 0 0 0 3px rgba(255, 255, 255, .75);
+}
+
+
+/* Находка 6 (визуальная проверка футера): выворотный логотип при 40×40
+   и opacity .65 превращается в неразборчивое серое пятно. Знак ПИКНИК
+   детальный — надпись «продуктовый рынок» идёт по дуге мелкими буквами,
+   на 40px они схлопываются в шум. Свод разд. 6 разрешает вилку 32–48px
+   и приглушение — берём верх вилки и поднимаем непрозрачность.
+   Пропорция знака 220×154, квадратные 40×40 её ещё и растягивали. */
+.footer-logo {
+  width: 68px;
+  height: auto;
+  aspect-ratio: 220 / 154;
+  opacity: .85;
+}
+
+
+/* Находка 7 (проверка с отключённым JavaScript): без скрипта мобильное
+   меню не раскрывается — гамбургер работает только на JS, а `.site-nav`
+   схлопнут в max-height: 0. Страница линейная и доскроллить можно, но
+   навигация — заявленная функция блока 1, и терять её из-за одного
+   несработавшего скрипта незачем.
+   Класс .no-js снимается инлайн-скриптом в <head> до отрисовки, поэтому
+   мигания при живом JS не будет. */
+@media (max-width: 959px) {
+  .no-js .site-nav {
+    position: static;
+    max-height: none;
+    overflow: visible;
+    visibility: visible;
+    opacity: 1;
+    padding-block: var(--space-4);
+  }
+  .no-js .nav-toggle { display: none; }
+  .no-js .site-header__inner { flex-wrap: wrap; height: auto; }
+}
+
+
+/* Находка 8 (независимая приёмка, подтверждена пересчётом): надзаголовок
+   `.overline` жёлтым на зелёном фоне блока 5 даёт контраст 4,05:1, на
+   красном фоне блока 16 — 4,19:1. Порог AA для этого текста 4,5:1, а не
+   3:1: кегль 13px при весе 600 крупным по WCAG не считается.
+   Откуда взялось: спецификация задала роль «надзаголовки на тёмном —
+   жёлтые», и правило распространили на все цветные секции скопом. На
+   чёрном фоне жёлтый даёт 9,6:1 и работает, на зелёном и красном — нет.
+   Промах пришёлся ровно на главный блок страницы и на блок с формой.
+   Чиним точечно: жёлтый остаётся ролью числа и надзаголовка на чёрном,
+   на зелёном и красном надзаголовок белый — 7,12:1 и 7,38:1. */
+.section--flagship .overline,
+.section--convert .overline {
+  color: var(--c-white);
+}
+
+/* Найдено там же: `.section__subtitle` объявлен жёлтым, но правило мёртвое —
+   `.section--convert p` (0,1,1) перебивает его (0,1,0) по специфичности
+   независимо от порядка. По факту подзаголовок рендерился белым, и это
+   лучше задуманного по контрасту (7,38:1 против 4,19:1), но правило,
+   которое не применяется, — мина: следующий человек будет править цвет
+   и не поймёт, почему ничего не меняется. Приводим объявленное к
+   фактическому и поднимаем специфичность, чтобы правило работало. */
+.section--convert .section__subtitle,
+.section--flagship .section__subtitle {
+  color: var(--c-white);
+}
+
+
+/* Находка 9 (сплошной прогон контраста по всем текстовым парам):
+   `.render-caption` — подпись-маркировка визуализации — на тёмной секции
+   рисуется цветом `--muted-on-light`, то есть почти чёрным по чёрному:
+   контраст 1,00:1, текст не виден вообще. Всплыло сразу после того, как
+   в блок 3 (чёрный фон) добавили кадр: до этого визуализаций на тёмных
+   секциях не было, и правило ни разу не сработало.
+   Цена ошибки выше обычной: подпись-маркировка обязательна по требованию
+   источника — рендер не должен читаться как фотография готового рынка.
+   Невидимая подпись означает, что требование формально выполнено, а
+   фактически нет. Спецификация тёмный вариант предусматривала, но
+   правилом он записан не был. */
+.section--dark .render-caption,
+.section--flagship .render-caption,
+.section--convert .render-caption {
+  color: var(--muted-on-dark);
+  border-top-color: var(--border-hairline-dark);
+}
+
+
+/* ============================================================
+   13. ВИЗУАЛЬНЫЙ ЯЗЫК ДЕЙСТВУЮЩЕГО САЙТА piknik-food.ru
+   ============================================================
+   Решение владельца 31.08: перенять почерк действующего сайта —
+   он его автор и он ему нравится. Заголовки блоков при этом
+   остаются JOST: их семнадцать, они длинные, а BosaNova —
+   капитель, на длинной строке она читается тяжело.
+
+   Что взято с живого сайта: векторный логотип, favicon, две
+   авторские иконки (парковка, зона разгрузки), шрифт
+   a_BosaNovaCps, крупное скругление 15px, иконки в круглых
+   обводках. Палитра совпала сама: их зелёный #086634 против
+   нашего #006633, красный #ab120e против #ac120d, жёлтый
+   #f4b93b против #f4ba3c — отличие 1-2 единицы на канал,
+   в пределах конвертации цветового профиля. Оставляем свои
+   значения из брендбука.
+   ============================================================ */
+
+:root {
+  --radius:    15px;   /* было 4px — почерк живого сайта */
+  --radius-sm: 5px;    /* было 2px — как радиус их кнопки */
+  --font-logo: 'BosaNova', Georgia, serif;
+}
+
+/* --- Капитель на надписи логотипа и надзаголовках --- */
+.site-brand__title,
+.footer-brand__name {
+  font-family: var(--font-logo);
+  font-weight: 400;
+  letter-spacing: 0.01em;
+}
+.overline {
+  font-family: var(--font-logo);
+  font-weight: 400;
+  letter-spacing: 0.06em;   /* капители нужно меньше разрядки, чем гротеску */
+  font-size: 15px;
+}
+@media (max-width: 640px) {
+  .overline { font-size: 14px; letter-spacing: 0.05em; }
+}
+
+/* --- Иконки в круглых обводках, приём живого сайта --- */
+.tag-list--icons .tag-list__item {
+  border: none;
+  padding-left: 0;
+  gap: var(--space-3);
+}
+.tag-list--icons .tag-list__item svg,
+.tag-list--icons .tag-list__item img {
+  width: 46px;
+  height: 46px;
+  padding: 11px;
+  border: 2px solid currentColor;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+/* --- Контейнер под съёмку: тоже круглая обводка вокруг иконки --- */
+.media-pending svg,
+.media-pending img {
+  width: 64px;
+  height: 64px;
+  padding: 15px;
+  border: 2px solid currentColor;
+  border-radius: 50%;
+  opacity: .75;
+}
+
+/* Логотип-вектор в шапке: SVG тянется по высоте, пропорция своя */
+.site-brand__logo { height: auto; aspect-ratio: 220 / 147; }
+.footer-logo { aspect-ratio: 220 / 147; }
+
+
+/* Находка 13 (визуальная проверка после переноса почерка): в первом
+   экране четыре плитки-цифры стоят в ряд внутри левой колонки шириной
+   580px — по 127px на плитку, из них под текст остаётся 85px. Слово
+   «автомобилей» на кегле 19px в 85px не помещается, и унаследованный
+   от .card `overflow-wrap: break-word` рвёт его посреди: «автомоби /
+   лей», «Продв / ижение». Проблема была и до переноса визуального
+   языка — просто не разглядел её на мелком контактном листе.
+   Чиним двумя правками: плитки в две колонки вместо четырёх (278px на
+   плитку — слово помещается целиком) и запрет разрыва слов у короткой
+   фразы-значения. break-word оставляем телу карточек, где он страхует
+   длинные строки. */
+@media (min-width: 960px) {
+  .hero__stats { grid-template-columns: 1fr 1fr; }
+}
+.digit-tile__value,
+.digit-tile__label {
+  overflow-wrap: normal;
+  word-break: normal;
+  hyphens: none;
+}
+
+
+/* Находка 14 (визуальная проверка шапки): после перехода на капитель
+   блок бренда потерял баланс — подпись «ДЛЯ АРЕНДАТОРОВ» перевешивала
+   название «ПИКНИК», а знак ужался до 37px по высоте против вилки
+   48–64px из раздела 6 свода.
+   Причина в природе шрифта: BosaNova — капитель, её строчные рисуются
+   уменьшенными прописными, поэтому на одном и том же кегле она читается
+   мельче гротеска. Кегль названия нужно поднимать, а не подгонять
+   подпись вниз — иначе подпись станет нечитаемой на узких экранах. */
+.site-brand__logo { width: auto; height: 48px; }
+.site-brand__title { font-size: 26px; line-height: 1.05; }
+
+@media (max-width: 720px) {
+  .site-brand__logo { width: auto; height: 40px; }
+  .site-brand__title { font-size: clamp(19px, 5.4vw, 22px); }
+}
+@media (max-width: 360px) {
+  .site-brand__logo { height: 36px; }
+}
+
+/* Футер: тот же знак вектором, размер по вилке свода */
+.footer-logo { width: auto; height: 62px; }
+
+
+/* ============================================================
+   14. ПЕРЕСБОРКА ПОД ПРИНЯТЫЙ РЕФЕРЕНС (UI Designer, 01.09.2026)
+   ------------------------------------------------------------
+   Источник — SPEC-REFERENCE-lending-22-06.md, снят координатором с
+   лендинга, который клиент уже принял. Задача владельца: «возьми то,
+   что уже было, и сделай с текстом, который новый». Разделы 0-13
+   выше — три последовательных слоя решений (editorial-каркас →
+   доработки UI Designer → почерк живого piknik-food.ru). Этот слой
+   их не отменяет построчно, а перекрывает финальным вариантом там,
+   где референс расходится: тёплый кремовый фон вместо белого,
+   крупные скругления 18-28px вместо 4-15, зелёный работает
+   многократно (deep/dark), а не только чёрным/одним зелёным,
+   заголовки не прописными, кнопки-пилюли, авторские 3D-иконки.
+   Токены рулбука SPEC разд.1 переносятся дословно, не пересматриваются.
+
+   Порядок:
+     14.1  Токены референса (цвет, радиусы, тени)
+     14.2  Типографика (не прописные заголовки, надзаголовок Roboto)
+     14.3  Ритм фонов секций (facts/marketing/how/trust = зелёный,
+           tvc/tenants = cream, service/parking = paper, why/infra/
+           about = cream-2, urgency = красный, apply = cream)
+     14.4  Карточки — белые, r-28, мягкая тень, авторские иконки
+     14.5  Кнопки-пилюли
+     14.6  Врезки-акценты (двух видов: на зелёном / на кремовом)
+     14.7  Первый экран — фото на весь блок, оверлей, факт-пилюли
+     14.8  Шаги (блок 8), цифры (блок 3), теги (блок 3)
+     14.9  Заявка (блок 16) — кремовая секция, зелёная карточка формы
+     14.10 Новые элементы блока 7 (реальное фото ТВЦ, соседи)
+   ============================================================ */
+
+/* ------------------------------------------------------------
+   14.1 ТОКЕНЫ РЕФЕРЕНСА
+   ------------------------------------------------------------
+   Значения — из :root принятого лендинга, не с глаза. Прежние
+   значения брендбука (#006633/#ac120d/#f4ba3c) отличались на
+   1-2 единицы на канал — берём референсные, чтобы новый сайт и
+   принятый лендинг совпадали по цвету буквально. */
+:root {
+  --c-green:  #086634;
+  --c-red:    #ab120e;
+  --c-yellow: #f4b93b;
+
+  --green-dark: #054d27;   /* флагманские секции — блок 5 */
+  --green-deep: #03371c;   /* самые тёмные — блоки 3, 8, 13, футер */
+  --cta-dark:   #8a0e0a;
+
+  --cream:      #faf6ee;   /* фон страницы по умолчанию — НЕ белый */
+  --cream-2:    #f2ead8;   /* второй кремовый — блоки 9, 10, 14 */
+  --paper:      #ffffff;   /* белый — только карточки и блоки 6, 11 */
+  --ink:        #1a1a17;
+  --ink-soft:   #5b5a52;
+
+  --r:      18px;   /* было 15 (почерк живого сайта) — референс просит 18 */
+  --r-lg:   28px;   /* карточки, крупные врезки */
+  --r-pill: 999px;  /* кнопки */
+  --sh:      0 18px 56px -22px rgba(3, 55, 28, .36);
+  --sh-card: 0 8px 32px -12px rgba(3, 55, 28, .18);
+
+  --bg-dark:     var(--green-deep); /* было чёрное — референс не использует чёрный вообще */
+  --bg-flagship: var(--green-dark); /* было = --c-green (один тон) — референс разводит зелёный на два фона */
+  --bg-wash:     var(--cream-2);    /* было rgba(126,129,130,.10) сероватое — референс просит именно cream-2 */
+
+  --radius:    var(--r);
+  --radius-sm: 10px;
+
+  --btn-onred-bg:       var(--c-red);   /* было жёлтое — актуально только пока блок 16 был красным */
+  --btn-onred-bg-hover: var(--cta-dark);
+  --btn-onred-text:     #ffffff;
+}
+
+body { background: var(--cream); }
+.site-header { background: var(--paper); }
+
+.section--paper { background: var(--paper); }
+
+
+/* ------------------------------------------------------------
+   14.2 ТИПОГРАФИКА — заголовки не прописными (SPEC разд. 2)
+   ------------------------------------------------------------
+   «Заголовки в референсе НЕ набраны прописными — это Jost 800/900
+   обычным регистром с плотным трекингом». Прежний рулбук требовал
+   капс по своей спецификации (другой документ) — здесь она уже не
+   действует, референс явно её переопределяет по решению владельца. */
+h1, h2, h3 {
+  text-transform: none;
+  font-weight: 800;
+  letter-spacing: -0.006em;
+}
+h1 { font-weight: 900; }
+
+:root {
+  --fs-h1: clamp(28px, 7.6vw, 64px);
+  --lh-h1: 1.05;
+  --ls-h1: -0.018em;
+  --fs-h2: clamp(24px, 5.6vw, 40px);
+  --lh-h2: 1.12;
+}
+
+.card__title, .step__title {
+  text-transform: none; /* .card__title/.step__title несут собственный uppercase
+    (раздел 8, специфичность класса) — общий h1,h2,h3{text-transform:none}
+    выше его не перебивает, нужен явный override того же типа селектора */
+  font-size: 17px;
+  font-weight: 800;
+  letter-spacing: -0.004em;
+}
+
+/* Надзаголовок — Roboto 700, не капитель a_BosaNova (раздел 13 решал
+   другую задачу: почерк живого сайта для логотипа/шапки, не для
+   надзаголовков лендинга). Роль цвета: зелёный на светлом, жёлтый на
+   зелёном/чёрном, белый на красном (замена ниже). */
+.overline {
+  font-family: var(--font-body);
+  font-weight: 700;
+  font-size: 11.5px;
+  letter-spacing: .32em;
+  color: var(--c-green);
+}
+@media (max-width: 640px) {
+  .overline { font-size: 11px; letter-spacing: .22em; }
+}
+.section--dark .overline,
+.section--flagship .overline {
+  color: var(--c-yellow);
+}
+.section--convert .overline { color: var(--c-green); }
+
+
+/* ------------------------------------------------------------
+   14.3 РИТМ ФОНОВ — зелёный работает трижды-четырежды, не один раз
+   ------------------------------------------------------------
+   Карта соответствия блокам нашего сайта (SPEC разд. 3):
+     блок 3 facts      → green-deep  (.section--dark, было чёрным)
+     блок 5 marketing  → green-dark  (.section--flagship)
+     блок 6 service    → paper       (.section--paper, добавлен в HTML)
+     блок 7 tvc        → cream       (обычный .section, класс wash снят)
+     блок 8 how        → green-deep  (.section--dark, добавлен в HTML)
+     блок 9 why        → cream-2     (.section--wash, добавлен в HTML)
+     блок 10 infra     → cream-2     (.section--wash, уже был)
+     блок 11 parking   → paper       (.section--paper, добавлен в HTML)
+     блок 12 tenants   → cream       (обычный .section, без изменений)
+     блок 13 trust     → green-deep  (.section--dark, уже был)
+     блок 14 about     → cream-2     (.section--wash, уже был)
+     блок 15 urgency   → красный     (.section--stat, было жёлтым)
+     блок 16 apply     → cream       (.section--convert, было красным) */
+
+/* Блок 15 «Заполненность» — референс держит эту секцию красной,
+   не жёлтой. Старое правило SPEC-brand «только чёрный текст на
+   жёлтом» относилось к другой палитре и здесь не действует — берём
+   палитру референса целиком, включая роль красного здесь. */
+.section--stat {
+  background: var(--c-red) !important;
+}
+.section--stat h1, .section--stat h2, .section--stat h3,
+.section--stat p, .section--stat li, .section--stat span,
+.section--stat strong {
+  color: #ffffff !important;
+}
+.section--stat .overline { color: rgba(255, 255, 255, .8) !important; }
+.section--stat h2 {
+  font-size: clamp(40px, 10vw, 88px);
+  line-height: .95;
+  margin-top: var(--space-2);
+}
+.section--stat .btn--primary {
+  background: #ffffff;
+  color: var(--c-red);
+  box-shadow: 0 10px 26px -12px rgba(0, 0, 0, .32);
+}
+.section--stat .btn--primary:hover { background: #f4ede0; }
+
+/* Блок 16 «Заявка» — референс держит саму секцию кремовой; красный/
+   зелёный уходит внутрь карточки формы (14.9), а не на весь блок. */
+.section--convert {
+  background: var(--cream);
+}
+.section--convert h1, .section--convert h2, .section--convert h3,
+.section--convert p, .section--convert li, .section--convert span,
+.section--convert strong {
+  color: var(--ink);
+}
+.section--convert .section__lede { color: var(--ink-soft); }
+.section--convert .section__subtitle { color: var(--c-green); }
+
+
+/* ------------------------------------------------------------
+   14.4 КАРТОЧКИ — белые, r-28, мягкая зелёная тень, авторские иконки
+   ------------------------------------------------------------ */
+.card {
+  background: var(--paper);
+  border: none;
+  border-radius: var(--r-lg);
+  box-shadow: var(--sh-card);
+  padding: var(--space-6) var(--space-6) var(--space-8);
+}
+/* Цветная верхняя полоса убрана по всему сайту — роль категории
+   теперь несёт иконка, а не полоса (referen: белая карточка + тень,
+   без цветного акцента сверху). */
+.card--accent-green, .card--accent-yellow, .card--accent-red {
+  border-top: none;
+}
+.section--dark .card, .section--flagship .card, .section--convert .card {
+  box-shadow: none;
+}
+/* Раздел 12.6 добавляет .section--flagship .card{border-top:3px solid
+   yellow} безусловно (0,2,0) — специфичность выше, чем у моего сброса
+   .card--accent-*{border-top:none} (0,1,0), и на карточках блока 5 (без
+   accent-класса вовсе) она всегда применялась. На карточках с r-lg
+   (28px) цветная верхняя грань превращается в плавающую дугу — в
+   референсе список маркетинга вообще без рамок. Отключаем той же
+   специфичностью (0,2,0), позже в каскаде — побеждает по порядку. */
+.section--flagship .card { border-top: none; }
+
+.card__icon {
+  display: block;
+  /* КВАДРАТНАЯ КОРОБКА ВО ВСЕХ БЛОКАХ. Иконки набора разной пропорции
+     (160×108, 160×135, 160×160), а `height: auto` считал высоту по
+     картинке — в блоке 7 замер дал 48, 31 и 48px, разброс 17px, и
+     заголовки уезжали на разные линии. `contain` держит пропорцию
+     внутри коробки, коробка одинаковая. Переопределения кегля коробки
+     для блоков 4 и 5 — в разделе 22, они идут после этого правила. */
+  width: 48px;
+  height: 48px;
+  object-fit: contain;
+  object-position: left center;
+  margin-bottom: var(--space-3);
+}
+/* Врезка-«квоут» — вторая короткая реплика внутри карточки формата
+   (блок 4) читается как отдельная мысль, не продолжение абзаца —
+   ровно приём референса «жёлтая линия слева» внутри белой карточки. */
+.cards-4 .card__text:nth-of-type(2) {
+  margin-top: var(--space-2);
+  padding: var(--space-2) 0 var(--space-2) var(--space-4);
+  border-left: 3px solid var(--c-yellow);
+  font-size: 14px;
+  color: var(--ink-soft);
+}
+
+/* Иконка в цветной квадратной подложке — блоки 10 «что входит» и 12
+   «кто уже здесь» (SPEC разд. 4: «у части иконок подложка, у части
+   без» — здесь референс её даёт). */
+.card--icon-box .card__icon {
+  padding: 13px;
+  border-radius: 14px;
+  background: var(--green-deep);
+  box-sizing: border-box;
+}
+
+/* Список-плашка в паре списки+медиа (блок 6 «сервис», уже paper) —
+   референс держит их как кремовые пилюли-строки, не карточки. */
+/* display:flex;flex-direction:row на LI с тремя детьми (иконка, h3, p)
+   кладёт КАЖДОГО ребёнка своей колонкой — заголовок и текст расходятся
+   в две узкие полосы вместо «иконка слева, текст одним блоком справа».
+   Grid с явной раскладкой по ячейкам решает это без обёрток в HTML. */
+#service .cards-2.split__main > .card,
+#traffic .cards-1.split__main > .card {
+  display: grid;
+  grid-template-columns: 48px 1fr;
+  column-gap: var(--space-4);
+  row-gap: var(--space-1);
+  align-items: start;
+  background: var(--cream-2);
+  box-shadow: none;
+  border-radius: var(--r-lg);
+  padding: var(--space-5) var(--space-6);
+}
+#service .card__icon, #traffic .card__icon {
+  grid-column: 1;
+  grid-row: 1 / span 2;
+  width: 48px; height: 48px;
+  margin-bottom: 0;
+  align-self: start;
+}
+#service .card__title, #traffic .card__title { grid-column: 2; grid-row: 1; }
+#service .card__text, #traffic .card__text { grid-column: 2; grid-row: 2; }
+#service .card__title, #traffic .card__title,
+#tvc .card__title {
+  margin-bottom: var(--space-1);
+}
+
+/* Заготовка под съёмку с иконкой вместо контурного SVG (блоки 6, 11,
+   13) — размер и обводка живого сайта (раздел 13) сохранены, но
+   непрозрачность поднята: 3D-иконка на .75 читается тускло. */
+.media-pending--icon img { opacity: 1; }
+.media-pending--icon span { margin-top: var(--space-1); }
+
+
+/* ------------------------------------------------------------
+   14.5 КНОПКИ-ПИЛЮЛИ (SPEC разд. 1: border-radius 999px + свечение)
+   ------------------------------------------------------------ */
+.btn {
+  border-radius: var(--r-pill);
+  padding: var(--space-4) var(--space-8);
+  font-weight: 700;
+  box-shadow: 0 14px 30px -14px rgba(171, 18, 14, .55);
+}
+.btn--lg { padding: var(--space-4) var(--space-8); }
+.btn--primary:hover { box-shadow: 0 16px 34px -12px rgba(171, 18, 14, .6); }
+.btn--secondary { box-shadow: none; }
+.btn--onred { box-shadow: 0 14px 30px -14px rgba(171, 18, 14, .5); }
+@media (max-width: 640px) {
+  .btn { border-radius: var(--r-pill); }
+}
+
+
+/* ------------------------------------------------------------
+   14.6 ВРЕЗКИ-АКЦЕНТЫ — два вида по фону, не один универсальный
+   ------------------------------------------------------------
+   На зелёном (блок 5, .callout без модификатора): полупрозрачная
+   плашка с жёлтой линией слева, без белой карточки — референс не
+   кладёт белую карточку поверх зелёного здесь.
+   На кремовом (.callout--light, блоки 12/14): наоборот — сплошной
+   зелёный баннер поверх кремового, как «Прилавок и стеллажи уже
+   настроены…» в блоке 10 референса. */
+.callout {
+  border-radius: var(--r);
+  /* Было `max-width: none` и молча отменяло `max-width: 68ch` из раздела
+     12.4 (то же селекторное имя, та же специфичность, но это правило
+     ниже по файлу и потому побеждает). Итог замерен: врезка блока 5
+     растягивалась на 1008px, это ~103 знака в строке при норме 45–75 —
+     на такой строке взгляд теряет начало следующей. Возвращаем книжную
+     ширину; `none` здесь и не требовалось, правило заводилось ради фона
+     и скругления. */
+  max-width: 62ch;
+}
+.section--flagship .callout {
+  background: rgba(255, 255, 255, .09);
+  color: #ffffff;
+  font-family: var(--font-body);
+  font-weight: 400;
+  font-size: 17px;
+  line-height: 1.6;
+  padding: var(--space-6) var(--space-8);
+  border-left: 3px solid var(--c-yellow);
+}
+.section--flagship .callout::before { content: none; }
+.section--flagship .callout strong { color: var(--c-yellow); }
+
+.callout--light {
+  background: var(--green-dark);
+  color: #ffffff;
+  font-family: var(--font-body);
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 1.6;
+  padding: var(--space-6) var(--space-8);
+  border-radius: var(--r-lg);
+}
+.callout--light::before { content: none; }
+.callout--light strong { color: var(--c-yellow); }
+
+/* Блок 13 «Правила рынка» — три абзаца получают ту же трактовку
+   («призрачная» карточка на зелёном), которую референс даёт своему
+   «Стандарт качества» callout. */
+#trust .prose {
+  background: rgba(255, 255, 255, .06);
+  border: 1px solid rgba(255, 255, 255, .12);
+  border-radius: var(--r-lg);
+  padding: var(--space-8);
+}
+#trust .prose strong { color: var(--c-yellow); }
+
+
+/* ------------------------------------------------------------
+   14.7 ПЕРВЫЙ ЭКРАН — фото на весь блок, зелёный оверлей, факт-пилюли
+   ------------------------------------------------------------
+   Раздел 1 свода: full-bleed предпочтительнее рамочного, тёмный
+   градиент слева→прозрачный справа, backdrop-blur не обязателен —
+   контраст даёт сам градиент (проверено ниже на 4.5:1). Кадр был
+   отдельной колонкой сбоку — референс держит фото фоном на весь
+   экран, текст поверх. HTML не меняется: .hero__media уходит в
+   абсолютный слой под текстом теми же тегами. */
+.section--hero {
+  position: relative;
+  overflow: hidden;
+  color: #ffffff;
+  min-height: 82vh;
+  display: flex;
+  align-items: center;
+  padding-block: var(--space-16) var(--space-12);
+}
+.section--hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background:
+    linear-gradient(100deg, rgba(3, 55, 28, .95) 0%, rgba(3, 55, 28, .86) 34%, rgba(3, 55, 28, .58) 64%, rgba(3, 55, 28, .34) 100%);
+}
+.section--hero .container {
+  width: 100%;
+}
+@media (min-width: 960px) {
+  /* Отменяет двухколоночный grid раздела 12.2 — фото больше не
+     отдельная колонка, оно фон на весь блок. */
+  .section--hero .container {
+    display: block;
+    grid-template-columns: none;
+    grid-template-areas: none;
+  }
+}
+
+/* .container намеренно БЕЗ position/z-index: если дать его контейнеру,
+   .hero__media (его ребёнок) станет искать containing block внутри
+   контейнера (1200px, по центру) вместо всей секции — фото окажется
+   врезкой по ширине текста, а не полноэкранным фоном. Вместо этого
+   каждый текстовый узел первого экрана становится positioned сам —
+   тогда он сравнивается по z-index с фото и оверлеем напрямую внутри
+   стекингового контекста .section--hero, минуя контейнер. */
+.hero__flag,
+.section--hero h1,
+.hero__lede,
+.hero__stats,
+.hero__actions,
+.hero__note {
+  position: relative;
+  z-index: 2;
+}
+
+.hero__media {
+  position: absolute;
+  inset: 0;
+  margin: 0;
+  z-index: 0;
+}
+.hero__media .media-block__frame {
+  width: 100%;
+  height: 100%;
+  aspect-ratio: auto;
+  border-radius: 0;
+}
+.hero__media .media-block__frame img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 60% 38%;
+}
+/* Подпись-маркировка обязана остаться видимой (свод разд. 5, требование
+   источника) — переносится в угол кадра плашкой на тёмном, читается
+   поверх фото так же, как поверх обычного светлого фона. */
+.hero__media .render-caption {
+  position: absolute;
+  right: var(--container-pad);
+  bottom: var(--space-6);
+  max-width: 260px;
+  background: rgba(3, 55, 28, .75);
+  border: none;
+  border-radius: 10px;
+  padding: var(--space-2) var(--space-3);
+  font-size: 11px;
+  color: rgba(255, 255, 255, .88) !important;
+}
+.hero__media .render-caption::before { background: var(--c-yellow); }
+
+/* На узких viewport .hero__media растягивается на всю высоту секции
+   (inset:0), а секция на мобильном выше 82vh из-за объёма текста
+   (118-знаковый h1 + 3 абзаца + 4 плитки + 2 кнопки) — подпись у
+   нижнего края фото оказывается физически на месте hero__note и
+   перекрывает его. Резервируем полосу под подпись снизу контейнера
+   и превращаем подпись в полноширинную плашку в этой полосе — она
+   больше не спорит с текстом за место. */
+@media (max-width: 959px) {
+  .section--hero .container { padding-bottom: 52px; }
+  .hero__media .render-caption {
+    left: var(--container-pad);
+    right: var(--container-pad);
+    bottom: var(--space-3);
+    max-width: none;
+  }
+}
+
+.hero__flag {
+  background: rgba(3, 55, 28, .55);
+  border-color: rgba(255, 255, 255, .28);
+  color: rgba(255, 255, 255, .92);
+}
+.hero__flag::before { border-radius: 50%; }
+
+.hl { color: var(--c-yellow); }
+
+/* h1 несёт явный color:var(--text-on-light) из раздела 3 (специфичность
+   тега, но прямое правило всегда перебивает унаследованное значение
+   независимо от специфичности) — без точечного override текст h1
+   остаётся тёмным на тёмном фото. */
+.section--hero h1 { color: #ffffff; }
+
+.hero__lede p { color: rgba(255, 255, 255, .88); }
+.hero__note { color: rgba(255, 255, 255, .72); }
+
+/* Факт-пилюли — стекло на тёмном (было: карточки под белый фон,
+   референс держит их полупрозрачными поверх фото). */
+.hero__stats .digit-tile {
+  background: rgba(3, 55, 28, .55);
+  border: 1px solid rgba(255, 255, 255, .18);
+  border-radius: var(--r);
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+}
+.hero__stats .digit-tile__value { color: #ffffff; }
+.hero__stats .digit-tile__label { color: rgba(255, 255, 255, .72); }
+.hero__stats .digit-tile--accent {
+  background: rgba(244, 185, 59, .20);
+  border-color: var(--c-yellow);
+}
+.hero__stats .digit-tile--accent .digit-tile__value { color: var(--c-yellow); }
+
+
+/* ------------------------------------------------------------
+   14.8 ШАГИ, ЦИФРЫ, ТЕГИ
+   ------------------------------------------------------------ */
+/* Блок 8 «за три шага» теперь на green-deep (раздел 14.3) — разделитель
+   между шагами становится тонкой светлой линией, не красным акцентом
+   сверху (референс: жёлтые «01/02/03», без цветного бордера). */
+#how .step {
+  border-top: 1px solid rgba(255, 255, 255, .14);
+  padding-top: var(--space-6);
+}
+/* Полоска у первого шага снята прежней правкой — и это ровно то, что
+   увидел владелец 08.09: «полосочка потерялась на цифре 01, сделай, чтобы
+   они были по одной линии». Без линии и отступа первый шаг начинался на
+   25px выше двух других (замер верха заголовков: 485, 510, 510).
+   Возвращаем: три шага одинаковые. */
+#how .steps > li:first-child {
+  /* полоса и отступ ТОЧНО как у соседей: 1px волосяная белая и `--space-6`.
+     Первая правка вернула старую красную 3px из базового `.step` — и первый
+     шаг встал на 6px выше двух других (замер верха заголовков: 504, 510, 510).
+     Число сошлось в ноль только когда границы стали одинаковыми. */
+  border-top: 1px solid rgba(255, 255, 255, .14);
+  padding-top: var(--space-6);
+}
+#how .step__num { color: var(--c-yellow); font-size: 44px; font-weight: 900; }
+#how .step__title { color: #ffffff; }
+#how .step p { color: rgba(255, 255, 255, .74); }
+
+/* Подпись под кнопкой блока 8 (.section__cta .section__outro, раздел
+   12.3) держит muted-on-light безусловно — рассчитана на светлые
+   секции. Блок 8 теперь green-deep, тёмный текст на тёмном зелёном
+   не читается вообще. */
+#how .section__cta .section__outro { color: rgba(255, 255, 255, .62); }
+
+/* Цифры блока 3 — референс использует более тяжёлый вес, чем 700.
+   Правило .section--dark span (раздел 4, специфичность 0,1,1)
+   перебивает базовый жёлтый .digit-tile__value (0,1,0) — цифры
+   рендерились белыми на зелёном вместо жёлтых. Возвращаем роль
+   «жёлтый = число» явным override той же специфичности, что и у
+   .hero__stats (0,2,0), выше конфликтующего правила. */
+.digit-tile__value { font-weight: 900; }
+.section--dark .digit-tile__value,
+.section--flagship .digit-tile__value { color: var(--c-yellow); }
+
+/* Иконки-теги блока 3 — референс держит их мелкими и плоскими, без
+   круглой обводки (обводка — приём живого сайта, здесь не подходит:
+   в этой строке референс явно показывает тонкие плоские значки). */
+#scale .tag-list--icons .tag-list__item svg {
+  width: 20px;
+  height: 20px;
+  padding: 0;
+  border: none;
+  border-radius: 0;
+  stroke: var(--c-yellow);
+  stroke-width: 1.6;
+}
+
+
+/* ------------------------------------------------------------
+   14.9 ЗАЯВКА (БЛОК 16) — кремовая секция, карточка формы green-dark
+   ------------------------------------------------------------ */
+.section--convert .apply {
+  background: var(--green-dark);
+  padding: var(--space-10) var(--space-8);
+  border-radius: var(--r-lg);
+  box-shadow: var(--sh);
+}
+@media (max-width: 640px) {
+  .section--convert .apply { padding: var(--space-8) var(--space-5); }
+}
+.section--convert .apply h1, .section--convert .apply h2, .section--convert .apply h3,
+.section--convert .apply p, .section--convert .apply li, .section--convert .apply span {
+  color: #ffffff;
+}
+.section--convert .apply .overline { color: var(--c-yellow); }
+.section--convert .apply .section__label { color: rgba(255, 255, 255, .85); }
+.section--convert .checklist li::before { background: var(--c-yellow); }
+.section--convert .form__label { color: rgba(255, 255, 255, .82); }
+
+
+/* ------------------------------------------------------------
+   14.10 БЛОК 7 (ТВЦ) — реальное фото фасада
+   ------------------------------------------------------------
+   fasad-tvc.jpg лежал в assets/img/ неиспользуемым — SPEC разд. 5
+   называет его «взято», но в разметке блока 7 не было ни одного
+   медиа вообще. Это реальная фотография, не 3D-визуализация —
+   render-caption ей не положен (это требование только для рендеров,
+   см. свод разд. 5: подпись существует, чтобы рендер не читался как
+   фото готового рынка; настоящему фото такая оговорка была бы
+   неверна по факту).
+
+   sosed-hoff.jpg и sosed-bethoven.jpg СЮДА НЕ ПОШЛИ — открыл файлы
+   глазами перед тем как поставить: имена не совпадают с содержимым.
+   sosed-hoff.jpg — тот самый ночной AI-рендер с вывесками «Свежие
+   продукты каждый день», прямо отклонённый SPEC разд. 5 (выдуманная
+   реклама на здании). sosed-bethoven.jpg — интерьер музея ретро-
+   автомобилей с мотоциклом, не логотип соседа вообще. Даю знать явно,
+   а не молча выбрасываю: если реальные логотипы соседей понадобятся
+   позже, их нужно получить отдельно и с тем же контролем «открыл
+   и проверил» — на слово имени файла в этом активе доверять нельзя. */
+.media-block--photo { margin: var(--space-8) 0 var(--space-6); }
+
+
+/* ------------------------------------------------------------
+   15. ПРАВКИ ПО ЗАМЕРУ КОНТРАСТА НА ПИКСЕЛЯХ
+   ------------------------------------------------------------
+   Проверка вычисленных цветов на первом экране бесполезна: под текстом
+   лежит фотография с градиентом-псевдоэлементом, и background-color
+   родителя её не отражает. Поэтому контраст здесь мерился по реальным
+   пикселям скриншота — цвет фона брался прямо из-под строки.
+   Две находки подтвердились снимками, остальные оказались ложными
+   (усреднение кропа захватывало соседние светлые области и цветную
+   иконку внутри карточки). */
+
+/* Находка 15.1: акцентная плитка «Продвижение точки» — жёлтый заголовок
+   на светло-оливковой полупрозрачной подложке даёт 2,00:1, подпись
+   «входит в стоимость аренды» — 2,10:1. Причина: подложка пропускала
+   светлые участки фотографии под собой. Уплотняем фон до тёмно-зелёного
+   и оставляем жёлтый только заголовку — на плотном тёмном он даёт
+   больше 7:1, а подпись делаем белой. */
+.hero__stats .digit-tile--accent {
+  background: rgba(3, 55, 28, .88);
+  border-color: rgba(244, 185, 59, .55);
+}
+.hero__stats .digit-tile--accent .digit-tile__value { color: var(--c-yellow); }
+.hero__stats .digit-tile--accent .digit-tile__label { color: rgba(255, 255, 255, .92); }
+
+/* Находка 15.2: подпись-маркировка на первом экране стоит поверх фото
+   на полупрозрачной плашке и на светлых участках кадра проваливается.
+   Подпись обязательна по требованию источника — рендер не должен
+   читаться как фотография готового рынка, — поэтому её читаемость
+   не может зависеть от того, какой участок кадра оказался под ней. */
+.section--hero .render-caption {
+  background: rgba(3, 55, 28, .92);
+  color: #fff;
+}
+
+/* Находка 15.3 — моя же ошибка при починке 15.1: сделал остальные три
+   плитки белыми, а текст в них остался белым (он рассчитан на тёмный
+   фон под фотографией). Три факта первого экрана — поток, число мест,
+   расстояние от МКАД — стали нечитаемы. Поймано снимком, счётчик
+   контраста на пикселях этого не показал: усреднение кропа по белой
+   плитке с белым текстом даёт «почти белый фон» и выглядит как шум.
+   Референс держит плашки-факты тёмными полупрозрачными с белым
+   текстом — приводим к этому, а акцентную выделяем жёлтой обводкой
+   и жёлтым заголовком, а не другим фоном. */
+.hero__stats .digit-tile {
+  background: rgba(3, 55, 28, .92);
+  border: 1px solid rgba(255, 255, 255, .18);
+}
+.hero__stats .digit-tile__value { color: #fff; }
+.hero__stats .digit-tile__label { color: rgba(255, 255, 255, .88); }
+.hero__note { color: rgba(255, 255, 255, .92); }
+
+
+/* ------------------------------------------------------------
+   16. ПЕРВЫЙ ЭКРАН: РЕНДЕР ФАСАДА
+   ------------------------------------------------------------
+   Решение владельца 01.09: на первом экране стоит рендер фасада из
+   исходного лендинга. Кадр горизонтальный (1200×651), а секция высокая,
+   поэтому при `cover` здание уезжало за края — в кадре оставалась
+   середина без входной группы и вывески. Три правки: показываем кадр
+   целиком по ширине, притягиваем фокус к зданию и делаем градиент
+   темнее слева, чтобы текст читался, а фасад оставался виден справа. */
+
+.section--hero .hero__media .media-block__frame img,
+.hero__media img {
+  object-fit: cover;
+  object-position: 50% 30%;   /* здание в верхней трети, под заголовком */
+}
+
+/* Градиент: плотный под текстом, прозрачнее над зданием справа */
+.section--hero::before {
+  background:
+    linear-gradient(180deg,
+      rgba(3, 55, 28, .55) 0%,
+      rgba(3, 55, 28, .35) 26%,
+      rgba(3, 55, 28, .62) 52%,
+      rgba(3, 55, 28, .90) 78%,
+      rgba(3, 55, 28, .96) 100%),
+    linear-gradient(100deg,
+      rgba(3, 55, 28, .78) 0%,
+      rgba(3, 55, 28, .55) 42%,
+      rgba(3, 55, 28, .18) 78%,
+      rgba(3, 55, 28, .10) 100%);
+}
+
+/* Подпись-маркировка на первом экране: слева внизу, у края контейнера,
+   а не поверх правой части кадра, где она наезжала на здание. */
+.hero__media .render-caption {
+  left: var(--container-pad);
+  right: auto;
+  max-width: 340px;
+  background: rgba(3, 55, 28, .92);
+}
+
+
+/* ------------------------------------------------------------
+   17. ПЕРВЫЙ ЭКРАН — ПО ВЕРСИИ 1 (решение владельца 08.09.2026)
+   ------------------------------------------------------------
+   Владелец: «первый экран один в один, как был у первой версии —
+   ночной рендер, на подложке прозрачной, только с нашим текстом».
+   Версия 1 — принятый клиентом лендинг 22.06 (`site-v2-B2B-foto.html`
+   контура НУ): кадр фоном на весь блок, зелёная подложка слева
+   → прозрачная справа, текст поверх в колонке 640px, факты плитками
+   на подложке. Кадр тот же самый: сверено по байтам — `fasad-render.jpg`
+   и фон первого экрана версии 1 это один снимок 1200×651.
+
+   ОТМЕНЯЕТ правку 16.1, которая на ≥960px выносила фасад полосой 21:8
+   вниз и делала фон секции непрозрачным. Её довод остаётся верным
+   арифметически: кадр 1200×651 под секцию высотой ~1050px тянется
+   в 1,6 раза, и фасад как ОБЪЕКТ не читается. Но первый экран версии 1
+   фасад и не показывает — он даёт атмосферу под текстом, в самой
+   версии 1 здание под подложкой тоже не читается. Показ фасада целиком
+   закрывает блок 7, где стоит реальное фото `fasad-tvc.jpg`.
+
+   Механика full-bleed и подложка уже собраны разделами 14.7 и 16 —
+   здесь снимается их отмена и добавляется колонка текста как в версии 1. */
+/* Подложка живёт в СЛОЕ КАДРА, а не псевдоэлементом секции.
+
+   Причина — замер, не вкус. Пока градиент лежал на `.section--hero::before`
+   с `z-index: 1`, подпись-маркировка внутри `.hero__media` (`z-index: 0`)
+   оказывалась ПОД ним: computed color у неё белый `rgba(255,255,255,.88)`,
+   а по пикселям 1,12:1 на всех четырёх ширинах — тот же класс дефекта,
+   что найден 08.09 на этой же подписи (элемент под оверлеем проходит
+   проверку по CSS и невидим на экране). Дочерний узел не может
+   подняться выше родительского стекингового контекста, поэтому
+   подложка переезжает внутрь слоя: кадр `z-index: 0`, подложка `1`,
+   подпись `2`. Так же устроена принятая спецификация покупательского
+   (`materials/pokaz-pervyy-ekran-2026-09-07/PODLOZHKA-v1-spec.md`:
+   `.hero__media::after`). */
+.section--hero {
+  /* база под кадром: если картинка не загрузится, текст всё равно
+     остаётся белым на тёмно-зелёном, а не белым на белом */
+  background-color: rgb(3, 55, 28);
+}
+.section--hero::before { display: none; }
+
+.hero__media { height: 100%; }
+.hero__media .media-block__frame { position: relative; z-index: 0; }
+
+/* Градиент версии 1 дословно: до 900px вертикальный (текст стоит над
+   кадром стеком), выше — слева направо. */
+.hero__media::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background: linear-gradient(to bottom,
+    rgba(3, 55, 28, .86) 0%,
+    rgba(3, 55, 28, .74) 44%,
+    rgba(3, 55, 28, .88) 100%);
+}
+.hero__media .render-caption { z-index: 2; }
+
+@media (min-width: 960px) {
+  /* Колонка текста как в версии 1 (там `grid-template-columns:
+     minmax(0, 640px)`). Без неё текст растягивается на все 1200px
+     контейнера, и подложка теряет смысл: справа не остаётся светлой
+     части кадра, ради которой градиент и идёт слева направо.
+
+     Сделано max-width на детях, а НЕ сеткой: на узлах первого экрана
+     висят `grid-area: flag/h1/lede/...` из раздела 12.2, и при сетке
+     без именованных областей (`grid-template-areas: none`) все шесть
+     узлов складываются в одну клетку и уезжают вправо — проверено
+     снимком. Убрать grid-area у шести узлов значит править 12.2;
+     `display: block` из 14.7 делает их инертными сам. */
+  .section--hero .container > *:not(.hero__media) {
+    max-width: 660px;
+  }
+  /* Кадр — абсолютный слой на всю секцию, как в 14.7. Выведен из потока,
+     поэтому в колонке текста места не занимает. */
+  .hero__media {
+    position: absolute;
+    inset: 0;
+    /* height задаётся явно: на `inset: 0` при `height: auto` слой
+       растягивался только до высоты картинки (781px на секции 1188px),
+       и низ секции оставался без кадра — поймано замером computed. */
+    height: 100%;
+    margin: 0;
+    width: auto;
+    max-width: none;
+    z-index: 0;
+  }
+  /* Подложка версии 1 на широком экране: слева плотно, справа кадр
+     виден. Вторым слоем — притемнение снизу, как в версии 1: у нас
+     текст доходит до низа секции, а у неё там стояли пилюли. */
+  .hero__media::after {
+    background:
+      linear-gradient(to top, rgba(3, 55, 28, .72) 0%, rgba(3, 55, 28, 0) 46%),
+      linear-gradient(96deg,
+        rgba(3, 55, 28, .93) 0%,
+        rgba(3, 55, 28, .80) 32%,
+        rgba(3, 55, 28, .50) 62%,
+        rgba(3, 55, 28, .30) 100%);
+  }
+  .section--hero .hero__media .media-block__frame {
+    width: 100%;
+    height: 100%;
+    aspect-ratio: auto;
+    border-radius: 0;
+    overflow: hidden;
+  }
+  /* Селектор не короче, чем у раздела 16 (`.section--hero .hero__media
+     .media-block__frame img`), иначе object-position оттуда перебивает
+     этот — первая попытка так и умерла молча. */
+  .section--hero .hero__media .media-block__frame img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: 50% 34%;
+  }
+  /* Подпись-маркировка обязательна (находка 15.2 и требование источника:
+     рендер не должен читаться как фотография готового рынка). В версии 1
+     её не было вовсе — здесь остаётся плашкой в правом нижнем углу кадра,
+     на подложке и вне колонки текста, чтобы не спорить с `hero__note`. */
+  .section--hero .hero__media .render-caption {
+    position: absolute;
+    left: auto;
+    right: var(--container-pad);
+    bottom: var(--space-6);
+    max-width: 340px;
+    background: rgba(3, 55, 28, .92);
+    padding: var(--space-2) var(--space-3);
+  }
+  /* Четыре факта в колонке 660px — 2×2, как пилюли версии 1: там
+     `flex: 1 1 210px` давал ровно два ряда по два. Базовые .cards-4
+     дали бы здесь четыре колонки по ~150px под целые фразы. */
+  .hero__stats.cards-4 { grid-template-columns: repeat(2, 1fr); }
+}
+
+
+/* Иконки в плитках первого экрана — поручение владельца 08.09.2026:
+   «иконки такие же, как у нас уже разработаны». Взяты из набора,
+   который уже стоит в сборке (`assets/img/icons/`, 19 файлов, тот же
+   объёмный набор, что в версии 1 и на покупательском) — новых не
+   рисовали, как и при правке буллетов B2C 07.09.
+   Плитка становится сеткой: иконка в первой колонке на два ряда,
+   значение и подпись во второй. Без обёртки в разметке — двум
+   существующим span'ам колонка достаётся автопотоком. */
+.hero__stats .digit-tile {
+  display: grid;
+  grid-template-columns: 44px minmax(0, 1fr);
+  column-gap: var(--space-3);
+  row-gap: var(--space-1);
+  align-items: start;
+}
+.hero__stat-ico {
+  grid-column: 1;
+  grid-row: 1 / span 2;
+  align-self: center;
+  width: 44px;
+  height: 44px;
+  object-fit: contain;
+  /* иконки набора 90–160px по большей стороне: 44px — уменьшение,
+     апскейла нет (запрет стека, раздел 2 CLAUDE.md подпроекта) */
+}
+.hero__stats .digit-tile__label { margin-top: 0; }
+
+
+/* ------------------------------------------------------------
+   18. ПЕРВЫЙ ЭКРАН — В ОДИН ЭКРАН, ШАПКА КАК В ВЕРСИИ 1
+   ------------------------------------------------------------
+   Поручения владельца 08.09.2026:
+   «нужно, чтобы на первом экране всё поместилось, чтобы человек открыл,
+   прочитал и увидел… надо расстояние между строками поменьше, сузить,
+   чтобы на первом экране монитора открывалась полноценная страница»;
+   «посмотри, как на первой версии решение плашки верхней и логотипа
+   было решено»; «эти две кнопки вынести в правую часть экрана,
+   а не под плашками».
+
+   Решение версии 1 (`site-v2-B2B-foto.html`): шапка `position: absolute`
+   поверх кадра, без фона и без границы, текст бренда и меню белые,
+   логотип на белом круге, красная кнопка справа; до 720px шапка
+   становится обычной, на плотном зелёном фоне. Забираем один в один. */
+
+.site-header {
+  /* Решение владельца 09.09: шапка липкая. На широком экране это `fixed`,
+     а не `sticky`, потому что шапка стоит ПОВЕРХ кадра и её высота учтена
+     верхним отступом секции (`padding-block: 88px` ниже). `sticky` вернул бы
+     шапку в поток, добавил 72px, и первый экран (826 при окне 900) перестал
+     бы влезать. `fixed`, как и прежний `absolute`, потока не занимает —
+     раскладка первого экрана не меняется.
+     Ниже 960px действует своя ветка: там шапка `sticky` и в потоке. */
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  background: transparent;
+  border-bottom: 0;
+  z-index: var(--z-header);
+  transition: background var(--transition-base), border-color var(--transition-base);
+}
+
+/* Прокрученная шапка получает фон. Без него белый бренд и меню (правила
+   ниже) тонут на светлых секциях — а их на странице шесть.
+   Цвет тот же, что у мобильной шапки, rgb(3,55,28): новых цветов в палитру
+   не заводим. Класс ставит скрипт, когда первый экран уходит из-под шапки;
+   без JS шапка остаётся прозрачной и ведёт себя как до правки. */
+.site-header.is-scrolled {
+  background: rgb(3, 55, 28);
+  border-bottom: var(--border-w) solid rgba(255, 255, 255, .16);
+}
+
+/* Якорные переходы: заголовок секции не должен уезжать под липкую шапку.
+   88px — высота шапки плюс воздух; на мобильных шапка ниже, там 76px. */
+main > section[id] { scroll-margin-top: 88px; }
+@media (max-width: 959px) { main > section[id] { scroll-margin-top: 76px; } }
+
+/* --- Блок 15-бис «Как добраться» (решение владельца 09.09) ------------
+   Перечень «метка — значение». Компонент не заводим новый: раскладка
+   строится на `.split`, а список — обычный `dl` с двумя колонками на
+   широком экране и в одну на телефоне. Метки набраны как надзаголовки
+   секций, чтобы не вводить третий типографический голос. */
+.route-list {
+  display: grid;
+  gap: 0;
+  margin-top: var(--space-6);
+  border-top: var(--border-w) solid var(--border-hairline-light);
+}
+.route-list__row {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-1);
+  padding: var(--space-3) 0;
+  border-bottom: var(--border-w) solid var(--border-hairline-light);
+}
+@media (min-width: 640px) {
+  .route-list__row { grid-template-columns: 148px minmax(0, 1fr); gap: var(--space-4); align-items: baseline; }
+}
+.route-list dt {
+  font-family: var(--font-body);
+  font-size: 11.5px;
+  font-weight: 700;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--c-green);
+}
+.route-list dd {
+  margin: 0;
+  font-size: 15.5px;
+  line-height: 1.5;
+  color: var(--text-on-light);
+}
+#dobratsya .section__cta { margin-top: var(--space-6); }
+/* Колонки здесь равные, а не 1,6 к 1 как в блоках 6 и 13: карта — не
+   иллюстрация к тексту, а второй по важности узел раздела. При базовой
+   пропорции она выходила 400px на 1440 и читалась миниатюрой. */
+@media (min-width: 960px) {
+  #dobratsya .split { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: var(--space-10); }
+}
+/* Карта — не кадр объекта, а схема: её нельзя обрезать по высоте, иначе
+   уедет метка. Поэтому рамке задаётся пропорция файла, а не 4:3 слота. */
+#dobratsya .media-block__frame { aspect-ratio: 1200 / 833; }
+
+/* Страница политики (`privacy.html`): кадра первого экрана там нет, а шапка
+   на широкой ветке прозрачная и `fixed` — белый бренд оказался бы на белом
+   фоне и перекрыл бы заголовок. Возвращаем шапку в поток и даём ей фон:
+   класс на `body`, без единого `style=""` в разметке (запрет разд. 12). */
+.page-legal .site-header {
+  position: static;
+  background: rgb(3, 55, 28);
+  border-bottom: var(--border-w) solid rgba(255, 255, 255, .16);
+}
+.page-legal .site-header__inner { justify-content: space-between; }
+
+/* Ссылка «На главную» в шапке политики. `.btn--secondary` объявлен с
+   `color: inherit` и на зелёной шапке наследовал тёмный текст страницы —
+   на снимке 09.09 читался как пятно. Ставим светлый явно. */
+.page-legal .site-header .btn--secondary { color: #fff; }
+.page-legal .site-header .btn--secondary:hover { color: var(--c-yellow); }
+
+/* Текст политики: мера строки в книжном диапазоне, иначе на 1440 строка
+   уходит за 100 знаков. Заголовки разделов — ритмом секции, не крупнее H1. */
+.page-legal .legal { max-width: 74ch; }
+.page-legal h1 { margin-bottom: var(--space-6); }
+.page-legal .legal h2 { margin-top: var(--space-6); }
+.page-legal .legal a { text-decoration: underline; }
+/* Логотип цветной (`logo-picnic-color.svg`) — на прозрачной зелёной шапке
+   он тонет. В версии 1 та же задача решена не вторым файлом, а белым
+   кругом под знаком: `background:#fff;border-radius:50%;padding:4px`.
+   Берём этот приём — новых ассетов не заводим. */
+.site-brand__logo {
+  background: #fff;
+  border-radius: 50%;
+  padding: 4px;
+  box-sizing: border-box;
+}
+.site-brand__title { color: #fff; }
+.site-brand__sub { color: rgba(255, 255, 255, .72); }
+.site-nav__list a { color: rgba(255, 255, 255, .88); }
+.site-nav__list a:hover { color: var(--c-yellow); }
+.nav-toggle__bar { background: #fff; }
+
+/* Ниже 960px меню уезжает в гамбургер и раскрывается панелью — на
+   прозрачной шапке панель повисла бы на кадре. Возвращаем шапке фон
+   и обычный поток, как версия 1 делает до 720px.
+
+   ⛔ Правка 09.09: было `position: static`, и это ломало мобильное меню
+   целиком. Панель раскрывается правилом `top: 100%` (разд. 3), которое
+   считается от ПОЗИЦИОНИРОВАННОГО предка. У статичной шапки такого предка
+   нет, отсчёт уходил к окну, и панель встала ровно на высоту экрана ниже
+   сгиба: nav.top = 812 при окне 812 на 375, то же на 360, 414, 768, 959.
+   Нажатие гамбургера не показывало ничего.
+   `sticky` возвращает и предка для отсчёта, и липкость (решение владельца
+   09.09). Место в потоке `sticky` сохраняет, поэтому раскладка первого
+   экрана не съезжает — в отличие от `fixed`, который здесь не годится. */
+@media (max-width: 959px) {
+  .site-header {
+    position: sticky;
+    top: 0;
+    background: rgb(3, 55, 28);
+  }
+}
+
+/* --- Сжатие первого экрана ---------------------------------------
+   Цель — весь первый экран в 900px высоты на 1440. Что сжато и почему
+   именно это: межстрочный интервал H1 (поручение владельца), кегль H1
+   (без него шесть строк не влезают), лид с 18px на 16px, плитки
+   компактнее, отступы секции. Тексты НЕ сокращались: три абзаца лида
+   стоят дословно по источнику.
+   ⚠️ Кегль H1 вышел меньше версии 1 (там до 64px). Это цена требования
+   «всё в один экран»: у нас на один абзац лида больше и четыре плитки
+   вместо пилюль. Хотите заголовок крупнее — снимать третий абзац лида,
+   а это текст источника и отдельное решение. */
+@media (min-width: 960px) {
+  .section--hero {
+    /* шапка стоит поверх кадра, поэтому её высота — это верхний отступ
+       секции, а не отдельная полоса над ней */
+    padding-block: 88px var(--space-4);
+    min-height: 0;
+  }
+  .section--hero h1 {
+    font-size: clamp(28px, 3.2vw, 48px);
+    line-height: 1.02;
+    letter-spacing: -0.02em;
+    margin-top: var(--space-2);
+  }
+  .hero__lede {
+    gap: var(--space-2);
+    margin: var(--space-3) 0 0;
+    font-size: 16px;
+  }
+  .hero__lede p { font-size: 16px; line-height: 1.45; }
+  .hero__stats.cards-4 { margin-top: var(--space-4); gap: var(--space-2); }
+  .hero__stats .digit-tile { padding: var(--space-3) var(--space-4); }
+  .hero__stats .digit-tile__value { font-size: 16px; line-height: 1.25; }
+  .hero__stats .digit-tile__label { font-size: 12px; }
+  .hero__stat-ico { width: 38px; height: 38px; }
+
+  /* Кнопки — в правую часть экрана (поручение владельца). Сетка задаётся
+     именованными областями, а НЕ `areas: none`: шесть узлов первого
+     экрана несут `grid-area` из раздела 12.2, и без областей они
+     складываются в одну клетку (проверено снимком). Поэтому области
+     переопределяются под новую раскладку теми же именами. */
+  .section--hero .container {
+    display: grid;
+    grid-template-columns: minmax(0, 680px) minmax(0, 1fr);
+    column-gap: var(--space-8);
+    row-gap: 0;
+    align-items: start;
+    grid-template-areas:
+      "flag    ."
+      "h1      ."
+      "lede    ."
+      "stats   actions"
+      ".       note";
+  }
+  /* max-width на детях больше не нужен — ширину держит колонка сетки */
+  .section--hero .container > *:not(.hero__media) { max-width: none; }
+  .hero__actions {
+    align-self: center;
+    justify-content: flex-start;
+    margin-top: 0;
+  }
+  .hero__note { margin-top: var(--space-3); }
+
+
+  /* Флажок — inline-flex, но как элемент сетки он растягивался на всю
+     колонку 580px и читался полосой. Прижимаем к началу колонки. */
+  .hero__flag { justify-self: start; }
+
+  /* Две кнопки в ряд, как на снимке владельца: в правой колонке
+     (~590px) они складывались столбиком из-за широкой красной кнопки
+     с крупным кеглем — режем горизонтальный отступ и кегль первой.
+
+     ⛔ Правка 09.09 по находке приёмки. Ряду нужно 470px, а вторая колонка
+     сетки — 360px: при `nowrap` кнопки переполняли её на 110px и правый
+     край второй уходил на 46px ЗА правый край содержимого страницы.
+     Прогон `overflow` этого не видел — вылет гасится `overflow: hidden`
+     первого экрана, то же место, что владелец поймал глазами в шапке 08.09.
+     Что перебрал, прежде чем выбрать. `justify-self: end` (прижать ряд к
+     правому краю сетки) убирал вылет, но переполнение уходило влево и
+     красная кнопка накрывала плитки 3 и 6 — замер дал пересечение 66×28px,
+     то есть дефект хуже прежнего. Сузить колонку текста с 680 до 570px
+     дало бы ряду нужные 470, но H1 и лид становятся выше примерно на 90px,
+     и первый экран (826 при 900) перестаёт влезать — а это требование
+     владельца. Перенести кнопки под плитки нельзя: его же поручение —
+     «вынести в правую часть экрана, а не под плашками».
+     Осталось одно: дать тексту красной кнопки переноситься. Ряд сжимается
+     до 355px и влезает в колонку 360 без вылета и без наложения.
+     ⚠️ Цена названа числом: кнопка стала двухстрочной. Высота ряда от этого
+     не изменилась — плитки в том же ряду выше кнопок. */
+  /* `wrap`, а не `nowrap`: на 1280–1680 колонка 360px и ряд 357px влезает,
+     кнопки стоят рядом; на 1024 и 960 колонка сужается до 184px, и там
+     кнопки переходят в столбик сами. С `nowrap` они на этих двух ширинах
+     вылетали за содержимое на 6 и 67px — замерено. */
+  .hero__actions {
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    align-items: center;
+  }
+  .hero__actions .btn--primary.btn--lg {
+    padding: var(--space-3) var(--space-4);
+    font-size: 15px;
+    white-space: normal;      /* было nowrap — оно и давало ряд 470px */
+    max-width: min(200px, 100%);
+    text-align: center;
+  }
+  .hero__actions .btn--secondary { white-space: nowrap; flex: none; max-width: 100%; }
+
+  /* Подпись-маркировка переезжает в левый низ: правый низ теперь занят
+     строкой «Перезвоним…», и на снимке они налезали друг на друга.
+     Под плитками слева места достаточно — секция кончается ниже. */
+  .section--hero .hero__media .render-caption {
+    left: var(--container-pad);
+    right: auto;
+    bottom: var(--space-4);
+  }
+
+  /* «Форматы мест» на кадре: текстовая ссылка стоит на светлой части
+     рендера. В версии 1 вторая кнопка — обводка пилюлей (`.btn-ghost`),
+     на снимке владельца именно она. Даём тот же вид: обводка плюс
+     тёмная полупрозрачная заливка, чтобы контраст не зависел от того,
+     какой участок кадра оказался под ссылкой. */
+  .hero__actions .btn--secondary {
+    padding: var(--space-3) var(--space-5);
+    white-space: nowrap;
+    border: var(--border-w) solid rgba(255, 255, 255, .42);
+    border-radius: 999px;
+    background: rgba(3, 55, 28, .88);
+    color: #fff;
+    text-decoration: none;
+  }
+  .hero__actions .btn--secondary:hover {
+    border-color: var(--c-yellow);
+    color: var(--c-yellow);
+  }
+}
+
+
+/* ------------------------------------------------------------
+   19. БРЕНД В ШАПКЕ — ЗНАК КАК НА ПОКУПАТЕЛЬСКОМ, НАЗВАНИЕ ПОДАЧЕЙ
+   ------------------------------------------------------------
+   Поручение владельца 08.09.2026: «сделай логотип и название ПИКНИК,
+   выдели каким-то интересным шрифтом, цветом или жирностью… чуть
+   поинтереснее сделай „Пикник для арендаторов“, и логотип как на
+   B2C сайте».
+
+   Что было проверено до правки: капитель `a_BosaNovaCps` на названии
+   уже стоит с 31.08 и действительно применяется — `document.fonts.check`
+   вернул true, ширина «ПИКНИК» 88,3px против 106,9px у Jost на том же
+   кегле. То есть шрифт менять не нужно, недоставало размера и акцента.
+
+   Знак: `logo-emblema.png/webp` — та же круглая эмблема, что в шапке
+   покупательского (`build-B2C-v3`), 160×160, на белом круге. Прежний
+   `logo-picnic-color.svg` остаётся в футере: там светлая секция и знак
+   читается без круга.
+   ⚠️ В эмблеме слово «ПИКНИК» есть внутри самого знака, рядом с ним
+   стоит второе — так же устроена шапка покупательского, приём взят
+   оттуда целиком по поручению. */
+
+.site-brand { gap: var(--space-4); }
+.site-brand__logo {
+  width: 58px;
+  height: 58px;
+  padding: 3px;   /* эмблема почти касается края круга — 4px её ужимали */
+}
+.site-brand__title {
+  font-size: 30px;
+  line-height: 1;
+  letter-spacing: 0.02em;
+}
+/* Подпись — брендовым жёлтым, тем же акцентом, что жёлтое слово в H1.
+   Контраст на подложке шапки замерен по пикселям, не по CSS. */
+.site-brand__sub {
+  color: var(--c-yellow);
+  font-weight: 700;
+  font-size: 11.5px;
+  letter-spacing: 0.16em;
+  margin-top: 3px;
+}
+@media (max-width: 720px) {
+  .site-brand__logo { width: 46px; height: 46px; }
+  .site-brand__title { font-size: clamp(21px, 5.6vw, 25px); }
+  .site-brand__sub { font-size: 10px; letter-spacing: 0.12em; }
+}
+@media (max-width: 360px) {
+  .site-brand__logo { width: 42px; height: 42px; }
+}
+
+
+/* ------------------------------------------------------------
+   20. ЛЕНТА ВИДОВ ЗАЛА (блок 3-бис)
+   ------------------------------------------------------------
+   Поручение владельца 08.09: лента из видов зала, сделанных для
+   покупательского. Механизм перенесён с `build-B2C-v3` целиком и
+   переписан на токены арендаторского: трек повторён дважды, сдвиг
+   на -50% ширины замыкается без стыка, движение снимается на hover
+   и при `prefers-reduced-motion`.
+
+   Подписей категорий здесь нет намеренно — на покупательском лента
+   называет направления, здесь их перечисляет блок 12, и вторая
+   подпись дала бы одно обещание дважды. Значит контрастных узлов
+   в секции нет вовсе, и мерить в ней нечего, кроме загрузки кадров. */
+.marquee {
+  background: var(--c-black);
+  overflow: hidden;
+}
+.marquee__inner { overflow: hidden; }
+.marquee__track {
+  display: flex;
+  width: max-content;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  animation: marquee-move 48s linear infinite;
+}
+.marquee:hover .marquee__track { animation-play-state: paused; }
+.marquee__tile {
+  position: relative;
+  flex: none;
+  width: 150px;
+  height: 150px;
+}
+.marquee__tile img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+@media (min-width: 700px) {
+  .marquee__tile { width: 200px; height: 200px; }
+}
+@media (min-width: 1000px) {
+  .marquee__tile { width: 220px; height: 220px; }
+}
+@keyframes marquee-move {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .marquee__track { animation: none; }
+}
+
+
+/* ------------------------------------------------------------
+   21. СМЕНА КАДРА В БЛОКЕ 3 (галерея витрин)
+   ------------------------------------------------------------
+   Поручение владельца 08.09: вместо одной 3D-визуализации — смена
+   кадра кнопками, того же размера. Тринадцать кадров витрин и видов
+   зала, все принятые версии.
+
+   Устройство: горизонтальная прокрутка со `scroll-snap` — без JS
+   это обычная лента, которая листается пальцем и трекпадом, кадры
+   видны все. Кнопки только доводят прокрутку до следующего кадра,
+   поэтому при выключенном JS они скрываются и ничего не ломают
+   (`html.no-js` — класс снимает инлайновый скрипт в шапке).
+
+   Пропорция слота сохранена: 1500×785 = 1,911 против прежних
+   1600×837 = 1,912, то есть блок не поехал по высоте. */
+.shots { margin-top: var(--space-8); }
+
+.shots__viewport {
+  overflow-x: auto;
+  overflow-y: hidden;
+  scroll-snap-type: x mandatory;
+  scroll-behavior: smooth;
+  border-radius: var(--radius);
+  /* полосу прокрутки убираем: доводку делают кнопки, а на тач-устройствах
+     она и так не показывается */
+  scrollbar-width: none;
+}
+.shots__viewport::-webkit-scrollbar { display: none; }
+.shots__viewport:focus-visible {
+  outline: 2px solid var(--c-yellow);
+  outline-offset: 3px;
+}
+.shots__track {
+  display: flex;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.shots__slide {
+  flex: 0 0 100%;
+  scroll-snap-align: start;
+  min-width: 0;
+}
+.shots__slide img {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 1500 / 785;
+  object-fit: cover;
+}
+
+.shots__nav {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  margin-top: var(--space-4);
+}
+/* Кнопки и счётчик считаются от фона секции. База — СВЕТЛАЯ секция
+   (блок 4): тёмные чернила на белом. Для тёмных секций (блок 3) —
+   переопределение ниже. Первая версия была собрана только под тёмную,
+   и в блоке 4 стрелки со счётчиком оказались почти невидимы: белое
+   по светлому. Поймано снимком. */
+.shots__btn {
+  width: 44px;
+  height: 44px;
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  line-height: 1;
+  color: var(--c-black);
+  background: transparent;
+  border: var(--border-w) solid var(--c-black);
+  border-radius: 50%;
+  cursor: pointer;
+}
+.shots__btn:hover {
+  background: var(--c-green);
+  border-color: var(--c-green);
+  color: #fff;
+}
+.section--dark .shots__btn,
+.section--flagship .shots__btn,
+.section--convert .shots__btn {
+  color: #fff;
+  background: rgba(255, 255, 255, .10);
+  border-color: rgba(255, 255, 255, .38);
+}
+.section--dark .shots__btn:hover,
+.section--flagship .shots__btn:hover,
+.section--convert .shots__btn:hover {
+  background: rgba(255, 255, 255, .18);
+  border-color: var(--c-yellow);
+  color: var(--c-yellow);
+}
+.shots__btn:focus-visible {
+  outline: 2px solid var(--c-yellow);
+  outline-offset: 3px;
+}
+.shots__btn[disabled] {
+  opacity: .38;
+  cursor: default;
+}
+.shots__btn[disabled]:hover {
+  background: transparent;
+  border-color: var(--c-black);
+  color: var(--c-black);
+}
+.section--dark .shots__btn[disabled]:hover,
+.section--flagship .shots__btn[disabled]:hover,
+.section--convert .shots__btn[disabled]:hover {
+  background: rgba(255, 255, 255, .10);
+  border-color: rgba(255, 255, 255, .38);
+  color: #fff;
+}
+.shots__counter {
+  margin: 0;
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 13px;
+  letter-spacing: 0.04em;
+  color: var(--text-on-light);
+}
+.section--dark .shots__counter,
+.section--flagship .shots__counter,
+.section--convert .shots__counter { color: rgba(255, 255, 255, .92); }
+/* Блок 3 — тёмная секция, поэтому и кнопки, и счётчик светлые.
+   Если галерея когда-нибудь встанет в светлую секцию, цвета
+   переопределяются здесь же модификатором, а не правкой этих правил. */
+
+.shots .render-caption { margin-top: var(--space-3); }
+
+/* Без JS кнопки не нужны: прокрутка работает сама, а нажимать не на что */
+html.no-js .shots__nav { display: none; }
+
+@media (prefers-reduced-motion: reduce) {
+  .shots__viewport { scroll-behavior: auto; }
+}
+
+
+/* ------------------------------------------------------------
+   22. КАРТОЧКИ С ИКОНКАМИ — ОДИН РАЗМЕР, ОДНА ЛИНИЯ (блоки 4 и 5)
+   ------------------------------------------------------------
+   Поручения владельца 08.09 по третьему и четвёртому экрану:
+   «иконки одинакового размера, на одном уровне, название жирным…
+   сноски с оранжевой вертикальной полосой чтобы все были на одном
+   уровне и хорошо смотрелись цельно»; «то же самое на четвёртой
+   странице… привести к одинаковым размерам иконки, выровнять
+   по одной линии название и начало текста».
+
+   Что было замерено ДО правки в блоке 4 (1440px): иконки 60, 54, 44
+   и 64px по высоте — при одинаковых атрибутах `width=64 height=64`,
+   потому что PNG набора разной пропорции (160×150, 160×135, 160×111,
+   160×160), а высота считалась по картинке. Из-за этого заголовки
+   начинались на четырёх разных уровнях — 599, 593, 583, 603 — и сноски
+   с жёлтой полосой расходились на 87px: 832, 780, 751, 745.
+
+   Лечится двумя вещами, и ни одна не трогает разметку:
+   1) иконка получает КВАДРАТНУЮ коробку и `object-fit: contain` —
+      внутри коробки картинка своей пропорции, но место занимает
+      одинаковое, поэтому следующий узел у всех начинается на одной линии;
+   2) строки карточек выравниваются между собой подсеткой (`subgrid`):
+      иконка, заголовок и текст встают в общие ряды сетки-списка.
+      Где браузер подсетку не знает, правило просто игнорируется и
+      раскладка остаётся прежней — ломаться нечему. */
+
+.cards-4 .card__icon,
+.cards-5 .card__icon {
+  object-fit: contain;
+  object-position: left center;
+  flex: none;
+}
+.cards-4 .card__icon { width: 64px; height: 64px; }
+.cards-5 .card__icon { width: 44px; height: 44px; }
+
+/* Подсетка: у карточек блока 4 четыре ряда (иконка, заголовок, текст,
+   сноска), у блока 5 — три. Пролёт задаётся по числу рядов. */
+.cards-4 .card {
+  display: grid;
+  grid-template-rows: subgrid;
+  grid-row: span 4;
+  align-content: start;
+}
+.cards-5 .card {
+  display: grid;
+  grid-template-rows: subgrid;
+  grid-row: span 3;
+  align-content: start;
+}
+
+/* Блок 6 тем же приёмом — правка 09.09 по находке приёмки. Замер до:
+   в парах карточек 1–2 и 5–6 текст начинался на разных линиях, разброс
+   10 и 11px. Причина та же, что была в блоке 4: заголовок «Ветеринарная
+   лаборатория на территории» занимает три строки против одной у «Зоны
+   разгрузки», и следующий узел уезжает вниз.
+   Три ряда: иконка, заголовок, текст. Коробка иконки квадратная —
+   в разметке `width=48 height=48`, но высота считалась по картинке,
+   а PNG набора разной пропорции. */
+.cards-2 .card__icon {
+  width: 48px;
+  height: 48px;
+  object-fit: contain;
+  object-position: left center;
+  flex: none;
+}
+.cards-2 .card {
+  display: grid;
+  grid-template-rows: subgrid;
+  grid-row: span 3;
+  align-content: start;
+}
+/* Сноска — последняя строка карточки, прижата к ВЕРХУ своего ряда: ряд
+   у всех карточек общий из-за подсетки, поэтому жёлтые полосы начинаются
+   на одной линии. Прижатие к низу давало разброс 21px — замерено:
+   сноска из одной строки вставала ниже сносок из двух. */
+.cards-4 .card .card__text:nth-of-type(2) {
+  align-self: start;
+  margin-top: 0;
+}
+
+/* Контраст заголовка к телу карточки: было 17px против 15,5px — почти
+   один кегль, и «название жирным» на экране не читалось как название.
+   Раздел 4 свода правил вёрстки требует контраста размеров между
+   заголовком и телом. Вес не меняем, он и так 800. */
+.cards-4 .card__title,
+.cards-5 .card__title {
+  font-size: 19px;
+  line-height: 1.22;
+}
+@media (max-width: 640px) {
+  .cards-4 .card__title,
+  .cards-5 .card__title { font-size: 18px; }
+}
+
+
+/* ------------------------------------------------------------
+   23. КОЛОНКА БЛОКА 6 — ДВА СЛОТА ДРУГ ПОД ДРУГОМ
+   ------------------------------------------------------------
+   Поручение владельца 08.09: «сделаем зону разгрузки, фотографию,
+   и ветеринарная лаборатория, такого же размера как сейчас серый
+   квадратик, то есть две друг под другом на этом же месте».
+   Прежний `.split__aside` — flex в одну строку под один элемент.
+   Здесь колонка на два слота одинаковой ширины и пропорции 4:3. */
+.split__aside--stack {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-4);
+  align-content: start;
+}
+.split__aside--stack .media-pending { width: 100%; }
+/* Слот с кадром повторяет геометрию серого бокса: та же ширина,
+   та же пропорция 4:3, то же скругление. Кадр обрезается по слоту,
+   поэтому кадры разной пропорции сюда встают без подгонки вёрстки. */
+.media-block--slot { margin: 0; }
+.media-block--slot .media-block__frame {
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  border-radius: var(--radius);
+}
+.media-block--slot .media-block__frame img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 50% 40%;
+}
+
+
+/* ------------------------------------------------------------
+   24. ПЕРВЫЙ ЭКРАН — ШЕСТЬ ПЛИТОК ВМЕСТО ЧЕТЫРЁХ
+   ------------------------------------------------------------
+   Поручение владельца 08.09: «55 торговых мест можно убрать, а вот эти
+   вещи указать нужно… есть возможность ещё два прямоугольничка поставить,
+   чтобы их было не 4, а 6. На первом экране».
+
+   Что стало: поток по шоссе · 1,5 км от МКАД · платёжеспособность зоны ·
+   оборудование в ставке · отсрочка платежа · маркетинговый пакет.
+   Снято: «55 торговых мест» (число осталось в блоке 3, где оно и живёт).
+
+   Раскладка: три колонки на два ряда вместо двух на два. Шесть плиток
+   в две колонки дали бы третий ряд и сломали «весь экран в одно окно»
+   (замер: 824px при окне 900 до правки). Три колонки держат два ряда,
+   поэтому кегль значения и отступы уменьшены — иначе целые фразы
+   не встают в колонку 190px. */
+.hero__stats--six {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-3);
+  margin-top: var(--space-6);
+}
+@media (min-width: 640px) {
+  .hero__stats--six { grid-template-columns: repeat(2, 1fr); }
+}
+@media (min-width: 960px) {
+  .hero__stats--six {
+    grid-template-columns: repeat(3, 1fr);
+    /* Явные ряды — под подсетку плиток: два ряда плиток по два ряда
+       содержимого каждый (значение, подпись). Правка 09.09 по находке
+       приёмки: подписи первого ряда стояли на 615, 615 и 606 — разброс
+       9px, потому что у «383 000 в месяц» значение в одну строку, а у
+       соседей в две, и подпись подтягивалась вверх. Подсетка сажает
+       значения и подписи всех трёх плиток в общие ряды. */
+    grid-template-rows: repeat(2, auto auto);
+    gap: var(--space-2);
+    margin-top: var(--space-4);
+  }
+  .hero__stats--six .digit-tile {
+    grid-template-rows: subgrid;
+    grid-row: span 2;
+  }
+  .hero__stats--six .digit-tile { padding: var(--space-2) var(--space-3); }
+  .hero__stats--six .digit-tile__value { font-size: 14.5px; line-height: 1.2; }
+  .hero__stats--six .digit-tile__label { font-size: 11px; line-height: 1.25; }
+  .hero__stats--six .hero__stat-ico { width: 40px; height: 40px; }
+  /* «Аналитика трафика» — единственная иконка с ВЕРТИКАЛЬНОЙ композицией:
+     камера сверху, человечек снизу, между ними пунктир. В квадратной коробке
+     её чернила занимают всю высоту, но лишь 54% ширины (348×651 в исходном
+     листе), поэтому рядом с широкими глифами она читается вдвое мельче.
+     Владелец: «аналитику трафика вообще не видно». Даём ей коробку крупнее —
+     выравниваем по видимому размеру, а не по числу в CSS. */
+  .hero__stats--six .digit-tile:nth-child(2) .hero__stat-ico { width: 52px; height: 52px; }
+}
+
+/* Ноутбучный диапазон: на 1280×800 шесть плиток дали +17px и первый экран
+   перестал влезать (замер). Отнимаем ровно там, где это не видно —
+   верхний отступ секции и зазор перед лидом. Ниже 960px требования
+   «весь экран в одно окно» нет: объём текста задан источником. */
+@media (min-width: 960px) and (max-width: 1366px) {
+  .section--hero { padding-block: 76px var(--space-3); }
+  .hero__lede { margin-top: var(--space-2); }
+  .hero__stats--six { margin-top: var(--space-3); }
+}
+
+
+/* ------------------------------------------------------------
+   25. КОНТАКТЫ — ТРУБКА, TELEGRAM, MAX
+   ------------------------------------------------------------
+   Поручение владельца 08.09: «нужно значок Макса поставить и трубочку
+   телефонную, на которую нажать для звонка. Ну и телеграм, наверное».
+
+   Номер `+7 915 210-91-55` — публикуемый лизинговый (`FACTS.md:47`,
+   owner 18.08). Ограничение оттуда же соблюдено: номер стоит ТОЛЬКО
+   как поле контакта, призыва звонить в тексте нет.
+
+   ⚠️ Адресов Telegram и MAX нет: профили регистрирует оператор
+   (`2-fk/brand/platform-strategy.md`), а решением владельца 08.09
+   «адреса профилей в соцсетях — потом, значки остаются без адресов,
+   это прототип». Поэтому у обоих `href="#"`. Свод правил §18 отдельно
+   предупреждает: `max.ru/<номер>` и `max.ru/<username>` не резолвятся,
+   личная ссылка MAX берётся только из приложения (`max.ru/u/<токен>`),
+   а `t.me/+<номер>` ведёт в приглашение в ГРУППУ, не в личный чат.
+   Значит когда адреса появятся — ставить именно личные ссылки и
+   проверять их РЕНДЕРОМ, а не кодом ответа: max.ru отдаёт 200 на любой путь.
+
+   MAX идёт текстовым бейджем, а не значком: глифа MAX в наборе нет,
+   и на покупательском он тоже набран текстом. */
+.contacts {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.contacts__link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  min-width: 44px;
+  height: 44px;
+  padding: 0 var(--space-2);
+  border: var(--border-w) solid rgba(255, 255, 255, .30);
+  border-radius: var(--radius-sm);
+  color: #fff;
+  text-decoration: none;
+}
+.contacts__link:hover {
+  color: var(--c-yellow);
+  border-color: var(--c-yellow);
+}
+.contacts__link--text {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 12px;
+  letter-spacing: 0.06em;
+}
+.contacts__number {
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 14px;
+  white-space: nowrap;
+}
+/* Номер прячется раньше значков: на 1280 шапка с четырьмя пунктами меню,
+   тремя контактами и красной кнопкой встаёт в упор. Трубка остаётся —
+   по ней и звонят с телефона. */
+@media (max-width: 1365px) {
+  .contacts__number { display: none; }
+}
+/* Ниже 960px меню уезжает в гамбургер, шапка становится плотной зелёной.
+   Значки там жили бы рядом с гамбургером и логотипом — на 360 это уже
+   не влезает (у покупательского тот же приём: в шапке с 700px, ниже —
+   только в подвале). */
+@media (max-width: 959px) {
+  .site-nav .contacts { display: none; }
+}
+/* В подвале секция светлая — контакты чернилами по бумаге */
+.contacts--footer { margin-top: var(--space-3); }
+.contacts--footer .contacts__link {
+  color: var(--text-on-light);
+  border-color: var(--border-hairline-light);
+}
+.contacts--footer .contacts__link:hover {
+  color: var(--c-green);
+  border-color: var(--c-green);
+}
+
+/* Кнопка шапки после добавления контактов ушла в три строки (замер: 131×80
+   при высоте строки 20px). Ряд шапки стал плотнее на 227px — трубка с номером,
+   Telegram и MAX. Кнопке запрещаем перенос и сужаем горизонтальный отступ;
+   номер прячется с 1366px и ниже, это уже сделано разделом 25. */
+@media (min-width: 960px) {
+  .site-nav__cta {
+    white-space: nowrap;
+    padding-inline: var(--space-4);
+    font-size: 14px;
+  }
+  .site-nav__list { gap: var(--space-4); }
+}
+
+
+/* ------------------------------------------------------------
+   27. ШАПКА — МЕНЮ ПРИЖАТО К ПРАВОМУ МОДУЛЮ
+   ------------------------------------------------------------
+   Поручение владельца 08.09: «строчку „Форматы мест“ нужно чуть правее
+   сместить, и всю строку… прижать к этому модулю, к „Оставить заявку“.
+   Просто сейчас „Форматы мест“ наложилось на строчку „ПИКНИК для
+   арендаторов“».
+
+   Он прав, и это дефект, а не вкус: на 1024px первый пункт меню
+   физически перекрывает слово «ПИКНИК». Мой замер этого не увидел,
+   потому что считал зазор до `.site-brand__sub` («ДЛЯ АРЕНДАТОРОВ»),
+   а сталкивается меню с `.site-brand__title` — оно шире. Прибор смотрел
+   не на тот элемент; правило то же, что и с контрастом.
+
+   Лечение: меню больше не растягивается по всей свободной ширине,
+   а прижимается вправо и идёт одним модулем с контактами и кнопкой.
+   Между брендом и этим модулем гарантированный зазор, меньше которого
+   строка не подойдёт ни на какой ширине. */
+@media (min-width: 960px) {
+  .site-header__inner {
+    gap: var(--space-8);
+  }
+  .site-nav {
+    margin-left: auto;          /* модуль уходит к правому краю */
+    flex: 0 1 auto;
+  }
+  .site-nav__list {
+    flex: 0 1 auto;
+    margin-right: var(--space-6);
+  }
+  /* Бренд не сжимается: он задаёт левый край шапки и левый край сетки
+     (проверка §15 свода — левый край знака, H1 и H2 должны совпадать) */
+  .site-brand { flex: 0 0 auto; }
+}
+/* 960–1150px: меню, три контакта и кнопка в один ряд с брендом уже тесно.
+   Убираем разрядку в меню и прячем номер раньше — трубка остаётся. */
+@media (min-width: 960px) and (max-width: 1150px) {
+  .site-nav__list { gap: var(--space-3); margin-right: var(--space-4); }
+  .site-nav__list a { font-size: 14px; }
+}
+
+/* 960–1150px: бренд, четыре пункта меню, три контакта и кнопка в один ряд
+   не влезают — правый край кнопки уходил за окно на 34px (замер на 1024).
+   Прогон overflow этого НЕ ловил: вылет гасится `overflow: hidden` первого
+   экрана, страница не начинает прокручиваться, и число остаётся ноль.
+   Ловится только сравнением правого края узла с правым краем контейнера.
+   Лечение: в этом диапазоне в шапке остаётся трубка, значки Telegram и MAX
+   уходят — они есть в подвале (тот же приём у покупательского). */
+@media (min-width: 960px) and (max-width: 1150px) {
+  .site-nav .contacts li:not(:first-child) { display: none; }
+}
+
+/* Лестница сжатия шапки, чтобы ряд ВСЕГДА укладывался в контейнер.
+   Прибор вылета (правый край узла против правого края содержимого
+   контейнера) показал: на 1440 кнопка стояла на 75px правее границы,
+   на 960 меню и контакты вылетали на 32–48px и меню заходило на бренд
+   (зазор −211px). Порядок отказа от лишнего — от менее важного к более:
+   номер → MAX → Telegram → разрядка меню. Трубка и кнопка остаются всегда. */
+@media (min-width: 960px) {
+  .site-header .container { column-gap: var(--space-6); }
+  .site-nav { min-width: 0; }
+  .site-nav__list { flex-wrap: nowrap; }
+}
+/* 1151–1365: номер уже скрыт разделом 25, снимаем MAX */
+@media (min-width: 1151px) and (max-width: 1365px) {
+  .site-nav .contacts li:nth-child(3) { display: none; }
+}
+/* 960–1149: в шапке только трубка (сделано разделом 27), плюс меню
+   компактнее и отступ до кнопки меньше */
+@media (min-width: 960px) and (max-width: 1149px) {
+  .site-nav__list { gap: var(--space-2); margin-right: var(--space-3); }
+  .site-nav__list a { font-size: 13.5px; padding: 0; }
+  .site-nav__cta { padding-inline: var(--space-3); font-size: 13.5px; }
+}
+
+/* Кнопка шапки не влезала в свой же контейнер на 1440 и 1600: ряду нужно
+   872px, а `.site-nav` даёт 837 — кнопка выходила на 67px правее границы
+   содержимого. Освобождаем место, снимая бейдж MAX ниже 1500px: он есть
+   в подвале, а трубка и Telegram важнее. */
+@media (min-width: 960px) and (max-width: 1499px) {
+  .site-nav .contacts li:nth-child(3) { display: none; }
+}
+
+/* Ряд не влезает и на 1600: контейнер закапан 1200px, содержимое всегда
+   1072px, а ряду нужно ~1107px (бренд 211 + меню 426 + контакты 246 +
+   кнопка 144 плюс зазоры). Убираем номер из ШАПКИ на всех ширинах —
+   трубка остаётся, и по ней звонят; сам номер стоит в подвале и в блоке
+   заявки. Владелец просил «трубочку, на которую нажать», а не номер
+   строкой, так что теряется меньше всего. */
+@media (min-width: 960px) {
+  .site-nav .contacts__number { display: none; }
+  .site-nav .contacts li:nth-child(3) { display: list-item; }
+}
+
+/* 960–1023: даже без номера ряд не влезает в 912px содержимого (кнопка
+   вылетала на 42px). Контакты уходят из шапки целиком — они в подвале. */
+@media (min-width: 960px) and (max-width: 1023px) {
+  .site-nav .contacts { display: none; }
+}
+
+
+/* ------------------------------------------------------------
+   28. ПОДВАЛ — ЗНАК К СЛОВУ, ЗНАЧКИ ВИДНЫ, КОЛОНКИ РОВНО
+   ------------------------------------------------------------
+   Поручение владельца 08.09: «нижний модуль сверь глазами, чтобы всё было
+   ровненько, потому что не читаемы некоторые вещи, что-то выше, что-то
+   ниже, ПИКНИК — сам логотип вдали от слова ПИКНИК».
+
+   Три дефекта, все увидены снимком и подтверждены замером:
+
+   1. ЗНАК ОТОРВАН ОТ СЛОВА. `.footer-brand` — колоночный флекс, а у него
+      `align-items: stretch` по умолчанию: картинка растягивалась на всю
+      ширину колонки (замер: 336×62 при своих 93×62), знак рисовался по
+      центру этой коробки, а «ПИКНИК» стоял у левого края. Между ними
+      получалось 250px пустоты. `width: auto` тут не помогал — растягивал
+      не размер, а выравнивание.
+
+   2. ЗНАЧКИ TELEGRAM И MAX НЕ ЧИТАЛИСЬ — и это моя ошибка из раздела 25:
+      я покрасил `.contacts--footer` в тёмные чернила «по бумаге», а подвал
+      тёмно-зелёный (`--bg-dark`). Тёмное по тёмному.
+
+   3. Колонки начинались на разной высоте: у бренда сверху картинка 62px,
+      у двух других — надзаголовок 12px. Заголовки колонок теперь на одной
+      линии, а знак с названием идут одним блоком. */
+.footer-brand {
+  align-items: flex-start;   /* было stretch — отсюда растянутый знак */
+}
+.footer-logo {
+  flex: none;
+  max-width: 100%;
+}
+.footer-brand__name { margin-top: var(--space-1); }
+
+/* Подвал тёмный: контакты светлые, как всё остальное в нём */
+.contacts--footer .contacts__link {
+  color: var(--text-on-dark);
+  border-color: rgba(255, 255, 255, .28);
+}
+.contacts--footer .contacts__link:hover {
+  color: var(--c-yellow);
+  border-color: var(--c-yellow);
+}
+.contacts--footer { margin-top: var(--space-4); }
+
+/* Заголовки колонок на одной линии: у колонки бренда сверху знак,
+   поэтому ей задаётся тот же верхний ритм, что титрам соседей */
+@media (min-width: 640px) {
+  .footer-grid { align-items: start; }
+  .footer-col__title { margin-top: 0; }
+}
+
+/* Знак подвала — та же круглая эмблема, что в шапке. Прежний
+   `logo-picnic.svg` рисует знак по центру своего viewBox 220×147, то есть
+   несёт внутри собственные поля: даже прижатый влево, он начинался на 15px
+   правее слова «ПИКНИК». Эмблема обрезана по краю, поэтому встаёт ровно
+   над словом. Заодно шапка и подвал держат один знак. */
+.footer-logo {
+  width: 56px;
+  height: 56px;
+  opacity: 1;
+  background: #fff;
+  border-radius: 50%;
+  padding: 3px;
+  box-sizing: border-box;
+}
+
+/* Два квадрата колонки блока 6 — по уровню с шестью карточками слева.
+   Поручение владельца 08.09: «эти два квадратика сделай на уровне с теми
+   шестью, что слева, на одном уровне». Было: колонка начиналась с той же
+   линии, но кончалась выше — два слота по 295px против ~700px левой
+   колонки, и низ модуля рвался. Теперь колонка тянется на всю высоту
+   ряда, слоты делят её пополам, а пропорция кадра подчиняется слоту
+   (`object-fit: cover`), а не наоборот. */
+@media (min-width: 960px) {
+  .split { align-items: stretch; }
+  .split__aside--stack {
+    grid-template-rows: 1fr 1fr;
+    /* `height: 100%` тут вредил: он считался от высоты ряда, а верхний
+       отступ добавлялся сверху — низ уезжал ровно на этот отступ (замер:
+       низ 1042 против 1010 у карточек). Растягивает `align-items: stretch`
+       на `.split`, и колонка сама доходит от верха до низа ряда. */
+    align-self: stretch;
+  }
+  .split__aside--stack > * { min-height: 0; }
+  .split__aside--stack .media-pending { height: 100%; aspect-ratio: auto; }
+  .split__aside--stack .media-block--slot { height: 100%; }
+  .split__aside--stack .media-block--slot .media-block__frame {
+    height: 100%;
+    aspect-ratio: auto;
+  }
+}
+/* Верх колонки был выше карточек на 32px: у сеток `.cards-*` есть
+   `margin-top: var(--space-8)` (единая точка ритма перед сетками),
+   у колонки его не было. Замер: верх слотов 358 против 390 у карточек. */
+@media (min-width: 960px) {
+  .split__aside--stack { margin-top: var(--space-8); }
+}
+
+
+/* ------------------------------------------------------------
+   29. КАРУСЕЛЬ ПОРТРЕТОВ (блок 12) — узкий слайд
+   ------------------------------------------------------------
+   Поручение владельца 08.09: в блоке «Кто уже здесь и какие ниши открыты»
+   вместо двух 3D-рендеров — карусель людей с лицами и марок резидентов.
+
+   Слайд узкий, а не во всю ширину: портреты продавцов 352–415px по ширине
+   после кропа под 3:4, и в широкий слот (1072px на 1440) их растянуло бы
+   в три раза. Апскейл запрещён стеком, поэтому в видимой части три кадра
+   на широком экране, два на среднем и один с половиной на телефоне —
+   размер кадра на экране остаётся меньше исходного. */
+.shots--portrety .shots__slide {
+  flex: 0 0 85%;
+}
+@media (min-width: 640px) {
+  .shots--portrety .shots__slide { flex: 0 0 48%; }
+}
+@media (min-width: 960px) {
+  .shots--portrety .shots__slide { flex: 0 0 32%; }
+}
+.shots--portrety .shots__track { gap: var(--space-4); }
+.shots--portrety .shots__slide img {
+  aspect-ratio: 3 / 4;
+  object-fit: cover;
+  border-radius: var(--radius);
+}
+
+/* Марки резидентов в карусели — это логотипы на белом, и рядом с живым
+   портретом они читались как пустое место (проверено снимком). Даём им
+   вид карточки: подложка, волосяная рамка, воздух по краям и `contain`,
+   чтобы знак не обрезался. */
+.shots__slide--marka img {
+  object-fit: contain;
+  background: var(--paper);
+  border: var(--border-w) solid var(--border-hairline-light);
+  padding: var(--space-6);
+}
+
+
+/* ------------------------------------------------------------
+   30. ЗНАКИ СОСЕДЕЙ В БЛОКЕ 7
+   ------------------------------------------------------------
+   Поручение владельца 08.09: «мебельный магазин Хофф — поставить его значок,
+   зоомагазин Бетховен, Автомаг — тоже их значки, Бургер Кинг — тоже их знак,
+   музей ретро-автомобилей — автомобильчик, а не какие-то флажки непонятные.
+   Все они есть у нас, либо на первой версии B2B или B2C сайтов».
+
+   Нашлись все: `materials/assets/znaki-sosedey-tvc/` с файлом провенанса
+   (Hoff и «Бетховен» — с B2B-лендинга заказчика, принятого клиентом 22.06;
+   «Автомаг» — с сайта сети, совпадение адреса проверено дословно), музей —
+   реальное фото экспоната с покупательского. Знака «Бургер Кинга» отдельным
+   файлом нет: взята его вывеска с фотографии фасада, то есть снимок здания,
+   а не перерисованный логотип.
+
+   ⛔ Запрет раздела 8 `CLAUDE.md` («генерировать чужие торговые знаки») не
+   нарушен: файлы идут в разметку как готовые изображения, в промпт генерации
+   ни один из них не попадает.
+
+   Полоса вместо иконки: знаки широкие (800×247, 1400×440), в квадрате 48px
+   они читаться не могут. Все приведены к 800×300 — логотипы вписаны целиком
+   в белое поле без обрезки, фотографии кадрированы. */
+.cards-4 .card__mark {
+  margin-bottom: var(--space-3);
+  border: var(--border-w) solid var(--border-hairline-light);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  background: #fff;
+}
+.cards-4 .card__mark img {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 16 / 6;
+  object-fit: cover;
+}
+/* Два знака в карточке «Бетховен и Автомаг» сложены в ОДНУ полосу картинкой:
+   вторая полоса добавляла карточке лишнюю строку сетки, и подсетка раздела 22
+   разводила заголовки на разные уровни — замер дал разброс 95px. */
+
+/* Колонка иконки в плитках первого экрана — по содержимому, а не жёсткие 44px:
+   увеличенная «Аналитика трафика» упиралась в фиксированную колонку, и её
+   коробка выходила 44×52 вместо 52×52 (замер). Ширину теперь задаёт сама
+   иконка, текст занимает остаток. */
+@media (min-width: 960px) {
+  .hero__stats--six .digit-tile { grid-template-columns: auto minmax(0, 1fr); }
+}
+
+/* ------------------------------------------------------------
+   31. ПОДВАЛ — СИММЕТРИЧНЫЕ ВЕРТИКАЛЬНЫЕ ОТСТУПЫ
+   ------------------------------------------------------------
+   Поручение владельца 08.09: «в подвале верхняя строчка, где контакты и адрес,
+   прижата к верхней части подвала, а нужно, чтобы она была равномерна между
+   нижней частью экрана и верхней частью подвала».
+
+   Замер подтвердил: у `.site-footer` вертикального padding не было вовсе —
+   `0px / 0px`, сетка начиналась ровно на верхней кромке подвала, копирайт
+   кончался ровно на нижней. Ставим одинаковые сверху и снизу. */
+.site-footer {
+  padding-block: var(--space-12);
+}
+@media (max-width: 640px) {
+  .site-footer { padding-block: var(--space-10); }
+}
+
+/* Иконки блока 5 крупнее — поручение владельца 08.09: «главное отличие,
+   продвижение вашей точки — сделай эти иконки побольше, чтобы их видно было».
+   Было 44px из раздела 22. Карточка блока 5 узкая (195px на 1440), но иконка
+   стоит отдельной строкой над заголовком, поэтому 64px в неё встают. */
+.cards-5 .card__icon { width: 64px; height: 64px; }
+@media (max-width: 640px) {
+  .cards-5 .card__icon { width: 56px; height: 56px; }
+}
