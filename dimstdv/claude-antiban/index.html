@@ -1,0 +1,787 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Гайд по инфраструктуре и защите от банов Claude (v2.0)</title>
+  
+  <!-- Open Graph / Telegram / Social Preview -->
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="Гайд по защите от банов Claude 24/7 (v2.0)">
+  <meta property="og:description" content="Ультимативная архитектура: Тонкий клиент Mac → Сервер в США 24/7, Single-IP Handshake, Сингапурский шлюз оплаты и обход антифрода.">
+  <meta property="og:image" content="https://clients.brand-os.ru/claude-antiban/cover.png">
+  <meta property="og:image:secure_url" content="https://clients.brand-os.ru/claude-antiban/cover.png">
+  <meta property="og:image:type" content="image/png">
+  <meta property="og:image:width" content="1376">
+  <meta property="og:image:height" content="768">
+  <meta property="og:url" content="https://clients.brand-os.ru/claude-antiban/">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Гайд по защите от банов Claude 24/7 (v2.0)">
+  <meta name="twitter:description" content="Архитектура удалённого сервера в США, Single-IP Handshake и обход фрода. Сделано брендом ВС.">
+  <meta name="twitter:image" content="https://clients.brand-os.ru/claude-antiban/cover.png">
+  <style>
+    :root {
+      --bg: #0d1117;
+      --card-bg: #161b22;
+      --card-border: #30363d;
+      --text: #c9d1d9;
+      --text-muted: #8b949e;
+      --heading: #f0f6fc;
+      --accent: #58a6ff;
+      --accent-hover: #79c0ff;
+      --warning: #d29922;
+      --warning-bg: rgba(210, 153, 34, 0.12);
+      --danger: #f85149;
+      --danger-bg: rgba(248, 81, 73, 0.12);
+      --success: #3fb950;
+      --success-bg: rgba(63, 185, 80, 0.12);
+      --purple: #bc8cff;
+      --purple-bg: rgba(188, 140, 255, 0.12);
+      --code-bg: #090d13;
+      --tag-bg: #21262d;
+    }
+
+    @media (prefers-color-scheme: light) {
+      :root {
+        --bg: #f6f8fa;
+        --card-bg: #ffffff;
+        --card-border: #d0d7de;
+        --text: #24292f;
+        --text-muted: #57606a;
+        --heading: #0969da;
+        --accent: #0969da;
+        --accent-hover: #0550ae;
+        --warning: #9a6700;
+        --warning-bg: #fff8c5;
+        --danger: #cf222e;
+        --danger-bg: #ffebe9;
+        --success: #1a7f37;
+        --success-bg: #dafbe1;
+        --purple: #8250df;
+        --purple-bg: #fbefff;
+        --code-bg: #f6f8fa;
+        --tag-bg: #eaeef2;
+      }
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.65;
+      padding: 32px 16px;
+    }
+
+    .container {
+      max-width: 940px;
+      margin: 0 auto;
+    }
+
+    header {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      padding: 30px;
+      margin-bottom: 24px;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+    }
+
+    .badge-bar {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 14px;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      background: var(--tag-bg);
+      color: var(--text-muted);
+      border: 1px solid var(--card-border);
+      font-size: 12px;
+      font-weight: 600;
+      padding: 4px 10px;
+      border-radius: 20px;
+    }
+
+    .badge.critical {
+      background: var(--danger-bg);
+      color: var(--danger);
+      border-color: var(--danger);
+    }
+
+    .badge.highlight {
+      background: var(--purple-bg);
+      color: var(--purple);
+      border-color: var(--purple);
+    }
+
+    .badge.success {
+      background: var(--success-bg);
+      color: var(--success);
+      border-color: var(--success);
+    }
+
+    h1 {
+      color: var(--heading);
+      font-size: 26px;
+      font-weight: 700;
+      line-height: 1.3;
+      margin-bottom: 12px;
+    }
+
+    .subtitle {
+      color: var(--text-muted);
+      font-size: 14.5px;
+    }
+
+    .nav-box {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 24px;
+    }
+
+    .nav-box h2 {
+      font-size: 14px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--text-muted);
+      margin-bottom: 12px;
+      border-bottom: none;
+      padding-bottom: 0;
+    }
+
+    .nav-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 8px 16px;
+    }
+
+    .nav-link {
+      color: var(--accent);
+      text-decoration: none;
+      font-size: 14px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: color 0.15s ease;
+    }
+
+    .nav-link:hover {
+      color: var(--accent-hover);
+      text-decoration: underline;
+    }
+
+    section {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      padding: 28px;
+      margin-bottom: 24px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    }
+
+    h2 {
+      color: var(--heading);
+      font-size: 20px;
+      font-weight: 700;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      border-bottom: 1px solid var(--card-border);
+      padding-bottom: 10px;
+    }
+
+    h3 {
+      font-size: 16px;
+      color: var(--heading);
+      margin: 20px 0 10px;
+    }
+
+    p { margin-bottom: 14px; font-size: 15px; }
+
+    ul, ol {
+      margin-bottom: 16px;
+      padding-left: 24px;
+    }
+
+    li {
+      margin-bottom: 8px;
+      font-size: 14.5px;
+    }
+
+    strong { color: var(--heading); }
+
+    a {
+      color: var(--accent);
+      text-decoration: none;
+      font-weight: 500;
+      word-break: break-all;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+
+    .alert {
+      padding: 14px 18px;
+      border-radius: 8px;
+      margin: 16px 0;
+      font-size: 14px;
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+      border-left: 4px solid;
+    }
+
+    .alert.warning {
+      background: var(--warning-bg);
+      border-left-color: var(--warning);
+      color: var(--text);
+    }
+
+    .alert.danger {
+      background: var(--danger-bg);
+      border-left-color: var(--danger);
+      color: var(--text);
+    }
+
+    .alert.success {
+      background: var(--success-bg);
+      border-left-color: var(--success);
+      color: var(--text);
+    }
+
+    .alert.info {
+      background: var(--purple-bg);
+      border-left-color: var(--purple);
+      color: var(--text);
+    }
+
+    .code-wrapper {
+      position: relative;
+      margin: 16px 0;
+    }
+
+    pre {
+      background: var(--code-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 8px;
+      padding: 16px;
+      overflow-x: auto;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-size: 13px;
+      line-height: 1.5;
+      color: #e6edf3;
+    }
+
+    code {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      background: var(--tag-bg);
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 13px;
+    }
+
+    pre code {
+      background: transparent;
+      padding: 0;
+    }
+
+    .copy-btn {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: var(--tag-bg);
+      border: 1px solid var(--card-border);
+      color: var(--text);
+      padding: 5px 10px;
+      border-radius: 6px;
+      font-size: 12px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .copy-btn:hover {
+      background: var(--accent);
+      color: #fff;
+    }
+
+    .arch-diagram {
+      background: var(--code-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 8px;
+      padding: 18px;
+      margin: 16px 0;
+      font-family: ui-monospace, monospace;
+      font-size: 12.5px;
+      line-height: 1.45;
+      color: #58a6ff;
+      overflow-x: auto;
+      white-space: pre;
+    }
+
+    .checklist {
+      list-style: none;
+      padding-left: 0;
+    }
+
+    .checklist-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 11px 14px;
+      border-radius: 6px;
+      margin-bottom: 7px;
+      background: var(--bg);
+      border: 1px solid var(--card-border);
+      cursor: pointer;
+      user-select: none;
+      transition: background 0.15s;
+    }
+
+    .checklist-item:hover {
+      background: var(--tag-bg);
+    }
+
+    .checklist-item input[type="checkbox"] {
+      margin-top: 3px;
+      width: 18px;
+      height: 18px;
+      accent-color: var(--success);
+      cursor: pointer;
+    }
+
+    .checklist-item.checked span {
+      text-decoration: line-through;
+      color: var(--text-muted);
+    }
+
+    .formula-box {
+      background: var(--code-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 8px;
+      padding: 16px;
+      text-align: center;
+      font-family: ui-monospace, monospace;
+      font-size: 13.5px;
+      color: var(--accent);
+      margin: 16px 0;
+      overflow-x: auto;
+    }
+
+    footer {
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 13px;
+      padding: 24px 0;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+
+  <div style="margin-bottom: 20px; border-radius: 12px; overflow: hidden; border: 1px solid var(--card-border); box-shadow: 0 6px 20px rgba(0,0,0,0.25);">
+    <img src="cover.png" alt="Обложка: Claude 100% Защита от банов" style="width: 100%; height: auto; display: block;">
+  </div>
+
+  <header>
+    <div class="badge-bar">
+      <span class="badge highlight">Версия 2.0 (Обновлено)</span>
+      <span class="badge">Тонкий клиент → США 24/7</span>
+      <span class="badge success">Single-IP Handshake</span>
+      <span class="badge critical">Сингапурский шлюз</span>
+      <span class="badge">Ноябрь 2026</span>
+    </div>
+    <h1>Гайд по инфраструктуре и защите от банов Claude</h1>
+    <p class="subtitle">
+      Ультимативный технический регламент: архитектура удалённого сервера в США, круглосуточная автономная работа 24/7, параноидальная сетевая защита и обход антифрода Stripe & Anthropic.
+    </p>
+  </header>
+
+  <nav class="nav-box">
+    <h2>Быстрая навигация по разделам</h2>
+    <div class="nav-grid">
+      <a class="nav-link" href="#principle">0. Принцип риск-скоринга</a>
+      <a class="nav-link" href="#arch">1. Архитектура 24/7 (Mac → США)</a>
+      <a class="nav-link" href="#handshake">2. Single-IP Handshake (OAuth)</a>
+      <a class="nav-link" href="#segregation">3. Изоляция мультиаккаунтов</a>
+      <a class="nav-link" href="#network">4. Сеть, TUN и Kill Switch</a>
+      <a class="nav-link" href="#scripts">5. Скрипты автоматизации</a>
+      <a class="nav-link" href="#payment">6. Платёжный хак: Сингапур</a>
+      <a class="nav-link" href="#settings">7. Настройки системы и профиля</a>
+      <a class="nav-link" href="#warmup">8. Прогрев аккаунта (Warm-up)</a>
+      <a class="nav-link" href="#checklist">9. Чек-лист готовности</a>
+    </div>
+  </nav>
+
+  <!-- Блок 0 -->
+  <section id="principle">
+    <h2>0. Фундаментальный принцип: Накопительный риск-скоринг</h2>
+    <p>
+      Anthropic практически никогда не блокирует аккаунт из-за одной изолированной причины. Система контроля рисков анализирует цепочку цифровых сигналов и суммирует показатели:
+    </p>
+    <div class="formula-box">
+      Risk Score = f(IP / Хостинг) + f(Single-IP Handshake) + f(Режим TUN) + f(Таймзона) + f(Изоляция) + f(Телефон) + f(Платёж) + f(Нагрузка)
+    </div>
+    <div class="alert warning">
+      <div>
+        <strong>Суть защиты:</strong> Приведение в порядок сигналов на <em>каждом</em> этапе стека. Если накапливается пороговое значение нестыковок (например: датацентровый пул IP + видимый системный прокси + несовпадение IP при авторизации), аккаунт мгновенно блокируется.
+      </div>
+    </div>
+  </section>
+
+  <!-- Блок 1 -->
+  <section id="arch">
+    <h2>1. Архитектурный сдвиг: «Тонкий клиент (Mac) → Сервер в США 24/7»</h2>
+    <p>
+      Запуск Claude Code локально на MacBook имеет критические ограничения: при закрытии крышки агент засыпает, обрывая длинные сессии кодинга, парсинг, ночные генерации и Telegram-ботов. Кроме того, постоянные смены домашних/офисных Wi-Fi сетей вызывают подозрения антифрода.
+    </p>
+
+    <div class="arch-diagram">┌─────────────────────────────────┐
+│        MacBook (Клиент)         │
+│  - VS Code (Remote - SSH)       │  ◄── Тонкий терминал управления
+│  - Браузер (Изолированный)      │
+└────────────────┬────────────────┘
+                 │ Зашифрованный туннель SSH (ed25519)
+                 ▼
+┌─────────────────────────────────┐
+│     VPS в США (Ubuntu 24.04)    │  ◄── Статический чистый IP (Дата-центр США)
+│  - Claude Code (24/7)           │  ◄── 1 Gbps канал без сна и лимитов крышки
+│  - Docker / Фоновые демоны     │  ◄── Ночные конвейеры, парсинг, боты
+│  - SOCKS5 / VLESS прокси-мост   │
+└────────────────┬────────────────┘
+                 │ HTTPS / WebSocket (Напрямую к API)
+                 ▼
+┌─────────────────────────────────┐
+│   Anthropic API / Claude.ai     │  ◄── Видит 100% стабильного американского юзера
+└─────────────────────────────────┘</div>
+
+    <h3>Требования к серверу:</h3>
+    <ul>
+      <li><strong>Провайдеры:</strong> HostHatch или BandwagonHost (дата-центры: Los Angeles / Silicon Valley / New York).</li>
+      <li><strong>Конфигурация:</strong> KVM NVMe, 8–16 GB RAM, 4+ vCPU, чистая ОС <strong>Ubuntu 24.04 LTS</strong>.</li>
+      <li><strong>Установка агента:</strong> Claude Code разворачивается непосредственно на сервере через расширение VS Code <code>Remote - SSH</code> (команда <code>Install in SSH: root@studio-vps</code>).</li>
+      <li><strong>Преимущество:</strong> Ноутбук используется исключительно как монитор и клавиатура. Вся тяжёлая работа крутится непрерывно.</li>
+    </ul>
+  </section>
+
+  <!-- Блок 2 -->
+  <section id="handshake">
+    <h2>2. Решение «Тонкого места»: Авторизация через зеркальный IP (Single-IP Handshake)</h2>
+    <p>
+      Главная точка уязвимости распределённой архитектуры — момент первичной OAuth-авторизации в браузере (<code>claude.ai/oauth/authorize</code>).
+    </p>
+
+    <div class="alert danger">
+      <div>
+        <strong>В чём ловушка:</strong> Терминал Claude Code запущен на сервере в США и генерирует одноразовую ссылку авторизации. Вы кликаете по ссылке на Mac, и браузер открывает страницу входа. Если на Mac включен сторонний VPN или соединение идёт напрямую, Anthropic видит, что сессия запрошена из дата-центра США, а подтверждается браузером из другой страны. Это моментальный красный флаг фрод-скоринга!
+      </div>
+    </div>
+
+    <h3>Инженерное решение (Single-IP Handshake):</h3>
+    <p>Перед кликом по ссылке авторизации трафик браузера на Mac временно пускается через сам удалённый сервер:</p>
+
+    <ol>
+      <li>
+        <strong>Поднятие SOCKS5-прокси через существующий SSH-туннель:</strong>
+        <div class="code-wrapper">
+          <pre><code>ssh -D 10808 -N -f root@studio-vps</code></pre>
+        </div>
+      </li>
+      <li>
+        <strong>Маршрутизация браузера:</strong> Через системные настройки или расширение (SwitchyOmega / FoxyProxy) направьте трафик доменов <code>claude.ai</code> и <code>anthropic.com</code> на <code>socks5://127.0.0.1:10808</code>.
+      </li>
+      <li>
+        <strong>Результат:</strong> Запрос авторизации в браузере уходит <em>ровно с того же самого IP</em>, на котором запущен терминал Claude Code. Показатель риска при авторизации равен <strong>0</strong>. После входа туннель можно закрыть.
+      </li>
+    </ol>
+  </section>
+
+  <!-- Блок 3 -->
+  <section id="segregation">
+    <h2>3. Протокол изоляции мультиаккаунтов (Multi-Account Segregation)</h2>
+    <p>
+      Если у вас уже есть первый рабочий аккаунт (например, локальный или зарегистрированный через СНГ/Узбекистан), и создаётся второй «чистый» аккаунт на максимальный тариф (\$100/мес Max):
+    </p>
+
+    <div class="alert danger">
+      <div>
+        <strong>Категорический запрет на пересечение сессий:</strong> Один общий HTTP-запрос или пересечение куки свяжет оба аккаунта в графе антифрода, и бан одного аккаунта автоматически уничтожит второй.
+      </div>
+    </div>
+
+    <h3>Правила строгого разделения:</h3>
+    <ul>
+      <li><strong>Сетевая изоляция:</strong> Новый чистый аккаунт никогда не должен открываться под IP-адресами старого аккаунта, и наоборот.</li>
+      <li><strong>Изолированные профили браузера:</strong> 
+        Создайте в Google Chrome отдельный профиль (например, «Claude USA Pro») либо используйте отдельный чистый браузер (Brave / Safari). В нём не должно быть истории, сессий или расширений старого аккаунта.
+      </li>
+      <li><strong>Раздельные хранилища токенов:</strong>
+        На Mac не держите токены нового аккаунта в системной связке ключей. Новый аккаунт должен жить исключительно в файловой системе удалённого VPS (директория <code>/root/.claude/</code>), к которой у локальных программ нет прямого доступа.
+      </li>
+    </ul>
+  </section>
+
+  <!-- Блок 4 -->
+  <section id="network">
+    <h2>4. Сетевая инфраструктура, TUN и Kill Switch</h2>
+    <p>
+      Если агент или веб-интерфейс используются на Mac, применяются строгие правила маскировки:
+    </p>
+
+    <h3>4.1. Обязательный режим TUN</h3>
+    <p>
+      Обычный системный прокси прописывает в macOS адрес <code>127.0.0.1:7890</code>. Claude Code считывает сетевой профиль и видит проксирование. 
+      <strong>Режим TUN</strong> поднимает виртуальную сетевую карту на уровне ядра ОС. Трафик перехватывается прозрачно, а системный прокси остаётся чистым (<code>scutil --proxy</code> возвращает <code>0</code>).
+    </p>
+
+    <h3>4.2. Kill Switch и запрет отката в Direct</h3>
+    <div class="alert warning">
+      <div>
+        <strong>Правило сброса соединения:</strong> Если туннель к серверу кратковременно оборвался, трафик доменов <code>claude.ai</code>, <code>claude.com</code>, <code>api.anthropic.com</code> должен <strong>сбрасываться (REJECT)</strong>. Автоматический откат в DIRECT недопустим.
+      </div>
+    </div>
+
+    <h3>4.3. База ссылок по сетевому уровню:</h3>
+    <ul>
+      <li><a href="https://bandwagonhost.com" target="_blank" rel="noopener noreferrer">BandwagonHost</a> — проверенная конфигурация E-Commerce VPS (Los Angeles USCA_9).</li>
+      <li><a href="https://x.com/gengdaJ/status/2036803153841328388" target="_blank" rel="noopener noreferrer">Пошаговая настройка узла от @gengdaJ</a>.</li>
+      <li><a href="https://x.com/gkxspace/status/2094386340645216468" target="_blank" rel="noopener noreferrer">Правила маршрутизации от @gkxspace</a>.</li>
+      <li><a href="https://x.com/xiaoxiaodong/status/2108873683494478141" target="_blank" rel="noopener noreferrer">Архитектурный разбор проксирования от @xiaoxiaodong</a>.</li>
+      <li><a href="https://x.com/gkxspace/status/2108522433917702540" target="_blank" rel="noopener noreferrer">Маршрут удалённого устройства через Сингапур</a>.</li>
+      <li><a href="https://www.equaldcdn.com" target="_blank" rel="noopener noreferrer">IPEqual</a> — готовые резидентные IP (тариф Max).</li>
+    </ul>
+  </section>
+
+  <!-- Блок 5 -->
+  <section id="scripts">
+    <h2>5. Готовые скрипты автоматизации (Из репозитория agent-server-hub)</h2>
+    <p>
+      Для быстрого и безошибочного развёртывания всей инфраструктуры используйте готовые скрипты:
+    </p>
+
+    <h3>5.1. Настройка SSH на Mac (`setup_ssh.sh`)</h3>
+    <p>
+      Автоматически генерирует надёжный ключ <code>ed25519</code>, пробрасывает его на сервер через <code>ssh-copy-id</code> и создаёт защищённый alias в <code>~/.ssh/config</code> с параметрами <code>ServerAliveInterval 60</code> и <code>ForwardAgent yes</code>.
+    </p>
+    <div class="code-wrapper">
+      <pre><code>cd ~/studio/Gemstudio/agent-server-hub/scripts
+./setup_ssh.sh &lt;IP_АДРЕС_СЕРВЕРА&gt;</code></pre>
+    </div>
+
+    <h3>5.2. Инициализация сервера (`bootstrap_server.sh`)</h3>
+    <p>
+      Запускается на сервере Ubuntu 24.04 LTS: настраивает фаервол <strong>ufw</strong>, защиту <strong>fail2ban</strong>, устанавливает <strong>Node.js 20 LTS</strong>, <strong>Python 3.11+</strong>, Docker, ffmpeg, создаёт безопасную структуру <code>/root/projects</code> и файл <code>.env</code> с правами <code>chmod 600</code>.
+    </p>
+    <div class="code-wrapper">
+      <pre><code>ssh studio-vps "bash -s" &lt; ~/studio/Gemstudio/agent-server-hub/scripts/bootstrap_server.sh</code></pre>
+    </div>
+
+    <h3>5.3. Скрипт проверки чистоты окружения Mac (Bash)</h3>
+    <div class="code-wrapper">
+      <button class="copy-btn" onclick="copyBashScript()">Скопировать Bash</button>
+      <pre><code id="bashCode"># 1. Системный прокси macOS — все значения должны быть 0
+scutil --proxy | grep -E "HTTPEnable|HTTPSEnable|SOCKSEnable"
+
+# 2. Переменные окружения текущего shell
+env | grep -iE "proxy"
+
+# 3. Наличие proxy в файлах запуска shell
+grep -iE "proxy" ~/.zshrc ~/.bashrc ~/.profile ~/.zshenv 2>/dev/null
+
+# 4. Конфигурация пакетных менеджеров npm / git
+npm config get proxy 2>/dev/null
+git config --global --get http.proxy
+
+# 5. Конфигурация Claude Code и переменные Anthropic
+cat ~/.claude/settings.json 2>/dev/null | grep -iE "proxy|base_url|anthropic_"
+env | grep -iE "anthropic|claude"
+
+# 6. Проверка внешнего IP и геолокации
+curl -s https://ipinfo.io | grep -E "ip|country|region|city"</code></pre>
+    </div>
+  </section>
+
+  <!-- Блок 6 -->
+  <section id="payment">
+    <h2>6. Способы оплаты и Платёжный хак «Сингапурский шлюз»</h2>
+    <p>
+      Платёжный метод — ключевой триггер антифрода Stripe и Anthropic. Оплата российскими картами или популярными массовыми виртуалками гарантированно ведёт к бану.
+    </p>
+
+    <div class="alert success">
+      <div>
+        <strong>Платёжный хак: «Сингапурский шлюз через Apple ID» (Наивысший траст)</strong><br>
+        <strong>Связка:</strong> <code>Сингапурский Apple ID</code> + <code>Сингапурская карта (Starryblu)</code> + <code>In-App Purchase в приложении Claude на iPhone</code>.<br><br>
+        <strong>Почему это работает на 100%:</strong>
+        Платёж принимает корпорация Apple (Merchant of Record). Данные банковской карты, имя владельца и BIN-код <strong>не передаются</strong> в Stripe и Anthropic. Фрод-фильтр банковских карт Anthropic вообще не активируется!
+      </div>
+    </div>
+
+    <h3>Правило совпадения триады (100% консистентность):</h3>
+    <div class="formula-box">
+      Apple ID (Сингапур) ≡ Карта оплаты (Сингапур) ≡ VPN на телефоне (Сингапур)
+    </div>
+    <p>
+      В момент подтверждения покупки по Face ID на iPhone должен быть включен сингапурский узел. После этого аккаунт получает легальный Pro/Max статус и подключается к американскому серверу.
+    </p>
+
+    <h3>Другие проверенные способы оплаты:</h3>
+    <ol>
+      <li><strong>Банковская карта США:</strong> Личная карта американского банка или карта зарегистрированной US LLC.</li>
+      <li><strong>US PayPal через US Apple ID:</strong> Американский аккаунт PayPal, привязанный к Apple ID.</li>
+      <li><strong>Физическая карта Starryblu напрямую:</strong>
+        <a href="https://sg.starryblu.com/x/6RtMh9c0" target="_blank" rel="noopener noreferrer">Оформить карту Starryblu</a> | 
+        <a href="https://x.com/gkxspace/status/2089668722105688198" target="_blank" rel="noopener noreferrer">Инструкция @gkxspace</a>.
+      </li>
+      <li><strong>Подарочные карты Apple (Gift Cards):</strong>
+        <a href="https://x.com/zureA255062/status/2103672988524855361" target="_blank" rel="noopener noreferrer">Фотоинструкция от @zureA255062</a>.
+      </li>
+      <li><strong>Сводная база альтернативных методов оплаты:</strong>
+        <a href="https://x.com/Nemo001ai/status/2072882143336767816" target="_blank" rel="noopener noreferrer">Коллекция от @Nemo001ai</a>.
+      </li>
+    </ol>
+  </section>
+
+  <!-- Блок 7 -->
+  <section id="settings">
+    <h2>7. Системные настройки, телефон и профиль</h2>
+
+    <h3>7.1. Телефонный номер</h3>
+    <ul>
+      <li><strong>Запрет виртуальных SMS-хабов:</strong> Разовые номера помечаются антифродом как высокорисковые.</li>
+      <li><strong>Решение:</strong> Постоянная американская eSIM/SIM от <strong>Red Pocket</strong> (\$30/год) в связке с картой-адаптером <strong>BeeSIM</strong> (работает в любом смартфоне): 
+        <a href="https://x.com/gkxspace/status/2101984042635944146" target="_blank" rel="noopener noreferrer">Инструкция по Red Pocket + BeeSIM</a>.
+      </li>
+    </ul>
+
+    <h3>7.2. Электронная почта</h3>
+    <ul>
+      <li>Использовать <strong>чистый или старый личный Gmail</strong>. Избегать свежерегов Outlook и покупных почт.</li>
+    </ul>
+
+    <h3>7.3. Таймзона и геолокация (macOS & iOS)</h3>
+    <ul>
+      <li>В системных настройках «Дата и время» отключить автоопределение и вручную выставить часовой пояс сервера (US / Pacific).</li>
+      <li>В «Конфиденциальность и безопасность» → «Службы геолокации» → «Системные службы» отключить <strong>«Установка часового пояса»</strong>.</li>
+      <li>В профиле Claude (<code>Settings → Privacy</code>) отключить <strong>Location metadata</strong> и <strong>Help improve our AI models</strong>.</li>
+    </ul>
+  </section>
+
+  <!-- Блок 8 -->
+  <section id="warmup">
+    <h2>8. Паттерны поведения и прогрев аккаунта (Warm-up)</h2>
+    <ol>
+      <li><strong>Плавный рост нагрузки:</strong>
+        Не включайте тариф Max 20x в день регистрации. Аккаунты, моментально выжимающие лимиты 20x, попадают под ручной аудит.
+        <br><em>Рекомендуемая схема:</em> <code>Free → Pro (3–5 дней) → Max 5x (10 дней) → Max 20x</code>.
+      </li>
+      <li><strong>Уважение отказов безопасности:</strong> Не долбите модель повторными попытками обхода фильтров безопасности при срабатывании Safety Refusal.</li>
+      <li><strong>Прохождение KYC:</strong> При запросе верификации паспорта ознакомьтесь с практикой: <a href="https://x.com/gengdaJ/status/2103049745984037061" target="_blank" rel="noopener noreferrer">Опыт верификации от @gengdaJ</a>.</li>
+    </ol>
+  </section>
+
+  <!-- Блок 9 -->
+  <section id="checklist">
+    <h2>9. Интерактивный чек-лист готовности перед запуском</h2>
+    <p>Кликайте по пунктам для проверки готовности вашей инфраструктуры:</p>
+
+    <div class="checklist">
+      <label class="checklist-item">
+        <input type="checkbox" onchange="toggleCheck(this)">
+        <span>Развёрнут удалённый сервер в США (HostHatch / BandwagonHost, Ubuntu 24.04 LTS)</span>
+      </label>
+      <label class="checklist-item">
+        <input type="checkbox" onchange="toggleCheck(this)">
+        <span>Отработал скрипт <code>setup_ssh.sh</code> на Mac (ключ ed25519, ServerAliveInterval 60)</span>
+      </label>
+      <label class="checklist-item">
+        <input type="checkbox" onchange="toggleCheck(this)">
+        <span>Отработал скрипт <code>bootstrap_server.sh</code> на сервере (ufw, fail2ban, Node 20, Python 3.11)</span>
+      </label>
+      <label class="checklist-item">
+        <input type="checkbox" onchange="toggleCheck(this)">
+        <span>Агент Claude Code установлен прямо на сервере (<code>Install in SSH: root@studio-vps</code>)</span>
+      </label>
+      <label class="checklist-item">
+        <input type="checkbox" onchange="toggleCheck(this)">
+        <span>Для OAuth-авторизации поднят <strong>Single-IP Handshake</strong> (<code>ssh -D 10808 root@studio-vps</code>)</span>
+      </label>
+      <label class="checklist-item">
+        <input type="checkbox" onchange="toggleCheck(this)">
+        <span>Изоляция мультиаккаунтов: выделен отдельный чистый профиль браузера без старых сессий</span>
+      </label>
+      <label class="checklist-item">
+        <input type="checkbox" onchange="toggleCheck(this)">
+        <span>Оплата проведена через «Сингапурский шлюз» Apple ID или прямую карту США</span>
+      </label>
+      <label class="checklist-item">
+        <input type="checkbox" onchange="toggleCheck(this)">
+        <span>Регистрация выполнена на постоянный номер Red Pocket и личный ящик Gmail</span>
+      </label>
+      <label class="checklist-item">
+        <input type="checkbox" onchange="toggleCheck(this)">
+        <span>На Mac и iPhone отключены автоматическая таймзона и службы геолокации времени</span>
+      </label>
+      <label class="checklist-item">
+        <input type="checkbox" onchange="toggleCheck(this)">
+        <span>В веб-профиле Claude отключены Location metadata и обучение моделей</span>
+      </label>
+      <label class="checklist-item">
+        <input type="checkbox" onchange="toggleCheck(this)">
+        <span>Запланирован плавный прогрев тарифов подписки (Pro → 5x → 20x)</span>
+      </label>
+    </div>
+  </section>
+
+  <footer style="margin-top: 30px; border-top: 1px solid var(--card-border); padding: 24px 0 10px; text-align: center;">
+    <div style="font-size: 16px; font-weight: 700; color: var(--heading); margin-bottom: 8px; letter-spacing: 0.3px;">
+      ⚡ Сделано брендом ВС
+    </div>
+    <div style="font-size: 14px; color: var(--text-muted); margin-bottom: 12px;">
+      Автор: <strong>ДВ</strong> • Для связи в Telegram: <a href="https://t.me/demast" target="_blank" rel="noopener noreferrer" style="color: var(--accent); font-weight: 600; text-decoration: none;">@demast</a>
+    </div>
+    <div style="font-size: 12px; color: var(--text-muted); opacity: 0.7;">
+      Gemstudio & agent-server-hub • Версия 2.0 • Ноябрь 2026
+    </div>
+  </footer>
+
+</div>
+
+<script>
+  function copyBashScript() {
+    const code = document.getElementById('bashCode').innerText;
+    navigator.clipboard.writeText(code).then(() => {
+      const btn = document.querySelector('.copy-btn');
+      const originalText = btn.innerText;
+      btn.innerText = 'Скопировано! ✓';
+      btn.style.background = 'var(--success)';
+      btn.style.color = '#fff';
+      setTimeout(() => {
+        btn.innerText = originalText;
+        btn.style.background = '';
+        btn.style.color = '';
+      }, 2000);
+    });
+  }
+
+  function toggleCheck(checkbox) {
+    const item = checkbox.closest('.checklist-item');
+    if (checkbox.checked) {
+      item.classList.add('checked');
+    } else {
+      item.classList.remove('checked');
+    }
+  }
+</script>
+
+</body>
+</html>
